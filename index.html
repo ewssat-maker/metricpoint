@@ -154,19 +154,46 @@
                 <label>Fecha de Siembra (YYYY-MM-DD):</label>
                 <input type="text" id="siembraDate" value="2025-12-15">
                 
-                <div class="ingesta-card">
+                <div class="param-group" style="margin-top: 15px; padding: 10px; background: #f0f9e8; border: 1px solid #ccece6; border-radius: 6px;">
+                    <h4 style="margin-top: 0; margin-bottom: 10px; color: #0868ac; font-size: 14px;">Humedad Inicial Real (Día 1)</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div style="width: 45%;">
+                            <label style="margin-top:0;">10 cm:</label>
+                            <input type="number" id="hum_10" step="0.01" placeholder="Ej: 0.15">
+                        </div>
+                        <div style="width: 45%;">
+                            <label style="margin-top:0;">30 cm:</label>
+                            <input type="number" id="hum_30" step="0.01" placeholder="Ej: 0.20">
+                        </div>
+                        <div style="width: 45%;">
+                            <label style="margin-top:0;">60 cm:</label>
+                            <input type="number" id="hum_60" step="0.01" placeholder="Ej: 0.22">
+                        </div>
+                        <div style="width: 45%;">
+                            <label style="margin-top:0;">100 cm:</label>
+                            <input type="number" id="hum_100" step="0.01" placeholder="Ej: 0.25">
+                        </div>
+                    </div>
+                    <small style="font-size: 11px; color: #666; display: block; margin-top: 5px;">*Si dejás vacío, el modelo usará el valor satelital o predeterminado.</small>
+                </div>
+
+                <div class="ingesta-card" style="margin-top: 15px;">
                     <h4>Carga Manual / Estación de Campo</h4>
                     <label>Fecha Registro:</label>
                     <input type="date" id="m_fecha">
-                    <div style="display: flex; gap: 10px;">
-                        <div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 5px;">
+                        <div style="width: 50%;">
                             <label>Lluvia (mm):</label>
                             <input type="number" id="m_lluvia" placeholder="0">
                         </div>
-                        <div>
+                        <div style="width: 50%;">
                             <label>ET0 (mm):</label>
                             <input type="number" id="m_et0" placeholder="0.0" step="0.1">
                         </div>
+                    </div>
+                    <div style="width: 100%;">
+                        <label>Riego Aplicado (mm):</label>
+                        <input type="number" id="m_riego" placeholder="0.0" step="0.1">
                     </div>
                     <button class="btn-secondary" style="width: 100%; margin-top: 8px; padding: 5px;" onclick="agregarDatoManual()">+ Agregar Registro</button>
                     <div id="m_status" style="font-size: 11px; color: #2b8cbe; margin-top: 5px;"></div>
@@ -194,6 +221,7 @@
                         <p><strong>Reserva (100 cm):</strong> <span id="c_100"></span> m³/m³</p>
                         <hr style="border-top: 1px solid #fd8d3c; margin: 10px 0;">
                         <p style="color: #d94801;"><strong>Evapotranspiración (ET0):</strong> <span id="c_et0"></span> mm/día</p>
+                        <p style="color: #0868ac; font-weight: bold; font-size: 14px; margin-top: 8px;">Recomendación: <span id="c_rec"></span></p>
                     </div>
                 </div>
                 
@@ -487,16 +515,31 @@
         leyendaRadar.addTo(mapPronostico);
 
         var chartObjAgro = null, chartObjClima = null;
-        window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
+        window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = []; window.riegosManuales = {};
 
         const customCanvasBg = { id: 'customCanvasBackgroundColor', beforeDraw: (chart, args, options) => { const {ctx} = chart; ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = options.color || '#ffffff'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } };
 
         function agregarDatoManual() {
-            const f = document.getElementById('m_fecha').value, ll = document.getElementById('m_lluvia').value, et = document.getElementById('m_et0').value;
+            const f = document.getElementById('m_fecha').value;
+            const ll = document.getElementById('m_lluvia').value;
+            const et = document.getElementById('m_et0').value;
+            const ri = document.getElementById('m_riego').value;
+            
             if (!f) return alert("Seleccione una fecha.");
-            let registro = { timestamp: f }; if (ll !== "") registro.lluvia = parseFloat(ll); if (et !== "") registro.et0 = parseFloat(et);
-            window.datosLocalesManuales = window.datosLocalesManuales.filter(d => d.timestamp !== f); window.datosLocalesManuales.push(registro);
-            document.getElementById('m_status').innerText = `${window.datosLocalesManuales.length} registros manuales.`; document.getElementById('m_lluvia').value = ''; document.getElementById('m_et0').value = '';
+            
+            let registro = { timestamp: f }; 
+            if (ll !== "") registro.lluvia = parseFloat(ll); 
+            if (et !== "") registro.et0 = parseFloat(et);
+            
+            window.datosLocalesManuales = window.datosLocalesManuales.filter(d => d.timestamp !== f); 
+            window.datosLocalesManuales.push(registro);
+            
+            if (ri !== "") window.riegosManuales[f] = parseFloat(ri);
+            
+            document.getElementById('m_status').innerText = `${window.datosLocalesManuales.length} registros y ${Object.keys(window.riegosManuales).length} riegos.`; 
+            document.getElementById('m_lluvia').value = ''; 
+            document.getElementById('m_et0').value = '';
+            document.getElementById('m_riego').value = '';
         }
 
         function abrirPestana(tabId, elementoBtn) {
@@ -548,10 +591,23 @@
         }
 
         function consultarFecha() {
-            const fecha = document.getElementById('fechaConsulta').value; if (!fecha || window.datosSimulacion.length === 0) return alert("Seleccione fecha válida.");
+            const fecha = document.getElementById('fechaConsulta').value; 
+            if (!fecha || window.datosSimulacion.length === 0) return alert("Seleccione fecha válida.");
+            
             const dato = window.datosSimulacion.find(d => d.timestamp === fecha);
             if (dato) {
-                ['10', '30', '60', '100'].forEach(p => document.getElementById('c_'+p).innerText = dato[`Humedad_${p}cm`].toFixed(3)); document.getElementById('c_et0').innerText = dato.ET0.toFixed(1); document.getElementById('resultadoConsulta').style.display = 'block'; document.getElementById('contenedorGeo3D').style.display = 'block'; document.getElementById('lblFechaGeo3D').innerText = `(Día: ${dato.timestamp})`; renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); abrirPestana('tabGeo3D', document.getElementById('btnTabGeo3D'));
+                ['10', '30', '60', '100'].forEach(p => document.getElementById('c_'+p).innerText = dato[`Humedad_${p}cm`].toFixed(3)); 
+                document.getElementById('c_et0').innerText = dato.ET0.toFixed(1); 
+                
+                document.getElementById('c_rec').innerText = dato.Recomendacion || "Sin datos";
+                if (dato.Recomendacion === "Regar") document.getElementById('c_rec').style.color = "#d73027";
+                else document.getElementById('c_rec').style.color = "#31a354";
+
+                document.getElementById('resultadoConsulta').style.display = 'block'; 
+                document.getElementById('contenedorGeo3D').style.display = 'block'; 
+                document.getElementById('lblFechaGeo3D').innerText = `(Día: ${dato.timestamp})`; 
+                renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); 
+                abrirPestana('tabGeo3D', document.getElementById('btnTabGeo3D'));
             } else alert("Fecha fuera de rango.");
         }
 
@@ -566,12 +622,38 @@
 
         async function ejecutarAnalisis() {
             if (!poligonoActual) return document.getElementById('status').innerText = 'Error: Dibuje un polígono primero.';
-            const token = localStorage.getItem("metric_token"); if (!token) return document.getElementById("authScreen").style.display = "flex";
-            document.getElementById('status').innerText = 'Validando licencia y simulando...'; document.getElementById('status').style.color = '#08306b';
+            const token = localStorage.getItem("metric_token"); 
+            if (!token) return document.getElementById("authScreen").style.display = "flex";
+            
+            document.getElementById('status').innerText = 'Validando licencia y simulando...'; 
+            document.getElementById('status').style.color = '#08306b';
             ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoConsulta','infoClima'].forEach(id => document.getElementById(id).style.display = 'none');
+            
+            let humedad_inicial = {};
+            if (document.getElementById('hum_10').value) humedad_inicial["10cm"] = parseFloat(document.getElementById('hum_10').value);
+            if (document.getElementById('hum_30').value) humedad_inicial["30cm"] = parseFloat(document.getElementById('hum_30').value);
+            if (document.getElementById('hum_60').value) humedad_inicial["60cm"] = parseFloat(document.getElementById('hum_60').value);
+            if (document.getElementById('hum_100').value) humedad_inicial["100cm"] = parseFloat(document.getElementById('hum_100').value);
+
+            let payload = { 
+                token: token, 
+                start_date: document.getElementById('startDate').value, 
+                end_date: document.getElementById('endDate').value, 
+                fecha_siembra: document.getElementById('siembraDate').value, 
+                coordenadas: poligonoActual, 
+                datos_locales: window.datosLocalesManuales,
+                humedad_inicial: humedad_inicial,
+                riegos: window.riegosManuales || {} 
+            };
+
             try {
-                const response = await fetch('https://metricmoisture-backend.onrender.com/api/calcular', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value, fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales }) });
+                const response = await fetch('https://metricmoisture-backend.onrender.com/api/calcular', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
                 const jsonResponse = await response.json();
+                
                 if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") { document.getElementById('status').innerText = ''; document.getElementById('paywallScreen').style.display = 'flex'; return; }
                 if (response.ok) {
                     document.getElementById('status').innerText = '¡Proceso completado!'; document.getElementById('status').style.color = '#31a354';
