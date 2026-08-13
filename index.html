@@ -121,7 +121,7 @@
             <div class="hub-card" onclick="abrirModulo('pronostico')">
                 <div class="hub-icon">🌩️</div>
                 <h3>Vigilancia Atmosférica</h3>
-                <p>Animaciones en tiempo real de satélites GOES, identificación de topes nubosos y sistemas frontales.</p>
+                <p>Animaciones en tiempo real del satélite GOES, identificación de topes nubosos y sistemas frontales.</p>
             </div>
             <div class="hub-card" onclick="abrirModulo('metricpoli')">
                 <div class="hub-icon">🐝</div>
@@ -275,12 +275,12 @@
         </div>
     </div>
 
-    <!-- Módulo 2: Pronóstico del Tiempo (AHORA CON API SATELLITAL EXACTA) -->
+    <!-- Módulo 2: Pronóstico del Tiempo (API ESTABLE RAINVIEWER) -->
     <div id="moduloPronostico" style="display: none;">
         <div class="header">
             <div class="header-left">
                 <h1>Vigilancia Atmosférica</h1>
-                <span>Monitoreo Satelital Global - Animación de Última Hora</span>
+                <span>Animación Satelital Global - Infrarrojo en Vivo</span>
             </div>
             <div>
                 <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">Volver al Menú</button>
@@ -292,17 +292,17 @@
             <div class="sidebar">
                 <h3>Control de Capas</h3>
                 <p style="font-size: 13px; color: #666;">
-                    Animación de la última hora de topes nubosos mediante telemetría satelital en vivo.
+                    Animación estable de topes nubosos mediante telemetría satelital (sin errores de sincronización de tiempo).
                 </p>
                 
-                <label>Producto Satelital:</label>
+                <label>Filtro Infrarrojo:</label>
                 <select id="selectBanda" style="width: 100%; padding: 8px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #ccc;">
-                    <option value="1_1">Infrarrojo Limpio (Colorizado - Tormentas)</option>
-                    <option value="0_1">Infrarrojo Limpio (Escala de Grises)</option>
+                    <option value="1">Colorizado (Detecta Tormentas Severas)</option>
+                    <option value="0">Escala de Grises (Nubosidad General)</option>
                 </select>
 
-                <button class="btn-secondary" style="width: 100%;" onclick="cargarGOES19()">Cargar Última Hora</button>
-                <button id="btnPlay" class="btn-primary" style="margin-top: 10px;" onclick="togglePlay()">▶ Reproducir Animación</button>
+                <button class="btn-secondary" style="width: 100%;" onclick="cargarSat()">Cargar Última Hora</button>
+                <button id="btnPlay" class="btn-primary" style="margin-top: 10px;" onclick="togglePlaySat()">▶ Reproducir Animación</button>
                 
                 <div id="statusRadar" style="font-size: 12px; font-weight: bold; color: #08306b; margin-top: 15px; padding: 10px; background: #e0f3db; border-radius: 4px; text-align: center;">Esperando conexión...</div>
             </div>
@@ -586,7 +586,7 @@
         }
 
         // ==========================================
-        // MAPA SATELITAL ANIMACIÓN (RainViewer API)
+        // MAPA SATELITAL ANIMACIÓN (API ESTABLE RAINVIEWER)
         // ==========================================
         var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 5);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(mapPronostico);
@@ -596,8 +596,8 @@
         var satInterval = null;
         var isPlaying = false;
 
-        async function cargarGOES19() {
-            document.getElementById("statusRadar").innerText = "Obteniendo telemetría orbital...";
+        async function cargarSat() {
+            document.getElementById("statusRadar").innerText = "Sincronizando satélite...";
             
             satLayers.forEach(obj => mapPronostico.removeLayer(obj.layer));
             satLayers = [];
@@ -606,23 +606,25 @@
             let colorScheme = document.getElementById("selectBanda").value;
             
             try {
-                // Consumimos API real para obtener marcas de tiempo EXACTAS de la última hora
+                // Obtiene los timestamps EXACTOS para no adivinar y evitar capas transparentes
                 let response = await fetch("https://api.rainviewer.com/public/weather-maps.json");
                 let data = await response.json();
                 
-                // Últimos 6 cuadros (aprox 1 hora) de la capa infrarroja satelital
+                // Últimos 6 cuadros
                 let frames = data.satellite.infrared.slice(-6);
+                let host = data.host; 
                 
                 frames.forEach((frame, index) => {
                     let fechaFrame = new Date(frame.time * 1000);
                     let timeStr = fechaFrame.getHours().toString().padStart(2, '0') + ':' + fechaFrame.getMinutes().toString().padStart(2, '0');
                     
-                    let tileUrl = `https://tilecache.rainviewer.com${frame.path}/512/{z}/{x}/{y}/0/${colorScheme}.png`;
+                    // URL de la capa satelital
+                    let tileUrl = `${host}${frame.path}/256/{z}/{x}/{y}/0/${colorScheme}_1.png`; 
                     
                     let layer = L.tileLayer(tileUrl, {
                         opacity: 0,
                         zIndex: 400 + index,
-                        attribution: 'GOES/RainViewer'
+                        attribution: 'RainViewer / Satélite'
                     });
                     
                     layer.addTo(mapPronostico);
@@ -631,21 +633,27 @@
                 
                 document.getElementById("statusRadar").innerText = "Sincronización completa. Presione Play.";
                 
+                // Forzar carga de la primera capa
+                if (satLayers.length > 0) {
+                    satLayers[0].layer.setOpacity(0.85);
+                }
+
                 setTimeout(() => {
                     if(isPlaying) {
                         clearInterval(satInterval);
                         isPlaying = false;
                     }
-                    togglePlay(); 
-                }, 1500);
+                    togglePlaySat(); 
+                }, 1000);
                 
             } catch(e) {
-                document.getElementById("statusRadar").innerText = "Error de conexión con la red satelital.";
+                console.error(e);
+                document.getElementById("statusRadar").innerText = "Error de red satelital.";
                 document.getElementById("statusRadar").style.color = "#d73027";
             }
         }
 
-        function animarFrames() {
+        function animarFramesSat() {
             if(satLayers.length === 0) return;
             
             satLayers.forEach(obj => obj.layer.setOpacity(0));
@@ -656,7 +664,7 @@
             currentFrame = (currentFrame + 1) % satLayers.length;
         }
 
-        function togglePlay() {
+        function togglePlaySat() {
             let btn = document.getElementById("btnPlay");
             if(isPlaying) {
                 clearInterval(satInterval);
@@ -665,11 +673,11 @@
                 btn.style.backgroundColor = "#31a354";
             } else {
                 if(satLayers.length === 0) {
-                    cargarGOES19();
+                    cargarSat();
                     return;
                 }
-                animarFrames();
-                satInterval = setInterval(animarFrames, 800);
+                animarFramesSat();
+                satInterval = setInterval(animarFramesSat, 800);
                 isPlaying = true;
                 btn.innerText = "⏸ Pausar Animación";
                 btn.style.backgroundColor = "#d73027";
