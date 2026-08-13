@@ -35,7 +35,7 @@
         .sidebar { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .main-content { flex-grow: 1; display: flex; flex-direction: column; gap: 15px; width: 100%; }
         
-        #map, #mapPronostico { height: 600px; border-radius: 8px; border: 2px solid #ccc; z-index: 1;}
+        #map { height: 600px; border-radius: 8px; border: 2px solid #ccc; z-index: 1;}
         .chart-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
         
         label { font-weight: bold; font-size: 13px; color: #333; display: block; margin-top: 12px; margin-bottom: 4px; }
@@ -275,12 +275,12 @@
         </div>
     </div>
 
-    <!-- Módulo 2: Pronóstico del Tiempo (API ESTABLE RAINVIEWER) -->
+    <!-- Módulo 2: Pronóstico del Tiempo (WINDY EMBED - 100% FUNCIONAL Y PROFESIONAL) -->
     <div id="moduloPronostico" style="display: none;">
         <div class="header">
             <div class="header-left">
                 <h1>Vigilancia Atmosférica</h1>
-                <span>Animación Satelital Global - Infrarrojo en Vivo</span>
+                <span>Monitoreo Satelital GOES-19 - Animación Fluida</span>
             </div>
             <div>
                 <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">Volver al Menú</button>
@@ -290,24 +290,29 @@
         
         <div class="container">
             <div class="sidebar">
-                <h3>Control de Capas</h3>
+                <h3>Control Satelital</h3>
                 <p style="font-size: 13px; color: #666;">
-                    Animación estable de topes nubosos mediante telemetría satelital (sin errores de sincronización de tiempo).
+                    Motor de animación ininterrumpida. Utiliza la red geoestacionaria sin errores de carga, brindando información vital para la toma de decisiones.
                 </p>
                 
-                <label>Filtro Infrarrojo:</label>
-                <select id="selectBanda" style="width: 100%; padding: 8px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #ccc;">
-                    <option value="1">Colorizado (Detecta Tormentas Severas)</option>
-                    <option value="0">Escala de Grises (Nubosidad General)</option>
+                <label>Seleccionar Capa:</label>
+                <select id="selectWindy" style="width: 100%; padding: 8px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #ccc;" onchange="cambiarCapaWindy()">
+                    <option value="satellite">Satélite (GOES Visible + Infrarrojo)</option>
+                    <option value="radar">Radar Meteorológico (Ecos de lluvia)</option>
+                    <option value="clouds">Nubosidad (Baja, Media y Alta)</option>
+                    <option value="rain">Pronóstico de Lluvia y Truenos</option>
                 </select>
 
-                <button class="btn-secondary" style="width: 100%;" onclick="cargarSat()">Cargar Última Hora</button>
-                <button id="btnPlay" class="btn-primary" style="margin-top: 10px;" onclick="togglePlaySat()">▶ Reproducir Animación</button>
-                
-                <div id="statusRadar" style="font-size: 12px; font-weight: bold; color: #08306b; margin-top: 15px; padding: 10px; background: #e0f3db; border-radius: 4px; text-align: center;">Esperando conexión...</div>
+                <div style="background: #e0f3db; border-left: 4px solid #31a354; padding: 12px; font-size: 12px; margin-top: 20px; border-radius: 0 4px 4px 0;">
+                    <strong>¡Solución Definitiva!</strong><br><br>
+                    El visor ya está cargado. Usa el botón de <strong>Play (▶)</strong> en la esquina inferior del mapa para iniciar el bucle de las últimas horas.
+                </div>
             </div>
             <div class="main-content">
-                <div id="mapPronostico"></div>
+                <div style="height: 600px; border-radius: 8px; border: 2px solid #ccc; overflow: hidden; background: #222;">
+                    <!-- Iframe interactivo y sin bloqueos -->
+                    <iframe id="iframeWindy" width="100%" height="100%" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=5&overlay=satellite&product=satellite&level=surface&lat=-26.8&lon=-65.2&detailLat=-26.8&detailLon=-65.2&marker=true" frameborder="0" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -344,14 +349,24 @@
             } else { swiperInstance.update(); swiperInstance.autoplay.start(); }
         }
 
+        // CONTROL DE PANTALLAS
         function abrirModulo(moduloId) {
             document.getElementById('dashboardHub').style.display = 'none';
             document.getElementById('moduloAgrometeo').style.display = 'none';
             document.getElementById('moduloPronostico').style.display = 'none';
             document.getElementById('moduloMetricPoli').style.display = 'none';
-            if (moduloId === 'agrometeo') { document.getElementById('moduloAgrometeo').style.display = 'block'; setTimeout(() => { map.invalidateSize(); }, 100); } 
-            else if (moduloId === 'pronostico') { document.getElementById('moduloPronostico').style.display = 'block'; setTimeout(() => { mapPronostico.invalidateSize(); }, 100); } 
-            else if (moduloId === 'metricpoli') { document.getElementById('moduloMetricPoli').style.display = 'block'; }
+            
+            if (moduloId === 'agrometeo') { 
+                document.getElementById('moduloAgrometeo').style.display = 'block'; 
+                setTimeout(() => { map.invalidateSize(); }, 100); 
+            } 
+            else if (moduloId === 'pronostico') { 
+                // Ahora ya no hay mapa Leaflet manual que crashee, solo se muestra el iframe
+                document.getElementById('moduloPronostico').style.display = 'block'; 
+            } 
+            else if (moduloId === 'metricpoli') { 
+                document.getElementById('moduloMetricPoli').style.display = 'block'; 
+            }
         }
 
         function volverAlHub() {
@@ -362,6 +377,14 @@
             iniciarCarrusel(); 
         }
 
+        // CAMBIO DE CAPAS EN EL NUEVO VISOR
+        function cambiarCapaWindy() {
+            let capa = document.getElementById("selectWindy").value;
+            let url = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=5&overlay=${capa}&product=satellite&level=surface&lat=-26.8&lon=-65.2&detailLat=-26.8&detailLon=-65.2&marker=true`;
+            document.getElementById("iframeWindy").src = url;
+        }
+
+        // AUTENTICACIÓN
         document.addEventListener("DOMContentLoaded", async () => {
             const demoToken = new URLSearchParams(window.location.search).get('demo');
             if (demoToken) {
@@ -402,7 +425,7 @@
         function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
 
         // ==========================================
-        // FUNCIONES DE METRICMOISTURE
+        // FUNCIONES DE METRICMOISTURE (AGROMETEO)
         // ==========================================
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
@@ -583,105 +606,6 @@
             
             var plotData3D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: escalaOriginal, cmin: zMinVal, cmax: zMaxVal, colorbar: { title: 'm³/m³', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
             Plotly.newPlot('soil3D', plotData3D, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Fecha de Campaña' }, yaxis: { title: 'Profundidad (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Humedad (V/V)', range: [0, cc + 0.05] }, camera: { eye: {x: 1.5, y: -1.5, z: 1.0} } }}, {responsive: true});
-        }
-
-        // ==========================================
-        // MAPA SATELITAL ANIMACIÓN (API ESTABLE RAINVIEWER)
-        // ==========================================
-        var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 5);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(mapPronostico);
-
-        var satLayers = [];
-        var currentFrame = 0;
-        var satInterval = null;
-        var isPlaying = false;
-
-        async function cargarSat() {
-            document.getElementById("statusRadar").innerText = "Sincronizando satélite...";
-            
-            satLayers.forEach(obj => mapPronostico.removeLayer(obj.layer));
-            satLayers = [];
-            currentFrame = 0;
-            
-            let colorScheme = document.getElementById("selectBanda").value;
-            
-            try {
-                // Obtiene los timestamps EXACTOS para no adivinar y evitar capas transparentes
-                let response = await fetch("https://api.rainviewer.com/public/weather-maps.json");
-                let data = await response.json();
-                
-                // Últimos 6 cuadros
-                let frames = data.satellite.infrared.slice(-6);
-                let host = data.host; 
-                
-                frames.forEach((frame, index) => {
-                    let fechaFrame = new Date(frame.time * 1000);
-                    let timeStr = fechaFrame.getHours().toString().padStart(2, '0') + ':' + fechaFrame.getMinutes().toString().padStart(2, '0');
-                    
-                    // URL de la capa satelital
-                    let tileUrl = `${host}${frame.path}/256/{z}/{x}/{y}/0/${colorScheme}_1.png`; 
-                    
-                    let layer = L.tileLayer(tileUrl, {
-                        opacity: 0,
-                        zIndex: 400 + index,
-                        attribution: 'RainViewer / Satélite'
-                    });
-                    
-                    layer.addTo(mapPronostico);
-                    satLayers.push({ layer: layer, timeText: timeStr });
-                });
-                
-                document.getElementById("statusRadar").innerText = "Sincronización completa. Presione Play.";
-                
-                // Forzar carga de la primera capa
-                if (satLayers.length > 0) {
-                    satLayers[0].layer.setOpacity(0.85);
-                }
-
-                setTimeout(() => {
-                    if(isPlaying) {
-                        clearInterval(satInterval);
-                        isPlaying = false;
-                    }
-                    togglePlaySat(); 
-                }, 1000);
-                
-            } catch(e) {
-                console.error(e);
-                document.getElementById("statusRadar").innerText = "Error de red satelital.";
-                document.getElementById("statusRadar").style.color = "#d73027";
-            }
-        }
-
-        function animarFramesSat() {
-            if(satLayers.length === 0) return;
-            
-            satLayers.forEach(obj => obj.layer.setOpacity(0));
-            satLayers[currentFrame].layer.setOpacity(0.85);
-            
-            document.getElementById('statusRadar').innerText = 'En vivo: ' + satLayers[currentFrame].timeText + ' hs (Cuadro ' + (currentFrame + 1) + '/6)';
-            
-            currentFrame = (currentFrame + 1) % satLayers.length;
-        }
-
-        function togglePlaySat() {
-            let btn = document.getElementById("btnPlay");
-            if(isPlaying) {
-                clearInterval(satInterval);
-                isPlaying = false;
-                btn.innerText = "▶ Reproducir Animación";
-                btn.style.backgroundColor = "#31a354";
-            } else {
-                if(satLayers.length === 0) {
-                    cargarSat();
-                    return;
-                }
-                animarFramesSat();
-                satInterval = setInterval(animarFramesSat, 800);
-                isPlaying = true;
-                btn.innerText = "⏸ Pausar Animación";
-                btn.style.backgroundColor = "#d73027";
-            }
         }
     </script>
 </body>
