@@ -119,9 +119,9 @@
                 <p>Análisis de humedad edáfica profunda con satélites SAR, topografía 3D y balance hídrico.</p>
             </div>
             <div class="hub-card" onclick="abrirModulo('pronostico')">
-                <div class="hub-icon">🌦️</div>
-                <h3>Pronóstico del Tiempo</h3>
-                <p>Modelado atmosférico, radares del SMN en vivo y variables predictivas meteorológicas.</p>
+                <div class="hub-icon">🌩️</div>
+                <h3>Vigilancia Atmosférica</h3>
+                <p>Animaciones en tiempo real del satélite GOES-19, identificación de topes nubosos y sistemas frontales.</p>
             </div>
             <div class="hub-card" onclick="abrirModulo('metricpoli')">
                 <div class="hub-icon">🐝</div>
@@ -275,12 +275,12 @@
         </div>
     </div>
 
-    <!-- Módulo 2: Pronóstico del Tiempo -->
+    <!-- Módulo 2: Pronóstico del Tiempo (AHORA SATÉLITE GOES-19) -->
     <div id="moduloPronostico" style="display: none;">
         <div class="header">
             <div class="header-left">
-                <h1>Pronóstico y Radares (SMN)</h1>
-                <span>Red SINARAME - Ecos de Precipitaciones en Vivo</span>
+                <h1>Vigilancia Atmosférica (GOES-19)</h1>
+                <span>Monitoreo GOES-East Oficial - Animación en Tiempo Real</span>
             </div>
             <div>
                 <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">Volver al Menú</button>
@@ -292,10 +292,20 @@
             <div class="sidebar">
                 <h3>Control de Capas</h3>
                 <p style="font-size: 13px; color: #666;">
-                    Monitoreo en tiempo real de ecos de lluvia sobre la región del NOA utilizando la red de radares del Servicio Meteorológico Nacional.
+                    Animación de la última hora de topes nubosos y humedad atmosférica directamente desde la órbita geoestacionaria.
                 </p>
-                <button class="btn-primary" onclick="actualizarRadar()">Refrescar Radar</button>
-                <div id="statusRadar" style="font-size: 11px; color: #2b8cbe; margin-top: 10px;"></div>
+                
+                <label>Producto Satelital:</label>
+                <select id="selectBanda" style="width: 100%; padding: 8px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #ccc;">
+                    <option value="goes_east_ch13">Banda 13 (Infrarrojo Limpio)</option>
+                    <option value="goes_east_ch08">Banda 8 (Vapor de Agua)</option>
+                    <option value="goes_east_ch02">Banda 2 (Visible / Nubes)</option>
+                </select>
+
+                <button class="btn-secondary" style="width: 100%;" onclick="cargarGOES19()">Cargar Última Hora</button>
+                <button id="btnPlay" class="btn-primary" style="margin-top: 10px;" onclick="togglePlay()">▶ Reproducir Animación</button>
+                
+                <div id="statusRadar" style="font-size: 12px; font-weight: bold; color: #08306b; margin-top: 15px; padding: 10px; background: #e0f3db; border-radius: 4px; text-align: center;">Esperando conexión...</div>
             </div>
             <div class="main-content">
                 <div id="mapPronostico"></div>
@@ -402,119 +412,90 @@
         map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
 
         // ==========================================
-        // MAPA DE PRONÓSTICO CON IMÁGENES REALES DEL SMN RECORTADAS
+        // MAPA SATELITAL GOES-19 (ANIMACIÓN WMS)
         // ==========================================
-        var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
+        var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 5);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(mapPronostico);
 
-        // Tucumán (Referencia incrustada)
-        var tucumanCoords = [
-            [-65.72001, -26.35156], [-66.03243, -26.24814], [-66.04342, -26.24937], [-66.05166, -26.23521], 
-            [-66.06539, -26.23952], [-66.10110, -26.21796], [-66.10384, -26.23090], [-66.09766, -26.24691], 
-            [-66.10453, -26.26169], [-66.11277, -26.25984], [-66.11895, -26.26538], [-66.12307, -26.27647], 
-            [-66.12170, -26.28816], [-66.12307, -26.30540], [-66.12341, -26.31094], [-66.11449, -26.34110], 
-            [-66.11929, -26.35217], [-66.11998, -26.36878], [-66.12067, -26.37678], [-66.12547, -26.38847], 
-            [-66.15843, -26.39708], [-66.16255, -26.41860], [-66.15568, -26.43398], [-66.15706, -26.44566], 
-            [-66.16667, -26.46103], [-66.17766, -26.46902], [-66.17766, -26.48623], [-66.16736, -26.50036], 
-            [-66.17422, -26.51019], [-66.17216, -26.52494], [-66.16530, -26.53600], [-66.17216, -26.54214], 
-            [-66.16804, -26.55934], [-66.17491, -26.57039], [-66.17766, -26.57776], [-66.16942, -26.60232], 
-            [-66.17491, -26.63056], [-66.04170, -26.60232], [-65.92978, -26.67536], [-65.83227, -26.73915], 
-            [-65.83365, -26.74958], [-65.85356, -26.75632], [-65.86111, -26.77042], [-65.86111, -26.78452], 
-            [-65.86729, -26.78943], [-65.86729, -26.79678], [-65.88171, -26.80597], [-65.87651, -26.81762], 
-            [-65.88887, -26.82987], [-65.89643, -26.84274], [-65.89162, -26.85438], [-65.90192, -26.86357], 
-            [-65.88750, -26.88317], [-65.87995, -26.88011], [-65.87514, -26.89235], [-65.85866, -26.90154], 
-            [-65.85973, -26.91195], [-65.85629, -26.91868], [-65.86110, -26.93154], [-65.87552, -26.93215], 
-            [-65.88719, -26.95296], [-65.89612, -26.97438], [-65.91191, -26.97989], [-65.91672, -27.00742], 
-            [-65.91740, -27.01538], [-65.97096, -27.01599], [-65.96684, -27.04107], [-65.97302, -27.07103], 
-            [-65.99088, -27.10710], [-66.00461, -27.10526], [-66.02109, -27.11321], [-66.02177, -27.12054], 
-            [-66.03825, -27.12482], [-66.03963, -27.13277], [-66.05679, -27.14254], [-66.05817, -27.15782], 
-            [-66.06709, -27.16026], [-66.06503, -27.16943], [-66.06915, -27.18653], [-66.08289, -27.19630], 
-            [-66.08151, -27.20974], [-66.11173, -27.21462], [-66.12271, -27.22500], [-66.12546, -27.23782], 
-            [-66.13370, -27.23904], [-66.13576, -27.25369], [-66.07053, -27.29092], [-66.03070, -27.29764], 
-            [-66.01354, -27.31228], [-65.99568, -27.31289], [-65.97371, -27.33302], [-65.96822, -27.36169], 
-            [-65.96753, -27.38425], [-65.96753, -27.40010], [-65.97577, -27.41351], [-65.96753, -27.42875], 
-            [-65.97577, -27.44033], [-65.97302, -27.46983], [-65.97577, -27.49176], [-65.96959, -27.51795], 
-            [-65.96769, -27.54103], [-65.95052, -27.56234], [-65.95739, -27.57086], [-65.94434, -27.59460], 
-            [-65.94228, -27.61650], [-65.93130, -27.64145], [-65.91825, -27.66699], [-65.87774, -27.67186], 
-            [-65.86606, -27.68949], [-65.86194, -27.72292], [-65.84684, -27.75574], [-65.84134, -27.79037], 
-            [-65.83173, -27.81345], [-65.83379, -27.83774], [-65.83379, -27.84928], [-65.81800, -27.82560], 
-            [-65.79809, -27.80677], [-65.80083, -27.78308], [-65.75689, -27.76789], [-65.72461, -27.79462], 
-            [-65.72118, -27.81406], [-65.70608, -27.80799], [-65.70814, -27.82135], [-65.70402, -27.83531], 
-            [-65.69784, -27.85171], [-65.70196, -27.86688], [-65.69921, -27.89116], [-65.68754, -27.91543], 
-            [-65.67655, -27.92757], [-65.67724, -27.94091], [-65.66694, -27.97306], [-65.62230, -27.96942], 
-            [-65.61407, -27.99307], [-65.59415, -27.99671], [-65.57767, -28.01550], [-65.56188, -28.00216], 
-            [-65.54883, -27.98579], [-65.54677, -27.97427], [-65.52617, -27.96214], [-65.51999, -27.94273], 
-            [-65.49734, -27.92878], [-65.48429, -27.91361], [-65.45888, -27.89662], [-65.43485, -27.88327], 
-            [-65.41768, -27.87902], [-65.39434, -27.85717], [-65.36893, -27.84321], [-65.17118, -27.94577], 
-            [-65.17461, -27.92089], [-65.16225, -27.87417], [-65.14303, -27.88145], [-65.10663, -27.89238], 
-            [-65.09359, -27.89238], [-65.04003, -27.87842], [-65.01874, -27.79037], [-65.02904, -27.75210], 
-            [-64.98922, -27.74055], [-65.02767, -27.58851], [-65.02355, -27.57573], [-65.01394, -27.57269], 
-            [-65.01119, -27.55930], [-64.99196, -27.56965], [-64.98098, -27.56538], [-64.96793, -27.55382], 
-            [-64.96930, -27.50572], [-64.97960, -27.49353], [-65.00913, -27.48623], [-64.97480, -27.35030], 
-            [-64.93978, -27.35579], [-64.93566, -27.34481], [-64.85601, -27.31920], [-64.83198, -27.22154], 
-            [-64.82580, -27.21910], [-64.81206, -27.14825], [-64.79833, -27.15069], [-64.77086, -27.01742], 
-            [-64.75438, -27.01558], [-64.74958, -27.00212], [-64.74134, -27.00212], [-64.70838, -26.81598], 
-            [-64.67954, -26.82273], [-64.67405, -26.79086], [-64.61774, -26.80250], [-64.58959, -26.65470], 
-            [-64.50101, -26.67311], [-64.50376, -26.61419], [-64.50788, -26.59946], [-64.51131, -26.54849], 
-            [-64.52230, -26.54542], [-64.51887, -26.51470], [-64.51818, -26.48269], [-64.52848, -26.46548], 
-            [-64.52436, -26.44089], [-64.53397, -26.41445], [-64.53123, -26.39477], [-64.53328, -26.38493], 
-            [-64.51887, -26.34717], [-64.48247, -26.30656], [-64.50582, -26.23575], [-64.49621, -26.21850], 
-            [-64.50239, -26.21727], [-64.52573, -26.22405], [-64.54427, -26.21789], [-64.55114, -26.22528], 
-            [-64.55869, -26.22158], [-64.56762, -26.22528], [-64.58204, -26.21912], [-64.59783, -26.22343], 
-            [-64.59783, -26.23082], [-64.61088, -26.22897], [-64.62461, -26.22713], [-64.64658, -26.24006], 
-            [-64.66306, -26.24068], [-64.67611, -26.23698], [-64.70975, -26.23944], [-64.74752, -26.23821], 
-            [-64.75988, -26.22528], [-64.78692, -26.22130], [-64.81988, -26.23115], [-64.82400, -26.23977], 
-            [-64.83980, -26.23793], [-64.85078, -26.24347], [-64.85765, -26.25332], [-64.88649, -26.28042], 
-            [-64.89679, -26.27795], [-64.91327, -26.29211], [-64.92494, -26.29211], [-64.94897, -26.30627], 
-            [-64.96133, -26.30319], [-64.97369, -26.27180], [-64.99360, -26.28226], [-65.02519, -26.29088], 
-            [-65.04098, -26.29027], [-65.03343, -26.27057], [-65.04785, -26.26502], [-65.03824, -26.23115], 
-            [-65.19479, -26.19296], [-65.22638, -26.19111], [-65.22294, -26.18248], [-65.27376, -26.17324], 
-            [-65.27993, -26.16338], [-65.27582, -26.15475], [-65.28337, -26.14427], [-65.28405, -26.13010], 
-            [-65.29229, -26.12085], [-65.29573, -26.09988], [-65.30122, -26.08077], [-65.31427, -26.08138], 
-            [-65.32594, -26.06967], [-65.35478, -26.05856], [-65.36783, -26.05795], [-65.37813, -26.06720], 
-            [-65.39323, -26.08693], [-65.41177, -26.09372], [-65.42070, -26.10605], [-65.43649, -26.10852], 
-            [-65.46876, -26.08940], [-65.47838, -26.09372], [-65.49691, -26.08755], [-65.52232, -26.09310], 
-            [-65.55116, -26.08632], [-65.56786, -26.09635], [-65.58846, -26.11608], [-65.59739, -26.11300], 
-            [-65.61387, -26.12040], [-65.63172, -26.12286], [-65.64339, -26.11053], [-65.68528, -26.11731], 
-            [-65.70107, -26.15245], [-65.69283, -26.16293], [-65.69764, -26.17710], [-65.69489, -26.18450], 
-            [-65.70588, -26.19004], [-65.70588, -26.20360], [-65.71069, -26.21777], [-65.70382, -26.22885], 
-            [-65.70794, -26.24487], [-65.71275, -26.25287], [-65.70931, -26.26026], [-65.71961, -26.26888], 
-            [-65.72305, -26.27935], [-65.70588, -26.29659], [-65.72236, -26.30705], [-65.71343, -26.32613], 
-            [-65.71481, -26.34829], [-65.73197, -26.34952], [-66.03341, -26.24733], [-65.72001, -26.35156]
-        ];
+        var satLayers = [];
+        var currentFrame = 0;
+        var satInterval = null;
+        var isPlaying = false;
 
-        L.geoJSON({ "type": "FeatureCollection", "features": [{ "type": "Feature", "geometry": { "type": "Polygon", "coordinates": [tucumanCoords] }, "properties": { "name": "Tucumán" } }] }, {
-            style: { color: '#ffffff', weight: 4, opacity: 1, fillOpacity: 0 },
-            interactive: false
-        }).addTo(mapPronostico);
-
-        // Superposición precisa de las imágenes reales LIMITADAS (Lajitas y Termas Limpias)
-        var boundsLajitas = [[-26.8393, -66.6200], [-22.5273, -61.8800]];
-        L.imageOverlay('lajitas_limpia.png', boundsLajitas, {
-            opacity: 0.85, interactive: false, zIndex: 400
-        }).addTo(mapPronostico);
-
-        var boundsTermas = [[-29.6393, -67.2967], [-25.3273, -62.4367]];
-        L.imageOverlay('termas_limpia.png', boundsTermas, {
-            opacity: 0.85, interactive: false, zIndex: 410
-        }).addTo(mapPronostico);
-
-        function actualizarRadar() {
-            let status = document.getElementById("statusRadar");
-            status.innerText = "Sincronizado con imágenes locales.";
+        function cargarGOES19() {
+            document.getElementById("statusRadar").innerText = "Sincronizando con GOES-19...";
+            
+            // Limpiar capas anteriores
+            satLayers.forEach(obj => mapPronostico.removeLayer(obj.layer));
+            satLayers = [];
+            
+            // Tomar el tipo de banda seleccionada
+            let banda = document.getElementById("selectBanda").value;
+            
+            // Calcular los últimos 6 cuadros (última hora, intervalos de 10 min)
+            let ahora = new Date();
+            ahora.setMinutes(Math.floor(ahora.getMinutes() / 10) * 10);
+            ahora.setSeconds(0);
+            ahora.setMilliseconds(0);
+            
+            for(let i=5; i>=0; i--) {
+                let t = new Date(ahora.getTime() - i*10*60000);
+                let timeStr = t.toISOString(); 
+                
+                // Usamos la API del Iowa Environmental Mesonet que rutea GOES-East
+                let wmsLayer = L.tileLayer.wms('https://mesonet.agron.iastate.edu/cgi-bin/wms/goes_east.cgi', {
+                    layers: banda,
+                    format: 'image/png',
+                    transparent: true,
+                    time: timeStr,
+                    opacity: 0, 
+                    attribution: 'NOAA / GOES-19 / IEM'
+                });
+                wmsLayer.addTo(mapPronostico);
+                satLayers.push({ layer: wmsLayer, time: t });
+            }
+            
+            // Iniciar animación automáticamente tras breve pausa para cargar los tiles
+            setTimeout(() => {
+                if(isPlaying) togglePlay(); 
+                togglePlay(); 
+            }, 2000);
         }
 
-        var leyendaRadar = L.control({position: 'bottomright'});
-        leyendaRadar.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'info legend');
-            div.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'; div.style.padding = '12px'; div.style.borderRadius = '6px'; div.style.fontFamily = 'Arial'; div.style.fontSize = '12px'; div.style.lineHeight = '1.6';
-            div.innerHTML += '<strong style="font-size:13px; color:#08306b;">Reflectividad SMN</strong><br><span style="font-size:10px; color:#666; display:block; margin-bottom:8px;">Marshall-Palmer</span>';
-            var limites = [10, 20, 30, 40, 50, 55, 60, 65], colores = ['#00FFFF', '#0000FF', '#00FF00', '#FFFF00', '#FF7F00', '#FF0000', '#FF00FF', '#FFFFFF'], lluvia_mmh = ['< 1 mm/h', '~1.5 mm/h', '3 a 5 mm/h', '10 a 20 mm/h', '~50 mm/h', '> 100 mm/h', 'Granizo', 'Extremo'];
-            for (var i = 0; i < limites.length; i++) { div.innerHTML += '<i style="background:' + colores[i] + '; width: 14px; height: 14px; display: inline-block; margin-right: 6px; border: 1px solid #333; vertical-align: middle;"></i> <span style="display:inline-block; width: 65px; font-weight:bold;">' + limites[i] + (limites[i + 1] ? '&ndash;' + limites[i + 1] + ' dBZ' : '+ dBZ') + '</span><span style="color:#444; margin-left: 5px;">(' + lluvia_mmh[i] + ')</span><br>'; }
-            return div;
-        };
-        leyendaRadar.addTo(mapPronostico);
+        function animarFrames() {
+            if(satLayers.length === 0) return;
+            satLayers.forEach(obj => obj.layer.setOpacity(0));
+            satLayers[currentFrame].layer.setOpacity(0.85);
+            
+            let frameTime = satLayers[currentFrame].time;
+            let timeText = frameTime.getHours().toString().padStart(2,'0') + ':' + frameTime.getMinutes().toString().padStart(2,'0') + ' hs';
+            
+            document.getElementById('statusRadar').innerText = 'En vivo: ' + timeText + ' (Frame ' + (currentFrame + 1) + '/6)';
+            currentFrame = (currentFrame + 1) % satLayers.length;
+        }
 
+        function togglePlay() {
+            let btn = document.getElementById("btnPlay");
+            if(isPlaying) {
+                clearInterval(satInterval);
+                isPlaying = false;
+                btn.innerText = "▶ Reproducir Animación";
+                btn.style.backgroundColor = "#31a354";
+            } else {
+                if(satLayers.length === 0) {
+                    cargarGOES19();
+                    return;
+                }
+                satInterval = setInterval(animarFrames, 800);
+                isPlaying = true;
+                btn.innerText = "⏸ Pausar Animación";
+                btn.style.backgroundColor = "#d73027";
+            }
+        }
+
+        // ==========================================
+        // FUNCIONES DE METRICMOISTURE
+        // ==========================================
         var chartObjAgro = null, chartObjClima = null;
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = []; window.riegosManuales = {};
 
