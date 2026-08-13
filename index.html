@@ -570,8 +570,10 @@
             }
             const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
-            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10);
-            let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
+            
+            let globalMin = 0;
+            let globalMax = parametros_suelo.CC;
+            
             let traces = [];
             layers.forEach((layer, index) => {
                 let zMatrix = [], colorMatrix = [], textMatrix = [];
@@ -670,12 +672,18 @@
             const fechas = datos.map(d => d.timestamp), lluvia = datos.map(d => d.Lluvia), et0 = datos.map(d => d.ET0), fisio = datos.map(d => d.Modelo_Fisiologico), rvi = datos.map(d => d.RVI_Crudo), obs = datos.map(d => d.Proxy_Humedad), h10 = datos.map(d=>d.Humedad_10cm), h30 = datos.map(d=>d.Humedad_30cm), h60 = datos.map(d=>d.Humedad_60cm), h100 = datos.map(d=>d.Humedad_100cm), cc = params ? params.CC : 0.3, pmp = params ? params.PMP : 0.15;
             if(chartObjAgro) chartObjAgro.destroy(); chartObjAgro = new Chart(document.getElementById('chartAgro').getContext('2d'), { type: 'line', data: { labels: fechas, datasets: [ { label: 'Humedad de Suelo (SAR)', data: obs, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yHumedad' }, { label: 'Vigor RVI (Satélite)', data: rvi, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yVigor' }, { label: 'Modelo Fisiológico Ideal', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: 0.4, yAxisID: 'yVigor' } ] }, options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Humedad (V/V)'}, min: 0, max: 0.55 }, yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor (0-1.2)'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg] });
             if(chartObjClima) chartObjClima.destroy(); chartObjClima = new Chart(document.getElementById('chartClima').getContext('2d'), { type: 'line', data: { labels: fechas, datasets: [ { type: 'bar', label: 'Lluvia Diaria (mm)', data: lluvia, backgroundColor: '#1f77b4', yAxisID: 'yLluvia', order: 3 }, { type: 'line', label: 'Evapotranspiración ET0 (mm/día)', data: et0, borderColor: '#ff7f0e', borderWidth: 2, borderDash: [3, 3], pointRadius: 0, tension: 0.3, yAxisID: 'yLluvia', order: 2 }, { type: 'line', label: 'Vigor RVI (Contexto)', data: rvi, borderColor: 'rgba(44, 160, 44, 0.5)', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, yAxisID: 'yVigor', order: 1, fill: true, backgroundColor: 'rgba(44, 160, 44, 0.1)' } ] }, options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yLluvia: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Agua (mm)'}, min: 0, suggestedMax: 100 }, yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor RVI'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg] });
-            const zMinVal = Math.max(0, pmp - 0.03), zMaxVal = cc + 0.05, tamañoBanda = (zMaxVal - zMinVal) / 10; let valoresTicks = [], textosTicks = []; for (let i = 0; i <= 5; i++) { let val = zMinVal + (i * (zMaxVal - zMinVal) / 5); valoresTicks.push(val); textosTicks.push(`${val.toFixed(2)} (${(val * 100).toFixed(0)}%)`); }
+            
+            const zMinVal = 0; 
+            const zMaxVal = cc; 
+            
+            const tamañoBanda = (zMaxVal - zMinVal) / 10; let valoresTicks = [], textosTicks = []; for (let i = 0; i <= 5; i++) { let val = zMinVal + (i * (zMaxVal - zMinVal) / 5); valoresTicks.push(val); textosTicks.push(`${val.toFixed(2)} (${(val * 100).toFixed(0)}%)`); }
             const escalaOriginal = [[0.0, '#d7191c'], [0.25, '#fdae61'], [0.5, '#ffffbf'], [0.75, '#abdda4'], [1.0, '#2b83ba']];
+            
             var plotData2D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour', colorscale: escalaOriginal, zmin: zMinVal, zmax: zMaxVal, contours: { coloring: 'fill', showlines: true, start: zMinVal, end: zMaxVal, size: tamañoBanda }, colorbar: { title: 'Humedad', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
             Plotly.newPlot('soilHeatmap', plotData2D, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Profundidad', tickvals: [0, -10, -30, -60, -100], ticktext: ['Superficie', '-10 cm', '-30 cm', '-60 cm', '-100 cm'] }}, {responsive: true});
+            
             var plotData3D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: escalaOriginal, cmin: zMinVal, cmax: zMaxVal, colorbar: { title: 'm³/m³', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
-            Plotly.newPlot('soil3D', plotData3D, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Fecha de Campaña' }, yaxis: { title: 'Profundidad (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Humedad (V/V)', range: [Math.max(0, pmp - 0.05), cc + 0.15] }, camera: { eye: {x: 1.5, y: -1.5, z: 1.0} } }}, {responsive: true});
+            Plotly.newPlot('soil3D', plotData3D, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Fecha de Campaña' }, yaxis: { title: 'Profundidad (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Humedad (V/V)', range: [0, cc + 0.05] }, camera: { eye: {x: 1.5, y: -1.5, z: 1.0} } }}, {responsive: true});
         }
     </script>
 </body>
