@@ -121,7 +121,7 @@
             <div class="hub-card" onclick="abrirModulo('pronostico')">
                 <div class="hub-icon">🌩️</div>
                 <h3>Vigilancia Atmosférica</h3>
-                <p>Animaciones en tiempo real del satélite GOES-19, identificación de topes nubosos y sistemas frontales.</p>
+                <p>Animaciones en tiempo real de satélites GOES, identificación de topes nubosos y sistemas frontales.</p>
             </div>
             <div class="hub-card" onclick="abrirModulo('metricpoli')">
                 <div class="hub-icon">🐝</div>
@@ -275,12 +275,12 @@
         </div>
     </div>
 
-    <!-- Módulo 2: Pronóstico del Tiempo (AHORA SATÉLITE GOES-19) -->
+    <!-- Módulo 2: Pronóstico del Tiempo (AHORA CON API SATELLITAL EXACTA) -->
     <div id="moduloPronostico" style="display: none;">
         <div class="header">
             <div class="header-left">
-                <h1>Vigilancia Atmosférica (GOES-19)</h1>
-                <span>Monitoreo GOES-East Oficial - Animación en Tiempo Real</span>
+                <h1>Vigilancia Atmosférica</h1>
+                <span>Monitoreo Satelital Global - Animación de Última Hora</span>
             </div>
             <div>
                 <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">Volver al Menú</button>
@@ -292,14 +292,13 @@
             <div class="sidebar">
                 <h3>Control de Capas</h3>
                 <p style="font-size: 13px; color: #666;">
-                    Animación de la última hora de topes nubosos y humedad atmosférica directamente desde la órbita geoestacionaria.
+                    Animación de la última hora de topes nubosos mediante telemetría satelital en vivo.
                 </p>
                 
                 <label>Producto Satelital:</label>
                 <select id="selectBanda" style="width: 100%; padding: 8px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #ccc;">
-                    <option value="goes_east_ch13">Banda 13 (Infrarrojo Limpio)</option>
-                    <option value="goes_east_ch08">Banda 8 (Vapor de Agua)</option>
-                    <option value="goes_east_ch02">Banda 2 (Visible / Nubes)</option>
+                    <option value="1_1">Infrarrojo Limpio (Colorizado - Tormentas)</option>
+                    <option value="0_1">Infrarrojo Limpio (Escala de Grises)</option>
                 </select>
 
                 <button class="btn-secondary" style="width: 100%;" onclick="cargarGOES19()">Cargar Última Hora</button>
@@ -402,6 +401,9 @@
 
         function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
 
+        // ==========================================
+        // FUNCIONES DE METRICMOISTURE
+        // ==========================================
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
 
@@ -411,91 +413,6 @@
         var poligonoActual = null;
         map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
 
-        // ==========================================
-        // MAPA SATELITAL GOES-19 (ANIMACIÓN WMS)
-        // ==========================================
-        var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 5);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(mapPronostico);
-
-        var satLayers = [];
-        var currentFrame = 0;
-        var satInterval = null;
-        var isPlaying = false;
-
-        function cargarGOES19() {
-            document.getElementById("statusRadar").innerText = "Sincronizando con GOES-19...";
-            
-            // Limpiar capas anteriores
-            satLayers.forEach(obj => mapPronostico.removeLayer(obj.layer));
-            satLayers = [];
-            
-            // Tomar el tipo de banda seleccionada
-            let banda = document.getElementById("selectBanda").value;
-            
-            // Calcular los últimos 6 cuadros (última hora, intervalos de 10 min)
-            let ahora = new Date();
-            ahora.setMinutes(Math.floor(ahora.getMinutes() / 10) * 10);
-            ahora.setSeconds(0);
-            ahora.setMilliseconds(0);
-            
-            for(let i=5; i>=0; i--) {
-                let t = new Date(ahora.getTime() - i*10*60000);
-                let timeStr = t.toISOString(); 
-                
-                // Usamos la API del Iowa Environmental Mesonet que rutea GOES-East
-                let wmsLayer = L.tileLayer.wms('https://mesonet.agron.iastate.edu/cgi-bin/wms/goes_east.cgi', {
-                    layers: banda,
-                    format: 'image/png',
-                    transparent: true,
-                    time: timeStr,
-                    opacity: 0, 
-                    attribution: 'NOAA / GOES-19 / IEM'
-                });
-                wmsLayer.addTo(mapPronostico);
-                satLayers.push({ layer: wmsLayer, time: t });
-            }
-            
-            // Iniciar animación automáticamente tras breve pausa para cargar los tiles
-            setTimeout(() => {
-                if(isPlaying) togglePlay(); 
-                togglePlay(); 
-            }, 2000);
-        }
-
-        function animarFrames() {
-            if(satLayers.length === 0) return;
-            satLayers.forEach(obj => obj.layer.setOpacity(0));
-            satLayers[currentFrame].layer.setOpacity(0.85);
-            
-            let frameTime = satLayers[currentFrame].time;
-            let timeText = frameTime.getHours().toString().padStart(2,'0') + ':' + frameTime.getMinutes().toString().padStart(2,'0') + ' hs';
-            
-            document.getElementById('statusRadar').innerText = 'En vivo: ' + timeText + ' (Frame ' + (currentFrame + 1) + '/6)';
-            currentFrame = (currentFrame + 1) % satLayers.length;
-        }
-
-        function togglePlay() {
-            let btn = document.getElementById("btnPlay");
-            if(isPlaying) {
-                clearInterval(satInterval);
-                isPlaying = false;
-                btn.innerText = "▶ Reproducir Animación";
-                btn.style.backgroundColor = "#31a354";
-            } else {
-                if(satLayers.length === 0) {
-                    cargarGOES19();
-                    return;
-                }
-                satInterval = setInterval(animarFrames, 800);
-                isPlaying = true;
-                btn.innerText = "⏸ Pausar Animación";
-                btn.style.backgroundColor = "#d73027";
-            }
-        }
-
-        // ==========================================
-        // FUNCIONES DE METRICMOISTURE
-        // ==========================================
         var chartObjAgro = null, chartObjClima = null;
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = []; window.riegosManuales = {};
 
@@ -666,6 +583,97 @@
             
             var plotData3D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: escalaOriginal, cmin: zMinVal, cmax: zMaxVal, colorbar: { title: 'm³/m³', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
             Plotly.newPlot('soil3D', plotData3D, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Fecha de Campaña' }, yaxis: { title: 'Profundidad (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Humedad (V/V)', range: [0, cc + 0.05] }, camera: { eye: {x: 1.5, y: -1.5, z: 1.0} } }}, {responsive: true});
+        }
+
+        // ==========================================
+        // MAPA SATELITAL ANIMACIÓN (RainViewer API)
+        // ==========================================
+        var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 5);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(mapPronostico);
+
+        var satLayers = [];
+        var currentFrame = 0;
+        var satInterval = null;
+        var isPlaying = false;
+
+        async function cargarGOES19() {
+            document.getElementById("statusRadar").innerText = "Obteniendo telemetría orbital...";
+            
+            satLayers.forEach(obj => mapPronostico.removeLayer(obj.layer));
+            satLayers = [];
+            currentFrame = 0;
+            
+            let colorScheme = document.getElementById("selectBanda").value;
+            
+            try {
+                // Consumimos API real para obtener marcas de tiempo EXACTAS de la última hora
+                let response = await fetch("https://api.rainviewer.com/public/weather-maps.json");
+                let data = await response.json();
+                
+                // Últimos 6 cuadros (aprox 1 hora) de la capa infrarroja satelital
+                let frames = data.satellite.infrared.slice(-6);
+                
+                frames.forEach((frame, index) => {
+                    let fechaFrame = new Date(frame.time * 1000);
+                    let timeStr = fechaFrame.getHours().toString().padStart(2, '0') + ':' + fechaFrame.getMinutes().toString().padStart(2, '0');
+                    
+                    let tileUrl = `https://tilecache.rainviewer.com${frame.path}/512/{z}/{x}/{y}/0/${colorScheme}.png`;
+                    
+                    let layer = L.tileLayer(tileUrl, {
+                        opacity: 0,
+                        zIndex: 400 + index,
+                        attribution: 'GOES/RainViewer'
+                    });
+                    
+                    layer.addTo(mapPronostico);
+                    satLayers.push({ layer: layer, timeText: timeStr });
+                });
+                
+                document.getElementById("statusRadar").innerText = "Sincronización completa. Presione Play.";
+                
+                setTimeout(() => {
+                    if(isPlaying) {
+                        clearInterval(satInterval);
+                        isPlaying = false;
+                    }
+                    togglePlay(); 
+                }, 1500);
+                
+            } catch(e) {
+                document.getElementById("statusRadar").innerText = "Error de conexión con la red satelital.";
+                document.getElementById("statusRadar").style.color = "#d73027";
+            }
+        }
+
+        function animarFrames() {
+            if(satLayers.length === 0) return;
+            
+            satLayers.forEach(obj => obj.layer.setOpacity(0));
+            satLayers[currentFrame].layer.setOpacity(0.85);
+            
+            document.getElementById('statusRadar').innerText = 'En vivo: ' + satLayers[currentFrame].timeText + ' hs (Cuadro ' + (currentFrame + 1) + '/6)';
+            
+            currentFrame = (currentFrame + 1) % satLayers.length;
+        }
+
+        function togglePlay() {
+            let btn = document.getElementById("btnPlay");
+            if(isPlaying) {
+                clearInterval(satInterval);
+                isPlaying = false;
+                btn.innerText = "▶ Reproducir Animación";
+                btn.style.backgroundColor = "#31a354";
+            } else {
+                if(satLayers.length === 0) {
+                    cargarGOES19();
+                    return;
+                }
+                animarFrames();
+                satInterval = setInterval(animarFrames, 800);
+                isPlaying = true;
+                btn.innerText = "⏸ Pausar Animación";
+                btn.style.backgroundColor = "#d73027";
+            }
         }
     </script>
 </body>
