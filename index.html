@@ -206,6 +206,7 @@
                     <h4>Propiedades del Suelo Analizado</h4>
                     <p><strong>Textura Arena:</strong> <span id="valArena"></span>%</p>
                     <p><strong>Textura Arcilla:</strong> <span id="valArcilla"></span>%</p>
+                    <p><strong>Materia Orgánica:</strong> <span id="valMO" style="color: #31a354; font-weight: bold;"></span>%</p>
                     <p><strong>Cap. de Campo (CC):</strong> <span id="valCC"></span> m³/m³</p>
                     <p><strong>Pto. Marchitez (PMP):</strong> <span id="valPMP"></span> m³/m³</p>
                 </div>
@@ -660,7 +661,7 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = '¡Proceso completado!'; document.getElementById('status').style.color = '#31a354';
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
-                    document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3); document.getElementById('infoConsulta').style.display = 'block';
+                    document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valMO').innerText = jsonResponse.suelo.MO; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3); document.getElementById('infoConsulta').style.display = 'block';
                     let act = {}; jsonResponse.data.forEach(d => { let m = d.timestamp.substring(0,7); act[m] = (act[m]||0)+d.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(e=>e[1]>0).map(e=>`<li>${e[0]}: <strong>${e[1].toFixed(1)} mm</strong></li>`).join('');
                     generarInforme(jsonResponse.data, jsonResponse.suelo);
                     ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
