@@ -7,7 +7,6 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <!-- Librería del Carrusel (Swiper.js) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 
     <style>
@@ -17,7 +16,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; }
         
         /* ==========================================
-           2. PANTALLA DE BIENVENIDA (SPLIT SCREEN)
+           2. PANTALLA DE BIENVENIDA (SPLIT SCREEN CORREGIDO)
            ========================================== */
         #authScreen {
             display: flex;
@@ -30,10 +29,17 @@
             z-index: 9999;
         }
 
-        /* Panel Izquierdo: Carrusel */
-        .auth-left { flex: 6; position: relative; }
+        /* Panel Izquierdo: Carrusel (Enjaulado al 60%) */
+        .auth-left { 
+            width: 60%; 
+            height: 100%;
+            position: relative; 
+            overflow: hidden; /* Impide que empuje al panel derecho */
+            background-color: #041d42; /* Fondo institucional de seguridad */
+        }
         .authSwiper { width: 100%; height: 100%; }
-        .authSwiper .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .authSwiper .swiper-slide { background-color: #041d42; }
+        .authSwiper .swiper-slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
         
         .auth-slide-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%;
@@ -43,10 +49,12 @@
         .auth-slide-overlay h2 { margin: 0 0 10px 0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
         .auth-slide-overlay p { margin: 0; font-size: 18px; color: #e0f3db; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
 
-        /* Panel Derecho: Login */
+        /* Panel Derecho: Login (Fijo al 40%) */
         .auth-right {
-            flex: 4; display: flex; align-items: center; justify-content: center;
-            background-color: #ffffff; box-shadow: -5px 0 15px rgba(0,0,0,0.05); z-index: 10;
+            width: 40%; 
+            height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background-color: #ffffff; box-shadow: -10px 0 25px rgba(0,0,0,0.15); z-index: 10;
         }
         .login-box { width: 80%; max-width: 380px; }
         .login-box h1 { color: #08306b; margin-top: 0; margin-bottom: 5px; font-size: 28px; }
@@ -307,7 +315,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <!-- Script de Swiper -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
     <script>
@@ -315,7 +322,6 @@
         // INICIALIZACIÓN DEL CARRUSEL Y AUTH
         // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
-            // Activar el carrusel de Swiper
             const swiper = new Swiper('.authSwiper', {
                 loop: true,
                 effect: 'fade',
@@ -323,7 +329,6 @@
                 pagination: { el: '.swiper-pagination', clickable: true }
             });
 
-            // Verificar token
             if (localStorage.getItem("metric_token")) {
                 document.getElementById("authScreen").style.display = "none";
                 document.getElementById("workspace").style.display = "block";
@@ -586,7 +591,6 @@
             ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoConsulta','infoClima'].forEach(id => document.getElementById(id).style.display = 'none');
 
             try {
-                // Actualizado para usar la URL de Render
                 const response = await fetch(`${BACKEND_URL}/api/calcular`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
