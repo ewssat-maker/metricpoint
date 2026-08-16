@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suite MetricPoint by metricpoint</title>
+    <title>MetricMoisture by metricpoint</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
@@ -16,19 +16,38 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; }
         
         /* ==========================================
-           2. PANTALLA DE BIENVENIDA (SPLIT SCREEN)
+           2. LANDING PAGE (SCROLL + VIDEO + LOGIN)
            ========================================== */
-        #authScreen {
-            display: flex; width: 100vw; height: 100vh; overflow: hidden;
-            background-color: #ffffff; position: fixed; top: 0; left: 0; z-index: 9999;
+        #landingWrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            background-color: #020617; /* Fondo oscuro para el scroll */
         }
 
-        .auth-left { 
-            width: 60%; height: 100%; position: relative; overflow: hidden; background-color: #041d42; 
+        /* Primer pantallazo (100% de la altura) */
+        #authScreen {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
         }
-        .authSwiper { width: 100%; height: 100%; }
-        .authSwiper .swiper-slide { background-color: #041d42; }
-        .authSwiper .swiper-slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+
+        /* Panel Izquierdo: VIDEO (60%) */
+        .auth-left { 
+            width: 60%; 
+            height: 100%;
+            position: relative; 
+            overflow: hidden; 
+            background-color: #041d42; 
+        }
+        
+        .auth-left video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+        }
         
         .auth-slide-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%;
@@ -38,8 +57,18 @@
         .auth-slide-overlay h2 { margin: 0 0 10px 0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
         .auth-slide-overlay p { margin: 0; font-size: 18px; color: #e0f3db; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
 
+        /* Scroll Flecha indicadora */
+        .scroll-indicator {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            color: white; font-size: 14px; text-align: center; animation: bounce 2s infinite; opacity: 0.7;
+        }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); } 40% { transform: translateY(-10px) translateX(-50%); } 60% { transform: translateY(-5px) translateX(-50%); } }
+
+        /* Panel Derecho: Login (40%) */
         .auth-right {
-            width: 40%; height: 100%; display: flex; align-items: center; justify-content: center;
+            width: 40%; 
+            height: 100%;
+            display: flex; align-items: center; justify-content: center;
             background-color: #ffffff; box-shadow: -10px 0 25px rgba(0,0,0,0.15); z-index: 10;
         }
         .login-box { width: 80%; max-width: 380px; }
@@ -58,24 +87,56 @@
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
         .divider span { padding: 0 10px; color: #888; font-size: 13px; }
 
+        /* SECCIÓN TÉCNICA (SCROLL) */
+        #techSection {
+            padding: 100px 50px;
+            display: flex; flex-direction: column; align-items: center; gap: 40px;
+            background-color: #020617;
+            overflow: hidden;
+        }
+        
+        .tech-header { text-align: center; margin-bottom: 20px; }
+        .tech-header h2 { color: #38bdf8; font-size: 32px; margin: 0; }
+        .tech-header p { color: #94a3b8; font-size: 16px; margin-top: 10px;}
+
+        /* Tarjetas que aparecen con el scroll */
+        .tech-card {
+            background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981;
+            border-radius: 8px; padding: 30px; max-width: 800px; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            /* Estado Inicial Oculto */
+            opacity: 0; transform: translateY(60px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        /* Clase que añade JS al detectar el scroll */
+        .tech-card.visible { opacity: 1; transform: translateY(0); }
+        
+        .tech-card h3 { color: #10b981; margin-top: 0; font-size: 20px; display: flex; align-items: center; gap: 10px;}
+        .tech-card p { color: #cbd5e1; font-size: 15px; line-height: 1.6; margin-bottom: 0; }
+
+
         /* ==========================================
-           3. ESTILOS DEL WORKSPACE Y DASHBOARD
+           3. ESTILOS DEL WORKSPACE
            ========================================== */
         #workspace { padding: 20px; display: none; }
         .header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .header-left h1 { margin: 0; font-size: 24px; }
         .header-left span { font-size: 14px; font-style: italic; color: #6baed6; }
         
-        /* HUB CARDS */
         #dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: center; }
-        .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+        
+        /* RESTAURANDO EL CARRUSEL DEL HUB */
+        .hubSwiper { width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; }
+        .hubSwiper .swiper-slide { position: relative; }
+        .hubSwiper .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
         .hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: all 0.3s ease; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; }
         .hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); background: linear-gradient(135deg, #0a3d8a 0%, #1b5bba 100%); border-bottom-color: #6baed6; }
         .hub-card h3 { color: #ffffff; margin: 15px 0 10px 0; font-size: 18px; }
         .hub-card p { color: #e0f3db; font-size: 13px; line-height: 1.5; margin: 0; }
         .hub-icon { font-size: 40px; }
 
-        /* MODULOS GENERAL */
         .container { display: flex; gap: 20px; }
         .sidebar { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .main-content { flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
@@ -94,18 +155,18 @@
 
         #status { margin-top: 15px; font-size: 13px; font-weight: bold; color: #d73027; }
         
-        .soil-card { margin-top: 15px; padding: 15px; background: #f0f9e8; border: 1px solid #ccece6; border-radius: 6px; display: none; }
-        .soil-card h4 { margin-top: 0; margin-bottom: 10px; color: #0868ac; font-size: 15px; border-bottom: 1px solid #ccece6; padding-bottom: 5px;}
-        .soil-card p { margin: 6px 0; font-size: 13px; color: #333;}
-        
-        .climate-card, .query-card, .ingesta-card { margin-top: 15px; padding: 15px; background: #e0f3db; border: 1px solid #a8ddb5; border-radius: 6px; display: none; }
+        .soil-card, .climate-card, .query-card, .ingesta-card { margin-top: 15px; padding: 15px; border-radius: 6px; display: none; }
+        .soil-card { background: #f0f9e8; border: 1px solid #ccece6; }
+        .climate-card { background: #e0f3db; border: 1px solid #a8ddb5; }
         .query-card { background: #fff5eb; border: 1px solid #fd8d3c; }
         .ingesta-card { display: block; padding: 12px; background: #f7f7f7; border: 1px dashed #08306b; }
-        .climate-card h4, .query-card h4, .ingesta-card h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid; padding-bottom: 5px; font-size: 15px;}
+        
+        .soil-card h4, .climate-card h4, .query-card h4, .ingesta-card h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid; padding-bottom: 5px; font-size: 15px;}
+        .soil-card h4 { color: #0868ac; border-color: #ccece6; }
         .climate-card h4 { color: #2b8cbe; border-color: #a8ddb5;}
         .query-card h4 { color: #d94801; border-color: #fd8d3c;}
         .ingesta-card h4 { color: #08306b; border: none;}
-        .climate-card p, .query-card p, .ingesta-card p { margin: 6px 0; font-size: 13px; color: #333;}
+        .soil-card p, .climate-card p, .query-card p, .ingesta-card p { margin: 6px 0; font-size: 13px; color: #333;}
 
         .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; display: none; }
         .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; }
@@ -118,60 +179,72 @@
 <body>
 
     <!-- ==========================================
-         PANTALLA DE BIENVENIDA (SPLIT SCREEN)
+         LANDING PAGE (PANTALLA DIVIDIDA + SCROLL TÉCNICO)
          ========================================== -->
-    <div id="authScreen">
-        <!-- Panel Izquierdo: Carrusel -->
-        <div class="auth-left">
-            <div class="swiper authSwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1586771107445-d3af11116497?q=80&w=1200&auto=format&fit=crop" alt="Agro">
-                        <div class="auth-slide-overlay">
-                            <h2>MetricMoisture</h2>
-                            <p>Gemelos Digitales Volumétricos para Monitoreo Edáfico Profundo.</p>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop" alt="Radar">
-                        <div class="auth-slide-overlay">
-                            <h2>Red SINARAME Integrada</h2>
-                            <p>Ecos de precipitación del SMN en tiempo real con precisión milimétrica.</p>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop" alt="Satelite">
-                        <div class="auth-slide-overlay">
-                            <h2>Inteligencia Geoespacial</h2>
-                            <p>Telemetría SAR directa a su centro de control agronómico.</p>
-                        </div>
-                    </div>
+    <div id="landingWrapper">
+        
+        <!-- PANTALLA 1: VIDEO Y LOGIN -->
+        <div id="authScreen">
+            <div class="auth-left">
+                <!-- VIDEO: Asegurate de llamar al archivo video_promo.mp4 y subirlo a GitHub -->
+                <video autoplay loop muted playsinline>
+                    <source src="video_promo.mp4" type="video/mp4">
+                    Tu navegador no soporta videos HTML5.
+                </video>
+                <div class="auth-slide-overlay">
+                    <h2>Inteligencia Geoespacial</h2>
+                    <p>Telemetría SAR directa a su centro de control agronómico.</p>
                 </div>
-                <div class="swiper-pagination"></div>
+                <div class="scroll-indicator">
+                    ▼ Descubre la arquitectura de MetricPoint ▼
+                </div>
+            </div>
+
+            <div class="auth-right">
+                <div class="login-box">
+                    <h1>Suite MetricPoint</h1>
+                    <p>Agrometeorología de Precisión. Ingrese sus credenciales.</p>
+                    
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="authEmail" placeholder="ejemplo@empresa.com">
+                    
+                    <label>Contraseña</label>
+                    <input type="password" id="authPassword" placeholder="••••••••">
+                    
+                    <button class="btn-auth-primary" onclick="hacerLogin()">Iniciar Sesión</button>
+                    
+                    <div class="divider"><span>o</span></div>
+                    
+                    <button class="btn-auth-secondary" onclick="hacerRegistro()">Crear Cuenta (5 Días Gratis)</button>
+                    
+                    <p id="authStatus" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
+                </div>
             </div>
         </div>
 
-        <!-- Panel Derecho: Login -->
-        <div class="auth-right">
-            <div class="login-box">
-                <h1>Suite MetricPoint</h1>
-                <p>Agrometeorología de Precisión. Ingrese sus credenciales.</p>
-                
-                <label>Correo Electrónico</label>
-                <input type="email" id="authEmail" placeholder="ejemplo@empresa.com">
-                
-                <label>Contraseña</label>
-                <input type="password" id="authPassword" placeholder="••••••••">
-                
-                <button class="btn-auth-primary" onclick="hacerLogin()">Iniciar Sesión</button>
-                
-                <div class="divider"><span>o</span></div>
-                
-                <button class="btn-auth-secondary" onclick="hacerRegistro()">Crear Cuenta (5 Días Gratis)</button>
-                
-                <p id="authStatus" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
+        <!-- PANTALLA 2: ESPECIFICACIONES TÉCNICAS (Haciendo Scroll) -->
+        <div id="techSection">
+            <div class="tech-header">
+                <h2>Arquitectura de la Suite</h2>
+                <p>Infraestructura tecnológica detrás de MetricPoint</p>
+            </div>
+
+            <div class="tech-card">
+                <h3>🛰️ Análisis Edáfico SAR (Sentinel-1)</h3>
+                <p>Nuestra plataforma inyecta datos crudos de microondas en banda C procedentes de la Agencia Espacial Europea. A diferencia de las imágenes ópticas, el radar penetra la cobertura vegetal y las nubes, permitiéndonos calcular la humedad volumétrica real del suelo desde los primeros centímetros hasta la zona radicular profunda, detectando estrés antes de que la planta muestre síntomas visuales.</p>
+            </div>
+
+            <div class="tech-card" style="border-left-color: #38bdf8;">
+                <h3 style="color:#38bdf8;">📡 Integración SINARAME en Vivo</h3>
+                <p>Conexión directa en tiempo real con la red de radares meteorológicos del Servicio Meteorológico Nacional (SMN). Limpiamos matemáticamente la reflectividad (dBZ) cortando vectores visuales basura para superponer ecos de tormenta milimétricos sobre sus lotes. Anticípese a frentes de granizo y tormentas convectivas severas minutos antes de que ocurran.</p>
+            </div>
+
+            <div class="tech-card" style="border-left-color: #f59e0b;">
+                <h3 style="color:#f59e0b;">🧊 Gemelos Digitales Topográficos</h3>
+                <p>Transformamos la vista de sus campos de planos 2D a bloques macizos 3D extrayendo Modelos Digitales de Elevación (DEM). Nuestro motor gráfico le permite hacer "radiografías espaciales" del terreno a distintas profundidades, interactuando con mapas de calor y descubriendo cuencas endorreicas, vías de escurrimiento y zonas propensas a la marchitez o al anegamiento crónico.</p>
             </div>
         </div>
+
     </div>
 
     <!-- Muro de Pago / Trial Expirado -->
@@ -197,6 +270,34 @@
                     <span>Seleccione el módulo de análisis que desea utilizar</span>
                 </div>
                 <button class="btn-danger" style="margin-top: 0;" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+
+            <!-- CARRUSEL RESTAURADO DEBAJO DEL HEADER -->
+            <div class="swiper hubSwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="https://images.unsplash.com/photo-1586771107445-d3af11116497?q=80&w=1200&auto=format&fit=crop" alt="Agro">
+                        <div class="auth-slide-overlay">
+                            <h2>MetricMoisture</h2>
+                            <p>Gemelos Digitales Volumétricos para Monitoreo Edáfico Profundo.</p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop" alt="Radar">
+                        <div class="auth-slide-overlay">
+                            <h2>Red SINARAME Integrada</h2>
+                            <p>Ecos de precipitación del SMN en tiempo real con precisión milimétrica.</p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop" alt="Satelite">
+                        <div class="auth-slide-overlay">
+                            <h2>Inteligencia Geoespacial</h2>
+                            <p>Telemetría SAR directa a su centro de control agronómico.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
             </div>
 
             <div class="hub-grid">
@@ -389,25 +490,42 @@
 
     <script>
         // ==========================================
-        // INICIALIZACIÓN DEL CARRUSEL Y AUTH
+        // 1. ANIMACIONES DE SCROLL (Intersection Observer)
         // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
-            const swiper = new Swiper('.authSwiper', {
-                loop: true,
-                effect: 'fade',
+            // El observador vigila cuando las tarjetas entran en la pantalla
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    } else {
+                        // Si querés que desaparezcan al irse hacia arriba o abajo:
+                        entry.target.classList.remove('visible'); 
+                    }
+                });
+            }, { threshold: 0.2 }); // Se activa cuando el 20% de la tarjeta es visible
+
+            document.querySelectorAll('.tech-card').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // Iniciar carrusel del Hub (estará oculto al principio)
+            const swiper = new Swiper('.hubSwiper', {
+                loop: true, effect: 'fade',
                 autoplay: { delay: 4000, disableOnInteraction: false },
-                pagination: { el: '.swiper-pagination', clickable: true }
+                pagination: { el: '.swiper-pagination', clickable: true },
+                observer: true, observeParents: true
             });
 
             if (localStorage.getItem("metric_token")) {
-                document.getElementById("authScreen").style.display = "none";
+                document.getElementById("landingWrapper").style.display = "none";
                 document.getElementById("workspace").style.display = "block";
-                document.getElementById("dashboardHub").style.display = "block"; // Aseguramos que cargue el Hub
+                document.getElementById("dashboardHub").style.display = "block";
             }
         });
 
         // ==========================================
-        // NAVEGACIÓN ENTRE MÓDULOS
+        // 2. NAVEGACIÓN Y AUTH
         // ==========================================
         function abrirModulo(moduloId) {
             document.getElementById('dashboardHub').style.display = 'none';
@@ -435,9 +553,6 @@
             document.getElementById('dashboardHub').style.display = 'block';
         }
 
-        // ==========================================
-        // CONEXIÓN AL BACKEND EN RENDER
-        // ==========================================
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
 
         async function hacerRegistro() {
@@ -456,7 +571,7 @@
                 const data = await res.json();
                 if(res.ok) {
                     localStorage.setItem("metric_token", data.token);
-                    document.getElementById("authScreen").style.display = "none";
+                    document.getElementById("landingWrapper").style.display = "none";
                     document.getElementById("workspace").style.display = "block";
                     document.getElementById("dashboardHub").style.display = "block";
                 } else { statusLabel.innerText = data.error; }
@@ -479,7 +594,7 @@
                 const data = await res.json();
                 if(res.ok) {
                     localStorage.setItem("metric_token", data.token);
-                    document.getElementById("authScreen").style.display = "none";
+                    document.getElementById("landingWrapper").style.display = "none";
                     document.getElementById("workspace").style.display = "block";
                     document.getElementById("dashboardHub").style.display = "block";
                 } else { statusLabel.innerText = data.error; }
@@ -492,7 +607,7 @@
         }
 
         // ==========================================
-        // MAPA METRIC MOISTURE
+        // 3. MAPAS Y HERRAMIENTAS
         // ==========================================
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
@@ -510,35 +625,19 @@
             poligonoActual = layer.toGeoJSON().geometry.coordinates;
         });
 
-        // ==========================================
-        // MAPA PRONÓSTICO (RADARES)
-        // ==========================================
         var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(mapPronostico);
         
-        // Superposición de radares limpios (Asegurate de tener termas_limpia.png y lajitas_limpia.png subidos a Github/Render)
         L.imageOverlay('lajitas_limpia.png', [[-26.8393, -66.6200], [-22.5273, -61.8800]], { opacity: 0.85 }).addTo(mapPronostico);
         L.imageOverlay('termas_limpia.png', [[-29.6393, -67.2967], [-25.3273, -62.4367]], { opacity: 0.85 }).addTo(mapPronostico);
 
         // ==========================================
-        // LÓGICA DE CÁLCULO Y GRÁFICOS (AGROMETEO)
+        // 4. LÓGICA DE AGROMETEO
         // ==========================================
         var chartObjAgro = null, chartObjClima = null;
-        window.datosSimulacion = []; 
-        window.parametrosSimulacion = null;
-        window.topografiaLote = [];
-        window.datosLocalesManuales = [];
+        window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
 
-        const customCanvasBg = {
-            id: 'customCanvasBackgroundColor',
-            beforeDraw: (chart, args, options) => {
-                const {ctx} = chart; ctx.save();
-                ctx.globalCompositeOperation = 'destination-over';
-                ctx.fillStyle = options.color || '#ffffff';
-                ctx.fillRect(0, 0, chart.width, chart.height);
-                ctx.restore();
-            }
-        };
+        const customCanvasBg = { id: 'customCanvasBackgroundColor', beforeDraw: (chart, args, options) => { const {ctx} = chart; ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = options.color || '#ffffff'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } };
 
         function agregarDatoManual() {
             const f = document.getElementById('m_fecha').value, ll = document.getElementById('m_lluvia').value, et = document.getElementById('m_et0').value;
@@ -566,20 +665,15 @@
                 let xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
                 let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
                 if (intersect) isInside = !isInside;
-            }
-            return isInside;
+            } return isInside;
         }
 
-        // ==========================================
-        // RENDERIZADOR 3D ESPACIAL (MAPA TOPOGRÁFICO)
-        // ==========================================
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
             let poly = poligonoActual[0];
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
-            const gridSize = 60; 
-            let xArr = [], yArr = [];
+            const gridSize = 60; let xArr = [], yArr = [];
             for(let i=0; i<gridSize; i++) { xArr.push(minX + (maxX-minX)*(i/(gridSize-1))); yArr.push(minY + (maxY-minY)*(i/(gridSize-1))); }
 
             let minCota = Infinity, maxCota = -Infinity, sumCota = 0, countCota = 0;
@@ -594,15 +688,12 @@
                 for (let i = 0; i < puntosDEM.length; i++) {
                     let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2);
                     let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w;
-                }
-                return sum_z_w / sum_w;
+                } return sum_z_w / sum_w;
             }
 
             const layers = [
-                { name: '10 cm', offset: 0, hum: dato.Humedad_10cm },
-                { name: '30 cm', offset: -25, hum: dato.Humedad_30cm },
-                { name: '60 cm', offset: -50, hum: dato.Humedad_60cm },
-                { name: '100 cm', offset: -75, hum: dato.Humedad_100cm }
+                { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm },
+                { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm }
             ];
 
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
@@ -626,8 +717,7 @@
                             cRow.push(humedadLocal);
                             tRow.push(`Humedad: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: ${layer.name}`);
                         } else { zRow.push(null); cRow.push(null); tRow.push(null); }
-                    }
-                    zMatrix.push(zRow); colorMatrix.push(cRow); textMatrix.push(tRow);
+                    } zMatrix.push(zRow); colorMatrix.push(cRow); textMatrix.push(tRow);
                 }
 
                 traces.push({
@@ -643,9 +733,6 @@
             Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {visible:false}, yaxis: {visible:false}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: '#ffffff' }, {responsive: true});
         }
 
-        // ==========================================
-        // FLUJO DE DATOS API AL BACKEND
-        // ==========================================
         function consultarFecha() {
             const fecha = document.getElementById('fechaConsulta').value;
             if (!fecha || window.datosSimulacion.length === 0) return alert("Seleccione fecha válida.");
@@ -668,21 +755,14 @@
             
             let texto = `Durante la campaña analizada (${datos[0].timestamp} al ${datos[datos.length-1].timestamp}), el lote recibió un acumulado de <strong>${lluviaTotal.toFixed(1)} mm</strong> de precipitaciones. La demanda atmosférica promedio (ET0) se mantuvo en <strong>${et0Promedio.toFixed(1)} mm/día</strong>.<br><br>`;
             
-            if (lluviaTotal < (et0Promedio * datos.length * 0.5)) {
-                texto += `El balance global muestra un <strong>déficit hídrico marcado</strong>, obligando al cultivo a depender estructuralmente del perfil edáfico. `;
-            } else {
-                texto += `El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. `;
-            }
+            if (lluviaTotal < (et0Promedio * datos.length * 0.5)) { texto += `El balance global muestra un <strong>déficit hídrico marcado</strong>, obligando al cultivo a depender estructuralmente del perfil edáfico. `; } 
+            else { texto += `El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. `; }
 
             let aguaUtil = (humUltima - params.PMP) / (params.CC - params.PMP);
             
-            if (aguaUtil > 0.65) {
-                texto += `Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.`;
-            } else if (aguaUtil > 0.35) {
-                texto += `Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.`;
-            } else {
-                texto += `<span style="color:#d73027;"><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>`;
-            }
+            if (aguaUtil > 0.65) { texto += `Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.`; } 
+            else if (aguaUtil > 0.35) { texto += `Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.`; } 
+            else { texto += `<span style="color:#d73027;"><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>`; }
 
             document.getElementById('textoInforme').innerHTML = texto;
             document.getElementById('contenedorInforme').style.display = 'block';
@@ -694,7 +774,7 @@
             const token = localStorage.getItem("metric_token");
             if (!token) {
                 document.getElementById("workspace").style.display = "none";
-                document.getElementById("authScreen").style.display = "flex";
+                document.getElementById("landingWrapper").style.display = "flex";
                 return;
             }
 
@@ -706,12 +786,8 @@
                 const response = await fetch(`${BACKEND_URL}/api/calcular`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        token: token,
-                        start_date: document.getElementById('startDate').value,
-                        end_date: document.getElementById('endDate').value,
-                        fecha_siembra: document.getElementById('siembraDate').value,
-                        coordenadas: poligonoActual,
-                        datos_locales: window.datosLocalesManuales
+                        token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value,
+                        fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales
                     })
                 });
                 
@@ -724,35 +800,24 @@
                 }
 
                 if (response.ok) {
-                    document.getElementById('status').innerText = '¡Proceso completado!';
-                    document.getElementById('status').style.color = '#31a354';
+                    document.getElementById('status').innerText = '¡Proceso completado!'; document.getElementById('status').style.color = '#31a354';
                     
-                    window.datosSimulacion = jsonResponse.data;
-                    window.parametrosSimulacion = jsonResponse.suelo;
-                    window.topografiaLote = jsonResponse.topografia; 
+                    window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     
                     document.getElementById('infoSuelo').style.display = 'block';
-                    document.getElementById('valArena').innerText = jsonResponse.suelo.Arena;
-                    document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla;
-                    document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3);
-                    document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
+                    document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
                     document.getElementById('infoConsulta').style.display = 'block';
                     
                     let act = {}; jsonResponse.data.forEach(d => { let m = d.timestamp.substring(0,7); act[m] = (act[m]||0)+d.Lluvia; });
                     document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(e=>e[1]>0).map(e=>`<li>${e[0]}: <strong>${e[1].toFixed(1)} mm</strong></li>`).join('');
 
                     generarInforme(jsonResponse.data, jsonResponse.suelo);
-
                     ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex');
-                    abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active'));
-                    renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
+                    abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
                 } else { document.getElementById('status').innerText = 'Error: ' + jsonResponse.error; }
             } catch (error) { document.getElementById('status').innerText = 'Error de conexión con el backend en Render.'; }
         }
 
-        // ==========================================
-        // RENDERIZADOR DE GRÁFICOS 2D y 3D TEMPORALES
-        // ==========================================
         function renderizarGraficos(datos, params) {
             const fechas = datos.map(d => d.timestamp);
             const lluvia = datos.map(d => d.Lluvia), et0 = datos.map(d => d.ET0), fisio = datos.map(d => d.Modelo_Fisiologico), rvi = datos.map(d => d.RVI_Crudo), obs = datos.map(d => d.Proxy_Humedad);
@@ -762,70 +827,36 @@
             if(chartObjAgro) chartObjAgro.destroy();
             chartObjAgro = new Chart(document.getElementById('chartAgro').getContext('2d'), {
                 type: 'line',
-                data: {
-                    labels: fechas,
-                    datasets: [
+                data: { labels: fechas, datasets: [
                         { label: 'Humedad de Suelo (SAR)', data: obs, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yHumedad' },
                         { label: 'Vigor RVI (Satélite)', data: rvi, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yVigor' },
                         { label: 'Modelo Fisiológico Ideal', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: 0.4, yAxisID: 'yVigor' }
                     ]
                 },
-                options: { 
-                    responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } },
-                    scales: { 
-                        yHumedad: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Humedad (V/V)'}, min: 0, max: 0.55 },
-                        yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor (0-1.2)'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } }
-                    } 
-                }, plugins: [customCanvasBg]
+                options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Humedad (V/V)'}, min: 0, max: 0.55 }, yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor (0-1.2)'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg]
             });
 
             if(chartObjClima) chartObjClima.destroy();
             chartObjClima = new Chart(document.getElementById('chartClima').getContext('2d'), {
                 type: 'line',
-                data: {
-                    labels: fechas,
-                    datasets: [
+                data: { labels: fechas, datasets: [
                         { type: 'bar', label: 'Lluvia Diaria (mm)', data: lluvia, backgroundColor: '#1f77b4', yAxisID: 'yLluvia', order: 3 },
                         { type: 'line', label: 'Evapotranspiración ET0 (mm/día)', data: et0, borderColor: '#ff7f0e', borderWidth: 2, borderDash: [3, 3], pointRadius: 0, tension: 0.3, yAxisID: 'yLluvia', order: 2 },
                         { type: 'line', label: 'Vigor RVI (Contexto)', data: rvi, borderColor: 'rgba(44, 160, 44, 0.5)', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, yAxisID: 'yVigor', order: 1, fill: true, backgroundColor: 'rgba(44, 160, 44, 0.1)' }
                     ]
                 },
-                options: { 
-                    responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } },
-                    scales: { 
-                        yLluvia: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Agua (mm)'}, min: 0, suggestedMax: 100 },
-                        yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor RVI'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } }
-                    } 
-                }, plugins: [customCanvasBg]
+                options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yLluvia: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Agua (mm)'}, min: 0, suggestedMax: 100 }, yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor RVI'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg]
             });
 
-            const zMinVal = Math.max(0, pmp - 0.03); 
-            const zMaxVal = cc + 0.05;
-            const tamañoBanda = (zMaxVal - zMinVal) / 10;
+            const zMinVal = Math.max(0, pmp - 0.03); const zMaxVal = cc + 0.05; const tamañoBanda = (zMaxVal - zMinVal) / 10;
             let valoresTicks = [], textosTicks = [];
-            for (let i = 0; i <= 5; i++) {
-                let val = zMinVal + (i * (zMaxVal - zMinVal) / 5);
-                valoresTicks.push(val);
-                textosTicks.push(`${val.toFixed(2)} (${(val * 100).toFixed(0)}%)`);
-            }
-            
+            for (let i = 0; i <= 5; i++) { let val = zMinVal + (i * (zMaxVal - zMinVal) / 5); valoresTicks.push(val); textosTicks.push(`${val.toFixed(2)} (${(val * 100).toFixed(0)}%)`); }
             const escalaOriginal = [[0.0, '#d7191c'], [0.25, '#fdae61'], [0.5, '#ffffbf'], [0.75, '#abdda4'], [1.0, '#2b83ba']];
 
-            var plotData2D = [{
-                z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour',
-                colorscale: escalaOriginal,
-                zmin: zMinVal, zmax: zMaxVal,
-                contours: { coloring: 'fill', showlines: true, start: zMinVal, end: zMaxVal, size: tamañoBanda },
-                colorbar: { title: 'Humedad', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks }
-            }];
+            var plotData2D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour', colorscale: escalaOriginal, zmin: zMinVal, zmax: zMaxVal, contours: { coloring: 'fill', showlines: true, start: zMinVal, end: zMaxVal, size: tamañoBanda }, colorbar: { title: 'Humedad', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
             Plotly.newPlot('soilHeatmap', plotData2D, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Profundidad', tickvals: [0, -10, -30, -60, -100], ticktext: ['Superficie', '-10 cm', '-30 cm', '-60 cm', '-100 cm'] }}, {responsive: true});
 
-            var plotData3D = [{
-                z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface',
-                colorscale: escalaOriginal,
-                cmin: zMinVal, cmax: zMaxVal,
-                colorbar: { title: 'm³/m³', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks }
-            }];
+            var plotData3D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: escalaOriginal, cmin: zMinVal, cmax: zMaxVal, colorbar: { title: 'm³/m³', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
             Plotly.newPlot('soil3D', plotData3D, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Fecha de Campaña' }, yaxis: { title: 'Profundidad (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Humedad (V/V)', range: [Math.max(0, pmp - 0.05), cc + 0.15] }, camera: { eye: {x: 1.5, y: -1.5, z: 1.0} } }}, {responsive: true});
         }
     </script>
