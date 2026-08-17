@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,68 +7,46 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 
     <style>
         /* ==========================================
-           1. ESTILOS GLOBALES
+           1. ESTILOS GLOBALES & SELECTOR IDIOMA
            ========================================== */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; }
         
+        .lang-selector {
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
+        }
+        .lang-selector select {
+            padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc;
+            background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b;
+        }
+
         /* ==========================================
            2. LANDING PAGE (SCROLL + VIDEO + LOGIN)
            ========================================== */
-        #landingWrapper {
-            display: flex;
-            flex-direction: column;
-            width: 100vw;
-            background-color: #020617; /* Fondo oscuro para el scroll */
-        }
+        #landingWrapper { display: flex; flex-direction: column; width: 100vw; background-color: #020617; }
+        #authScreen { display: flex; width: 100%; height: 100vh; background-color: #ffffff; }
 
-        /* Primer pantallazo (100% de la altura) */
-        #authScreen {
-            display: flex;
-            width: 100%;
-            height: 100vh;
-            background-color: #ffffff;
-        }
-
-        /* Panel Izquierdo: VIDEO (60%) */
-        .auth-left { 
-            width: 60%; 
-            height: 100%;
-            position: relative; 
-            overflow: hidden; 
-            background-color: #041d42; 
-        }
-        
-        .auth-left video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.85;
-        }
-        
+        .auth-left { width: 60%; height: 100%; position: relative; overflow: hidden; background-color: #041d42; }
+        .auth-left video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
         .auth-slide-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(to top, rgba(8, 48, 107, 0.95), transparent);
-            color: white; padding: 80px 40px 40px 40px; box-sizing: border-box;
+            color: white; padding: 80px 40px 40px 40px; box-sizing: border-box; pointer-events: none;
         }
         .auth-slide-overlay h2 { margin: 0 0 10px 0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
         .auth-slide-overlay p { margin: 0; font-size: 18px; color: #e0f3db; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
 
-        /* Scroll Flecha indicadora */
         .scroll-indicator {
             position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            color: white; font-size: 14px; text-align: center; animation: bounce 2s infinite; opacity: 0.7;
+            color: white; font-size: 14px; text-align: center; animation: bounce 2s infinite; opacity: 0.7; pointer-events: none;
         }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); } 40% { transform: translateY(-10px) translateX(-50%); } 60% { transform: translateY(-5px) translateX(-50%); } }
 
-        /* Panel Derecho: Login (40%) */
         .auth-right {
-            width: 40%; 
-            height: 100%;
-            display: flex; align-items: center; justify-content: center;
+            width: 40%; height: 100%; display: flex; align-items: center; justify-content: center;
             background-color: #ffffff; box-shadow: -10px 0 25px rgba(0,0,0,0.15); z-index: 10;
         }
         .login-box { width: 80%; max-width: 380px; }
@@ -88,53 +66,40 @@
         .divider span { padding: 0 10px; color: #888; font-size: 13px; }
 
         /* SECCIÓN TÉCNICA (SCROLL) */
-        #techSection {
-            padding: 100px 50px;
-            display: flex; flex-direction: column; align-items: center; gap: 40px;
-            background-color: #020617;
-            overflow: hidden;
-        }
-        
+        #techSection { padding: 100px 50px; display: flex; flex-direction: column; align-items: center; gap: 40px; background-color: #020617; overflow: hidden; }
         .tech-header { text-align: center; margin-bottom: 20px; }
         .tech-header h2 { color: #38bdf8; font-size: 32px; margin: 0; }
         .tech-header p { color: #94a3b8; font-size: 16px; margin-top: 10px;}
-
-        /* Tarjetas que aparecen con el scroll */
         .tech-card {
-            background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981;
-            border-radius: 8px; padding: 30px; max-width: 800px; width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            /* Estado Inicial Oculto */
-            opacity: 0; transform: translateY(60px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981; border-radius: 8px; padding: 30px; max-width: 800px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0; transform: translateY(60px); transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-        /* Clase que añade JS al detectar el scroll */
         .tech-card.visible { opacity: 1; transform: translateY(0); }
-        
         .tech-card h3 { color: #10b981; margin-top: 0; font-size: 20px; display: flex; align-items: center; gap: 10px;}
         .tech-card p { color: #cbd5e1; font-size: 15px; line-height: 1.6; margin-bottom: 0; }
 
-
         /* ==========================================
-           3. ESTILOS DEL WORKSPACE
+           3. ESTILOS DEL WORKSPACE Y DASHBOARD
            ========================================== */
-        #workspace { padding: 20px; display: none; }
+        #workspace { padding: 20px; display: none; margin-top: 40px; }
         .header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .header-left h1 { margin: 0; font-size: 24px; }
         .header-left span { font-size: 14px; font-style: italic; color: #6baed6; }
         
         #dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: center; }
         
-        /* RESTAURANDO EL CARRUSEL DEL HUB */
-        .hubSwiper { width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; }
-        .hubSwiper .swiper-slide { position: relative; }
-        .hubSwiper .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+        /* VIDEO HUB REEMPLAZANDO EL CARRUSEL */
+        .hub-video-container {
+            position: relative; width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; background-color: #041d42;
+        }
+        .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
 
         .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
         .hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: all 0.3s ease; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; }
         .hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); background: linear-gradient(135deg, #0a3d8a 0%, #1b5bba 100%); border-bottom-color: #6baed6; }
-        .hub-card h3 { color: #ffffff; margin: 15px 0 10px 0; font-size: 18px; }
-        .hub-card p { color: #e0f3db; font-size: 13px; line-height: 1.5; margin: 0; }
+        .hub-card h3 { color: #ffffff; margin: 15px 0 10px 0; font-size: 18px; text-align: center; }
+        .hub-card p { color: #e0f3db; font-size: 13px; line-height: 1.5; margin: 0; text-align: center; }
         .hub-icon { font-size: 40px; }
 
         .container { display: flex; gap: 20px; }
@@ -178,82 +143,83 @@
 </head>
 <body>
 
+    <!-- Selector de Idiomas -->
+    <div class="lang-selector">
+        <select id="langSwitch" onchange="cambiarIdioma(this.value)">
+            <option value="en">🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt">🇧🇷 Português</option>
+        </select>
+    </div>
+
     <!-- ==========================================
-         LANDING PAGE (PANTALLA DIVIDIDA + SCROLL TÉCNICO)
+         LANDING PAGE
          ========================================== -->
     <div id="landingWrapper">
-        
-        <!-- PANTALLA 1: VIDEO Y LOGIN -->
         <div id="authScreen">
             <div class="auth-left">
-                <!-- VIDEO: Asegurate de llamar al archivo video_promo.mp4 y subirlo a GitHub -->
+                <!-- VIDEO PROMOCIONAL DE FONDO -->
                 <video autoplay loop muted playsinline>
                     <source src="video_promo.mp4" type="video/mp4">
-                    Tu navegador no soporta videos HTML5.
                 </video>
                 <div class="auth-slide-overlay">
-                    <h2>Inteligencia Geoespacial</h2>
-                    <p>Telemetría SAR directa a su centro de control agronómico.</p>
+                    <h2 data-i18n="landing_title">Geospatial Intelligence</h2>
+                    <p data-i18n="landing_subtitle">Direct SAR telemetry to your agronomic control center.</p>
                 </div>
-                <div class="scroll-indicator">
-                    ▼ Descubre la arquitectura de MetricPoint ▼
+                <div class="scroll-indicator" data-i18n="landing_scroll">
+                    ▼ Discover MetricPoint's architecture ▼
                 </div>
             </div>
 
             <div class="auth-right">
                 <div class="login-box">
                     <h1>Suite MetricPoint</h1>
-                    <p>Agrometeorología de Precisión. Ingrese sus credenciales.</p>
+                    <p data-i18n="login_desc">Precision Agrometeorology. Enter your credentials.</p>
                     
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="authEmail" placeholder="ejemplo@empresa.com">
+                    <label data-i18n="lbl_email">Email Address</label>
+                    <input type="email" id="authEmail" data-i18n="ph_email" placeholder="example@company.com">
                     
-                    <label>Contraseña</label>
+                    <label data-i18n="lbl_pass">Password</label>
                     <input type="password" id="authPassword" placeholder="••••••••">
                     
-                    <button class="btn-auth-primary" onclick="hacerLogin()">Iniciar Sesión</button>
+                    <button class="btn-auth-primary" onclick="hacerLogin()" data-i18n="btn_login">Sign In</button>
                     
-                    <div class="divider"><span>o</span></div>
+                    <div class="divider"><span data-i18n="lbl_or">or</span></div>
                     
-                    <button class="btn-auth-secondary" onclick="hacerRegistro()">Crear Cuenta (5 Días Gratis)</button>
+                    <button class="btn-auth-secondary" onclick="hacerRegistro()" data-i18n="btn_trial">Create Account (5-Day Free Trial)</button>
                     
                     <p id="authStatus" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
                 </div>
             </div>
         </div>
 
-        <!-- PANTALLA 2: ESPECIFICACIONES TÉCNICAS (Haciendo Scroll) -->
         <div id="techSection">
             <div class="tech-header">
-                <h2>Arquitectura de la Suite</h2>
-                <p>Infraestructura tecnológica detrás de MetricPoint</p>
+                <h2 data-i18n="tech_title">Suite Architecture</h2>
+                <p data-i18n="tech_desc">Technological infrastructure behind MetricPoint</p>
             </div>
-
             <div class="tech-card">
-                <h3>🛰️ Análisis Edáfico SAR (Sentinel-1)</h3>
-                <p>Nuestra plataforma inyecta datos crudos de microondas en banda C procedentes de la Agencia Espacial Europea. A diferencia de las imágenes ópticas, el radar penetra la cobertura vegetal y las nubes, permitiéndonos calcular la humedad volumétrica real del suelo desde los primeros centímetros hasta la zona radicular profunda, detectando estrés antes de que la planta muestre síntomas visuales.</p>
+                <h3 data-i18n="card1_title">🛰️ SAR Edaphic Analysis (Sentinel-1)</h3>
+                <p data-i18n="card1_desc">Our platform injects raw C-band microwave data from the European Space Agency. Unlike optical images, radar penetrates vegetation cover and clouds, allowing us to calculate the real volumetric soil moisture from the first centimeters to the deep root zone, detecting stress before the plant shows visual symptoms.</p>
             </div>
-
             <div class="tech-card" style="border-left-color: #38bdf8;">
-                <h3 style="color:#38bdf8;">📡 Integración SINARAME en Vivo</h3>
-                <p>Conexión directa en tiempo real con la red de radares meteorológicos del Servicio Meteorológico Nacional (SMN). Limpiamos matemáticamente la reflectividad (dBZ) cortando vectores visuales basura para superponer ecos de tormenta milimétricos sobre sus lotes. Anticípese a frentes de granizo y tormentas convectivas severas minutos antes de que ocurran.</p>
+                <h3 style="color:#38bdf8;" data-i18n="card2_title">📡 Live SINARAME Integration</h3>
+                <p data-i18n="card2_desc">Direct real-time connection with the weather radar network of the National Meteorological Service (SMN). We mathematically clean the reflectivity (dBZ) by cutting garbage visual vectors to overlay millimeter storm echoes over your lots. Anticipate hail fronts and severe convective storms minutes before they occur.</p>
             </div>
-
             <div class="tech-card" style="border-left-color: #f59e0b;">
-                <h3 style="color:#f59e0b;">🧊 Gemelos Digitales Topográficos</h3>
-                <p>Transformamos la vista de sus campos de planos 2D a bloques macizos 3D extrayendo Modelos Digitales de Elevación (DEM). Nuestro motor gráfico le permite hacer "radiografías espaciales" del terreno a distintas profundidades, interactuando con mapas de calor y descubriendo cuencas endorreicas, vías de escurrimiento y zonas propensas a la marchitez o al anegamiento crónico.</p>
+                <h3 style="color:#f59e0b;" data-i18n="card3_title">🧊 Topographic Digital Twins</h3>
+                <p data-i18n="card3_desc">We transform the view of your fields from 2D planes to massive 3D blocks by extracting Digital Elevation Models (DEM). Our graphics engine allows you to take "spatial X-rays" of the terrain at different depths, interacting with heat maps and discovering endorheic basins, runoff routes and areas prone to wilting or chronic waterlogging.</p>
             </div>
         </div>
-
     </div>
 
-    <!-- Muro de Pago / Trial Expirado -->
+    <!-- Muro de Pago -->
     <div id="paywallScreen" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 9999; display: none; justify-content: center; align-items: center;">
         <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px;">
-            <h2 style="color: #d73027; margin-top:0;">Período de Prueba Expirado</h2>
-            <p style="color: #333;">Tus 5 días de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.</p>
-            <button class="btn-primary" onclick="alert('Funcionalidad de pasarela de pago en construcción...')">Adquirir Licencia Premium</button>
-            <button class="btn-secondary" style="margin-top: 15px; background: transparent; color: #666;" onclick="cerrarSesion()">Cerrar sesión</button>
+            <h2 style="color: #d73027;" data-i18n="paywall_title">Trial Period Expired</h2>
+            <p style="color: #333;" data-i18n="paywall_desc">Your 5 days of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.</p>
+            <button class="btn-primary" onclick="alert('Payment gateway in construction...')" data-i18n="btn_upgrade">Get Premium License</button>
+            <button class="btn-secondary" style="margin-top: 15px; background: transparent; color: #666;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
         </div>
     </div>
 
@@ -262,59 +228,42 @@
          ========================================== -->
     <div id="workspace">
         
-        <!-- ================= DASHBOARD HUB ================= -->
         <div id="dashboardHub">
             <div class="header">
                 <div class="header-left" style="text-align: left;">
                     <h1>Suite MetricPoint</h1>
-                    <span>Seleccione el módulo de análisis que desea utilizar</span>
+                    <span data-i18n="hub_subtitle">Select the analysis module you want to use</span>
                 </div>
-                <button class="btn-danger" style="margin-top: 0;" onclick="cerrarSesion()">Cerrar Sesión</button>
+                <button class="btn-danger" style="margin-top: 0;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
             </div>
 
-            <!-- CARRUSEL RESTAURADO DEBAJO DEL HEADER -->
-            <div class="swiper hubSwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1586771107445-d3af11116497?q=80&w=1200&auto=format&fit=crop" alt="Agro">
-                        <div class="auth-slide-overlay">
-                            <h2>MetricMoisture</h2>
-                            <p>Gemelos Digitales Volumétricos para Monitoreo Edáfico Profundo.</p>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop" alt="Radar">
-                        <div class="auth-slide-overlay">
-                            <h2>Red SINARAME Integrada</h2>
-                            <p>Ecos de precipitación del SMN en tiempo real con precisión milimétrica.</p>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop" alt="Satelite">
-                        <div class="auth-slide-overlay">
-                            <h2>Inteligencia Geoespacial</h2>
-                            <p>Telemetría SAR directa a su centro de control agronómico.</p>
-                        </div>
-                    </div>
+            <!-- NUEVO VIDEO DEL HUB (Reemplaza al Carrusel) -->
+            <div class="hub-video-container">
+                <video autoplay loop muted playsinline>
+                    <source src="video_carrousel.mp4" type="video/mp4">
+                    Browser does not support video.
+                </video>
+                <div class="auth-slide-overlay">
+                    <h2 data-i18n="hub_vid_title">MetricMoisture 3D Engine</h2>
+                    <p data-i18n="hub_vid_desc">Interactive Volumetric Digital Twins for precision monitoring.</p>
                 </div>
-                <div class="swiper-pagination"></div>
             </div>
 
             <div class="hub-grid">
                 <div class="hub-card" onclick="abrirModulo('agrometeo')">
                     <div class="hub-icon">🌱</div>
                     <h3>MetricMoisture</h3>
-                    <p>Análisis de humedad edáfica profunda con satélites SAR, topografía 3D y balance hídrico.</p>
+                    <p data-i18n="mod_moisture_desc">Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.</p>
                 </div>
                 <div class="hub-card" onclick="abrirModulo('pronostico')">
                     <div class="hub-icon">🌦️</div>
-                    <h3>Pronóstico del Tiempo</h3>
-                    <p>Modelado atmosférico, radares del SMN en vivo y variables predictivas meteorológicas.</p>
+                    <h3 data-i18n="mod_weather_title">Weather Forecast</h3>
+                    <p data-i18n="mod_weather_desc">Atmospheric modeling, live SMN radars and predictive meteorological variables.</p>
                 </div>
                 <div class="hub-card" onclick="abrirModulo('metricpoli')">
                     <div class="hub-icon">🐝</div>
                     <h3>MetricPoli</h3>
-                    <p>Suite integral de polinización, monitoreo de colmenas y análisis fenológico avanzado.</p>
+                    <p data-i18n="mod_poli_desc">Comprehensive pollination suite, hive monitoring and advanced phenological analysis.</p>
                 </div>
             </div>
         </div>
@@ -324,30 +273,30 @@
             <div class="header">
                 <div class="header-left">
                     <h1>MetricMoisture (SaaS Premium)</h1>
-                    <span>Humedad Edáfica Satelital</span>
+                    <span data-i18n="mod1_subtitle">Satellite Edaphic Moisture</span>
                 </div>
                 <div>
-                    <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">Volver al Menú</button>
+                    <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button>
                 </div>
             </div>
             
             <div class="container">
                 <div class="sidebar">
-                    <h3>Parámetros del Lote</h3>
-                    <label>Fecha de Inicio (YYYY-MM-DD):</label>
+                    <h3 data-i18n="lbl_lot_params">Lot Parameters</h3>
+                    <label data-i18n="lbl_start_date">Start Date (YYYY-MM-DD):</label>
                     <input type="text" id="startDate" value="2025-09-01">
-                    <label>Fecha de Fin (YYYY-MM-DD):</label>
+                    <label data-i18n="lbl_end_date">End Date (YYYY-MM-DD):</label>
                     <input type="text" id="endDate" value="2026-08-01">
-                    <label>Fecha de Siembra (YYYY-MM-DD):</label>
+                    <label data-i18n="lbl_sow_date">Sowing Date (YYYY-MM-DD):</label>
                     <input type="text" id="siembraDate" value="2025-12-15">
                     
                     <div class="ingesta-card">
-                        <h4>Carga Manual / Estación de Campo</h4>
-                        <label>Fecha Registro:</label>
+                        <h4 data-i18n="lbl_manual_input">Manual Input / Field Station</h4>
+                        <label data-i18n="lbl_reg_date">Record Date:</label>
                         <input type="date" id="m_fecha">
                         <div style="display: flex; gap: 10px;">
                             <div>
-                                <label>Lluvia (mm):</label>
+                                <label data-i18n="lbl_rain">Rain (mm):</label>
                                 <input type="number" id="m_lluvia" placeholder="0">
                             </div>
                             <div>
@@ -355,38 +304,38 @@
                                 <input type="number" id="m_et0" placeholder="0.0" step="0.1">
                             </div>
                         </div>
-                        <button class="btn-secondary" style="width: 100%; margin-top: 8px; padding: 5px;" onclick="agregarDatoManual()">+ Agregar Registro</button>
+                        <button class="btn-secondary" style="width: 100%; margin-top: 8px; padding: 5px;" onclick="agregarDatoManual()" data-i18n="btn_add_rec">+ Add Record</button>
                         <div id="m_status" style="font-size: 11px; color: #2b8cbe; margin-top: 5px;"></div>
                     </div>
 
-                    <button class="btn-primary" onclick="ejecutarAnalisis()">EJECUTAR ANÁLISIS</button>
+                    <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">EXECUTE ANALYSIS</button>
                     <div id="status"></div>
                     
                     <div class="soil-card" id="infoSuelo">
-                        <h4>Propiedades del Suelo Analizado</h4>
-                        <p><strong>Textura Arena:</strong> <span id="valArena"></span>%</p>
-                        <p><strong>Textura Arcilla:</strong> <span id="valArcilla"></span>%</p>
-                        <p><strong>Cap. de Campo (CC):</strong> <span id="valCC"></span> m³/m³</p>
-                        <p><strong>Pto. Marchitez (PMP):</strong> <span id="valPMP"></span> m³/m³</p>
+                        <h4 data-i18n="lbl_soil_props">Analyzed Soil Properties</h4>
+                        <p><strong data-i18n="lbl_sand">Sand Texture:</strong> <span id="valArena"></span>%</p>
+                        <p><strong data-i18n="lbl_clay">Clay Texture:</strong> <span id="valArcilla"></span>%</p>
+                        <p><strong data-i18n="lbl_cc">Field Capacity (CC):</strong> <span id="valCC"></span> m³/m³</p>
+                        <p><strong data-i18n="lbl_pmp">Wilting Point (PMP):</strong> <span id="valPMP"></span> m³/m³</p>
                     </div>
 
                     <div class="query-card" id="infoConsulta">
-                        <h4>Consultar Perfil por Fecha</h4>
+                        <h4 data-i18n="lbl_query_prof">Query Profile by Date</h4>
                         <input type="date" id="fechaConsulta" style="margin-bottom: 10px;">
-                        <button class="btn-secondary" style="width: 100%; margin-top: 0;" onclick="consultarFecha()">Escanear Topografía 3D</button>
+                        <button class="btn-secondary" style="width: 100%; margin-top: 0;" onclick="consultarFecha()" data-i18n="btn_scan_3d">Scan 3D Topography</button>
                         <div id="resultadoConsulta" style="margin-top: 15px; font-size: 13px; color: #333; display: none;">
-                            <p><strong>Superficie (10 cm):</strong> <span id="c_10"></span> m³/m³</p>
-                            <p><strong>Subsuperficie (30 cm):</strong> <span id="c_30"></span> m³/m³</p>
-                            <p><strong>Raíces Prof. (60 cm):</strong> <span id="c_60"></span> m³/m³</p>
-                            <p><strong>Reserva (100 cm):</strong> <span id="c_100"></span> m³/m³</p>
+                            <p><strong data-i18n="lbl_surf10">Surface (10 cm):</strong> <span id="c_10"></span> m³/m³</p>
+                            <p><strong data-i18n="lbl_sub30">Subsurface (30 cm):</strong> <span id="c_30"></span> m³/m³</p>
+                            <p><strong data-i18n="lbl_root60">Deep Roots (60 cm):</strong> <span id="c_60"></span> m³/m³</p>
+                            <p><strong data-i18n="lbl_res100">Reserve (100 cm):</strong> <span id="c_100"></span> m³/m³</p>
                             <hr style="border-top: 1px solid #fd8d3c; margin: 10px 0;">
-                            <p style="color: #d94801;"><strong>Evapotranspiración (ET0):</strong> <span id="c_et0"></span> mm/día</p>
+                            <p style="color: #d94801;"><strong data-i18n="lbl_et0">Evapotranspiration (ET0):</strong> <span id="c_et0"></span> mm/day</p>
                         </div>
                     </div>
                     
                     <div class="climate-card" id="infoClima">
-                        <h4>Datos Climáticos</h4>
-                        <p><strong>Lluvia Acumulada Total:</strong> <span id="valLluvia"></span> mm</p>
+                        <h4 data-i18n="lbl_climate_data">Climate Data</h4>
+                        <p><strong data-i18n="lbl_total_rain">Total Accumulated Rain:</strong> <span id="valLluvia"></span> mm</p>
                         <ul id="listaMeses"></ul>
                     </div>
                 </div>
@@ -395,15 +344,15 @@
                     <div id="map"></div>
                     
                     <div id="contenedorInforme" style="display: none; background: #eef7f9; border-left: 5px solid #08306b; padding: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #08306b; font-size: 16px;">Diagnóstico Agrometeorológico</h4>
+                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #08306b; font-size: 16px;" data-i18n="lbl_diag">Agrometeorological Diagnostics</h4>
                         <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
                     </div>
 
                     <div class="tabs" id="tabMenu">
-                        <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)">Humedad y Vigor</button>
-                        <button class="tab-btn" onclick="abrirPestana('tabClima', this)">Clima y Precipitaciones</button>
-                        <button class="tab-btn" onclick="abrirPestana('tab3D', this)">Modelo 3D (Campaña)</button>
-                        <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)">Radiografía Espacial (Lote)</button>
+                        <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)" data-i18n="tab_moist">Moisture & Vigor</button>
+                        <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
+                        <button class="tab-btn" onclick="abrirPestana('tab3D', this)" data-i18n="tab_3d">3D Model (Campaign)</button>
+                        <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)" data-i18n="tab_xray">Spatial X-Ray (Lot)</button>
                     </div>
 
                     <div id="tabAgronomia" class="tab-content active">
@@ -414,23 +363,16 @@
                             <div id="soilHeatmap" style="width: 100%; height: 350px;"></div>
                         </div>
                     </div>
-
                     <div id="tabClima" class="tab-content">
-                        <div class="chart-container" id="contenedorLineasClima" style="display: none;">
-                            <canvas id="chartClima" height="120"></canvas>
-                        </div>
+                        <div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div>
                     </div>
-
                     <div id="tab3D" class="tab-content">
-                        <div class="chart-container" id="contenedor3D" style="display: none; height: 550px;">
-                            <div id="soil3D" style="width: 100%; height: 100%;"></div>
-                        </div>
+                        <div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div>
                     </div>
-
                     <div id="tabGeo3D" class="tab-content">
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
                             <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
-                                Radiografía Espacial <span id="lblFechaGeo3D" style="color: #d73027;"></span>
+                                <span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span>
                             </h4>
                             <div id="soilGeo3D" style="width: 100%; height: 100%;"></div>
                         </div>
@@ -439,46 +381,37 @@
             </div>
         </div>
 
-        <!-- ================= MÓDULO 2: PRONÓSTICO Y RADARES ================= -->
+        <!-- ================= MÓDULO 2 & 3 ================= -->
         <div id="moduloPronostico" style="display: none;">
             <div class="header">
                 <div class="header-left">
-                    <h1>Pronóstico y Radares (SMN)</h1>
-                    <span>Red SINARAME - Ecos de Precipitaciones en Vivo</span>
+                    <h1 data-i18n="mod_weather_title">Weather Forecast (SMN)</h1>
+                    <span data-i18n="mod2_subtitle">SINARAME Network - Live Precipitation Echoes</span>
                 </div>
-                <div>
-                    <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">Volver al Menú</button>
-                </div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
-            
             <div class="container">
                 <div class="sidebar">
-                    <h3>Control de Capas</h3>
-                    <p style="font-size: 13px; color: #666;">Monitoreo en tiempo real de ecos de lluvia sobre la región del NOA utilizando la red de radares del Servicio Meteorológico Nacional.</p>
-                    <button class="btn-primary" onclick="alert('Radares refrescados.')">Refrescar Radar</button>
+                    <h3 data-i18n="lbl_layers">Layer Control</h3>
+                    <p style="font-size: 13px; color: #666;" data-i18n="lbl_layer_desc">Real-time monitoring of rain echoes using the National Meteorological Service radar network.</p>
+                    <button class="btn-primary" onclick="alert('Refrescado')" data-i18n="btn_refresh">Refresh Radar</button>
                 </div>
-                <div class="main-content">
-                    <div id="mapPronostico"></div>
-                </div>
+                <div class="main-content"><div id="mapPronostico"></div></div>
             </div>
         </div>
 
-        <!-- ================= MÓDULO 3: METRIC POLI ================= -->
         <div id="moduloMetricPoli" style="display: none;">
             <div class="header">
                 <div class="header-left">
                     <h1>MetricPoli (SaaS Premium)</h1>
                     <span>by metricpoint</span>
                 </div>
-                <div>
-                    <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">Volver al Menú</button>
-                </div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             <div class="container" style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box;">
                 <iframe src="https://va2ek5-fernando-suarez.shinyapps.io/polinizacion/" width="100%" height="1200px" style="border: none; border-radius: 8px;" title="Módulo MetricPoli"></iframe>
             </div>
         </div>
-
     </div>
 
     <!-- SCRIPTS -->
@@ -486,64 +419,139 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
     <script>
         // ==========================================
-        // 1. ANIMACIONES DE SCROLL (Intersection Observer)
+        // DICCIONARIO DE TRADUCCIONES (i18n)
+        // ==========================================
+        const traducciones = {
+            en: {
+                "landing_title": "Geospatial Intelligence", "landing_subtitle": "Direct SAR telemetry to your agronomic control center.", "landing_scroll": "▼ Discover MetricPoint's architecture ▼",
+                "login_desc": "Precision Agrometeorology. Enter your credentials.", "lbl_email": "Email Address", "ph_email": "example@company.com", "lbl_pass": "Password", "btn_login": "Sign In", "lbl_or": "or", "btn_trial": "Create Account (5-Day Free Trial)",
+                "tech_title": "Suite Architecture", "tech_desc": "Technological infrastructure behind MetricPoint",
+                "card1_title": "🛰️ SAR Edaphic Analysis (Sentinel-1)", "card1_desc": "Our platform injects raw C-band microwave data from the European Space Agency. Unlike optical images, radar penetrates vegetation cover and clouds, allowing us to calculate the real volumetric soil moisture from the first centimeters to the deep root zone, detecting stress before the plant shows visual symptoms.",
+                "card2_title": "📡 Live SINARAME Integration", "card2_desc": "Direct real-time connection with the weather radar network of the National Meteorological Service (SMN). We mathematically clean the reflectivity (dBZ) by cutting garbage visual vectors to overlay millimeter storm echoes over your lots. Anticipate hail fronts and severe convective storms minutes before they occur.",
+                "card3_title": "🧊 Topographic Digital Twins", "card3_desc": "We transform the view of your fields from 2D planes to massive 3D blocks by extracting Digital Elevation Models (DEM). Our graphics engine allows you to take \"spatial X-rays\" of the terrain at different depths, interacting with heat maps and discovering endorheic basins, runoff routes and areas prone to wilting or chronic waterlogging.",
+                "paywall_title": "Trial Period Expired", "paywall_desc": "Your 5 days of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.", "btn_upgrade": "Get Premium License", "btn_logout": "Sign Out",
+                "hub_subtitle": "Select the analysis module you want to use", "hub_vid_title": "MetricMoisture 3D Engine", "hub_vid_desc": "Interactive Volumetric Digital Twins for precision monitoring.",
+                "mod_moisture_desc": "Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.", "mod_weather_title": "Weather Forecast", "mod_weather_desc": "Atmospheric modeling, live SMN radars and predictive meteorological variables.", "mod_poli_desc": "Comprehensive pollination suite, hive monitoring and advanced phenological analysis.",
+                "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
+                "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "EXECUTE ANALYSIS",
+                "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):",
+                "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan 3D Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):",
+                "lbl_climate_data": "Climate Data", "lbl_total_rain": "Total Accumulated Rain:", "lbl_diag": "Agrometeorological Diagnostics",
+                "tab_moist": "Moisture & Vigor", "tab_clim": "Climate & Rain", "tab_3d": "3D Model (Campaign)", "tab_xray": "Spatial X-Ray",
+                "mod2_subtitle": "SINARAME Network - Live Precipitation Echoes", "lbl_layers": "Layer Control", "lbl_layer_desc": "Real-time monitoring of rain echoes using the National Meteorological Service radar network.", "btn_refresh": "Refresh Radar",
+                "msg_auth_err": "Please fill both fields.", "msg_login": "Signing in...", "msg_reg": "Registering...", "msg_err_serv": "Connection error to server.",
+                "diag_base": "During the analyzed campaign (START to END), the lot received an accumulated <strong>RAIN mm</strong> of precipitation. The average atmospheric demand (ET0) remained at <strong>ET0 mm/day</strong>.<br><br>",
+                "diag_def": "The global balance shows a <strong>marked water deficit</strong>, forcing the crop to structurally depend on the edaphic profile. ",
+                "diag_fav": "The global balance shows a <strong>favorable</strong> atmospheric behavior. ",
+                "diag_opt": "Currently, the deep reserve of the lot (100 cm) is at <strong>optimal</strong> levels (above 65% of useful water), guaranteeing root stability against upcoming heat waves.",
+                "diag_reg": "Currently, the deep reserve (100 cm) is in a state of <strong>regular transition</strong>. It is suggested to monitor surface drying to avoid phenological stress.",
+                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>"
+            },
+            es: {
+                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
+                "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (5 Días Gratis)",
+                "tech_title": "Arquitectura de la Suite", "tech_desc": "Infraestructura tecnológica detrás de MetricPoint",
+                "card1_title": "🛰️ Análisis Edáfico SAR (Sentinel-1)", "card1_desc": "Nuestra plataforma inyecta datos crudos de microondas en banda C procedentes de la Agencia Espacial Europea. A diferencia de las imágenes ópticas, el radar penetra la cobertura vegetal y las nubes, permitiéndonos calcular la humedad volumétrica real del suelo desde los primeros centímetros hasta la zona radicular profunda, detectando estrés antes de que la planta muestre síntomas visuales.",
+                "card2_title": "📡 Integración SINARAME en Vivo", "card2_desc": "Conexión directa en tiempo real con la red de radares meteorológicos del Servicio Meteorológico Nacional (SMN). Limpiamos matemáticamente la reflectividad (dBZ) cortando vectores visuales basura para superponer ecos de tormenta milimétricos sobre sus lotes. Anticípese a frentes de granizo y tormentas convectivas severas minutos antes de que ocurran.",
+                "card3_title": "🧊 Gemelos Digitales Topográficos", "card3_desc": "Transformamos la vista de sus campos de planos 2D a bloques macizos 3D extrayendo Modelos Digitales de Elevación (DEM). Nuestro motor gráfico le permite hacer \"radiografías espaciales\" del terreno a distintas profundidades, interactuando con mapas de calor y descubriendo cuencas endorreicas, vías de escurrimiento y zonas propensas a la marchitez o al anegamiento crónico.",
+                "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 5 días de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
+                "hub_subtitle": "Seleccione el módulo de análisis que desea utilizar", "hub_vid_title": "Motor 3D MetricMoisture", "hub_vid_desc": "Gemelos Digitales Volumétricos para monitoreo de precisión.",
+                "mod_moisture_desc": "Análisis de humedad edáfica profunda con satélites SAR, topografía 3D y balance hídrico.", "mod_weather_title": "Pronóstico del Tiempo", "mod_weather_desc": "Modelado atmosférico, radares del SMN en vivo y variables predictivas meteorológicas.", "mod_poli_desc": "Suite integral de polinización, monitoreo de colmenas y análisis fenológico avanzado.",
+                "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
+                "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
+                "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):",
+                "lbl_query_prof": "Consultar Perfil por Fecha", "btn_scan_3d": "Escanear Topografía 3D", "lbl_surf10": "Superficie (10 cm):", "lbl_sub30": "Subsuperficie (30 cm):", "lbl_root60": "Raíces Prof. (60 cm):", "lbl_res100": "Reserva (100 cm):", "lbl_et0": "Evapotranspiración (ET0):",
+                "lbl_climate_data": "Datos Climáticos", "lbl_total_rain": "Lluvia Acumulada Total:", "lbl_diag": "Diagnóstico Agrometeorológico",
+                "tab_moist": "Humedad y Vigor", "tab_clim": "Clima y Precipitaciones", "tab_3d": "Modelo 3D (Campaña)", "tab_xray": "Radiografía Espacial",
+                "mod2_subtitle": "Red SINARAME - Ecos en Vivo", "lbl_layers": "Control de Capas", "lbl_layer_desc": "Monitoreo en tiempo real de ecos de lluvia sobre la región utilizando el SMN.", "btn_refresh": "Refrescar Radar",
+                "msg_auth_err": "Complete ambos campos.", "msg_login": "Iniciando sesión...", "msg_reg": "Registrando...", "msg_err_serv": "Error de conexión al servidor.",
+                "diag_base": "Durante la campaña analizada (START al END), el lote recibió un acumulado de <strong>RAIN mm</strong> de precipitaciones. La demanda atmosférica promedio (ET0) se mantuvo en <strong>ET0 mm/día</strong>.<br><br>",
+                "diag_def": "El balance global muestra un <strong>déficit hídrico marcado</strong>, obligando al cultivo a depender estructuralmente del perfil edáfico. ",
+                "diag_fav": "El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. ",
+                "diag_opt": "Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.",
+                "diag_reg": "Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.",
+                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>"
+            },
+            pt: {
+                "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
+                "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (5 Dias Grátis)",
+                "tech_title": "Arquitetura da Suite", "tech_desc": "Infraestrutura tecnológica por trás do MetricPoint",
+                "card1_title": "🛰️ Análise Edáfica SAR (Sentinel-1)", "card1_desc": "Nossa plataforma injeta dados brutos de micro-ondas em banda C da Agência Espacial Europeia. Ao contrário das imagens ópticas, o radar penetra na cobertura vegetal e nas nuvens, permitindo-nos calcular a umidade volumétrica real do solo.",
+                "card2_title": "📡 Integração SINARAME ao Vivo", "card2_desc": "Conexão direta em tempo real com a rede de radares do Serviço Meteorológico. Limpamos matematicamente a refletividade (dBZ) cortando vetores visuais de lixo para sobrepor ecos de tempestades milimétricas sobre seus lotes.",
+                "card3_title": "🧊 Gêmeos Digitais Topográficos", "card3_desc": "Transformamos a visão de seus campos de planos 2D para blocos sólidos 3D extraindo Modelos Digitais de Elevação (DEM). Nosso mecanismo gráfico permite tirar \"raios-x espaciais\" do terreno em diferentes profundidades.",
+                "paywall_title": "Período de Teste Expirado", "paywall_desc": "Seus 5 dias de acesso gratuito terminaram. Para continuar usando os satélites da ESA e injetar topografia 3D, faça o upgrade para Premium.", "btn_upgrade": "Obter Licença Premium", "btn_logout": "Sair",
+                "hub_subtitle": "Selecione o módulo de análise que deseja usar", "hub_vid_title": "Motor 3D MetricMoisture", "hub_vid_desc": "Gêmeos Digitais Volumétricos para monitoramento de precisão.",
+                "mod_moisture_desc": "Análise de umidade edáfica profunda com satélites SAR, topografia 3D e balanço hídrico.", "mod_weather_title": "Previsão do Tempo", "mod_weather_desc": "Modelagem atmosférica, radares ao vivo e variáveis meteorológicas preditivas.", "mod_poli_desc": "Suíte abrangente de polinização, monitoramento de colmeias e análise fenológica avançada.",
+                "mod1_subtitle": "Umidade Edáfica por Satélite", "btn_back": "Voltar ao Menu", "lbl_lot_params": "Parâmetros do Lote", "lbl_start_date": "Data de Início (AAAA-MM-DD):", "lbl_end_date": "Data de Fim (AAAA-MM-DD):", "lbl_sow_date": "Data de Semeadura (AAAA-MM-DD):",
+                "lbl_manual_input": "Entrada Manual / Estação", "lbl_reg_date": "Data de Registro:", "lbl_rain": "Chuva (mm):", "btn_add_rec": "+ Adicionar Registro", "btn_execute": "EXECUTAR ANÁLISE",
+                "lbl_soil_props": "Propriedades do Solo Analisadas", "lbl_sand": "Textura Areia:", "lbl_clay": "Textura Argila:", "lbl_cc": "Capacidade de Campo (CC):", "lbl_pmp": "Ponto de Murcha (PMP):",
+                "lbl_query_prof": "Consultar Perfil por Data", "btn_scan_3d": "Verificar Topografia 3D", "lbl_surf10": "Superfície (10 cm):", "lbl_sub30": "Subsuperfície (30 cm):", "lbl_root60": "Raízes Profundas (60 cm):", "lbl_res100": "Reserva (100 cm):", "lbl_et0": "Evapotranspiração (ET0):",
+                "lbl_climate_data": "Dados Climáticos", "lbl_total_rain": "Chuva Acumulada Total:", "lbl_diag": "Diagnóstico Agrometeorológico",
+                "tab_moist": "Umidade e Vigor", "tab_clim": "Clima e Chuva", "tab_3d": "Modelo 3D (Campanha)", "tab_xray": "Raio-X Espacial",
+                "mod2_subtitle": "Rede SINARAME - Ecos de Precipitação ao Vivo", "lbl_layers": "Controle de Camadas", "lbl_layer_desc": "Monitoramento em tempo real dos ecos de chuva usando a rede de radares meteorológicos.", "btn_refresh": "Atualizar Radar",
+                "msg_auth_err": "Preencha ambos os campos.", "msg_login": "Iniciando sessão...", "msg_reg": "Registrando...", "msg_err_serv": "Erro de conexão com o servidor.",
+                "diag_base": "Durante a campanha analisada (START a END), o lote recebeu um acumulado de <strong>RAIN mm</strong> de precipitação. A demanda atmosférica média (ET0) permaneceu em <strong>ET0 mm/dia</strong>.<br><br>",
+                "diag_def": "O balanço global mostra um <strong>déficit hídrico acentuado</strong>, forçando a cultura a depender estruturalmente do perfil edáfico. ",
+                "diag_fav": "O balanço global mostra um comportamento atmosférico <strong>favorável</strong>. ",
+                "diag_opt": "Atualmente, a reserva profunda do lote (100 cm) encontra-se em níveis <strong>ótimos</strong> (acima de 65% de água útil), garantindo estabilidade radicular frente a ondas de calor.",
+                "diag_reg": "Atualmente, a reserva profunda (100 cm) está em um estado de <strong>transição regular</strong>. Sugere-se monitorar a secagem superficial para evitar estresse fenológico.",
+                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> A reserva profunda do lote atingiu níveis <strong>críticos</strong> próximos ao Ponto de Murcha, representando um alto risco para a cultura.</span>"
+            }
+        };
+
+        // Función central de cambio de idioma
+        function cambiarIdioma(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (traducciones[lang] && traducciones[lang][key]) {
+                    if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
+                        el.placeholder = traducciones[lang][key];
+                    } else {
+                        el.innerHTML = traducciones[lang][key];
+                    }
+                }
+            });
+            // Si el reporte ya está generado en pantalla, forzar a que se traduzca (si existen datos)
+            if (window.datosSimulacion && window.datosSimulacion.length > 0) {
+                generarInforme(window.datosSimulacion, window.parametrosSimulacion);
+            }
+        }
+
+        // ==========================================
+        // 2. ANIMACIONES DE SCROLL Y AUTH
         // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
-            // El observador vigila cuando las tarjetas entran en la pantalla
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if(entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    } else {
-                        // Si querés que desaparezcan al irse hacia arriba o abajo:
-                        entry.target.classList.remove('visible'); 
-                    }
+                    if(entry.isIntersecting) { entry.target.classList.add('visible'); } 
+                    else { entry.target.classList.remove('visible'); }
                 });
-            }, { threshold: 0.2 }); // Se activa cuando el 20% de la tarjeta es visible
+            }, { threshold: 0.2 }); 
 
-            document.querySelectorAll('.tech-card').forEach(card => {
-                observer.observe(card);
-            });
+            document.querySelectorAll('.tech-card').forEach(card => observer.observe(card));
             
-            // Iniciar carrusel del Hub (estará oculto al principio)
-            const swiper = new Swiper('.hubSwiper', {
-                loop: true, effect: 'fade',
-                autoplay: { delay: 4000, disableOnInteraction: false },
-                pagination: { el: '.swiper-pagination', clickable: true },
-                observer: true, observeParents: true
-            });
-
             if (localStorage.getItem("metric_token")) {
                 document.getElementById("landingWrapper").style.display = "none";
                 document.getElementById("workspace").style.display = "block";
                 document.getElementById("dashboardHub").style.display = "block";
             }
+            
+            // Inicializar texto en idioma por defecto (Inglés)
+            cambiarIdioma(document.getElementById('langSwitch').value);
         });
 
-        // ==========================================
-        // 2. NAVEGACIÓN Y AUTH
-        // ==========================================
         function abrirModulo(moduloId) {
             document.getElementById('dashboardHub').style.display = 'none';
             document.getElementById('moduloAgrometeo').style.display = 'none';
             document.getElementById('moduloPronostico').style.display = 'none';
             document.getElementById('moduloMetricPoli').style.display = 'none';
             
-            if (moduloId === 'agrometeo') { 
-                document.getElementById('moduloAgrometeo').style.display = 'block'; 
-                setTimeout(() => { if(map) map.invalidateSize(); }, 100); 
-            } 
-            else if (moduloId === 'pronostico') { 
-                document.getElementById('moduloPronostico').style.display = 'block'; 
-                setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); 
-            }
-            else if (moduloId === 'metricpoli') {
-                document.getElementById('moduloMetricPoli').style.display = 'block';
-            }
+            if (moduloId === 'agrometeo') { document.getElementById('moduloAgrometeo').style.display = 'block'; setTimeout(() => { if(map) map.invalidateSize(); }, 100); } 
+            else if (moduloId === 'pronostico') { document.getElementById('moduloPronostico').style.display = 'block'; setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
+            else if (moduloId === 'metricpoli') { document.getElementById('moduloMetricPoli').style.display = 'block'; }
         }
 
         function volverAlHub() {
@@ -555,19 +563,21 @@
 
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
 
+        function getMsg(key) {
+            const lang = document.getElementById('langSwitch').value;
+            return traducciones[lang][key];
+        }
+
         async function hacerRegistro() {
             const email = document.getElementById("authEmail").value;
             const password = document.getElementById("authPassword").value;
             const statusLabel = document.getElementById("authStatus");
             
-            if(!email || !password) { statusLabel.innerText = "Complete ambos campos."; return; }
-            statusLabel.innerText = "Registrando...";
+            if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
+            statusLabel.innerText = getMsg("msg_reg");
             
             try {
-                const res = await fetch(`${BACKEND_URL}/api/register`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+                const res = await fetch(`${BACKEND_URL}/api/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await res.json();
                 if(res.ok) {
                     localStorage.setItem("metric_token", data.token);
@@ -575,7 +585,7 @@
                     document.getElementById("workspace").style.display = "block";
                     document.getElementById("dashboardHub").style.display = "block";
                 } else { statusLabel.innerText = data.error; }
-            } catch(e) { statusLabel.innerText = "Error de conexión al servidor de Render."; }
+            } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
 
         async function hacerLogin() {
@@ -583,14 +593,11 @@
             const password = document.getElementById("authPassword").value;
             const statusLabel = document.getElementById("authStatus");
             
-            if(!email || !password) { statusLabel.innerText = "Complete ambos campos."; return; }
-            statusLabel.innerText = "Iniciando sesión...";
+            if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
+            statusLabel.innerText = getMsg("msg_login");
             
             try {
-                const res = await fetch(`${BACKEND_URL}/api/login`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+                const res = await fetch(`${BACKEND_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await res.json();
                 if(res.ok) {
                     localStorage.setItem("metric_token", data.token);
@@ -598,13 +605,10 @@
                     document.getElementById("workspace").style.display = "block";
                     document.getElementById("dashboardHub").style.display = "block";
                 } else { statusLabel.innerText = data.error; }
-            } catch(e) { statusLabel.innerText = "Error de conexión al servidor de Render."; }
+            } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
 
-        function cerrarSesion() {
-            localStorage.removeItem("metric_token");
-            location.reload();
-        }
+        function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
 
         // ==========================================
         // 3. MAPAS Y HERRAMIENTAS
@@ -612,27 +616,19 @@
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
 
-        var drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
+        var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
         var drawControl = new L.Control.Draw({ draw: { polyline: false, polygon: true, circle: false, rectangle: false, marker: false }, edit: { featureGroup: drawnItems } });
         map.addControl(drawControl);
-
         var poligonoActual = null;
-        map.on(L.Draw.Event.CREATED, function (event) {
-            drawnItems.clearLayers(); 
-            var layer = event.layer;
-            drawnItems.addLayer(layer);
-            poligonoActual = layer.toGeoJSON().geometry.coordinates;
-        });
+        map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
 
         var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(mapPronostico);
-        
         L.imageOverlay('lajitas_limpia.png', [[-26.8393, -66.6200], [-22.5273, -61.8800]], { opacity: 0.85 }).addTo(mapPronostico);
         L.imageOverlay('termas_limpia.png', [[-29.6393, -67.2967], [-25.3273, -62.4367]], { opacity: 0.85 }).addTo(mapPronostico);
 
         // ==========================================
-        // 4. LÓGICA DE AGROMETEO
+        // 4. LÓGICA DE AGROMETEO Y RENDERS
         // ==========================================
         var chartObjAgro = null, chartObjClima = null;
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
@@ -641,61 +637,40 @@
 
         function agregarDatoManual() {
             const f = document.getElementById('m_fecha').value, ll = document.getElementById('m_lluvia').value, et = document.getElementById('m_et0').value;
-            if (!f) return alert("Seleccione una fecha.");
-            let registro = { timestamp: f };
-            if (ll !== "") registro.lluvia = parseFloat(ll);
-            if (et !== "") registro.et0 = parseFloat(et);
-            window.datosLocalesManuales = window.datosLocalesManuales.filter(d => d.timestamp !== f);
-            window.datosLocalesManuales.push(registro);
-            document.getElementById('m_status').innerText = `${window.datosLocalesManuales.length} registros manuales.`;
+            if (!f) return alert("Select Date");
+            let registro = { timestamp: f }; if (ll !== "") registro.lluvia = parseFloat(ll); if (et !== "") registro.et0 = parseFloat(et);
+            window.datosLocalesManuales = window.datosLocalesManuales.filter(d => d.timestamp !== f); window.datosLocalesManuales.push(registro);
+            document.getElementById('m_status').innerText = `${window.datosLocalesManuales.length} records.`;
             document.getElementById('m_lluvia').value = ''; document.getElementById('m_et0').value = '';
         }
 
         function abrirPestana(tabId, elementoBtn) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            elementoBtn.classList.add('active');
-            document.getElementById('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); document.getElementById('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
         }
 
         function isPointInPoly(pt, poly) {
             let x = pt[0], y = pt[1], isInside = false;
-            for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-                let xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
-                let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                if (intersect) isInside = !isInside;
-            } return isInside;
+            for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { let xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1]; let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi); if (intersect) isInside = !isInside; } return isInside;
         }
 
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
-            let poly = poligonoActual[0];
-            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
             const gridSize = 60; let xArr = [], yArr = [];
             for(let i=0; i<gridSize; i++) { xArr.push(minX + (maxX-minX)*(i/(gridSize-1))); yArr.push(minY + (maxY-minY)*(i/(gridSize-1))); }
 
             let minCota = Infinity, maxCota = -Infinity, sumCota = 0, countCota = 0;
-            if (puntosDEM && puntosDEM.length > 0) {
-                puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; sumCota+=p.z; countCota++; });
-            } else { minCota = 0; maxCota = 1; sumCota = 0; countCota = 1; }
+            if (puntosDEM && puntosDEM.length > 0) { puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; sumCota+=p.z; countCota++; }); } else { minCota = 0; maxCota = 1; sumCota = 0; countCota = 1; }
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
 
             function getRelieveZ(lon, lat) {
-                if (!puntosDEM || puntosDEM.length === 0) return 0;
-                let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; 
-                for (let i = 0; i < puntosDEM.length; i++) {
-                    let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2);
-                    let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w;
-                } return sum_z_w / sum_w;
+                if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; 
+                for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w;
             }
 
-            const layers = [
-                { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm },
-                { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm }
-            ];
-
+            const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
 
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10);
@@ -708,156 +683,96 @@
                     let zRow = [], cRow = [], tRow = [];
                     for(let i=0; i<gridSize; i++) {
                         if (isPointInPoly([xArr[i], yArr[j]], poly)) {
-                            let relieveBase = getRelieveZ(xArr[i], yArr[j]);
-                            zRow.push(relieveBase + layer.offset);
-                            let cotaNorm = (relieveBase - minCota) / rangoCota;
-                            let factorAgua = (0.5 - cotaNorm); 
-                            let humedadLocal = layer.hum + (factorAgua * 0.15); 
-                            humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal));
-                            cRow.push(humedadLocal);
-                            tRow.push(`Humedad: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: ${layer.name}`);
+                            let relieveBase = getRelieveZ(xArr[i], yArr[j]); zRow.push(relieveBase + layer.offset);
+                            let cotaNorm = (relieveBase - minCota) / rangoCota; let factorAgua = (0.5 - cotaNorm); let humedadLocal = layer.hum + (factorAgua * 0.15); humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal));
+                            cRow.push(humedadLocal); tRow.push(`Moisture: ${humedadLocal.toFixed(3)} m³/m³<br>Level: ${layer.name}`);
                         } else { zRow.push(null); cRow.push(null); tRow.push(null); }
                     } zMatrix.push(zRow); colorMatrix.push(cRow); textMatrix.push(tRow);
                 }
 
                 traces.push({
                     name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix,
-                    text: textMatrix, type: 'surface', colorscale: colorScaleRojoPurpura,
-                    cmin: globalMin, cmax: globalMax, showscale: index === 0,
-                    colorbar: { title: 'Humedad', thickness: 15, len: 0.8, y: 0.5, tickformat: '.3f' },
-                    hoverinfo: 'text', opacity: 1.0 
+                    text: textMatrix, type: 'surface', colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, showscale: index === 0,
+                    colorbar: { title: 'Moisture', thickness: 15, len: 0.8, y: 0.5, tickformat: '.3f' }, hoverinfo: 'text', opacity: 1.0 
                 });
             });
 
-            Plotly.purge('soilGeo3D');
-            Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {visible:false}, yaxis: {visible:false}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: '#ffffff' }, {responsive: true});
+            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {visible:false}, yaxis: {visible:false}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: '#ffffff' }, {responsive: true});
         }
 
         function consultarFecha() {
             const fecha = document.getElementById('fechaConsulta').value;
-            if (!fecha || window.datosSimulacion.length === 0) return alert("Seleccione fecha válida.");
+            if (!fecha || window.datosSimulacion.length === 0) return alert("Select a date.");
             const dato = window.datosSimulacion.find(d => d.timestamp === fecha);
             if (dato) {
                 ['10', '30', '60', '100'].forEach(p => document.getElementById('c_'+p).innerText = dato[`Humedad_${p}cm`].toFixed(3));
                 document.getElementById('c_et0').innerText = dato.ET0.toFixed(1);
-                document.getElementById('resultadoConsulta').style.display = 'block';
-                document.getElementById('contenedorGeo3D').style.display = 'block';
-                document.getElementById('lblFechaGeo3D').innerText = `(Día: ${dato.timestamp})`;
-                renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote);
-                abrirPestana('tabGeo3D', document.getElementById('btnTabGeo3D'));
-            } else alert("Fecha fuera de rango.");
+                document.getElementById('resultadoConsulta').style.display = 'block'; document.getElementById('contenedorGeo3D').style.display = 'block';
+                document.getElementById('lblFechaGeo3D').innerText = `(Date: ${dato.timestamp})`;
+                renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); abrirPestana('tabGeo3D', document.getElementById('btnTabGeo3D'));
+            } else alert("Date out of range.");
         }
 
         function generarInforme(datos, params) {
-            const lluviaTotal = datos.reduce((acc, d) => acc + d.Lluvia, 0);
-            const et0Promedio = datos.reduce((acc, d) => acc + d.ET0, 0) / datos.length;
-            const humUltima = datos[datos.length-1].Humedad_100cm;
+            const lluviaTotal = datos.reduce((acc, d) => acc + d.Lluvia, 0); const et0Promedio = datos.reduce((acc, d) => acc + d.ET0, 0) / datos.length; const humUltima = datos[datos.length-1].Humedad_100cm;
             
-            let texto = `Durante la campaña analizada (${datos[0].timestamp} al ${datos[datos.length-1].timestamp}), el lote recibió un acumulado de <strong>${lluviaTotal.toFixed(1)} mm</strong> de precipitaciones. La demanda atmosférica promedio (ET0) se mantuvo en <strong>${et0Promedio.toFixed(1)} mm/día</strong>.<br><br>`;
-            
-            if (lluviaTotal < (et0Promedio * datos.length * 0.5)) { texto += `El balance global muestra un <strong>déficit hídrico marcado</strong>, obligando al cultivo a depender estructuralmente del perfil edáfico. `; } 
-            else { texto += `El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. `; }
-
+            let texto = getMsg("diag_base").replace("START", datos[0].timestamp).replace("END", datos[datos.length-1].timestamp).replace("RAIN", lluviaTotal.toFixed(1)).replace("ET0", et0Promedio.toFixed(1));
+            if (lluviaTotal < (et0Promedio * datos.length * 0.5)) { texto += getMsg("diag_def"); } else { texto += getMsg("diag_fav"); }
             let aguaUtil = (humUltima - params.PMP) / (params.CC - params.PMP);
-            
-            if (aguaUtil > 0.65) { texto += `Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.`; } 
-            else if (aguaUtil > 0.35) { texto += `Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.`; } 
-            else { texto += `<span style="color:#d73027;"><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>`; }
+            if (aguaUtil > 0.65) { texto += getMsg("diag_opt"); } else if (aguaUtil > 0.35) { texto += getMsg("diag_reg"); } else { texto += getMsg("diag_crit"); }
 
-            document.getElementById('textoInforme').innerHTML = texto;
-            document.getElementById('contenedorInforme').style.display = 'block';
+            document.getElementById('textoInforme').innerHTML = texto; document.getElementById('contenedorInforme').style.display = 'block';
         }
 
         async function ejecutarAnalisis() {
-            if (!poligonoActual) return document.getElementById('status').innerText = 'Error: Dibuje un polígono primero.';
-            
+            if (!poligonoActual) return document.getElementById('status').innerText = 'Error: Draw polygon.';
             const token = localStorage.getItem("metric_token");
-            if (!token) {
-                document.getElementById("workspace").style.display = "none";
-                document.getElementById("landingWrapper").style.display = "flex";
-                return;
-            }
+            if (!token) { document.getElementById("workspace").style.display = "none"; document.getElementById("landingWrapper").style.display = "flex"; return; }
 
-            document.getElementById('status').innerText = 'Validando licencia y simulando...';
-            document.getElementById('status').style.color = '#08306b';
+            document.getElementById('status').innerText = 'Simulating...'; document.getElementById('status').style.color = '#08306b';
             ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoConsulta','infoClima'].forEach(id => document.getElementById(id).style.display = 'none');
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/calcular`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value,
-                        fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales
-                    })
-                });
-                
+                const response = await fetch(`${BACKEND_URL}/api/calcular`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value, fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales }) });
                 const jsonResponse = await response.json();
-
-                if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") {
-                    document.getElementById('status').innerText = '';
-                    document.getElementById('paywallScreen').style.display = 'flex';
-                    return;
-                }
-
+                if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") { document.getElementById('status').innerText = ''; document.getElementById('paywallScreen').style.display = 'flex'; return; }
                 if (response.ok) {
-                    document.getElementById('status').innerText = '¡Proceso completado!'; document.getElementById('status').style.color = '#31a354';
-                    
+                    document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     
-                    document.getElementById('infoSuelo').style.display = 'block';
-                    document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
-                    document.getElementById('infoConsulta').style.display = 'block';
+                    document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3); document.getElementById('infoConsulta').style.display = 'block';
                     
-                    let act = {}; jsonResponse.data.forEach(d => { let m = d.timestamp.substring(0,7); act[m] = (act[m]||0)+d.Lluvia; });
-                    document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(e=>e[1]>0).map(e=>`<li>${e[0]}: <strong>${e[1].toFixed(1)} mm</strong></li>`).join('');
+                    let act = {}; jsonResponse.data.forEach(d => { let m = d.timestamp.substring(0,7); act[m] = (act[m]||0)+d.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(e=>e[1]>0).map(e=>`<li>${e[0]}: <strong>${e[1].toFixed(1)} mm</strong></li>`).join('');
 
                     generarInforme(jsonResponse.data, jsonResponse.suelo);
                     ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex');
                     abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
                 } else { document.getElementById('status').innerText = 'Error: ' + jsonResponse.error; }
-            } catch (error) { document.getElementById('status').innerText = 'Error de conexión con el backend en Render.'; }
+            } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
 
         function renderizarGraficos(datos, params) {
-            const fechas = datos.map(d => d.timestamp);
-            const lluvia = datos.map(d => d.Lluvia), et0 = datos.map(d => d.ET0), fisio = datos.map(d => d.Modelo_Fisiologico), rvi = datos.map(d => d.RVI_Crudo), obs = datos.map(d => d.Proxy_Humedad);
-            const h10 = datos.map(d=>d.Humedad_10cm), h30 = datos.map(d=>d.Humedad_30cm), h60 = datos.map(d=>d.Humedad_60cm), h100 = datos.map(d=>d.Humedad_100cm);
-            const cc = params ? params.CC : 0.3, pmp = params ? params.PMP : 0.15;
+            const fechas = datos.map(d => d.timestamp); const lluvia = datos.map(d => d.Lluvia), et0 = datos.map(d => d.ET0), fisio = datos.map(d => d.Modelo_Fisiologico), rvi = datos.map(d => d.RVI_Crudo), obs = datos.map(d => d.Proxy_Humedad); const h10 = datos.map(d=>d.Humedad_10cm), h30 = datos.map(d=>d.Humedad_30cm), h60 = datos.map(d=>d.Humedad_60cm), h100 = datos.map(d=>d.Humedad_100cm); const cc = params ? params.CC : 0.3, pmp = params ? params.PMP : 0.15;
 
             if(chartObjAgro) chartObjAgro.destroy();
             chartObjAgro = new Chart(document.getElementById('chartAgro').getContext('2d'), {
-                type: 'line',
-                data: { labels: fechas, datasets: [
-                        { label: 'Humedad de Suelo (SAR)', data: obs, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yHumedad' },
-                        { label: 'Vigor RVI (Satélite)', data: rvi, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yVigor' },
-                        { label: 'Modelo Fisiológico Ideal', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: 0.4, yAxisID: 'yVigor' }
-                    ]
-                },
-                options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Humedad (V/V)'}, min: 0, max: 0.55 }, yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor (0-1.2)'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg]
+                type: 'line', data: { labels: fechas, datasets: [ { label: 'SAR Moisture', data: obs, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yHumedad' }, { label: 'RVI Vigor', data: rvi, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: 0.2, spanGaps: true, yAxisID: 'yVigor' }, { label: 'Ideal Model', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: 0.4, yAxisID: 'yVigor' } ] }, options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: true, position: 'left', min: 0, max: 0.55 }, yVigor: { type: 'linear', display: true, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg]
             });
 
             if(chartObjClima) chartObjClima.destroy();
             chartObjClima = new Chart(document.getElementById('chartClima').getContext('2d'), {
-                type: 'line',
-                data: { labels: fechas, datasets: [
-                        { type: 'bar', label: 'Lluvia Diaria (mm)', data: lluvia, backgroundColor: '#1f77b4', yAxisID: 'yLluvia', order: 3 },
-                        { type: 'line', label: 'Evapotranspiración ET0 (mm/día)', data: et0, borderColor: '#ff7f0e', borderWidth: 2, borderDash: [3, 3], pointRadius: 0, tension: 0.3, yAxisID: 'yLluvia', order: 2 },
-                        { type: 'line', label: 'Vigor RVI (Contexto)', data: rvi, borderColor: 'rgba(44, 160, 44, 0.5)', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, yAxisID: 'yVigor', order: 1, fill: true, backgroundColor: 'rgba(44, 160, 44, 0.1)' }
-                    ]
-                },
-                options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yLluvia: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Agua (mm)'}, min: 0, suggestedMax: 100 }, yVigor: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Vigor RVI'}, min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg]
+                type: 'line', data: { labels: fechas, datasets: [ { type: 'bar', label: 'Rain (mm)', data: lluvia, backgroundColor: '#1f77b4', yAxisID: 'yLluvia', order: 3 }, { type: 'line', label: 'ET0 (mm/day)', data: et0, borderColor: '#ff7f0e', borderWidth: 2, borderDash: [3, 3], pointRadius: 0, tension: 0.3, yAxisID: 'yLluvia', order: 2 }, { type: 'line', label: 'RVI Context', data: rvi, borderColor: 'rgba(44, 160, 44, 0.5)', borderWidth: 2, pointRadius: 0, tension: 0.2, spanGaps: true, yAxisID: 'yVigor', order: 1, fill: true, backgroundColor: 'rgba(44, 160, 44, 0.1)' } ] }, options: { responsive: true, plugins: { legend: { labels: { usePointStyle: true, boxWidth: 10 } } }, scales: { yLluvia: { type: 'linear', display: true, position: 'left', min: 0, suggestedMax: 100 }, yVigor: { type: 'linear', display: true, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: false } } } }, plugins: [customCanvasBg]
             });
 
             const zMinVal = Math.max(0, pmp - 0.03); const zMaxVal = cc + 0.05; const tamañoBanda = (zMaxVal - zMinVal) / 10;
-            let valoresTicks = [], textosTicks = [];
-            for (let i = 0; i <= 5; i++) { let val = zMinVal + (i * (zMaxVal - zMinVal) / 5); valoresTicks.push(val); textosTicks.push(`${val.toFixed(2)} (${(val * 100).toFixed(0)}%)`); }
+            let valoresTicks = [], textosTicks = []; for (let i = 0; i <= 5; i++) { let val = zMinVal + (i * (zMaxVal - zMinVal) / 5); valoresTicks.push(val); textosTicks.push(`${val.toFixed(2)} (${(val * 100).toFixed(0)}%)`); }
             const escalaOriginal = [[0.0, '#d7191c'], [0.25, '#fdae61'], [0.5, '#ffffbf'], [0.75, '#abdda4'], [1.0, '#2b83ba']];
 
-            var plotData2D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour', colorscale: escalaOriginal, zmin: zMinVal, zmax: zMaxVal, contours: { coloring: 'fill', showlines: true, start: zMinVal, end: zMaxVal, size: tamañoBanda }, colorbar: { title: 'Humedad', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
-            Plotly.newPlot('soilHeatmap', plotData2D, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Profundidad', tickvals: [0, -10, -30, -60, -100], ticktext: ['Superficie', '-10 cm', '-30 cm', '-60 cm', '-100 cm'] }}, {responsive: true});
+            var plotData2D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour', colorscale: escalaOriginal, zmin: zMinVal, zmax: zMaxVal, contours: { coloring: 'fill', showlines: true, start: zMinVal, end: zMaxVal, size: tamañoBanda }, colorbar: { title: 'Moisture', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
+            Plotly.newPlot('soilHeatmap', plotData2D, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Depth', tickvals: [0, -10, -30, -60, -100], ticktext: ['Surface', '-10 cm', '-30 cm', '-60 cm', '-100 cm'] }}, {responsive: true});
 
             var plotData3D = [{ z: [h100,h60,h30,h10,h10], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: escalaOriginal, cmin: zMinVal, cmax: zMaxVal, colorbar: { title: 'm³/m³', thickness: 15, tickvals: valoresTicks, ticktext: textosTicks } }];
-            Plotly.newPlot('soil3D', plotData3D, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Fecha de Campaña' }, yaxis: { title: 'Profundidad (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Humedad (V/V)', range: [Math.max(0, pmp - 0.05), cc + 0.15] }, camera: { eye: {x: 1.5, y: -1.5, z: 1.0} } }}, {responsive: true});
+            Plotly.newPlot('soil3D', plotData3D, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Date' }, yaxis: { title: 'Depth (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Moisture (V/V)', range: [Math.max(0, pmp - 0.05), cc + 0.15] }, camera: { eye: {x: 1.5, y: -1.5, z: 1.0} } }}, {responsive: true});
         }
     </script>
 </body>
