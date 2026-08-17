@@ -14,49 +14,39 @@
            ========================================== */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; }
         
-        .lang-selector {
-            position: fixed; top: 20px; right: 20px; z-index: 10000;
-        }
-        .lang-selector select {
-            padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc;
-            background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b;
-        }
+        .lang-selector { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+        .lang-selector select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b; }
 
         /* ==========================================
-           2. LANDING PAGE (SCROLL + VIDEO + LOGIN)
+           2. LANDING PAGE & LOGIN
            ========================================== */
         #landingWrapper { display: flex; flex-direction: column; width: 100vw; background-color: #020617; }
         #authScreen { display: flex; width: 100%; height: 100vh; background-color: #ffffff; }
 
         .auth-left { width: 60%; height: 100%; position: relative; overflow: hidden; background-color: #041d42; }
         .auth-left video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
-        .auth-slide-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, rgba(8, 48, 107, 0.95), transparent);
-            color: white; padding: 80px 40px 40px 40px; box-sizing: border-box; pointer-events: none;
-        }
+        .auth-slide-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(8, 48, 107, 0.95), transparent); color: white; padding: 80px 40px 40px 40px; box-sizing: border-box; pointer-events: none; }
         .auth-slide-overlay h2 { margin: 0 0 10px 0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
         .auth-slide-overlay p { margin: 0; font-size: 18px; color: #e0f3db; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
 
-        .scroll-indicator {
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            color: white; font-size: 14px; text-align: center; animation: bounce 2s infinite; opacity: 0.7; pointer-events: none;
-        }
+        .scroll-indicator { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); color: white; font-size: 14px; text-align: center; animation: bounce 2s infinite; opacity: 0.7; pointer-events: none; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); } 40% { transform: translateY(-10px) translateX(-50%); } 60% { transform: translateY(-5px) translateX(-50%); } }
 
-        .auth-right {
-            width: 40%; height: 100%; display: flex; align-items: center; justify-content: center;
-            background-color: #ffffff; box-shadow: -10px 0 25px rgba(0,0,0,0.15); z-index: 10;
-        }
+        .auth-right { width: 40%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #ffffff; box-shadow: -10px 0 25px rgba(0,0,0,0.15); z-index: 10; }
         .login-box { width: 80%; max-width: 380px; }
         .login-box h1 { color: #08306b; margin-top: 0; margin-bottom: 5px; font-size: 28px; }
         .login-box p { font-size: 14px; color: #666; margin-bottom: 30px; }
         .login-box label { font-weight: 600; font-size: 13px; color: #333; display: block; margin-top: 15px; margin-bottom: 5px; }
-        .login-box input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
+        .login-box input[type="email"], .login-box input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
         .login-box input:focus { border-color: #08306b; outline: none; }
         
-        .btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 25px; cursor: pointer; transition: background 0.3s; }
+        /* ESTILO DEL CHECKBOX LEGAL */
+        .legal-check { display: flex; align-items: flex-start; margin-top: 15px; gap: 8px; }
+        .legal-check input { margin-top: 3px; cursor: pointer; }
+        .legal-check label { margin-top: 0; font-size: 12px; font-weight: normal; color: #555; line-height: 1.4; }
+        .legal-check a { color: #08306b; text-decoration: underline; cursor: pointer; font-weight: bold; }
+
+        .btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 20px; cursor: pointer; transition: background 0.3s; }
         .btn-auth-primary:hover { background-color: #041d42; }
         .btn-auth-secondary { width: 100%; padding: 12px; background-color: #ffffff; color: #08306b; border: 1px solid #08306b; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.3s; margin-top: 15px; }
         .btn-auth-secondary:hover { background-color: #f0f7fa; }
@@ -65,21 +55,28 @@
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
         .divider span { padding: 0 10px; color: #888; font-size: 13px; }
 
+        /* MODAL DE TÉRMINOS Y CONDICIONES */
+        #modalTyC { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 700px; max-height: 80vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header { background: #08306b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 18px; }
+        .modal-body { padding: 20px; overflow-y: auto; font-size: 14px; color: #333; line-height: 1.6; }
+        .modal-body h4 { color: #08306b; margin-top: 20px; margin-bottom: 5px; }
+        .modal-footer { padding: 15px 20px; background: #f4f7f6; text-align: right; border-top: 1px solid #ddd; }
+        .btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
         /* SECCIÓN TÉCNICA (SCROLL) */
         #techSection { padding: 100px 50px; display: flex; flex-direction: column; align-items: center; gap: 40px; background-color: #020617; overflow: hidden; }
         .tech-header { text-align: center; margin-bottom: 20px; }
         .tech-header h2 { color: #38bdf8; font-size: 32px; margin: 0; }
         .tech-header p { color: #94a3b8; font-size: 16px; margin-top: 10px;}
-        .tech-card {
-            background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981; border-radius: 8px; padding: 30px; max-width: 800px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            opacity: 0; transform: translateY(60px); transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
+        .tech-card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981; border-radius: 8px; padding: 30px; max-width: 800px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; transform: translateY(60px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
         .tech-card.visible { opacity: 1; transform: translateY(0); }
         .tech-card h3 { color: #10b981; margin-top: 0; font-size: 20px; display: flex; align-items: center; gap: 10px;}
         .tech-card p { color: #cbd5e1; font-size: 15px; line-height: 1.6; margin-bottom: 0; }
 
         /* ==========================================
-           3. ESTILOS DEL WORKSPACE Y DASHBOARD
+           3. ESTILOS DEL WORKSPACE
            ========================================== */
         #workspace { padding: 20px; display: none; margin-top: 40px; }
         .header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -88,11 +85,7 @@
         
         #dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: center; }
         
-        /* VIDEO HUB REEMPLAZANDO EL CARRUSEL */
-        .hub-video-container {
-            position: relative; width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; background-color: #041d42;
-        }
+        .hub-video-container { position: relative; width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; background-color: #041d42; }
         .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
 
         .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
@@ -143,7 +136,6 @@
 </head>
 <body>
 
-    <!-- Selector de Idiomas -->
     <div class="lang-selector">
         <select id="langSwitch" onchange="cambiarIdioma(this.value)">
             <option value="en">🇬🇧 English</option>
@@ -152,13 +144,32 @@
         </select>
     </div>
 
-    <!-- ==========================================
-         LANDING PAGE
-         ========================================== -->
+    <!-- MODAL DE TÉRMINOS Y CONDICIONES -->
+    <div id="modalTyC">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-i18n="legal_title">Términos y Condiciones de Uso</h3>
+                <span style="cursor: pointer; font-size: 20px;" onclick="cerrarTyC()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="legal_p1">Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.</p>
+                <h4 data-i18n="legal_h1">1. Descargo de Responsabilidad Agronómica</h4>
+                <p data-i18n="legal_p2">La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de <strong>asistencia para la toma de decisiones</strong> y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.</p>
+                <h4 data-i18n="legal_h2">2. Fuentes de Datos de Terceros</h4>
+                <p data-i18n="legal_p3">La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.</p>
+                <h4 data-i18n="legal_h3">3. Uso y Licencias</h4>
+                <p data-i18n="legal_p4">El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close-modal" onclick="cerrarTyC()" data-i18n="btn_close">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LANDING PAGE -->
     <div id="landingWrapper">
         <div id="authScreen">
             <div class="auth-left">
-                <!-- VIDEO PROMOCIONAL DE FONDO -->
                 <video autoplay loop muted playsinline>
                     <source src="video_promo.mp4" type="video/mp4">
                 </video>
@@ -181,12 +192,19 @@
                     
                     <label data-i18n="lbl_pass">Password</label>
                     <input type="password" id="authPassword" placeholder="••••••••">
+
+                    <!-- CHECKBOX LEGAL -->
+                    <div class="legal-check">
+                        <input type="checkbox" id="chkLegal">
+                        <label for="chkLegal">
+                            <span data-i18n="lbl_read">I have read and accept the </span> 
+                            <a onclick="abrirTyC()" data-i18n="lbl_tyc">Terms and Conditions</a>
+                        </label>
+                    </div>
                     
                     <button class="btn-auth-primary" onclick="hacerLogin()" data-i18n="btn_login">Sign In</button>
-                    
                     <div class="divider"><span data-i18n="lbl_or">or</span></div>
-                    
-                    <button class="btn-auth-secondary" onclick="hacerRegistro()" data-i18n="btn_trial">Create Account (5-Day Free Trial)</button>
+                    <button class="btn-auth-secondary" onclick="hacerRegistro()" data-i18n="btn_trial">Create Account (48-Hour Free Trial)</button>
                     
                     <p id="authStatus" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
                 </div>
@@ -217,7 +235,7 @@
     <div id="paywallScreen" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 9999; display: none; justify-content: center; align-items: center;">
         <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px;">
             <h2 style="color: #d73027;" data-i18n="paywall_title">Trial Period Expired</h2>
-            <p style="color: #333;" data-i18n="paywall_desc">Your 5 days of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.</p>
+            <p style="color: #333;" data-i18n="paywall_desc">Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.</p>
             <button class="btn-primary" onclick="alert('Payment gateway in construction...')" data-i18n="btn_upgrade">Get Premium License</button>
             <button class="btn-secondary" style="margin-top: 15px; background: transparent; color: #666;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
         </div>
@@ -227,7 +245,6 @@
          ESPACIO DE TRABAJO
          ========================================== -->
     <div id="workspace">
-        
         <div id="dashboardHub">
             <div class="header">
                 <div class="header-left" style="text-align: left;">
@@ -237,11 +254,9 @@
                 <button class="btn-danger" style="margin-top: 0;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
             </div>
 
-            <!-- NUEVO VIDEO DEL HUB (Reemplaza al Carrusel) -->
             <div class="hub-video-container">
                 <video autoplay loop muted playsinline>
                     <source src="video_carrousel.mp4" type="video/mp4">
-                    Browser does not support video.
                 </video>
                 <div class="auth-slide-overlay">
                     <h2 data-i18n="hub_vid_title">MetricMoisture 3D Engine</h2>
@@ -268,16 +283,13 @@
             </div>
         </div>
 
-        <!-- ================= MÓDULO 1: METRIC MOISTURE ================= -->
         <div id="moduloAgrometeo" style="display: none;">
             <div class="header">
                 <div class="header-left">
                     <h1>MetricMoisture (SaaS Premium)</h1>
                     <span data-i18n="mod1_subtitle">Satellite Edaphic Moisture</span>
                 </div>
-                <div>
-                    <button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button>
-                </div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             
             <div class="container">
@@ -295,14 +307,8 @@
                         <label data-i18n="lbl_reg_date">Record Date:</label>
                         <input type="date" id="m_fecha">
                         <div style="display: flex; gap: 10px;">
-                            <div>
-                                <label data-i18n="lbl_rain">Rain (mm):</label>
-                                <input type="number" id="m_lluvia" placeholder="0">
-                            </div>
-                            <div>
-                                <label>ET0 (mm):</label>
-                                <input type="number" id="m_et0" placeholder="0.0" step="0.1">
-                            </div>
+                            <div><label data-i18n="lbl_rain">Rain (mm):</label><input type="number" id="m_lluvia" placeholder="0"></div>
+                            <div><label>ET0 (mm):</label><input type="number" id="m_et0" placeholder="0.0" step="0.1"></div>
                         </div>
                         <button class="btn-secondary" style="width: 100%; margin-top: 8px; padding: 5px;" onclick="agregarDatoManual()" data-i18n="btn_add_rec">+ Add Record</button>
                         <div id="m_status" style="font-size: 11px; color: #2b8cbe; margin-top: 5px;"></div>
@@ -342,7 +348,6 @@
 
                 <div class="main-content">
                     <div id="map"></div>
-                    
                     <div id="contenedorInforme" style="display: none; background: #eef7f9; border-left: 5px solid #08306b; padding: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         <h4 style="margin-top: 0; margin-bottom: 8px; color: #08306b; font-size: 16px;" data-i18n="lbl_diag">Agrometeorological Diagnostics</h4>
                         <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
@@ -356,24 +361,14 @@
                     </div>
 
                     <div id="tabAgronomia" class="tab-content active">
-                        <div class="chart-container" id="contenedorLineasAgro" style="display: none;">
-                            <canvas id="chartAgro" height="100"></canvas>
-                        </div>
-                        <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;">
-                            <div id="soilHeatmap" style="width: 100%; height: 350px;"></div>
-                        </div>
+                        <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
+                        <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
                     </div>
-                    <div id="tabClima" class="tab-content">
-                        <div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div>
-                    </div>
-                    <div id="tab3D" class="tab-content">
-                        <div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div>
-                    </div>
+                    <div id="tabClima" class="tab-content"><div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div></div>
+                    <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     <div id="tabGeo3D" class="tab-content">
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
-                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
-                                <span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span>
-                            </h4>
+                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;"><span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span></h4>
                             <div id="soilGeo3D" style="width: 100%; height: 100%;"></div>
                         </div>
                     </div>
@@ -381,7 +376,6 @@
             </div>
         </div>
 
-        <!-- ================= MÓDULO 2 & 3 ================= -->
         <div id="moduloPronostico" style="display: none;">
             <div class="header">
                 <div class="header-left">
@@ -402,10 +396,7 @@
 
         <div id="moduloMetricPoli" style="display: none;">
             <div class="header">
-                <div class="header-left">
-                    <h1>MetricPoli (SaaS Premium)</h1>
-                    <span>by metricpoint</span>
-                </div>
+                <div class="header-left"><h1>MetricPoli (SaaS Premium)</h1><span>by metricpoint</span></div>
                 <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             <div class="container" style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box;">
@@ -427,12 +418,14 @@
         const traducciones = {
             en: {
                 "landing_title": "Geospatial Intelligence", "landing_subtitle": "Direct SAR telemetry to your agronomic control center.", "landing_scroll": "▼ Discover MetricPoint's architecture ▼",
-                "login_desc": "Precision Agrometeorology. Enter your credentials.", "lbl_email": "Email Address", "ph_email": "example@company.com", "lbl_pass": "Password", "btn_login": "Sign In", "lbl_or": "or", "btn_trial": "Create Account (5-Day Free Trial)",
+                "login_desc": "Precision Agrometeorology. Enter your credentials.", "lbl_email": "Email Address", "ph_email": "example@company.com", "lbl_pass": "Password", "btn_login": "Sign In", "lbl_or": "or", "btn_trial": "Create Account (48-Hour Free Trial)",
+                "lbl_read": "I have read and accept the ", "lbl_tyc": "Terms and Conditions", "msg_tyc_req": "You must accept the Terms and Conditions to register.",
+                "legal_title": "Terms and Conditions of Use", "legal_p1": "By registering, accessing or using the MetricPoint platform, you agree to be bound by these terms.", "legal_h1": "1. Agronomic Disclaimer", "legal_p2": "The Platform provides satellite and radar telemetry tools. You understand that it is strictly a decision assistance tool and does not replace agronomic judgment in the field. MetricPoint assumes no liability for yield losses or crop damage resulting from decisions made based on the platform.", "legal_h2": "2. Third Party Data Sources", "legal_p3": "The architecture is fed by the European Space Agency (Copernicus) and the National Meteorological Service (SMN). We do not guarantee 100% uptime in case of government server crashes.", "legal_h3": "3. Use and Licenses", "legal_p4": "Trial access lasts 48 hours. Web scraping, resale of information or sharing credentials without a commercial license is explicitly prohibited.", "btn_close": "Close",
                 "tech_title": "Suite Architecture", "tech_desc": "Technological infrastructure behind MetricPoint",
                 "card1_title": "🛰️ SAR Edaphic Analysis (Sentinel-1)", "card1_desc": "Our platform injects raw C-band microwave data from the European Space Agency. Unlike optical images, radar penetrates vegetation cover and clouds, allowing us to calculate the real volumetric soil moisture from the first centimeters to the deep root zone, detecting stress before the plant shows visual symptoms.",
                 "card2_title": "📡 Live SINARAME Integration", "card2_desc": "Direct real-time connection with the weather radar network of the National Meteorological Service (SMN). We mathematically clean the reflectivity (dBZ) by cutting garbage visual vectors to overlay millimeter storm echoes over your lots. Anticipate hail fronts and severe convective storms minutes before they occur.",
                 "card3_title": "🧊 Topographic Digital Twins", "card3_desc": "We transform the view of your fields from 2D planes to massive 3D blocks by extracting Digital Elevation Models (DEM). Our graphics engine allows you to take \"spatial X-rays\" of the terrain at different depths, interacting with heat maps and discovering endorheic basins, runoff routes and areas prone to wilting or chronic waterlogging.",
-                "paywall_title": "Trial Period Expired", "paywall_desc": "Your 5 days of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.", "btn_upgrade": "Get Premium License", "btn_logout": "Sign Out",
+                "paywall_title": "Trial Period Expired", "paywall_desc": "Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.", "btn_upgrade": "Get Premium License", "btn_logout": "Sign Out",
                 "hub_subtitle": "Select the analysis module you want to use", "hub_vid_title": "MetricMoisture 3D Engine", "hub_vid_desc": "Interactive Volumetric Digital Twins for precision monitoring.",
                 "mod_moisture_desc": "Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.", "mod_weather_title": "Weather Forecast", "mod_weather_desc": "Atmospheric modeling, live SMN radars and predictive meteorological variables.", "mod_poli_desc": "Comprehensive pollination suite, hive monitoring and advanced phenological analysis.",
                 "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
@@ -452,12 +445,14 @@
             },
             es: {
                 "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
-                "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (5 Días Gratis)",
+                "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (48 Horas Gratis)",
+                "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "msg_tyc_req": "Debes aceptar los Términos y Condiciones para registrarte.",
+                "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
                 "tech_title": "Arquitectura de la Suite", "tech_desc": "Infraestructura tecnológica detrás de MetricPoint",
                 "card1_title": "🛰️ Análisis Edáfico SAR (Sentinel-1)", "card1_desc": "Nuestra plataforma inyecta datos crudos de microondas en banda C procedentes de la Agencia Espacial Europea. A diferencia de las imágenes ópticas, el radar penetra la cobertura vegetal y las nubes, permitiéndonos calcular la humedad volumétrica real del suelo desde los primeros centímetros hasta la zona radicular profunda, detectando estrés antes de que la planta muestre síntomas visuales.",
                 "card2_title": "📡 Integración SINARAME en Vivo", "card2_desc": "Conexión directa en tiempo real con la red de radares meteorológicos del Servicio Meteorológico Nacional (SMN). Limpiamos matemáticamente la reflectividad (dBZ) cortando vectores visuales basura para superponer ecos de tormenta milimétricos sobre sus lotes. Anticípese a frentes de granizo y tormentas convectivas severas minutos antes de que ocurran.",
                 "card3_title": "🧊 Gemelos Digitales Topográficos", "card3_desc": "Transformamos la vista de sus campos de planos 2D a bloques macizos 3D extrayendo Modelos Digitales de Elevación (DEM). Nuestro motor gráfico le permite hacer \"radiografías espaciales\" del terreno a distintas profundidades, interactuando con mapas de calor y descubriendo cuencas endorreicas, vías de escurrimiento y zonas propensas a la marchitez o al anegamiento crónico.",
-                "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 5 días de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
+                "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 48 horas de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
                 "hub_subtitle": "Seleccione el módulo de análisis que desea utilizar", "hub_vid_title": "Motor 3D MetricMoisture", "hub_vid_desc": "Gemelos Digitales Volumétricos para monitoreo de precisión.",
                 "mod_moisture_desc": "Análisis de humedad edáfica profunda con satélites SAR, topografía 3D y balance hídrico.", "mod_weather_title": "Pronóstico del Tiempo", "mod_weather_desc": "Modelado atmosférico, radares del SMN en vivo y variables predictivas meteorológicas.", "mod_poli_desc": "Suite integral de polinización, monitoreo de colmenas y análisis fenológico avanzado.",
                 "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
@@ -477,12 +472,14 @@
             },
             pt: {
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
-                "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (5 Dias Grátis)",
+                "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (48 Horas Grátis)",
+                "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "msg_tyc_req": "Você deve aceitar os Termos e Condições para se registrar.",
+                "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 horas. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
                 "tech_title": "Arquitetura da Suite", "tech_desc": "Infraestrutura tecnológica por trás do MetricPoint",
                 "card1_title": "🛰️ Análise Edáfica SAR (Sentinel-1)", "card1_desc": "Nossa plataforma injeta dados brutos de micro-ondas em banda C da Agência Espacial Europeia. Ao contrário das imagens ópticas, o radar penetra na cobertura vegetal e nas nuvens, permitindo-nos calcular a umidade volumétrica real do solo.",
                 "card2_title": "📡 Integração SINARAME ao Vivo", "card2_desc": "Conexão direta em tempo real com a rede de radares do Serviço Meteorológico. Limpamos matematicamente a refletividade (dBZ) cortando vetores visuais de lixo para sobrepor ecos de tempestades milimétricas sobre seus lotes.",
                 "card3_title": "🧊 Gêmeos Digitais Topográficos", "card3_desc": "Transformamos a visão de seus campos de planos 2D para blocos sólidos 3D extraindo Modelos Digitais de Elevação (DEM). Nosso mecanismo gráfico permite tirar \"raios-x espaciais\" do terreno em diferentes profundidades.",
-                "paywall_title": "Período de Teste Expirado", "paywall_desc": "Seus 5 dias de acesso gratuito terminaram. Para continuar usando os satélites da ESA e injetar topografia 3D, faça o upgrade para Premium.", "btn_upgrade": "Obter Licença Premium", "btn_logout": "Sair",
+                "paywall_title": "Período de Teste Expirado", "paywall_desc": "Suas 48 horas de acesso gratuito terminaram. Para continuar usando os satélites da ESA e injetar topografia 3D, faça o upgrade para Premium.", "btn_upgrade": "Obter Licença Premium", "btn_logout": "Sair",
                 "hub_subtitle": "Selecione o módulo de análise que deseja usar", "hub_vid_title": "Motor 3D MetricMoisture", "hub_vid_desc": "Gêmeos Digitais Volumétricos para monitoramento de precisão.",
                 "mod_moisture_desc": "Análise de umidade edáfica profunda com satélites SAR, topografia 3D e balanço hídrico.", "mod_weather_title": "Previsão do Tempo", "mod_weather_desc": "Modelagem atmosférica, radares ao vivo e variáveis meteorológicas preditivas.", "mod_poli_desc": "Suíte abrangente de polinização, monitoramento de colmeias e análise fenológica avançada.",
                 "mod1_subtitle": "Umidade Edáfica por Satélite", "btn_back": "Voltar ao Menu", "lbl_lot_params": "Parâmetros do Lote", "lbl_start_date": "Data de Início (AAAA-MM-DD):", "lbl_end_date": "Data de Fim (AAAA-MM-DD):", "lbl_sow_date": "Data de Semeadura (AAAA-MM-DD):",
@@ -502,26 +499,22 @@
             }
         };
 
-        // Función central de cambio de idioma
         function cambiarIdioma(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (traducciones[lang] && traducciones[lang][key]) {
                     if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
                         el.placeholder = traducciones[lang][key];
-                    } else {
-                        el.innerHTML = traducciones[lang][key];
-                    }
+                    } else { el.innerHTML = traducciones[lang][key]; }
                 }
             });
-            // Si el reporte ya está generado en pantalla, forzar a que se traduzca (si existen datos)
             if (window.datosSimulacion && window.datosSimulacion.length > 0) {
                 generarInforme(window.datosSimulacion, window.parametrosSimulacion);
             }
         }
 
         // ==========================================
-        // 2. ANIMACIONES DE SCROLL Y AUTH
+        // 2. ANIMACIONES, MODALES Y AUTH
         // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
             const observer = new IntersectionObserver((entries) => {
@@ -539,9 +532,11 @@
                 document.getElementById("dashboardHub").style.display = "block";
             }
             
-            // Inicializar texto en idioma por defecto (Inglés)
             cambiarIdioma(document.getElementById('langSwitch').value);
         });
+
+        function abrirTyC() { document.getElementById('modalTyC').style.display = 'flex'; }
+        function cerrarTyC() { document.getElementById('modalTyC').style.display = 'none'; }
 
         function abrirModulo(moduloId) {
             document.getElementById('dashboardHub').style.display = 'none';
@@ -572,8 +567,11 @@
             const email = document.getElementById("authEmail").value;
             const password = document.getElementById("authPassword").value;
             const statusLabel = document.getElementById("authStatus");
+            const tycChecked = document.getElementById("chkLegal").checked;
             
             if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
+            if(!tycChecked) { statusLabel.innerText = getMsg("msg_tyc_req"); return; }
+
             statusLabel.innerText = getMsg("msg_reg");
             
             try {
