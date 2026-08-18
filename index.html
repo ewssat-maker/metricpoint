@@ -10,7 +10,7 @@
 
     <style>
         /* ==========================================
-           1. ESTILOS GLOBALES & SELECTOR IDIOMA
+           1. ESTILOS GLOBALES & IDIOMAS
            ========================================== */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; }
         
@@ -18,7 +18,7 @@
         .lang-selector select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b; }
 
         /* ==========================================
-           2. LANDING PAGE (SCROLL + VIDEO + LOGIN)
+           2. LANDING PAGE & LOGIN
            ========================================== */
         #landingWrapper { display: flex; flex-direction: column; width: 100vw; background-color: #020617; }
         #authScreen { display: flex; width: 100%; height: 100vh; background-color: #ffffff; }
@@ -37,7 +37,7 @@
         .login-box h1 { color: #08306b; margin-top: 0; margin-bottom: 5px; font-size: 28px; }
         .login-box p { font-size: 14px; color: #666; margin-bottom: 30px; }
         .login-box label { font-weight: 600; font-size: 13px; color: #333; display: block; margin-top: 15px; margin-bottom: 5px; }
-        .login-box input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
+        .login-box input[type="email"], .login-box input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
         .login-box input:focus { border-color: #08306b; outline: none; }
         
         .legal-check { display: flex; align-items: flex-start; margin-top: 15px; gap: 8px; }
@@ -45,7 +45,7 @@
         .legal-check label { margin-top: 0; font-size: 12px; font-weight: normal; color: #555; line-height: 1.4; }
         .legal-check a { color: #08306b; text-decoration: underline; cursor: pointer; font-weight: bold; }
 
-        .btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 25px; cursor: pointer; transition: background 0.3s; }
+        .btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 20px; cursor: pointer; transition: background 0.3s; }
         .btn-auth-primary:hover { background-color: #041d42; }
         .btn-auth-secondary { width: 100%; padding: 12px; background-color: #ffffff; color: #08306b; border: 1px solid #08306b; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.3s; margin-top: 15px; }
         .btn-auth-secondary:hover { background-color: #f0f7fa; }
@@ -54,7 +54,7 @@
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
         .divider span { padding: 0 10px; color: #888; font-size: 13px; }
 
-        /* MODALES LEGALES COMPLETOS */
+        /* MODALES LEGALES */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; }
         .modal-content { background: white; width: 90%; max-width: 700px; max-height: 80vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
         .modal-header { background: #08306b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -131,14 +131,24 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* CONTROL EXCLUSIVO SECTOR GEMELO DIGITIAL */
+        /* ==========================================
+           CONTROLES DEL GEMELO DIGITAL BETA
+           ========================================== */
         .gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
-        .gemelo-control-panel label { color: #38bdf8; margin: 0; font-size: 14px; font-weight: bold; }
-        .gemelo-control-panel select { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #38bdf8; font-weight: bold; cursor: pointer; }
+        .gemelo-control-panel label { color: #10b981; margin: 0; font-size: 14px; font-weight: bold; }
+        .gemelo-control-panel select { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; cursor: pointer; }
+        
+        .instruccion-beta {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;
+            padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: white;
+            pointer-events: none; backdrop-filter: blur(4px);
+        }
     </style>
 </head>
 <body>
 
+    <!-- SELECTOR DE IDIOMAS -->
     <div class="lang-selector">
         <select id="langSwitch" onchange="cambiarIdioma(this.value)">
             <option value="en">🇬🇧 English</option>
@@ -147,7 +157,7 @@
         </select>
     </div>
 
-    <!-- MODAL DE TÉRMINOS Y CONDICIONES -->
+    <!-- MODAL TÉRMINOS -->
     <div id="modalTyC" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -169,7 +179,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE PRIVACIDAD -->
+    <!-- MODAL PRIVACIDAD -->
     <div id="modalPrivacidad" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -368,6 +378,7 @@
                         <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
                     </div>
 
+                    <!-- SOLAPAS ORIGINALES + NUEVA SOLAPA BETA -->
                     <div class="tabs" id="tabMenu">
                         <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)" data-i18n="tab_moist">Moisture & Vigor</button>
                         <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
@@ -376,6 +387,7 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
 
+                    <!-- PESTAÑAS ORIGINALES (INTACTAS) -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -390,7 +402,7 @@
                         </div>
                     </div>
 
-                    <!-- NUEVA SOLAPA BETA (Aislada, no rompe lo demás) -->
+                    <!-- NUEVA PESTAÑA GEMELO (BETA) CON EL SCRIPT INTEGRADO Y DATOS REALES -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="gemelo-control-panel">
                             <label>SELECCIÓN DE CAPA EDÁFICA PROFUNDA:</label>
@@ -400,8 +412,9 @@
                                 <option value="100">Fondo de Reserva Estructural (-100 cm)</option>
                             </select>
                         </div>
-                        <div class="chart-container" id="contenedorGemeloBeta" style="height: 600px;">
-                            <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
+                        <div class="chart-container" id="contenedorGemeloBeta" style="height: 600px; padding: 0; overflow: hidden; background-color: #020617; border: 2px solid #1e293b;">
+                            <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
+                            <div class="instruccion-beta">👆 Haz clic en el perfil para fijar una sonda de humedad</div>
                         </div>
                     </div>
 
@@ -535,6 +548,7 @@
             cambiarIdioma(document.getElementById('langSwitch').value);
         });
 
+        // Funciones Modales
         function abrirTyC() { document.getElementById('modalTyC').style.display = 'flex'; }
         function cerrarTyC() { document.getElementById('modalTyC').style.display = 'none'; }
         function abrirPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'flex'; }
@@ -579,6 +593,7 @@
 
         function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
 
+        // Mapas
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
         var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
@@ -613,7 +628,7 @@
         }
 
         // =====================================================================
-        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA)
+        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA) -> INTACTO
         // =====================================================================
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
             let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
@@ -623,7 +638,6 @@
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
             function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w; }
             const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
-            
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
             
@@ -645,7 +659,8 @@
         }
 
         // =====================================================================
-        // NUEVO MOTOR: GEMELO DIGITAL VOLUMÉTRICO INTERACTIVO (CUBO CON DATOS REALES)
+        // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - Integración Exacta
+        // Toma el script independiente y lo adapta con la Topografía y Humedad Reales
         // =====================================================================
         window.ultimoDatoCalculado = null; 
 
@@ -656,107 +671,152 @@
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
-            const resolucion = 50; 
+            const gridSize = 50; 
             let xArr = [], yArr = [];
-            for(let i=0; i<resolucion; i++) { xArr.push(minX + (maxX-minX)*(i/(resolucion-1))); yArr.push(minY + (maxY-minY)*(i/(resolucion-1))); }
+            for(let i=0; i<gridSize; i++) {
+                xArr.push(minX + (maxX-minX)*(i/(gridSize-1)));
+                yArr.push(minY + (maxY-minY)*(i/(gridSize-1)));
+            }
 
             let minCota = Infinity, maxCota = -Infinity;
-            if (puntosDEM && puntosDEM.length > 0) { 
-                puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; }); 
+            if (puntosDEM && puntosDEM.length > 0) {
+                puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; });
             } else { minCota = 0; maxCota = 1; }
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
 
             function getRelieveZ(lon, lat) {
                 if (!puntosDEM || puntosDEM.length === 0) return 0;
-                let sum_w = 0, sum_z_w = 0;
+                let sum_w = 0, sum_z_w = 0, smoothing = 0.00005;
                 for (let i = 0; i < puntosDEM.length; i++) {
                     let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2);
-                    let w = 1/(d2+0.00005); sum_w += w; sum_z_w += p.z*w;
+                    let w = 1/(d2+smoothing); sum_w += w; sum_z_w += p.z*w;
                 } return sum_z_w / sum_w;
             }
 
-            let humedadBase = dato.Humedad_60cm; 
-            let offsetZ = -50; 
-            if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; offsetZ = 0; }
-            if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; offsetZ = -75; }
+            // Datos Base Reales
+            let humedadBase = dato.Humedad_60cm; let offsetZ = -50;
+            if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; offsetZ = -5; }
+            if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; offsetZ = -80; }
 
-            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
-            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); 
+            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10);
             let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
 
-            // Capa 1: Superficie del Terreno (Verde/Marrón)
-            let z_campo = [], color_campo = [];
-            
-            // Capa 2: Lámina de Humedad Real (Se mueve según el selector)
-            let z_hum = [], color_hum = [], texto_hum = [];
+            let z_surf = [], color_surf = [];
+            let z_moist = [], moist = [], text_moist = [];
 
-            // Profundidad del fondo del bloque
-            let z_piso_bloque = minCota - 100;
-
-            for(let j=0; j<resolucion; j++) {
-                let rZ_c = [], rC_c = [];
-                let rZ_h = [], rC_h = [], rT_h = [];
-
-                for(let i=0; i<resolucion; i++) {
+            // Generar matrices respetando la geometría del polígono dibujado
+            for(let j=0; j<gridSize; j++) {
+                let r_surf = [], c_surf = [];
+                let r_moist = [], r_m = [], r_t = [];
+                for(let i=0; i<gridSize; i++) {
                     if (isPointInPoly([xArr[i], yArr[j]], poly)) {
                         let cota = getRelieveZ(xArr[i], yArr[j]);
-                        
-                        // Superficie campo
-                        rZ_c.push(cota); rC_c.push(0.5);
 
-                        // Humedad real con escurrimiento topográfico
-                        rZ_h.push(cota + offsetZ);
+                        // 1. Capa Superficie (Cota real + textura estética de campo)
+                        let surco = Math.sin(j * 2) * 0.2; 
+                        let c_val = surco > 0 ? 1 : 0.2;
+                        r_surf.push(cota + surco);
+                        c_surf.push(c_val);
+
+                        // 2. Capa Humedad (Datos Reales satelitales)
+                        r_moist.push(cota + offsetZ);
                         let cotaNorm = (cota - minCota) / rangoCota;
-                        let factorAgua = (0.5 - cotaNorm); 
-                        let humedadLocal = humedadBase + (factorAgua * 0.15); 
+                        let factorAgua = (0.5 - cotaNorm);
+                        let humedadLocal = humedadBase + (factorAgua * 0.15);
                         humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal));
-                        rC_h.push(humedadLocal);
-                        rT_h.push(`Humedad Real: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: ${profundidadSeleccionada} cm`);
-                    } else { 
-                        rZ_c.push(null); rC_c.push(null);
-                        rZ_h.push(null); rC_h.push(null); rT_h.push(null); 
+                        r_m.push(humedadLocal);
+                        r_t.push(`Humedad Real: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: -${profundidadSeleccionada} cm`);
+                    } else {
+                        r_surf.push(null); c_surf.push(null);
+                        r_moist.push(null); r_m.push(null); r_t.push(null);
                     }
                 }
-                z_campo.push(rZ_c); color_campo.push(rC_c);
-                z_hum.push(rZ_h); color_hum.push(rC_h); texto_hum.push(rT_h);
+                z_surf.push(r_surf); color_surf.push(c_surf);
+                z_moist.push(r_moist); moist.push(r_m); text_moist.push(r_t);
             }
 
-            const trace_campo = {
-                x: xArr, y: yArr, z: z_campo, surfacecolor: color_campo, type: 'surface', 
-                colorscale: [[0, '#5d4037'], [1, '#2e7d32']], opacity: 0.65, showscale: false, hoverinfo: 'none'
+            // Capas configuradas igual que tu script de prueba
+            const trace_surface = {
+                x: xArr, y: yArr, z: z_surf, surfacecolor: color_surf, type: 'surface',
+                colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']], 
+                showscale: false, opacity: 0.8, lighting: { ambient: 0.6, diffuse: 0.9 },
+                name: 'Superficie (0 cm)', hoverinfo: 'none'
             };
 
-            const trace_hum = {
-                x: xArr, y: yArr, z: z_hum, surfacecolor: color_hum, text: texto_hum, type: 'surface', 
-                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, name: 'Humedad Real', hoverinfo: 'text',
-                colorbar: { title: 'Moisture', thickness: 15, len: 0.8, y: 0.5, tickformat: '.3f' }
+            const trace_moisture = {
+                x: xArr, y: yArr, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
+                colorscale: 'Turbo', cmin: globalMin, cmax: globalMax,
+                colorbar: { title: 'Agua Útil<br>(V/V)', x: 0.95, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 12 },
+                lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil -${profundidadSeleccionada} cm`,
+                hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
 
-            // Paredes para hacer el bloque macizo
-            const flat_bottom = Array(resolucion).fill(z_piso_bloque);
-            const col_tierra_oscura = [[0, '#110a08'], [1, '#3e2723']];
+            // Construcción del Cubo Macizo (Envolviendo la geometría real)
+            const z_bottom = minCota - 100;
+            const flat_bottom = Array(gridSize).fill(z_bottom);
+            const col_tierra = [[0, '#1f130e'], [1, '#3b251b']];
 
-            const trace_pared_sur = {
-                x: [xArr, xArr], y: [Array(resolucion).fill(yArr[0]), Array(resolucion).fill(yArr[0])],
-                z: [z_campo[0], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra_oscura, hoverinfo: 'none'
-            };
-            const trace_pared_norte = {
-                x: [xArr, xArr], y: [Array(resolucion).fill(yArr[resolucion-1]), Array(resolucion).fill(yArr[resolucion-1])],
-                z: [z_campo[resolucion-1], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra_oscura, hoverinfo: 'none'
-            };
+            const trace_wall_s = { x: [xArr, xArr], y: [Array(gridSize).fill(yArr[0]), Array(gridSize).fill(yArr[0])], z: [z_surf[0], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_wall_n = { x: [xArr, xArr], y: [Array(gridSize).fill(yArr[gridSize-1]), Array(gridSize).fill(yArr[gridSize-1])], z: [z_surf[gridSize-1], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_wall_w = { x: [Array(gridSize).fill(xArr[0]), Array(gridSize).fill(xArr[0])], y: [yArr, yArr], z: [z_surf.map(r => r[0]), flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_wall_e = { x: [Array(gridSize).fill(xArr[gridSize-1]), Array(gridSize).fill(xArr[gridSize-1])], y: [yArr, yArr], z: [z_surf.map(r => r[gridSize-1]), flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
 
-            // Mismos parámetros visuales que la Radiografía para que no se deforme
-            const layout_cubo = {
-                margin: { l:0, r:0, b:0, t:0 }, paper_bgcolor: 'transparent',
+            const data = [trace_surface, trace_moisture, trace_wall_s, trace_wall_n, trace_wall_w, trace_wall_e];
+
+            // Configuración del espacio (Cámara y perspectivas copiadas exactamente de tu script original)
+            const layout = {
+                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+                margin: { l: 0, r: 0, b: 0, t: 0 },
+                hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
-                    xaxis: { visible: false }, yaxis: { visible: false }, zaxis: { visible: false },
-                    camera: { eye: {x: 1.3, y: -1.6, z: 0.6} },
-                    aspectratio: {x: 1, y: 1, z: 0.9} 
+                    camera: { eye: { x: 1.4, y: -1.6, z: 0.8 } }, 
+                    xaxis: { visible: false, showgrid: false, zeroline: false },
+                    yaxis: { visible: false, showgrid: false, zeroline: false },
+                    zaxis: { visible: false, showgrid: false, zeroline: false },
+                    aspectratio: { x: 1, y: 1, z: 0.5 }, 
+                    annotations: [] 
                 }
             };
 
             Plotly.purge('soilGemeloVolumetrico');
-            Plotly.newPlot('soilGemeloVolumetrico', [trace_campo, trace_hum, trace_pared_sur, trace_pared_norte], layout_cubo, {responsive: true, displayModeBar: false});
+            Plotly.newPlot('soilGemeloVolumetrico', data, layout, {responsive: true, displayModeBar: false});
+
+            // Motor Interactivo de Banderas al Clic
+            const miGrafico = document.getElementById('soilGemeloVolumetrico');
+            miGrafico.removeAllListeners('plotly_click'); // Evita eventos duplicados
+            miGrafico.on('plotly_click', function(datosEvento) {
+                const punto = datosEvento.points[0];
+                const nombreCapa = punto.data.name;
+                if (nombreCapa === undefined || (!nombreCapa.includes('Perfil') && !nombreCapa.includes('Superficie'))) return;
+
+                let mensaje = "";
+                let colorBorde = "#38bdf8";
+                let colorFondo = "rgba(15, 23, 42, 0.85)";
+
+                if (nombreCapa.includes('Superficie')) {
+                    mensaje = `<b>PUNTO SUPERFICIAL</b><br>Elevación: ${punto.z.toFixed(2)} m`;
+                    colorBorde = "#10b981";
+                } else if (nombreCapa.includes('Perfil')) {
+                    const hum = punto.surfacecolor;
+                    let estado = "Óptimo";
+                    // Usa los parámetros reales de suelo si existen
+                    let limitePMP = parametros_suelo ? parametros_suelo.PMP + 0.05 : 0.25;
+                    let limiteCC = parametros_suelo ? parametros_suelo.CC - 0.05 : 0.40;
+                    
+                    if (hum < limitePMP) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
+                    else if (hum > limiteCC) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
+                    
+                    mensaje = `<b>PERFIL PROFUNDO</b><br>Agua Útil: ${(hum * 100).toFixed(0)}%<br>${estado}`;
+                }
+
+                const nuevaBandera = {
+                    showarrow: true, x: punto.x, y: punto.y, z: punto.z,
+                    ax: 0, ay: -80, text: mensaje, font: { color: 'white', size: 12 },
+                    bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6,
+                    arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
+                };
+                Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]});
+            });
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
@@ -814,7 +874,7 @@
                     ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); 
                     abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); 
                     
-                    // ESTO NO SE TOCÓ: MANTIENE TUS GRÁFICOS INTACTOS Y CRUDOS
+                    // GRÁFICOS INTACTOS
                     renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
 
                     let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
@@ -824,9 +884,6 @@
             } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
 
-        // =====================================================================
-        // TUS GRÁFICOS ORIGINALES (HEATMAP INTACTO Y LÍNEAS CRUDAS)
-        // =====================================================================
         function renderizarGraficos(datos, params) {
             const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
             if(chartObjAgro) chartObjAgro.destroy();
