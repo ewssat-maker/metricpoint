@@ -128,12 +128,11 @@
         .tab-btn.active { color: #08306b; border-bottom: 3px solid #08306b; margin-bottom: -2px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        
-        /* Controles Geo3D */
+
+        /* Controles de Solapas 3D */
         .gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
         .gemelo-control-panel label { margin: 0; font-size: 14px; font-weight: bold; }
         .gemelo-control-panel select, .gemelo-control-panel input { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; font-weight: bold; cursor: pointer; }
-
     </style>
 </head>
 <body>
@@ -177,7 +176,7 @@
             </div>
             <div class="modal-body">
                 <h4 data-i18n="priv_h1">1. Información que recopilamos</h4>
-                <p data-i18n="priv_p1">Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para calcular los balances hídricos.</p>
+                <p data-i18n="priv_p1">Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.</p>
                 <h4 data-i18n="priv_h2">2. Compartición con Terceros</h4>
                 <p data-i18n="priv_p2">MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.</p>
                 <h4 data-i18n="priv_h3">3. Derechos del Usuario</h4>
@@ -369,7 +368,7 @@
                     </div>
                     <div id="tabClima" class="tab-content"><div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div></div>
                     
-                    <!-- PERFIL 3D RESTAURADO (INTACTO COMO ANTES) -->
+                    <!-- PERFIL 3D DE CAMPAÑA RESTAURADO (INTACTO COMO ANTES) -->
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
                     <!-- RADIOGRAFÍA ESPACIAL ORIGINAL -->
@@ -395,17 +394,17 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (BETA) DISEÑO SPLIT (Controles a la derecha) -->
+                    <!-- GEMELO VOLUMÉTRICO (BETA) DISEÑO SPLIT FINAL -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div style="display: flex; flex-direction: row; background-color: #020617; border: 2px solid #1e293b; border-radius: 8px; overflow: hidden; height: 600px;">
                             
-                            <!-- Lado Izquierdo: Modelo 3D con ZOOM y Escala Despegada -->
+                            <!-- Lado Izquierdo: Modelo 3D con ZOOM INMENSO -->
                             <div style="flex-grow: 1; position: relative;">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
                                 <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; pointer-events: none; backdrop-filter: blur(4px);">👆 Haz clic en el perfil para fijar una sonda. Clic fuera para quitarla.</div>
                             </div>
                             
-                            <!-- Lado Derecho: Controles y Resultados (La barra azul que pediste) -->
+                            <!-- Lado Derecho: Controles y Resultados -->
                             <div style="width: 320px; background: #0f172a; border-left: 2px solid #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">FECHA A CONSULTAR:</label>
@@ -673,7 +672,10 @@
         }
 
         // =====================================================================
-        // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - Corrección de Escala Despegada
+        // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - CORRECCIÓN DEFINITIVA
+        // - Escala perimetral separada
+        // - Zoom INTENSO 
+        // - Clics seguros usando relayout() para no perder la rotación manual
         // =====================================================================
         window.ultimoDatoCalculado = null; 
         window.gemeloDataPlot = null;
@@ -791,7 +793,8 @@
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
                 colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
-                colorbar: { title: 'Agua Útil<br>(V/V)', x: 0.95, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
+                // AQUÍ: ESCALA PEGADA AL MARGEN DERECHO (x: 1.15 tira la escala fuera del contenedor visual)
+                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil -${profundidadSeleccionada} cm`,
                 hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
@@ -799,12 +802,13 @@
             window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
             if (profundidadSeleccionada == "0") window.gemeloDataPlot = [trace_moisture, trace_skirt]; 
 
+            // --- ZOOM INTENSO Y MARGEN PARA LA ESCALA DE COLOR ---
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-                margin: { l: 0, r: 0, b: 0, t: 0 }, 
+                margin: { l: 0, r: 120, b: 0, t: 0 }, // 120px DE MARGEN DERECHO EXCLUSIVO PARA LA ESCALA
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
-                    camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
+                    camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } }, // MÁS ZOOM
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, 
@@ -814,41 +818,48 @@
                 }
             };
 
-            Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
+            // Usar newPlot para renderizar la capa limpia
+            Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
 
+            // FIX DEL CRASH Y ROTACIÓN: Usar relayout() solo para las anotaciones, sin tocar la cámara
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
             
-            if (!miGrafico.hasAttribute('data-click-bound')) {
-                miGrafico.on('plotly_click', function(datosEvento) {
-                    if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
-                    const punto = datosEvento.points[0];
-                    const nombreCapa = punto.data.name;
-                    if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
-                        window.gemeloLayout.scene.annotations = [];
-                        Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout);
-                        return;
-                    }
-                    let mensaje = ""; let colorBorde = "#38bdf8"; let colorFondo = "rgba(15, 23, 42, 0.85)";
-                    if (nombreCapa.includes('Superficie')) {
-                        mensaje = `<b>PUNTO SUPERFICIAL</b><br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
-                        colorBorde = "#10b981"; 
-                    } else if (nombreCapa.includes('Perfil')) {
-                        const hum = punto.surfacecolor; let estado = "Óptimo";
-                        let pmp = window.parametrosSimulacion ? window.parametrosSimulacion.PMP : 0.15;
-                        let cc = window.parametrosSimulacion ? window.parametrosSimulacion.CC : 0.35;
-                        if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
-                        else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
-                        mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
-                    }
-                    const nuevaBandera = {
-                        showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
-                        font: { color: 'white', size: 12 }, bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
-                    };
-                    window.gemeloLayout.scene.annotations = [nuevaBandera];
-                    Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout);
-                });
-                miGrafico.setAttribute('data-click-bound', 'true');
-            }
+            // Destruir oyentes viejos para evitar el loop infinito (fuga de memoria)
+            miGrafico.removeAllListeners('plotly_click');
+            
+            miGrafico.on('plotly_click', function(datosEvento) {
+                if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
+                const punto = datosEvento.points[0];
+                const nombreCapa = punto.data.name;
+                
+                // Si toca fuera o en la falda, limpia la bandera (SOLO USA RELAYOUT, no REACT)
+                if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
+                    Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': []});
+                    return;
+                }
+
+                let mensaje = ""; let colorBorde = "#38bdf8"; let colorFondo = "rgba(15, 23, 42, 0.85)";
+                
+                if (nombreCapa.includes('Superficie')) {
+                    mensaje = `<b>PUNTO SUPERFICIAL</b><br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
+                    colorBorde = "#10b981"; 
+                } else if (nombreCapa.includes('Perfil')) {
+                    const hum = punto.surfacecolor; let estado = "Óptimo";
+                    let pmp = window.parametrosSimulacion ? window.parametrosSimulacion.PMP : 0.15;
+                    let cc = window.parametrosSimulacion ? window.parametrosSimulacion.CC : 0.35;
+                    if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
+                    else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
+                    mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
+                }
+
+                const nuevaBandera = {
+                    showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
+                    font: { color: 'white', size: 12 }, bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
+                };
+                
+                // Actualización LIGERA: no resetea la cámara, no traba el navegador
+                Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]});
+            });
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
@@ -923,6 +934,7 @@
             } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
 
+        // --- RESTAURACIÓN DEL GRÁFICO 3D ORIGINAL DEL PERFIL DE HUMEDAD ---
         function renderizarGraficos(datos, params) {
             const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
             
