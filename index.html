@@ -402,7 +402,7 @@
                         </div>
                     </div>
 
-                    <!-- NUEVO GEMELO VOLUMÉTRICO (BETA) ARREGLADO -->
+                    <!-- NUEVO GEMELO VOLUMÉTRICO (BETA) ARREGLADO DEFINITIVO -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <!-- CAJA DE CONSULTA MUDADA AQUÍ -->
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 15px;">
@@ -505,7 +505,7 @@
                 "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>"
             },
             es: {
-                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
+                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronômico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
                 "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (48 Horas Gratis)",
                 "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "lbl_and": " y la ", "lbl_priv": "Política de Privacidad", "msg_tyc_req": "Debes aceptar los términos legales para registrarte.",
                 "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
@@ -680,6 +680,8 @@
         // - Clics seguros sin colapsar memoria
         // =====================================================================
         window.ultimoDatoCalculado = null; 
+        window.gemeloDataPlot = null;
+        window.gemeloLayout = null;
 
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -721,8 +723,9 @@
 
             let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
             let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
 
-            // 1. LA FALDA DE TIERRA (Borde exacto)
+            // 1. LA FALDA DE TIERRA (Borde exacto recortado)
             let periX = [], periY = [], periZ_top = [], periZ_bot = [], periC = [];
             for(let k = 0; k < poly.length; k++) {
                 let pt = poly[k];
@@ -735,7 +738,8 @@
                 let baseZ = 8 + (cotaNorm * 4); 
                 let surco = Math.sin(py * 2) * 0.2; 
                 
-                periX.push(px); periY.push(py);
+                periX.push(px); 
+                periY.push(py);
                 periZ_top.push(baseZ + surco - visualOffset); // Techo en la capa elegida
                 periZ_bot.push(-2); // Fondo fijo profundo
                 periC.push(0);
@@ -745,7 +749,7 @@
             const trace_skirt = {
                 x: [periX, periX], y: [periY, periY], z: [periZ_top, periZ_bot],
                 surfacecolor: [periC, periC], type: 'surface',
-                colorscale: [[0, '#3e2723'], [1, '#4e342e']], // COLOR TIERRA MARRÓN OSCURO REALISTA
+                colorscale: [[0, '#2c1e16'], [1, '#2c1e16']], // COLOR TIERRA OSCURA
                 showscale: false, hoverinfo: 'none', name: 'Bloque Profundo'
             };
 
@@ -789,54 +793,54 @@
             const trace_surface = {
                 x: plotX, y: plotY, z: z_surf, surfacecolor: color_surf, type: 'surface',
                 colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']], 
-                showscale: false, opacity: 0.8, lighting: { ambient: 0.6, diffuse: 0.9 },
+                showscale: false, opacity: 0.9, lighting: { ambient: 0.6, diffuse: 0.9 },
                 name: 'Superficie (0 cm)', hovertemplate: "<b>Lote Superficial</b><extra></extra>"
             };
 
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
-                colorscale: [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']], 
-                cmin: globalMin, cmax: globalMax,
-                // ESCALA PEGADA A LA DERECHA (x: 1.05) Y SEPARADA DEL MODELO
+                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
+                // ESCALA BIEN A LA DERECHA Y DESPEGADA
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.05, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil -${profundidadSeleccionada} cm`,
                 hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
 
-            let data_plot = [trace_surface, trace_moisture, trace_skirt];
-            if (profundidadSeleccionada == "0") data_plot = [trace_moisture, trace_skirt];
+            window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
+            if (profundidadSeleccionada == "0") window.gemeloDataPlot = [trace_moisture, trace_skirt]; 
 
-            // --- BLOQUEO DE TAMAÑO (RANGE Z) PARA QUE NO SALTE AL CAMBIAR DE CAPA ---
-            const layout = {
+            // --- ZOOM, BLOQUEO DE TAMAÑO (RANGE) Y MARGEN PARA LA ESCALA ---
+            window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-                margin: { l: 0, r: 80, b: 0, t: 0 }, // Margen derecho 80 para darle lugar a la escala
+                margin: { l: 0, r: 80, b: 0, t: 0 }, // Margen para la escala
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
-                    camera: { eye: { x: 1.4, y: -1.6, z: 0.8 } }, 
+                    camera: { eye: { x: 1.0, y: -1.2, z: 0.5 } }, // MÁS ZOOM
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-1, gridSize] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-1, gridSize] }, 
-                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, // <- AQUÍ ESTÁ EL SECRETO
+                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, // FIJA LA CÁMARA PARA QUE NO SALTE
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.5 }, 
                     annotations: [] 
                 }
             };
 
-            Plotly.react('soilGemeloVolumetrico', data_plot, layout, {responsive: true, displayModeBar: false});
+            Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
 
             // FIX: EVENTO CLIC ÚNICO Y SEGURO PARA NO COLGAR EL NAVEGADOR
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
             
-            if (!miGrafico._hasClickListener) {
+            if (!miGrafico.hasAttribute('data-click-bound')) {
                 miGrafico.on('plotly_click', function(datosEvento) {
                     if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
                     
                     const punto = datosEvento.points[0];
                     const nombreCapa = punto.data.name;
                     
-                    // Si toca la "falda" oscura de tierra, limpiamos todas las banderas de la pantalla
-                    if (!nombreCapa || (!nombreCapa.includes('Perfil') && !nombreCapa.includes('Superficie'))) {
-                        Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': []}).catch(e=>{});
+                    // Clic fuera o en la falda limpia la pantalla
+                    if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
+                        window.gemeloLayout.scene.annotations = [];
+                        Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout);
                         return;
                     }
 
@@ -850,8 +854,8 @@
                     } else if (nombreCapa.includes('Perfil')) {
                         const hum = punto.surfacecolor;
                         let estado = "Óptimo";
-                        let pmp = parametros_suelo ? parametros_suelo.PMP : 0.15;
-                        let cc = parametros_suelo ? parametros_suelo.CC : 0.35;
+                        let pmp = window.parametrosSimulacion ? window.parametrosSimulacion.PMP : 0.15;
+                        let cc = window.parametrosSimulacion ? window.parametrosSimulacion.CC : 0.35;
                         
                         if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
                         else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
@@ -860,14 +864,17 @@
                     }
 
                     const nuevaBandera = {
-                        showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
+                        showarrow: true, x: punto.x, y: punto.y, z: punto.z,
+                        ax: 0, ay: -80, text: mensaje,
                         font: { color: 'white', size: 12 }, bgcolor: colorFondo,
-                        bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
+                        bordercolor: colorBorde, borderwidth: 2, borderpad: 6,
+                        arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
                     };
 
-                    Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]}).catch(e=>{});
+                    window.gemeloLayout.scene.annotations = [nuevaBandera];
+                    Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout);
                 });
-                miGrafico._hasClickListener = true;
+                miGrafico.setAttribute('data-click-bound', 'true');
             }
         }
 
