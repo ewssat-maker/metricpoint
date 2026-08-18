@@ -154,7 +154,7 @@
         </select>
     </div>
 
-    <!-- MODALES LEGALES -->
+    <!-- MODAL TÉRMINOS -->
     <div id="modalTyC" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -176,6 +176,7 @@
         </div>
     </div>
 
+    <!-- MODAL PRIVACIDAD -->
     <div id="modalPrivacidad" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -535,7 +536,7 @@
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
                 "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (48 Horas Grátis)",
                 "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "lbl_and": " e a ", "lbl_priv": "Política de Privacidade", "msg_tyc_req": "Você deve aceitar os termos legais para se registrar.",
-                "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a este termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
+                "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
                 "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema."
             }
         };
@@ -642,7 +643,7 @@
         }
 
         // =====================================================================
-        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA) -> INTACTO
+        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA)
         // =====================================================================
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
             let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
@@ -674,7 +675,9 @@
 
         // =====================================================================
         // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - CORRECCIÓN DEFINITIVA
-        // - Zoom mejorado, escala perimetral despejada, bloque recortado, cero cuelgues.
+        // - Escala perimetral separada
+        // - Zoom INTENSO 
+        // - Clics seguros sin colapsar memoria
         // =====================================================================
         window.ultimoDatoCalculado = null; 
         window.gemeloDataPlot = null;
@@ -689,7 +692,7 @@
 
             const gridSize = 50; 
             let realX = [], realY = [];
-            let plotX = [], plotY = []; // Coordenadas normalizadas 0-50
+            let plotX = [], plotY = []; 
 
             for(let i=0; i<gridSize; i++) {
                 realX.push(minX + (maxX-minX)*(i/(gridSize-1)));
@@ -737,8 +740,8 @@
                 
                 periX.push(px); 
                 periY.push(py);
-                periZ_top.push(baseZ + surco - visualOffset); // Techo en la capa elegida
-                periZ_bot.push(-2); // Fondo fijo profundo
+                periZ_top.push(baseZ + surco - visualOffset); 
+                periZ_bot.push(-2); 
                 periC.push(0);
             }
             periX.push(periX[0]); periY.push(periY[0]); periZ_top.push(periZ_top[0]); periZ_bot.push(periZ_bot[0]); periC.push(0);
@@ -746,7 +749,7 @@
             const trace_skirt = {
                 x: [periX, periX], y: [periY, periY], z: [periZ_top, periZ_bot],
                 surfacecolor: [periC, periC], type: 'surface',
-                colorscale: [[0, '#2c1e16'], [1, '#2c1e16']], // COLOR TIERRA OSCURA
+                colorscale: [[0, '#2c1e16'], [1, '#2c1e16']], 
                 showscale: false, hoverinfo: 'none', name: 'Bloque Profundo'
             };
 
@@ -762,7 +765,6 @@
                         let cotaReal = getRelieveZ(realX[i], realY[j]);
                         let cotaNorm = (cotaReal - minCota) / rangoCota;
 
-                        // Superficie Normalizada (Campo)
                         let baseZ = 8 + (cotaNorm * 4); 
                         let surco = Math.sin(j * 2) * 0.2; 
                         let c_val = surco > 0 ? 1 : 0.2;
@@ -770,7 +772,6 @@
                         r_surf.push(baseZ + surco);
                         c_surf.push(c_val);
 
-                        // Humedad Real (Se mueve en Z según offset)
                         r_moist.push(baseZ + surco - visualOffset);
                         let factorAgua = (0.5 - cotaNorm); 
                         let humedadLocal = humedadBase + (factorAgua * 0.15);
@@ -797,8 +798,8 @@
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
                 colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
-                // ESCALA BIEN A LA DERECHA Y DESPEGADA (x: 0.99, xanchor: right)
-                colorbar: { title: 'Agua Útil<br>(V/V)', x: 0.99, xanchor: 'right', y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
+                // AQUÍ: x: 1.15 tira la escala a la derecha absoluta del bloque.
+                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil -${profundidadSeleccionada} cm`,
                 hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
@@ -806,16 +807,16 @@
             window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
             if (profundidadSeleccionada == "0") window.gemeloDataPlot = [trace_moisture, trace_skirt]; 
 
-            // --- ZOOM, BLOQUEO DE TAMAÑO (RANGE) Y MARGEN ---
+            // --- AQUÍ SE LE DA EL MARGEN DERECHO EXCLUSIVO A LA ESCALA DE 120PX Y MUCHO MÁS ZOOM ---
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-                margin: { l: 0, r: 0, b: 0, t: 0 }, // Margen en cero, la escala se pega al perímetro usando x: 0.99
+                margin: { l: 0, r: 120, b: 0, t: 0 }, 
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
-                    camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } }, // <--- MÁS ZOOM COMO PEDISTE
+                    camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } }, // ZOOM INTENSO
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
-                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, // FIJA LA CÁMARA PARA QUE NO SALTE
+                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, 
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.5 }, 
                     annotations: [] 
@@ -824,7 +825,6 @@
 
             Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
 
-            // FIX: EVENTO CLIC ÚNICO Y SEGURO PARA NO COLGAR EL NAVEGADOR
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
             
             if (!miGrafico.hasAttribute('data-click-bound')) {
@@ -834,7 +834,6 @@
                     const punto = datosEvento.points[0];
                     const nombreCapa = punto.data.name;
                     
-                    // Clic fuera o en la falda limpia la pantalla (quita la bandera)
                     if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
                         window.gemeloLayout.scene.annotations = [];
                         Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout);
@@ -880,9 +879,6 @@
             construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, window.parametrosSimulacion, window.topografiaLote, profundidad);
         }
 
-        // =====================================================================
-        // FUNCIÓN GLOBAL DE FECHAS (Cajas mudadas dentro de las solapas)
-        // =====================================================================
         function consultarFechaGlobal(inputId) {
             const fecha = document.getElementById(inputId).value;
             if (!fecha || window.datosSimulacion.length === 0) return alert("Seleccione una fecha válida.");
@@ -891,28 +887,23 @@
             if (dato) {
                 window.ultimoDatoCalculado = dato;
                 
-                // Actualizar etiquetas en Radiografía 3D (Solapa Clásica)
                 document.getElementById('rG_10').innerText = dato.Humedad_10cm.toFixed(3);
                 document.getElementById('rG_30').innerText = dato.Humedad_30cm.toFixed(3);
                 document.getElementById('rG_60').innerText = dato.Humedad_60cm.toFixed(3);
                 document.getElementById('rG_100').innerText = dato.Humedad_100cm.toFixed(3);
                 document.getElementById('rG_et0').innerText = dato.ET0.toFixed(1);
                 
-                // Actualizar etiquetas en Gemelo Beta (Solapa Nueva)
                 document.getElementById('rB_10').innerText = dato.Humedad_10cm.toFixed(3);
                 document.getElementById('rB_30').innerText = dato.Humedad_30cm.toFixed(3);
                 document.getElementById('rB_60').innerText = dato.Humedad_60cm.toFixed(3);
                 document.getElementById('rB_100').innerText = dato.Humedad_100cm.toFixed(3);
 
-                // Mostrar las barras de resultados
                 document.getElementById('resGeo3D').style.display = 'block'; 
                 document.getElementById('resGemelo').style.display = 'block';
                 
-                // Sincronizar ambas cajas de fecha
                 document.getElementById('fechaConsultaGeo3D').value = fecha;
                 document.getElementById('fechaConsultaGemelo').value = fecha;
                 
-                // Disparar Renderizados
                 renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); 
                 let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
                 construirGemeloVolumetricoInteractiva(dato, window.parametrosSimulacion, window.topografiaLote, profPorDefecto);
@@ -940,7 +931,6 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
-                    // --- RECUPERADO: INICIO CON DATOS REALES ---
                     let valorRealInicio = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm;
                     let diasTransicion = Math.min(30, jsonResponse.data.length);
                     for(let i = 0; i < diasTransicion; i++) {
@@ -949,7 +939,6 @@
                         jsonResponse.data[i].Humedad_60cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
                         jsonResponse.data[i].Humedad_100cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
                     }
-                    // ------------------------------------------------------
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
@@ -961,72 +950,34 @@
                     ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); 
                     abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); 
                     
-                    // GRÁFICOS INTACTOS Y RESTAURADOS
                     renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
 
-                    // Poblar las cajas de fecha con el último día simulado
                     let uF = window.ultimoDatoCalculado.timestamp;
                     document.getElementById('fechaConsultaGeo3D').value = uF;
                     document.getElementById('fechaConsultaGemelo').value = uF;
-                    consultarFechaGlobal('fechaConsultaGemelo'); // Activa todo visualmente
+                    consultarFechaGlobal('fechaConsultaGemelo'); 
 
                 } else { document.getElementById('status').innerText = 'Error: ' + jsonResponse.error; }
             } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
 
-        // --- RESTAURACIÓN PURA DEL GRÁFICO 3D ORIGINAL DEL PERFIL DE HUMEDAD ---
         function renderizarGraficos(datos, params) {
-            const fechas = datos.map(a => a.timestamp); 
-            const lluvia = datos.map(a => a.Lluvia);
-            const et0 = datos.map(a => a.ET0);
-            const fisio = datos.map(a => a.Modelo_Fisiologico);
-            const g = datos.map(a => a.RVI_Crudo);
-            const h = datos.map(a => a.Proxy_Humedad); 
-            const i = datos.map(a => a.Humedad_10cm);
-            const j = datos.map(a => a.Humedad_30cm);
-            const k = datos.map(a => a.Humedad_60cm);
-            const l = datos.map(a => a.Humedad_100cm); 
-            const m = params ? params.CC : .3;
-            const n = params ? params.PMP : .15;
-
-            // 1. Gráfico de Líneas Agronomía
+            const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
+            
             if(chartObjAgro) chartObjAgro.destroy();
-            chartObjAgro = new Chart(document.getElementById("chartAgro").getContext("2d"), { 
-                type: 'line', data: { labels: fechas, datasets: [ { label: 'SAR Moisture', data: h, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yHumedad' }, { label: 'RVI Vigor', data: g, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yVigor' }, { label: 'Ideal Model', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: .4, yAxisID: 'yVigor' } ] }, options: { responsive: !0, plugins: { legend: { labels: { usePointStyle: !0, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: !0, position: 'left', min: 0, max: .55 }, yVigor: { type: 'linear', display: !0, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: !1 } } } }, plugins: [customCanvasBg] 
-            });
+            chartObjAgro = new Chart(document.getElementById("chartAgro").getContext("2d"), { type: 'line', data: { labels: fechas, datasets: [ { label: 'SAR Moisture', data: h, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yHumedad' }, { label: 'RVI Vigor', data: g, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yVigor' }, { label: 'Ideal Model', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: .4, yAxisID: 'yVigor' } ] }, options: { responsive: !0, plugins: { legend: { labels: { usePointStyle: !0, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: !0, position: 'left', min: 0, max: .55 }, yVigor: { type: 'linear', display: !0, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: !1 } } } }, plugins: [customCanvasBg] });
             
-            // 2. Gráfico Clima
             if(chartObjClima) chartObjClima.destroy();
-            chartObjClima = new Chart(document.getElementById("chartClima").getContext("2d"), { 
-                type: 'line', data: { labels: fechas, datasets: [ { type: 'bar', label: 'Rain (mm)', data: lluvia, backgroundColor: '#1f77b4', yAxisID: 'yLluvia', order: 3 }, { type: 'line', label: 'ET0 (mm/day)', data: et0, borderColor: '#ff7f0e', borderWidth: 2, borderDash: [3, 3], pointRadius: 0, tension: .3, yAxisID: 'yLluvia', order: 2 }, { type: 'line', label: 'RVI Context', data: g, borderColor: 'rgba(44, 160, 44, 0.5)', borderWidth: 2, pointRadius: 0, tension: .2, spanGaps: !0, yAxisID: 'yVigor', order: 1, fill: !0, backgroundColor: 'rgba(44, 160, 44, 0.1)' } ] }, options: { responsive: !0, plugins: { legend: { labels: { usePointStyle: !0, boxWidth: 10 } } }, scales: { yLluvia: { type: 'linear', display: !0, position: 'left', min: 0, suggestedMax: 100 }, yVigor: { type: 'linear', display: !0, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: !1 } } } }, plugins: [customCanvasBg] 
-            });
+            chartObjClima = new Chart(document.getElementById("chartClima").getContext("2d"), { type: 'line', data: { labels: fechas, datasets: [ { type: 'bar', label: 'Rain (mm)', data: lluvia, backgroundColor: '#1f77b4', yAxisID: 'yLluvia', order: 3 }, { type: 'line', label: 'ET0 (mm/day)', data: et0, borderColor: '#ff7f0e', borderWidth: 2, borderDash: [3, 3], pointRadius: 0, tension: .3, yAxisID: 'yLluvia', order: 2 }, { type: 'line', label: 'RVI Context', data: g, borderColor: 'rgba(44, 160, 44, 0.5)', borderWidth: 2, pointRadius: 0, tension: .2, spanGaps: !0, yAxisID: 'yVigor', order: 1, fill: !0, backgroundColor: 'rgba(44, 160, 44, 0.1)' } ] }, options: { responsive: !0, plugins: { legend: { labels: { usePointStyle: !0, boxWidth: 10 } } }, scales: { yLluvia: { type: 'linear', display: !0, position: 'left', min: 0, suggestedMax: 100 }, yVigor: { type: 'linear', display: !0, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: !1 } } } }, plugins: [customCanvasBg] });
             
-            // Lógica de Escalas para mapas de calor/3D
             const o = Math.max(0, n - .03); const p = m + .05; const q = (p - o) / 10;
-            let r = [], s = []; 
-            for (let a = 0; a <= 5; a++) { 
-                let b = o + a * (p - o) / 5; r.push(b); s.push(`${b.toFixed(2)} (${(b * 100).toFixed(0)}%)`); 
-            }
+            let r = [], s = []; for (let a = 0; a <= 5; a++) { let b = o + a * (p - o) / 5; r.push(b); s.push(`${b.toFixed(2)} (${(b * 100).toFixed(0)}%)`); }
             const t = [[0, "#d7191c"], [.25, "#fdae61"], [.5, "#ffffbf"], [.75, "#abdda4"], [1, "#2b83ba"]];
             
-            // 3. Mapa de Calor (Heatmap)
-            var u = [{ 
-                z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], 
-                type: 'contour', colorscale: t, zmin: o, zmax: p, 
-                contours: { coloring: 'fill', showlines: !0, start: o, end: p, size: q }, 
-                colorbar: { title: 'Moisture', thickness: 15, tickvals: r, ticktext: s } 
-            }]; 
-            Plotly.newPlot('soilHeatmap', u, {
-                margin: { t: 20, b: 50, l: 90, r: 40 }, 
-                yaxis: { title: 'Depth', tickvals: [0, -10, -30, -60, -100], ticktext: ["Surface", "-10 cm", "-30 cm", "-60 cm", "-100 cm"] }
-            }, {responsive: !0});
+            var u = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour', colorscale: t, zmin: o, zmax: p, contours: { coloring: 'fill', showlines: !0, start: o, end: p, size: q }, colorbar: { title: 'Moisture', thickness: 15, tickvals: r, ticktext: s } }]; Plotly.newPlot('soilHeatmap', u, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Depth', tickvals: [0, -10, -30, -60, -100], ticktext: ["Surface", "-10 cm", "-30 cm", "-60 cm", "-100 cm"] }}, {responsive: !0});
             
-            // 4. MODELO 3D DE CAMPAÑA (RESTAURADO A SU ESTADO ORIGINAL)
-            var v = [{ 
-                z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], 
-                type: 'surface', colorscale: t, cmin: o, cmax: p, 
-                colorbar: { title: 'm³/m³', thickness: 15, tickvals: r, ticktext: s } 
-            }]; 
+            // --- GRÁFICO 3D DE CAMPAÑA RESTAURADO (INTACTO COMO ANTES) ---
+            var v = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: t, cmin: o, cmax: p, colorbar: { title: 'm³/m³', thickness: 15, tickvals: r, ticktext: s } }]; 
             Plotly.newPlot('soil3D', v, {
                 margin: { l: 0, r: 0, b: 0, t: 30 }, 
                 scene: { 
