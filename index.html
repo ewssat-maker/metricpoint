@@ -111,18 +111,16 @@
 
         #status { margin-top: 15px; font-size: 13px; font-weight: bold; color: #d73027; }
         
-        .soil-card, .climate-card, .query-card, .ingesta-card { margin-top: 15px; padding: 15px; border-radius: 6px; display: none; }
+        .soil-card, .climate-card, .ingesta-card { margin-top: 15px; padding: 15px; border-radius: 6px; display: none; }
         .soil-card { background: #f0f9e8; border: 1px solid #ccece6; }
         .climate-card { background: #e0f3db; border: 1px solid #a8ddb5; }
-        .query-card { background: #fff5eb; border: 1px solid #fd8d3c; }
         .ingesta-card { display: block; padding: 12px; background: #f7f7f7; border: 1px dashed #08306b; }
         
-        .soil-card h4, .climate-card h4, .query-card h4, .ingesta-card h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid; padding-bottom: 5px; font-size: 15px;}
+        .soil-card h4, .climate-card h4, .ingesta-card h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid; padding-bottom: 5px; font-size: 15px;}
         .soil-card h4 { color: #0868ac; border-color: #ccece6; }
         .climate-card h4 { color: #2b8cbe; border-color: #a8ddb5;}
-        .query-card h4 { color: #d94801; border-color: #fd8d3c;}
         .ingesta-card h4 { color: #08306b; border: none;}
-        .soil-card p, .climate-card p, .query-card p, .ingesta-card p { margin: 6px 0; font-size: 13px; color: #333;}
+        .soil-card p, .climate-card p, .ingesta-card p { margin: 6px 0; font-size: 13px; color: #333;}
 
         .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; display: none; }
         .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; }
@@ -132,11 +130,11 @@
         .tab-content.active { display: block; }
 
         /* ==========================================
-           CONTROLES DEL GEMELO DIGITAL BETA
+           CONTROLES 3D INTRA-SOLAPA
            ========================================== */
         .gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
-        .gemelo-control-panel label { color: #10b981; margin: 0; font-size: 14px; font-weight: bold; }
-        .gemelo-control-panel select { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; cursor: pointer; }
+        .gemelo-control-panel label { margin: 0; font-size: 14px; font-weight: bold; }
+        .gemelo-control-panel select, .gemelo-control-panel input { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; font-weight: bold; cursor: pointer; }
         
         .instruccion-beta {
             position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -348,20 +346,6 @@
                         <p><strong data-i18n="lbl_cc">Field Capacity (CC):</strong> <span id="valCC"></span> m³/m³</p>
                         <p><strong data-i18n="lbl_pmp">Wilting Point (PMP):</strong> <span id="valPMP"></span> m³/m³</p>
                     </div>
-
-                    <div class="query-card" id="infoConsulta">
-                        <h4 data-i18n="lbl_query_prof">Query Profile by Date</h4>
-                        <input type="date" id="fechaConsulta" style="margin-bottom: 10px;">
-                        <button class="btn-secondary" style="width: 100%; margin-top: 0;" onclick="consultarFecha()" data-i18n="btn_scan_3d">Scan 3D Topography</button>
-                        <div id="resultadoConsulta" style="margin-top: 15px; font-size: 13px; color: #333; display: none;">
-                            <p><strong data-i18n="lbl_surf10">Surface (10 cm):</strong> <span id="c_10"></span> m³/m³</p>
-                            <p><strong data-i18n="lbl_sub30">Subsurface (30 cm):</strong> <span id="c_30"></span> m³/m³</p>
-                            <p><strong data-i18n="lbl_root60">Deep Roots (60 cm):</strong> <span id="c_60"></span> m³/m³</p>
-                            <p><strong data-i18n="lbl_res100">Reserve (100 cm):</strong> <span id="c_100"></span> m³/m³</p>
-                            <hr style="border-top: 1px solid #fd8d3c; margin: 10px 0;">
-                            <p style="color: #d94801;"><strong data-i18n="lbl_et0">Evapotranspiration (ET0):</strong> <span id="c_et0"></span> mm/day</p>
-                        </div>
-                    </div>
                     
                     <div class="climate-card" id="infoClima">
                         <h4 data-i18n="lbl_climate_data">Climate Data</h4>
@@ -377,7 +361,7 @@
                         <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
                     </div>
 
-                    <!-- SOLAPAS ORIGINALES + NUEVA SOLAPA BETA -->
+                    <!-- SOLAPAS -->
                     <div class="tabs" id="tabMenu">
                         <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)" data-i18n="tab_moist">Moisture & Vigor</button>
                         <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
@@ -386,7 +370,7 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
 
-                    <!-- PESTAÑAS ORIGINALES (INTACTAS) -->
+                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -394,26 +378,60 @@
                     <div id="tabClima" class="tab-content"><div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div></div>
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
+                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL (INTACTA) -->
                     <div id="tabGeo3D" class="tab-content">
+                        <!-- CAJA DE CONSULTA MUDADA AQUÍ -->
+                        <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
+                            <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                                <label style="color: #38bdf8;">FECHA DE ANÁLISIS (YYYY-MM-DD):</label>
+                                <input type="date" id="fechaConsultaGeo3D" style="border-color:#38bdf8;">
+                                <button class="btn-secondary" style="margin:0; background:#38bdf8; color:#020617; border:none;" onclick="consultarFechaGlobal('fechaConsultaGeo3D')">Cargar Radiografía</button>
+                            </div>
+                            <div id="resGeo3D" style="color: white; font-size: 13px; display: none; width: 100%; border-top: 1px solid #1e293b; padding-top: 10px;">
+                                <strong>Sup:</strong> <span id="rG_10"></span> m³/m³ | 
+                                <strong>Sub:</strong> <span id="rG_30"></span> m³/m³ | 
+                                <strong>Raíz:</strong> <span id="rG_60"></span> m³/m³ | 
+                                <strong>Res:</strong> <span id="rG_100"></span> m³/m³ | 
+                                <span style="color:#f59e0b;"><strong>ET0:</strong> <span id="rG_et0"></span> mm/día</span>
+                            </div>
+                        </div>
+
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
-                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;"><span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span></h4>
+                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;"><span data-i18n="tab_xray">Spatial X-Ray</span></h4>
                             <div id="soilGeo3D" style="width: 100%; height: 100%;"></div>
                         </div>
                     </div>
 
-                    <!-- NUEVA PESTAÑA GEMELO (BETA) ARREGLADA (CUBO CORTADO, TAMAÑO FIJO Y BARRA AL COSTADO) -->
+                    <!-- NUEVO GEMELO VOLUMÉTRICO (BETA) ARREGLADO -->
                     <div id="tabGemeloBeta" class="tab-content">
-                        <div class="gemelo-control-panel">
-                            <label>SELECCIÓN DE CAPA EDÁFICA PROFUNDA:</label>
-                            <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)">
-                                <option value="0">Superficie Terreno (0 cm)</option>
-                                <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
-                                <option value="100">Fondo de Reserva Estructural (-100 cm)</option>
-                            </select>
+                        <!-- CAJA DE CONSULTA MUDADA AQUÍ -->
+                        <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 15px;">
+                            <div style="display:flex; gap:15px; width: 100%; align-items:center;">
+                                <div>
+                                    <label style="color:#10b981;">FECHA A CONSULTAR:</label>
+                                    <input type="date" id="fechaConsultaGemelo" style="border-color:#10b981;">
+                                    <button class="btn-secondary" style="margin:0 0 0 10px; background:#10b981; color:#020617; border:none;" onclick="consultarFechaGlobal('fechaConsultaGemelo')">Cargar Gemelo</button>
+                                </div>
+                                <div>
+                                    <label style="color:#10b981;">SELECCIÓN DE CAPA EDÁFICA:</label>
+                                    <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)" style="border-color:#10b981;">
+                                        <option value="0">Superficie Terreno (0 cm)</option>
+                                        <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
+                                        <option value="100">Fondo de Reserva Estructural (-100 cm)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="resGemelo" style="color: white; font-size: 13px; display: none; width: 100%; border-top: 1px solid #1e293b; padding-top: 10px;">
+                                <strong style="color:#10b981;">Sup:</strong> <span id="rB_10"></span> m³/m³ &nbsp;|&nbsp;
+                                <strong style="color:#10b981;">Sub:</strong> <span id="rB_30"></span> m³/m³ &nbsp;|&nbsp;
+                                <strong style="color:#10b981;">Raíz:</strong> <span id="rB_60"></span> m³/m³ &nbsp;|&nbsp;
+                                <strong style="color:#10b981;">Res:</strong> <span id="rB_100"></span> m³/m³
+                            </div>
                         </div>
+
                         <div class="chart-container" id="contenedorGemeloBeta" style="height: 600px; padding: 0; overflow: hidden; background-color: #020617; border: 2px solid #1e293b; position: relative;">
                             <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
-                            <div class="instruccion-beta">👆 Haz clic en el perfil para fijar una sonda de humedad</div>
+                            <div class="instruccion-beta">👆 Haz clic en el perfil para fijar una sonda. Clic fuera para quitarla.</div>
                         </div>
                     </div>
 
@@ -656,7 +674,10 @@
         }
 
         // =====================================================================
-        // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - Corrección Cubo Negro Flotante
+        // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - CORRECCIÓN DEFINITIVA
+        // - Fondo de tierra irregular pegado a los bordes
+        // - Cámara estática sin saltos (range)
+        // - Clics seguros sin colapsar memoria
         // =====================================================================
         window.ultimoDatoCalculado = null; 
 
@@ -668,9 +689,16 @@
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
             const gridSize = 50; 
-            let plotX = [], plotY = []; 
+            let realX = [], realY = [];
+            let plotX = [], plotY = []; // Coordenadas normalizadas 0-50
 
-            // CÁLCULO DE RELIEVE REAL
+            for(let i=0; i<gridSize; i++) {
+                realX.push(minX + (maxX-minX)*(i/(gridSize-1)));
+                realY.push(minY + (maxY-minY)*(i/(gridSize-1)));
+                plotX.push(i);
+                plotY.push(i);
+            }
+
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) {
                 puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; });
@@ -686,52 +714,42 @@
                 } return sum_z_w / sum_w;
             }
 
-            // DATOS BASE SEGÚN CAPA
+            // Datos y límites visuales
             let humedadBase = dato.Humedad_60cm; let visualOffset = 6; 
             if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; visualOffset = 1; }
             if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; visualOffset = 10; }
 
             let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
             let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
-            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
 
-            // VAMOS A CREAR UNA "FALDA" QUE RODEA EXACTAMENTE EL POLÍGONO
+            // 1. LA FALDA DE TIERRA (Borde exacto)
             let periX = [], periY = [], periZ_top = [], periZ_bot = [], periC = [];
             for(let k = 0; k < poly.length; k++) {
                 let pt = poly[k];
-                // Proyectamos los vértices del polígono al espacio de la grilla 50x50
                 let px = (pt[0] - minX) / (maxX - minX) * (gridSize - 1);
                 let py = (pt[1] - minY) / (maxY - minY) * (gridSize - 1);
                 
                 let cotaReal = getRelieveZ(pt[0], pt[1]);
                 let cotaNorm = (cotaReal - minCota) / rangoCota;
                 
-                let baseZ = 8 + (cotaNorm * 4); // Misma base que el terreno
+                let baseZ = 8 + (cotaNorm * 4); 
                 let surco = Math.sin(py * 2) * 0.2; 
                 
-                periX.push(px); 
-                periY.push(py);
-                periZ_top.push(baseZ + surco - visualOffset); // Techo del cubo se pega a la humedad
-                periZ_bot.push(-2); // Piso del cubo fijo
+                periX.push(px); periY.push(py);
+                periZ_top.push(baseZ + surco - visualOffset); // Techo en la capa elegida
+                periZ_bot.push(-2); // Fondo fijo profundo
                 periC.push(0);
             }
-            // Cerramos el polígono
             periX.push(periX[0]); periY.push(periY[0]); periZ_top.push(periZ_top[0]); periZ_bot.push(periZ_bot[0]); periC.push(0);
 
-            // LA FALDA O MURO PERIMETRAL OSCURO (Recortado perfecto a la geometría)
             const trace_skirt = {
                 x: [periX, periX], y: [periY, periY], z: [periZ_top, periZ_bot],
                 surfacecolor: [periC, periC], type: 'surface',
-                colorscale: [[0, '#0a0a0a'], [1, '#171717']], // Cubo oscuro
+                colorscale: [[0, '#3e2723'], [1, '#4e342e']], // COLOR TIERRA MARRÓN OSCURO REALISTA
                 showscale: false, hoverinfo: 'none', name: 'Bloque Profundo'
             };
 
-            // PREPARAMOS LAS CAPAS SUPERIORES (TERRENO Y HUMEDAD)
-            for(let i=0; i<gridSize; i++) {
-                plotX.push(i);
-                plotY.push(i);
-            }
-
+            // 2. CAPA SUPERFICIAL Y CAPA DE HUMEDAD
             let z_surf = [], color_surf = [];
             let z_moist = [], moist = [], text_moist = [];
 
@@ -739,14 +757,11 @@
                 let r_surf = [], c_surf = [];
                 let r_moist = [], r_m = [], r_t = [];
                 for(let i=0; i<gridSize; i++) {
-                    let rX = minX + (maxX-minX)*(i/(gridSize-1));
-                    let rY = minY + (maxY-minY)*(j/(gridSize-1));
-
-                    if (isPointInPoly([rX, rY], poly)) {
-                        let cotaReal = getRelieveZ(rX, rY);
+                    if (isPointInPoly([realX[i], realY[j]], poly)) {
+                        let cotaReal = getRelieveZ(realX[i], realY[j]);
                         let cotaNorm = (cotaReal - minCota) / rangoCota;
 
-                        // Superficie Normalizada
+                        // Superficie Normalizada (Campo)
                         let baseZ = 8 + (cotaNorm * 4); 
                         let surco = Math.sin(j * 2) * 0.2; 
                         let c_val = surco > 0 ? 1 : 0.2;
@@ -754,7 +769,7 @@
                         r_surf.push(baseZ + surco);
                         c_surf.push(c_val);
 
-                        // Humedad Real
+                        // Humedad Real (Se mueve en Z según offset)
                         r_moist.push(baseZ + surco - visualOffset);
                         let factorAgua = (0.5 - cotaNorm); 
                         let humedadLocal = humedadBase + (factorAgua * 0.15);
@@ -780,80 +795,80 @@
 
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
-                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
-                // CORRECCIÓN BARRA DE COLOR BIEN A LA DERECHA
-                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
+                colorscale: [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']], 
+                cmin: globalMin, cmax: globalMax,
+                // ESCALA PEGADA A LA DERECHA (x: 1.05) Y SEPARADA DEL MODELO
+                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.05, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil -${profundidadSeleccionada} cm`,
                 hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
 
             let data_plot = [trace_surface, trace_moisture, trace_skirt];
-            
-            // Si elige superficie (0cm), no mostramos capa flotante
-            if (profundidadSeleccionada == "0") {
-                data_plot = [trace_moisture, trace_skirt];
-            }
+            if (profundidadSeleccionada == "0") data_plot = [trace_moisture, trace_skirt];
 
-            // --- FIJANDO EL TAMAÑO DE LA IMAGEN Y LA CÁMARA ---
-            // Le agregamos 'camera' base solo para que mantenga el ángulo, pero bloqueamos el auto-escala del eje Z
+            // --- BLOQUEO DE TAMAÑO (RANGE Z) PARA QUE NO SALTE AL CAMBIAR DE CAPA ---
             const layout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-                margin: { l: 0, r: 0, b: 0, t: 0 },
+                margin: { l: 0, r: 80, b: 0, t: 0 }, // Margen derecho 80 para darle lugar a la escala
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
+                    camera: { eye: { x: 1.4, y: -1.6, z: 0.8 } }, 
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-1, gridSize] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-1, gridSize] }, 
-                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, // ESTO IMPIDE QUE SALTE
+                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, // <- AQUÍ ESTÁ EL SECRETO
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.5 }, 
                     annotations: [] 
                 }
             };
-            layout.scene.camera = { eye: { x: 1.4, y: -1.6, z: 0.8 } };
 
             Plotly.react('soilGemeloVolumetrico', data_plot, layout, {responsive: true, displayModeBar: false});
 
-            // FIX DEL CRASH: Evento de clic limpio y único
+            // FIX: EVENTO CLIC ÚNICO Y SEGURO PARA NO COLGAR EL NAVEGADOR
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
-            miGrafico.removeAllListeners('plotly_click'); 
             
-            miGrafico.on('plotly_click', function(datosEvento) {
-                if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
-                
-                const punto = datosEvento.points[0];
-                const nombreCapa = punto.data.name;
-                
-                if (!nombreCapa || (!nombreCapa.includes('Perfil') && !nombreCapa.includes('Superficie'))) return;
-
-                let mensaje = "";
-                let colorBorde = "#38bdf8";
-                let colorFondo = "rgba(15, 23, 42, 0.85)";
-
-                if (nombreCapa.includes('Superficie')) {
-                    mensaje = `<b>PUNTO SUPERFICIAL</b><br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
-                    colorBorde = "#10b981"; 
-                } else if (nombreCapa.includes('Perfil')) {
-                    const hum = punto.surfacecolor;
-                    let estado = "Óptimo";
-                    let pmp = parametros_suelo ? parametros_suelo.PMP : 0.15;
-                    let cc = parametros_suelo ? parametros_suelo.CC : 0.35;
+            if (!miGrafico._hasClickListener) {
+                miGrafico.on('plotly_click', function(datosEvento) {
+                    if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
                     
-                    if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
-                    else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
+                    const punto = datosEvento.points[0];
+                    const nombreCapa = punto.data.name;
                     
-                    mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
-                }
+                    // Si toca la "falda" oscura de tierra, limpiamos todas las banderas de la pantalla
+                    if (!nombreCapa || (!nombreCapa.includes('Perfil') && !nombreCapa.includes('Superficie'))) {
+                        Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': []}).catch(e=>{});
+                        return;
+                    }
 
-                const nuevaBandera = {
-                    showarrow: true, x: punto.x, y: punto.y, z: punto.z,
-                    ax: 0, ay: -80, text: mensaje,
-                    font: { color: 'white', size: 12 }, bgcolor: colorFondo,
-                    bordercolor: colorBorde, borderwidth: 2, borderpad: 6,
-                    arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
-                };
+                    let mensaje = "";
+                    let colorBorde = "#38bdf8";
+                    let colorFondo = "rgba(15, 23, 42, 0.85)";
 
-                Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]}).catch(err => console.log(err));
-            });
+                    if (nombreCapa.includes('Superficie')) {
+                        mensaje = `<b>PUNTO SUPERFICIAL</b><br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
+                        colorBorde = "#10b981"; 
+                    } else if (nombreCapa.includes('Perfil')) {
+                        const hum = punto.surfacecolor;
+                        let estado = "Óptimo";
+                        let pmp = parametros_suelo ? parametros_suelo.PMP : 0.15;
+                        let cc = parametros_suelo ? parametros_suelo.CC : 0.35;
+                        
+                        if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
+                        else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
+                        
+                        mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
+                    }
+
+                    const nuevaBandera = {
+                        showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
+                        font: { color: 'white', size: 12 }, bgcolor: colorFondo,
+                        bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
+                    };
+
+                    Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]}).catch(e=>{});
+                });
+                miGrafico._hasClickListener = true;
+            }
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
@@ -861,24 +876,43 @@
             construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, window.parametrosSimulacion, window.topografiaLote, profundidad);
         }
 
-        function consultarFecha() {
-            const fecha = document.getElementById('fechaConsulta').value;
-            if (!fecha || window.datosSimulacion.length === 0) return alert("Select a date.");
+        // =====================================================================
+        // FUNCIÓN GLOBAL DE FECHAS (Cajas mudadas dentro de las solapas)
+        // =====================================================================
+        function consultarFechaGlobal(inputId) {
+            const fecha = document.getElementById(inputId).value;
+            if (!fecha || window.datosSimulacion.length === 0) return alert("Seleccione una fecha válida.");
+            
             const dato = window.datosSimulacion.find(d => d.timestamp === fecha);
             if (dato) {
                 window.ultimoDatoCalculado = dato;
-                ['10', '30', '60', '100'].forEach(p => document.getElementById('c_'+p).innerText = dato[`Humedad_${p}cm`].toFixed(3));
-                document.getElementById('c_et0').innerText = dato.ET0.toFixed(1);
-                document.getElementById('resultadoConsulta').style.display = 'block'; document.getElementById('contenedorGeo3D').style.display = 'block';
-                document.getElementById('lblFechaGeo3D').innerText = `(Date: ${dato.timestamp})`;
                 
+                // Actualizar etiquetas en Radiografía 3D (Solapa Clásica)
+                document.getElementById('rG_10').innerText = dato.Humedad_10cm.toFixed(3);
+                document.getElementById('rG_30').innerText = dato.Humedad_30cm.toFixed(3);
+                document.getElementById('rG_60').innerText = dato.Humedad_60cm.toFixed(3);
+                document.getElementById('rG_100').innerText = dato.Humedad_100cm.toFixed(3);
+                document.getElementById('rG_et0').innerText = dato.ET0.toFixed(1);
+                
+                // Actualizar etiquetas en Gemelo Beta (Solapa Nueva)
+                document.getElementById('rB_10').innerText = dato.Humedad_10cm.toFixed(3);
+                document.getElementById('rB_30').innerText = dato.Humedad_30cm.toFixed(3);
+                document.getElementById('rB_60').innerText = dato.Humedad_60cm.toFixed(3);
+                document.getElementById('rB_100').innerText = dato.Humedad_100cm.toFixed(3);
+
+                // Mostrar las barras de resultados
+                document.getElementById('resGeo3D').style.display = 'block'; 
+                document.getElementById('resGemelo').style.display = 'block';
+                
+                // Sincronizar ambas cajas de fecha
+                document.getElementById('fechaConsultaGeo3D').value = fecha;
+                document.getElementById('fechaConsultaGemelo').value = fecha;
+                
+                // Disparar Renderizados
                 renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); 
-                
                 let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
                 construirGemeloVolumetricoInteractiva(dato, window.parametrosSimulacion, window.topografiaLote, profPorDefecto);
-                
-                abrirPestana('tabGeo3D', document.getElementById('btnTabGeo3D'));
-            } else alert("Date out of range.");
+            } else alert("Fecha fuera del rango de simulación.");
         }
 
         function generarInforme(datos, params) {
@@ -894,7 +928,7 @@
             if (!poligonoActual) return document.getElementById('status').innerText = 'Error: Draw polygon.';
             const token = localStorage.getItem("metric_token"); if (!token) { document.getElementById("workspace").style.display = "none"; document.getElementById("landingWrapper").style.display = "flex"; return; }
             document.getElementById('status').innerText = 'Simulating...'; document.getElementById('status').style.color = '#08306b';
-            ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoConsulta','infoClima'].forEach(id => document.getElementById(id).style.display = 'none');
+            ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoClima'].forEach(id => document.getElementById(id).style.display = 'none');
             try {
                 const response = await fetch(`${BACKEND_URL}/api/calcular`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value, fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales }) });
                 const jsonResponse = await response.json();
@@ -902,7 +936,7 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
-                    // --- RECUPERADO Y BLINDADO: INICIO CON DATOS REALES ---
+                    // --- RECUPERADO: INICIO CON DATOS REALES ---
                     let valorRealInicio = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm;
                     let diasTransicion = Math.min(30, jsonResponse.data.length);
                     for(let i = 0; i < diasTransicion; i++) {
@@ -914,7 +948,7 @@
                     // ------------------------------------------------------
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
-                    document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3); document.getElementById('infoConsulta').style.display = 'block';
+                    document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
                     let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
                     
                     window.ultimoDatoCalculado = jsonResponse.data[jsonResponse.data.length - 1];
@@ -923,11 +957,13 @@
                     ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); 
                     abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); 
                     
-                    // GRÁFICOS INTACTOS
                     renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
 
-                    let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
-                    construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, window.parametrosSimulacion, window.topografiaLote, profPorDefecto);
+                    // Poblar las cajas de fecha con el último día simulado
+                    let uF = window.ultimoDatoCalculado.timestamp;
+                    document.getElementById('fechaConsultaGeo3D').value = uF;
+                    document.getElementById('fechaConsultaGemelo').value = uF;
+                    consultarFechaGlobal('fechaConsultaGemelo'); // Activa todo visualmente
 
                 } else { document.getElementById('status').innerText = 'Error: ' + jsonResponse.error; }
             } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
