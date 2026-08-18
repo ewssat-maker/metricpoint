@@ -9,81 +9,132 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
 
     <style>
-        /* 1. ESTILOS GLOBALES */
+        /* ==========================================
+           1. ESTILOS GLOBALES & IDIOMAS
+           ========================================== */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; }
+        
         .lang-selector { position: fixed; top: 20px; right: 20px; z-index: 10000; }
         .lang-selector select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b; }
 
-        /* 2. LANDING PAGE & LOGIN */
+        /* ==========================================
+           2. LANDING PAGE & LOGIN
+           ========================================== */
         #landingWrapper { display: flex; flex-direction: column; width: 100vw; background-color: #020617; }
         #authScreen { display: flex; width: 100%; height: 100vh; background-color: #ffffff; }
+
         .auth-left { width: 60%; height: 100%; position: relative; overflow: hidden; background-color: #041d42; }
         .auth-left video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
         .auth-slide-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(8, 48, 107, 0.95), transparent); color: white; padding: 80px 40px 40px 40px; box-sizing: border-box; pointer-events: none; }
         .auth-slide-overlay h2 { margin: 0 0 10px 0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
         .auth-slide-overlay p { margin: 0; font-size: 18px; color: #e0f3db; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+
         .scroll-indicator { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); color: white; font-size: 14px; text-align: center; animation: bounce 2s infinite; opacity: 0.7; pointer-events: none; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); } 40% { transform: translateY(-10px) translateX(-50%); } 60% { transform: translateY(-5px) translateX(-50%); } }
+
         .auth-right { width: 40%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #ffffff; box-shadow: -10px 0 25px rgba(0,0,0,0.15); z-index: 10; }
         .login-box { width: 80%; max-width: 380px; }
         .login-box h1 { color: #08306b; margin-top: 0; margin-bottom: 5px; font-size: 28px; }
         .login-box p { font-size: 14px; color: #666; margin-bottom: 30px; }
         .login-box label { font-weight: 600; font-size: 13px; color: #333; display: block; margin-top: 15px; margin-bottom: 5px; }
         .login-box input[type="email"], .login-box input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
+        .login-box input:focus { border-color: #08306b; outline: none; }
+        
         .legal-check { display: flex; align-items: flex-start; margin-top: 15px; gap: 8px; }
         .legal-check input { margin-top: 3px; cursor: pointer; }
         .legal-check label { margin-top: 0; font-size: 12px; font-weight: normal; color: #555; line-height: 1.4; }
         .legal-check a { color: #08306b; text-decoration: underline; cursor: pointer; font-weight: bold; }
+
         .btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 20px; cursor: pointer; transition: background 0.3s; }
         .btn-auth-primary:hover { background-color: #041d42; }
         .btn-auth-secondary { width: 100%; padding: 12px; background-color: #ffffff; color: #08306b; border: 1px solid #08306b; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.3s; margin-top: 15px; }
+        .btn-auth-secondary:hover { background-color: #f0f7fa; }
+        
         .divider { display: flex; align-items: center; text-align: center; margin: 20px 0; }
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
         .divider span { padding: 0 10px; color: #888; font-size: 13px; }
 
-        /* 3. MODALES */
+        /* MODALES LEGALES */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; }
         .modal-content { background: white; width: 90%; max-width: 700px; max-height: 80vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
         .modal-header { background: #08306b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h3 { margin: 0; font-size: 18px; }
         .modal-body { padding: 20px; overflow-y: auto; font-size: 14px; color: #333; line-height: 1.6; }
+        .modal-body h4 { color: #08306b; margin-top: 20px; margin-bottom: 5px; }
         .modal-footer { padding: 15px 20px; background: #f4f7f6; text-align: right; border-top: 1px solid #ddd; }
         .btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* 4. WORKSPACE */
+        /* SECCIÓN TÉCNICA (SCROLL) */
+        #techSection { padding: 100px 50px; display: flex; flex-direction: column; align-items: center; gap: 40px; background-color: #020617; overflow: hidden; }
+        .tech-header { text-align: center; margin-bottom: 20px; }
+        .tech-header h2 { color: #38bdf8; font-size: 32px; margin: 0; }
+        .tech-header p { color: #94a3b8; font-size: 16px; margin-top: 10px;}
+        .tech-card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981; border-radius: 8px; padding: 30px; max-width: 800px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; transform: translateY(60px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .tech-card.visible { opacity: 1; transform: translateY(0); }
+        .tech-card h3 { color: #10b981; margin-top: 0; font-size: 20px; display: flex; align-items: center; gap: 10px;}
+        .tech-card p { color: #cbd5e1; font-size: 15px; line-height: 1.6; margin-bottom: 0; }
+
+        /* ==========================================
+           3. ESTILOS DEL WORKSPACE
+           ========================================== */
         #workspace { padding: 20px; display: none; margin-top: 40px; }
         .header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-left h1 { margin: 0; font-size: 24px; }
+        .header-left span { font-size: 14px; font-style: italic; color: #6baed6; }
+        
         #dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: center; }
         .hub-video-container { position: relative; width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; background-color: #041d42; }
         .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+
         .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
         .hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: all 0.3s ease; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; }
-        .hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); }
+        .hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); background: linear-gradient(135deg, #0a3d8a 0%, #1b5bba 100%); border-bottom-color: #6baed6; }
+        .hub-card h3 { color: #ffffff; margin: 15px 0 10px 0; font-size: 18px; text-align: center; }
+        .hub-card p { color: #e0f3db; font-size: 13px; line-height: 1.5; margin: 0; text-align: center; }
         .hub-icon { font-size: 40px; }
 
         .container { display: flex; gap: 20px; }
         .sidebar { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .main-content { flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+        
         #map, #mapPronostico { height: 600px; border-radius: 8px; border: 2px solid #ccc; z-index: 1;}
         .chart-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
+        
+        label { font-weight: bold; font-size: 13px; color: #333; display: block; margin-top: 12px; margin-bottom: 4px; }
+        input[type="text"], input[type="date"], input[type="number"], input[type="email"], input[type="password"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .btn-primary { width: 100%; padding: 10px; background-color: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; margin-top: 15px; cursor: pointer; transition: background 0.3s;}
+        .btn-primary:hover { background-color: #238b45; }
+        .btn-secondary { padding: 8px 15px; background-color: #08306b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 10px;}
+        .btn-secondary:hover { background-color: #041d42; }
+        .btn-danger { background-color: #d73027; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        #status { margin-top: 15px; font-size: 13px; font-weight: bold; color: #d73027; }
+        
+        .soil-card, .climate-card, .query-card, .ingesta-card { margin-top: 15px; padding: 15px; border-radius: 6px; display: none; }
+        .soil-card { background: #f0f9e8; border: 1px solid #ccece6; }
+        .climate-card { background: #e0f3db; border: 1px solid #a8ddb5; }
+        .query-card { background: #fff5eb; border: 1px solid #fd8d3c; }
+        .ingesta-card { display: block; padding: 12px; background: #f7f7f7; border: 1px dashed #08306b; }
+        
+        .soil-card h4, .climate-card h4, .query-card h4, .ingesta-card h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid; padding-bottom: 5px; font-size: 15px;}
+        .soil-card h4 { color: #0868ac; border-color: #ccece6; }
+        .climate-card h4 { color: #2b8cbe; border-color: #a8ddb5;}
+        .query-card h4 { color: #d94801; border-color: #fd8d3c;}
+        .ingesta-card h4 { color: #08306b; border: none;}
+        .soil-card p, .climate-card p, .query-card p, .ingesta-card p { margin: 6px 0; font-size: 13px; color: #333;}
+
         .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; display: none; }
-        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; color: #666; cursor: pointer; }
+        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; }
+        .tab-btn:hover { color: #08306b; }
         .tab-btn.active { color: #08306b; border-bottom: 3px solid #08306b; margin-bottom: -2px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        
-        .btn-primary { width: 100%; padding: 10px; background-color: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; margin-top: 15px; cursor: pointer;}
-        .btn-secondary { padding: 8px 15px; background-color: #08306b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px;}
-        .btn-danger { background-color: #d73027; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        
+
+        /* CONTROL EXCLUSIVO SECTOR GEMELO DIGITIAL */
         .gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
         .gemelo-control-panel label { color: #38bdf8; margin: 0; font-size: 14px; font-weight: bold; }
         .gemelo-control-panel select { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #38bdf8; font-weight: bold; cursor: pointer; }
-
-        /* SECCIÓN TÉCNICA (SCROLL) */
-        #techSection { padding: 100px 50px; display: flex; flex-direction: column; align-items: center; gap: 40px; background-color: #020617; overflow: hidden; }
-        .tech-card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981; border-radius: 8px; padding: 30px; max-width: 800px; width: 100%; opacity: 0; transform: translateY(60px); transition: 0.8s ease-out; }
-        .tech-card.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
@@ -96,248 +147,688 @@
         </select>
     </div>
 
+    <!-- MODALES -->
     <div id="modalTyC" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header"><h3 data-i18n="legal_title">Terms and Conditions</h3><span style="cursor: pointer;" onclick="cerrarTyC()">&times;</span></div>
-            <div class="modal-body">
-                <p data-i18n="legal_p1">By using MetricPoint, you accept these terms.</p>
-                <h4 data-i18n="legal_h1">1. Agronomic Disclaimer</h4>
-                <p data-i18n="legal_p2">This is a decision assistance tool. MetricPoint is not liable for crop loss or economic damage.</p>
-                <h4 data-i18n="legal_h2">2. Data</h4>
-                <p data-i18n="legal_p3">Fed by Copernicus and SMN. Uptime is not guaranteed.</p>
+            <div class="modal-header">
+                <h3 data-i18n="legal_title">Términos y Condiciones de Uso</h3>
+                <span style="cursor: pointer; font-size: 20px;" onclick="cerrarTyC()">&times;</span>
             </div>
-            <div class="modal-footer"><button class="btn-close-modal" onclick="cerrarTyC()" data-i18n="btn_close">Close</button></div>
+            <div class="modal-body">
+                <p data-i18n="legal_p1">Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.</p>
+                <h4 data-i18n="legal_h1">1. Descargo de Responsabilidad Agronómica</h4>
+                <p data-i18n="legal_p2">La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de <strong>asistencia para la toma de decisiones</strong> y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.</p>
+                <h4 data-i18n="legal_h2">2. Fuentes de Datos de Terceros</h4>
+                <p data-i18n="legal_p3">La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.</p>
+                <h4 data-i18n="legal_h3">3. Uso y Licencias</h4>
+                <p data-i18n="legal_p4">El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close-modal" onclick="cerrarTyC()" data-i18n="btn_close">Cerrar</button>
+            </div>
         </div>
     </div>
 
     <div id="modalPrivacidad" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header"><h3 data-i18n="priv_title">Privacy Policy</h3><span style="cursor: pointer;" onclick="cerrarPrivacidad()">&times;</span></div>
-            <div class="modal-body">
-                <h4 data-i18n="priv_h1">1. Data collection</h4>
-                <p data-i18n="priv_p1">We store your email and lot coordinates for moisture calculations only.</p>
-                <h4 data-i18n="priv_h2">2. Security</h4>
-                <p data-i18n="priv_p2">We do not sell your data. Coordinates are sent anonymously to processing engines.</p>
+            <div class="modal-header">
+                <h3 data-i18n="priv_title">Aviso de Privacidad</h3>
+                <span style="cursor: pointer; font-size: 20px;" onclick="cerrarPrivacidad()">&times;</span>
             </div>
-            <div class="modal-footer"><button class="btn-close-modal" onclick="cerrarPrivacidad()" data-i18n="btn_close">Close</button></div>
+            <div class="modal-body">
+                <h4 data-i18n="priv_h1">1. Información que recopilamos</h4>
+                <p data-i18n="priv_p1">Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.</p>
+                <h4 data-i18n="priv_h2">2. Compartición con Terceros</h4>
+                <p data-i18n="priv_p2">MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.</p>
+                <h4 data-i18n="priv_h3">3. Derechos del Usuario</h4>
+                <p data-i18n="priv_p3">En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close-modal" onclick="cerrarPrivacidad()" data-i18n="btn_close">Cerrar</button>
+            </div>
         </div>
     </div>
 
+    <!-- LANDING PAGE -->
     <div id="landingWrapper">
         <div id="authScreen">
             <div class="auth-left">
-                <video autoplay loop muted playsinline><source src="video_promo.mp4" type="video/mp4"></video>
+                <video autoplay loop muted playsinline>
+                    <source src="video_promo.mp4" type="video/mp4">
+                </video>
                 <div class="auth-slide-overlay">
                     <h2 data-i18n="landing_title">Geospatial Intelligence</h2>
                     <p data-i18n="landing_subtitle">Direct SAR telemetry to your agronomic control center.</p>
                 </div>
-                <div class="scroll-indicator" data-i18n="landing_scroll">▼ Discover Architecture ▼</div>
+                <div class="scroll-indicator" data-i18n="landing_scroll">▼ Discover MetricPoint's architecture ▼</div>
             </div>
+
             <div class="auth-right">
                 <div class="login-box">
                     <h1>Suite MetricPoint</h1>
-                    <p data-i18n="login_desc">Precision Agrometeorology.</p>
-                    <label data-i18n="lbl_email">Email</label><input type="email" id="authEmail" placeholder="example@company.com">
-                    <label data-i18n="lbl_pass">Password</label><input type="password" id="authPassword" placeholder="••••••••">
+                    <p data-i18n="login_desc">Precision Agrometeorology. Enter your credentials.</p>
+                    
+                    <label data-i18n="lbl_email">Email Address</label>
+                    <input type="email" id="authEmail" data-i18n="ph_email" placeholder="example@company.com">
+                    
+                    <label data-i18n="lbl_pass">Password</label>
+                    <input type="password" id="authPassword" placeholder="••••••••">
+
                     <div class="legal-check">
                         <input type="checkbox" id="chkLegal">
                         <label for="chkLegal">
-                            <span data-i18n="lbl_read">Accept </span><a onclick="abrirTyC()" data-i18n="lbl_tyc">Terms</a>
-                            <span data-i18n="lbl_and"> & </span><a onclick="abrirPrivacidad()" data-i18n="lbl_priv">Privacy</a>
+                            <span data-i18n="lbl_read">I have read and accept the </span> 
+                            <a onclick="abrirTyC()" data-i18n="lbl_tyc">Terms and Conditions</a>
+                            <span data-i18n="lbl_and"> and the </span>
+                            <a onclick="abrirPrivacidad()" data-i18n="lbl_priv">Privacy Policy</a>
                         </label>
                     </div>
+                    
                     <button class="btn-auth-primary" onclick="hacerLogin()" data-i18n="btn_login">Sign In</button>
                     <div class="divider"><span data-i18n="lbl_or">or</span></div>
-                    <button class="btn-auth-secondary" onclick="hacerRegistro()" data-i18n="btn_trial">Create 48h Trial</button>
-                    <p id="authStatus" style="color:#d73027; margin-top:15px; text-align:center; font-size:13px;"></p>
+                    <button class="btn-auth-secondary" onclick="hacerRegistro()" data-i18n="btn_trial">Create Account (48-Hour Free Trial)</button>
+                    
+                    <p id="authStatus" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
                 </div>
             </div>
         </div>
+
         <div id="techSection">
-            <div class="tech-card"><h3 data-i18n="card1_title">🛰️ SAR Analysis</h3><p data-i18n="card1_desc">Real soil moisture via Sentinel-1 SAR.</p></div>
-            <div class="tech-card"><h3 data-i18n="card2_title">📡 Live Radar</h3><p data-i18n="card2_desc">SMN SINARAME integration for real-time echoes.</p></div>
-            <div class="tech-card"><h3 data-i18n="card3_title">🧊 3D Twins</h3><p data-i18n="card3_desc">Volumetric edaphic visualization using DEM models.</p></div>
+            <div class="tech-header">
+                <h2 data-i18n="tech_title">Suite Architecture</h2>
+                <p data-i18n="tech_desc">Technological infrastructure behind MetricPoint</p>
+            </div>
+            <div class="tech-card">
+                <h3 data-i18n="card1_title">🛰️ SAR Edaphic Analysis (Sentinel-1)</h3>
+                <p data-i18n="card1_desc">Our platform injects raw C-band microwave data from the European Space Agency. Unlike optical images, radar penetrates vegetation cover and clouds, allowing us to calculate the real volumetric soil moisture from the first centimeters to the deep root zone, detecting stress before the plant shows visual symptoms.</p>
+            </div>
+            <div class="tech-card" style="border-left-color: #38bdf8;">
+                <h3 style="color:#38bdf8;" data-i18n="card2_title">📡 Live SINARAME Integration</h3>
+                <p data-i18n="card2_desc">Direct real-time connection with the weather radar network of the National Meteorological Service (SMN). We mathematically clean the reflectivity (dBZ) by cutting garbage visual vectors to overlay millimeter storm echoes over your lots. Anticipate hail fronts and severe convective storms minutes before they occur.</p>
+            </div>
+            <div class="tech-card" style="border-left-color: #f59e0b;">
+                <h3 style="color:#f59e0b;" data-i18n="card3_title">🧊 Topographic Digital Twins</h3>
+                <p data-i18n="card3_desc">We transform the view of your fields from 2D planes to massive 3D blocks by extracting Digital Elevation Models (DEM). Our graphics engine allows you to take "spatial X-rays" of the terrain at different depths, interacting with heat maps and discovering endorheic basins, runoff routes and areas prone to wilting or chronic waterlogging.</p>
+            </div>
         </div>
     </div>
 
+    <!-- Muro de Pago -->
+    <div id="paywallScreen" class="modal-overlay" style="z-index: 9999;">
+        <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px;">
+            <h2 style="color: #d73027;" data-i18n="paywall_title">Trial Period Expired</h2>
+            <p style="color: #333;" data-i18n="paywall_desc">Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.</p>
+            <button class="btn-primary" onclick="alert('Payment gateway in construction...')" data-i18n="btn_upgrade">Get Premium License</button>
+            <button class="btn-secondary" style="margin-top: 15px; background: transparent; color: #666;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
+        </div>
+    </div>
+
+    <!-- ESPACIO DE TRABAJO -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
-                <div class="header-left"><h1>Suite MetricPoint</h1><span data-i18n="hub_subtitle">Select Module</span></div>
-                <button class="btn-danger" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
+                <div class="header-left" style="text-align: left;">
+                    <h1>Suite MetricPoint</h1>
+                    <span data-i18n="hub_subtitle">Select the analysis module you want to use</span>
+                </div>
+                <button class="btn-danger" style="margin-top: 0;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
             </div>
+
             <div class="hub-video-container">
                 <video autoplay loop muted playsinline><source src="video_carrousel.mp4" type="video/mp4"></video>
-                <div class="auth-slide-overlay"><h2 data-i18n="hub_vid_title">MetricMoisture 3D</h2><p data-i18n="hub_vid_desc">Interactive Digital Twins.</p></div>
+                <div class="auth-slide-overlay">
+                    <h2 data-i18n="hub_vid_title">MetricMoisture 3D Engine</h2>
+                    <p data-i18n="hub_vid_desc">Interactive Volumetric Digital Twins for precision monitoring.</p>
+                </div>
             </div>
+
             <div class="hub-grid">
-                <div class="hub-card" onclick="abrirModulo('agrometeo')"><div class="hub-icon">🌱</div><h3>MetricMoisture</h3></div>
-                <div class="hub-card" onclick="abrirModulo('pronostico')"><div class="hub-icon">🌦️</div><h3 data-i18n="mod_weather_title">Weather</h3></div>
-                <div class="hub-card" onclick="abrirModulo('metricpoli')"><div class="hub-icon">🐝</div><h3>MetricPoli</h3></div>
+                <div class="hub-card" onclick="abrirModulo('agrometeo')">
+                    <div class="hub-icon">🌱</div>
+                    <h3>MetricMoisture</h3>
+                    <p data-i18n="mod_moisture_desc">Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.</p>
+                </div>
+                <div class="hub-card" onclick="abrirModulo('pronostico')">
+                    <div class="hub-icon">🌦️</div>
+                    <h3 data-i18n="mod_weather_title">Weather Forecast</h3>
+                    <p data-i18n="mod_weather_desc">Atmospheric modeling, live SMN radars and predictive meteorological variables.</p>
+                </div>
+                <div class="hub-card" onclick="abrirModulo('metricpoli')">
+                    <div class="hub-icon">🐝</div>
+                    <h3>MetricPoli</h3>
+                    <p data-i18n="mod_poli_desc">Comprehensive pollination suite, hive monitoring and advanced phenological analysis.</p>
+                </div>
             </div>
         </div>
 
         <div id="moduloAgrometeo" style="display: none;">
-            <div class="header"><h1>MetricMoisture</h1><button class="btn-secondary" onclick="volverAlHub()" data-i18n="btn_back">Back</button></div>
+            <div class="header">
+                <div class="header-left">
+                    <h1>MetricMoisture (SaaS Premium)</h1>
+                    <span data-i18n="mod1_subtitle">Satellite Edaphic Moisture</span>
+                </div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+            </div>
+            
             <div class="container">
                 <div class="sidebar">
                     <h3 data-i18n="lbl_lot_params">Lot Parameters</h3>
-                    <input type="text" id="startDate" value="2025-09-01">
-                    <input type="text" id="endDate" value="2026-08-01">
-                    <input type="text" id="siembraDate" value="2025-12-15">
-                    <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">ANALYZE</button>
+                    <label data-i18n="lbl_start_date">Start Date (YYYY-MM-DD):</label><input type="text" id="startDate" value="2025-09-01">
+                    <label data-i18n="lbl_end_date">End Date (YYYY-MM-DD):</label><input type="text" id="endDate" value="2026-08-01">
+                    <label data-i18n="lbl_sow_date">Sowing Date (YYYY-MM-DD):</label><input type="text" id="siembraDate" value="2025-12-15">
+                    
+                    <div class="ingesta-card">
+                        <h4 data-i18n="lbl_manual_input">Manual Input / Field Station</h4>
+                        <label data-i18n="lbl_reg_date">Record Date:</label><input type="date" id="m_fecha">
+                        <div style="display: flex; gap: 10px;">
+                            <div><label data-i18n="lbl_rain">Rain (mm):</label><input type="number" id="m_lluvia" placeholder="0"></div>
+                            <div><label>ET0 (mm):</label><input type="number" id="m_et0" placeholder="0.0" step="0.1"></div>
+                        </div>
+                        <button class="btn-secondary" style="width: 100%; margin-top: 8px; padding: 5px;" onclick="agregarDatoManual()" data-i18n="btn_add_rec">+ Add Record</button>
+                        <div id="m_status" style="font-size: 11px; color: #2b8cbe; margin-top: 5px;"></div>
+                    </div>
+
+                    <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">EXECUTE ANALYSIS</button>
                     <div id="status"></div>
-                    <div class="soil-card" id="infoSuelo"><h4>Soil Props</h4><p>CC: <span id="valCC"></span></p><p>PMP: <span id="valPMP"></span></p></div>
-                    <div class="query-card" id="infoConsulta"><h4>Scan Date</h4><input type="date" id="fechaConsulta"><button class="btn-secondary" onclick="consultarFecha()">Scan 3D</button></div>
+                    
+                    <div class="soil-card" id="infoSuelo">
+                        <h4 data-i18n="lbl_soil_props">Analyzed Soil Properties</h4>
+                        <p><strong data-i18n="lbl_sand">Sand Texture:</strong> <span id="valArena"></span>%</p>
+                        <p><strong data-i18n="lbl_clay">Clay Texture:</strong> <span id="valArcilla"></span>%</p>
+                        <p><strong data-i18n="lbl_cc">Field Capacity (CC):</strong> <span id="valCC"></span> m³/m³</p>
+                        <p><strong data-i18n="lbl_pmp">Wilting Point (PMP):</strong> <span id="valPMP"></span> m³/m³</p>
+                    </div>
+
+                    <div class="query-card" id="infoConsulta">
+                        <h4 data-i18n="lbl_query_prof">Query Profile by Date</h4>
+                        <input type="date" id="fechaConsulta" style="margin-bottom: 10px;">
+                        <button class="btn-secondary" style="width: 100%; margin-top: 0;" onclick="consultarFecha()" data-i18n="btn_scan_3d">Scan 3D Topography</button>
+                        <div id="resultadoConsulta" style="margin-top: 15px; font-size: 13px; color: #333; display: none;">
+                            <p><strong data-i18n="lbl_surf10">Surface (10 cm):</strong> <span id="c_10"></span> m³/m³</p>
+                            <p><strong data-i18n="lbl_sub30">Subsurface (30 cm):</strong> <span id="c_30"></span> m³/m³</p>
+                            <p><strong data-i18n="lbl_root60">Deep Roots (60 cm):</strong> <span id="c_60"></span> m³/m³</p>
+                            <p><strong data-i18n="lbl_res100">Reserve (100 cm):</strong> <span id="c_100"></span> m³/m³</p>
+                            <hr style="border-top: 1px solid #fd8d3c; margin: 10px 0;">
+                            <p style="color: #d94801;"><strong data-i18n="lbl_et0">Evapotranspiration (ET0):</strong> <span id="c_et0"></span> mm/day</p>
+                        </div>
+                    </div>
+                    
+                    <div class="climate-card" id="infoClima">
+                        <h4 data-i18n="lbl_climate_data">Climate Data</h4>
+                        <p><strong data-i18n="lbl_total_rain">Total Accumulated Rain:</strong> <span id="valLluvia"></span> mm</p>
+                        <ul id="listaMeses"></ul>
+                    </div>
                 </div>
+
                 <div class="main-content">
                     <div id="map"></div>
-                    <div id="contenedorInforme" style="display:none; background:#eef7f9; border-left:5px solid #08306b; padding:15px; border-radius:4px;">
-                        <h4 data-i18n="lbl_diag">Diagnostics</h4><p id="textoInforme"></p>
+                    <div id="contenedorInforme" style="display: none; background: #eef7f9; border-left: 5px solid #08306b; padding: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #08306b; font-size: 16px;" data-i18n="lbl_diag">Agrometeorological Diagnostics</h4>
+                        <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
                     </div>
+
+                    <!-- SECCIÓN DE SOLAPAS -->
                     <div class="tabs" id="tabMenu">
-                        <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)">Humedad & Vigor</button>
-                        <button class="tab-btn" onclick="abrirPestana('tabClima', this)">Clima</button>
-                        <button class="tab-btn" onclick="abrirPestana('tab3D', this)">Temporal 3D</button>
-                        <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)">Radiografía Espacial</button>
+                        <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)" data-i18n="tab_moist">Moisture & Vigor</button>
+                        <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
+                        <button class="tab-btn" onclick="abrirPestana('tab3D', this)" data-i18n="tab_3d">3D Model (Campaign)</button>
+                        <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)" data-i18n="tab_xray">Spatial X-Ray (Lot)</button>
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
-                    <div id="tabAgronomia" class="tab-content active"><canvas id="chartAgro" height="100"></canvas><div id="soilHeatmap" style="height:350px;"></div></div>
-                    <div id="tabClima" class="tab-content"><canvas id="chartClima" height="120"></canvas></div>
-                    <div id="tab3D" class="tab-content"><div id="soil3D" style="height:550px;"></div></div>
-                    <div id="tabGeo3D" class="tab-content"><div id="soilGeo3D" style="height:600px;"></div></div>
-                    <div id="tabGemeloBeta" class="tab-content">
-                        <div class="gemelo-control-panel"><label>CAPA:</label><select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)"><option value="0">0 cm</option><option value="60" selected>-60 cm</option><option value="100">-100 cm</option></select></div>
-                        <div id="soilGemeloVolumetrico" style="height:600px;"></div>
+
+                    <div id="tabAgronomia" class="tab-content active">
+                        <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
+                        <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
                     </div>
+                    <div id="tabClima" class="tab-content"><div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div></div>
+                    <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
+                    
+                    <div id="tabGeo3D" class="tab-content">
+                        <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
+                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;"><span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span></h4>
+                            <div id="soilGeo3D" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- CONTENIDO NUEVA SOLAPA BETA -->
+                    <div id="tabGemeloBeta" class="tab-content">
+                        <div class="gemelo-control-panel">
+                            <label>SELECCIÓN DE CAPA EDÁFICA PROFUNDA:</label>
+                            <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)">
+                                <option value="0">Superficie Terreno (0 cm)</option>
+                                <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
+                                <option value="100">Fondo de Reserva Estructural (-100 cm)</option>
+                            </select>
+                        </div>
+                        <div class="chart-container" id="contenedorGemeloBeta" style="height: 600px;">
+                            <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
-        <div id="moduloPronostico" style="display:none;"><div id="mapPronostico" style="height:800px"></div></div>
-        <div id="moduloMetricPoli" style="display:none;"><iframe src="https://va2ek5-fernando-suarez.shinyapps.io/polinizacion/" width="100%" height="1200px" style="border:none;"></iframe></div>
+
+        <div id="moduloPronostico" style="display: none;">
+            <div class="header">
+                <div class="header-left">
+                    <h1 data-i18n="mod_weather_title">Weather Forecast (SMN)</h1>
+                    <span data-i18n="mod2_subtitle">SINARAME Network - Live Precipitation Echoes</span>
+                </div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+            </div>
+            <div class="container">
+                <div class="sidebar">
+                    <h3 data-i18n="lbl_layers">Layer Control</h3>
+                    <p style="font-size: 13px; color: #666;" data-i18n="lbl_layer_desc">Real-time monitoring of rain echoes using the National Meteorological Service radar network.</p>
+                    <button class="btn-primary" onclick="alert('Refrescado')" data-i18n="btn_refresh">Refresh Radar</button>
+                </div>
+                <div class="main-content"><div id="mapPronostico"></div></div>
+            </div>
+        </div>
+
+        <div id="moduloMetricPoli" style="display: none;">
+            <div class="header">
+                <div class="header-left"><h1>MetricPoli (SaaS Premium)</h1><span>by metricpoint</span></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+            </div>
+            <div class="container" style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box;">
+                <iframe src="https://va2ek5-fernando-suarez.shinyapps.io/polinizacion/" width="100%" height="1200px" style="border: none; border-radius: 8px;" title="Módulo MetricPoli"></iframe>
+            </div>
+        </div>
     </div>
 
+    <!-- SCRIPTS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <script>
-        // DICCIONARIO I18N
         const traducciones = {
-            en: { "landing_title": "Geospatial Intelligence", "legal_title": "Terms", "priv_title": "Privacy", "btn_login": "Sign In", "diag_base": "From START to END, rain RAIN mm, ET0 mm/day.", "diag_opt": "Soil reserve is optimal." },
-            es: { "landing_title": "Inteligencia Geoespacial", "legal_title": "Términos y Condiciones", "priv_title": "Aviso de Privacidad", "btn_login": "Iniciar Sesión", "diag_base": "Desde START a END, lluvia RAIN mm, demanda ET0 mm/día.", "diag_opt": "Reserva edáfica óptima." },
-            pt: { "landing_title": "Inteligência Geoespacial", "legal_title": "Termos", "priv_title": "Privacidade", "btn_login": "Entrar" }
+            en: {
+                "landing_title": "Geospatial Intelligence", "landing_subtitle": "Direct SAR telemetry to your agronomic control center.", "landing_scroll": "▼ Discover MetricPoint's architecture ▼",
+                "login_desc": "Precision Agrometeorology. Enter your credentials.", "lbl_email": "Email Address", "ph_email": "example@company.com", "lbl_pass": "Password", "btn_login": "Sign In", "lbl_or": "or", "btn_trial": "Create Account (48-Hour Free Trial)",
+                "lbl_read": "I have read and accept the ", "lbl_tyc": "Terms and Conditions", "lbl_and": " and the ", "lbl_priv": "Privacy Policy", "msg_tyc_req": "You must accept the legal terms to register.",
+                "legal_title": "Terms and Conditions of Use", "legal_p1": "By registering, accessing or using the MetricPoint platform, you agree to be bound by these terms.", "legal_h1": "1. Agronomic Disclaimer", "legal_p2": "The Platform provides satellite and radar telemetry tools. You understand that it is strictly a decision assistance tool and does not replace agronomic judgment in the field. MetricPoint assumes no liability for yield losses or crop damage resulting from decisions made based on the platform.", "legal_h2": "2. Third Party Data Sources", "legal_p3": "The architecture is fed by the European Space Agency (Copernicus) and the National Meteorological Service (SMN). We do not guarantee 100% uptime in case of government server crashes.", "legal_h3": "3. Use and Licenses", "legal_p4": "Trial access lasts 48 hours. Web scraping, resale of information or sharing credentials without a commercial license is explicitly prohibited.", "btn_close": "Close",
+                "priv_title": "Privacy Policy", "priv_h1": "1. Information we collect", "priv_p1": "We collect your email (with encrypted password) and the geospatial coordinates (polygons) of the analyzed lots for calculating water balances.", "priv_h2": "2. Sharing with Third Parties", "priv_p2": "MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.", "priv_h3": "3. User Rights", "priv_p3": "In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the system administrator.",
+                "tech_title": "Suite Architecture", "tech_desc": "Technological infrastructure behind MetricPoint",
+                "card1_title": "🛰️ SAR Edaphic Analysis (Sentinel-1)", "card1_desc": "Our platform injects raw C-band microwave data from the European Space Agency. Unlike optical images, radar penetrates vegetation cover and clouds, allowing us to calculate the real volumetric soil moisture from the first centimeters to the deep root zone, detecting stress before the plant shows visual symptoms.",
+                "card2_title": "📡 Live SINARAME Integration", "card2_desc": "Direct real-time connection with the weather radar network of the National Meteorological Service (SMN). We mathematically clean the reflectivity (dBZ) by cutting garbage visual vectors to overlay millimeter storm echoes over your lots. Anticipate hail fronts and severe convective storms minutes before they occur.",
+                "card3_title": "🧊 Topographic Digital Twins", "card3_desc": "We transform the view of your fields from 2D planes to massive 3D blocks by extracting Digital Elevation Models (DEM). Our graphics engine allows you to take \"spatial X-rays\" of the terrain at different depths, interacting with heat maps and discovering endorheic basins, runoff routes and areas prone to wilting or chronic waterlogging.",
+                "paywall_title": "Trial Period Expired", "paywall_desc": "Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.", "btn_upgrade": "Get Premium License", "btn_logout": "Sign Out",
+                "hub_subtitle": "Select the analysis module you want to use", "hub_vid_title": "MetricMoisture 3D Engine", "hub_vid_desc": "Interactive Volumetric Digital Twins for precision monitoring.",
+                "mod_moisture_desc": "Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.", "mod_weather_title": "Weather Forecast", "mod_weather_desc": "Atmospheric modeling, live SMN radars and predictive meteorological variables.", "mod_poli_desc": "Comprehensive pollination suite, hive monitoring and advanced phenological analysis.",
+                "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
+                "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "EXECUTE ANALYSIS",
+                "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):",
+                "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan 3D Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):",
+                "lbl_climate_data": "Climate Data", "lbl_total_rain": "Total Accumulated Rain:", "lbl_diag": "Agrometeorological Diagnostics",
+                "tab_moist": "Moisture & Vigor", "tab_clim": "Climate & Rain", "tab_3d": "3D Model (Campaign)", "tab_xray": "Spatial X-Ray",
+                "mod2_subtitle": "SINARAME Network - Live Precipitation Echoes", "lbl_layers": "Layer Control", "lbl_layer_desc": "Real-time monitoring of rain echoes using the National Meteorological Service radar network.", "btn_refresh": "Refresh Radar",
+                "msg_auth_err": "Please fill both fields.", "msg_login": "Signing in...", "msg_reg": "Registering...", "msg_err_serv": "Connection error to server.",
+                "diag_base": "During the analyzed campaign (START to END), the lot received an accumulated <strong>RAIN mm</strong> of precipitation. The average atmospheric demand (ET0) remained at <strong>ET0 mm/day</strong>.<br><br>",
+                "diag_def": "The global balance shows a <strong>marked water deficit</strong>, forcing the crop to structurally depend on the edaphic profile. ",
+                "diag_fav": "The global balance shows a <strong>favorable</strong> atmospheric behavior. ",
+                "diag_opt": "Currently, the deep reserve of the lot (100 cm) is at <strong>optimal</strong> levels (above 65% of useful water), guaranteeing root stability against upcoming heat waves.",
+                "diag_reg": "Currently, the deep reserve (100 cm) is in a state of <strong>regular transition</strong>. It is suggested to monitor surface drying to avoid phenological stress.",
+                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>"
+            },
+            es: {
+                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
+                "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (48 Horas Gratis)",
+                "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "lbl_and": " y la ", "lbl_priv": "Política de Privacidad", "msg_tyc_req": "Debes aceptar los términos legales para registrarte.",
+                "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
+                "priv_title": "Aviso de Privacidad", "priv_h1": "1. Información que recopilamos", "priv_p1": "Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.", "priv_h2": "2. Compartición con Terceros", "priv_p2": "MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.", "priv_h3": "3. Derechos del Usuario", "priv_p3": "En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.",
+                "tech_title": "Arquitectura de la Suite", "tech_desc": "Infraestructura tecnológica detrás de MetricPoint",
+                "card1_title": "🛰️ Análisis Edáfico SAR (Sentinel-1)", "card1_desc": "Nuestra plataforma inyecta datos crudos de microondas en banda C procedentes de la Agencia Espacial Europea. A diferencia de las imágenes ópticas, el radar penetra la cobertura vegetal y las nubes, permitiéndonos calcular la humedad volumétrica real del suelo desde los primeros centímetros hasta la zona radicular profunda, detectando estrés antes de que la planta muestre síntomas visuales.",
+                "card2_title": "📡 Integración SINARAME en Vivo", "card2_desc": "Conexión directa en tiempo real con la red de radares meteorológicos del Servicio Meteorológico Nacional (SMN). Limpiamos matemáticamente la reflectividad (dBZ) cortando vectores visuales basura para superponer ecos de tormenta milimétricos sobre sus lotes. Anticípese a frentes de granizo y tormentas convectivas severas minutos antes de que ocurran.",
+                "card3_title": "🧊 Gemelos Digitales Topográficos", "card3_desc": "Transformamos la vista de sus campos de planos 2D a bloques macizos 3D extrayendo Modelos Digitales de Elevación (DEM). Nuestro motor gráfico le permite hacer \"radiografías espaciales\" del terreno a distintas profundidades, interactuando con mapas de calor y descubriendo cuencas endorreicas, vías de escurrimiento y zonas propensas a la marchitez o al anegamiento crónico.",
+                "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 48 horas de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
+                "hub_subtitle": "Seleccione el módulo de análisis que desea utilizar", "hub_vid_title": "Motor 3D MetricMoisture", "hub_vid_desc": "Gemelos Digitales Volumétricos para monitoreo de precisión.",
+                "mod_moisture_desc": "Análisis de humedad edáfica profunda con satélites SAR, topografía 3D y balance hídrico.", "mod_weather_title": "Pronóstico del Tiempo", "mod_weather_desc": "Modelado atmosférico, radares del SMN en vivo y variables predictivas meteorológicas.", "mod_poli_desc": "Suite integral de polinización, monitoreo de colmenas y análisis fenológico avanzado.",
+                "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
+                "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
+                "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):",
+                "lbl_query_prof": "Consultar Perfil por Fecha", "btn_scan_3d": "Escanear Topografía 3D", "lbl_surf10": "Superficie (10 cm):", "lbl_sub30": "Subsuperficie (30 cm):", "lbl_root60": "Raíces Prof. (60 cm):", "lbl_res100": "Reserva (100 cm):", "lbl_et0": "Evapotranspiración (ET0):",
+                "lbl_climate_data": "Datos Climáticos", "lbl_total_rain": "Lluvia Acumulada Total:", "lbl_diag": "Diagnóstico Agrometeorológico",
+                "tab_moist": "Humedad y Vigor", "tab_clim": "Clima y Precipitaciones", "tab_3d": "Modelo 3D (Campaña)", "tab_xray": "Radiografía Espacial",
+                "mod2_subtitle": "Red SINARAME - Ecos en Vivo", "lbl_layers": "Control de Capas", "lbl_layer_desc": "Monitoreo en tiempo real de ecos de lluvia sobre la región utilizando el SMN.", "btn_refresh": "Refrescar Radar",
+                "msg_auth_err": "Complete ambos campos.", "msg_login": "Iniciando sesión...", "msg_reg": "Registrando...", "msg_err_serv": "Error de conexión al servidor.",
+                "diag_base": "Durante la campaña analizada (START al END), el lote recibió un acumulado de <strong>RAIN mm</strong> de precipitaciones. La demanda atmosférica promedio (ET0) se mantuvo en <strong>ET0 mm/día</strong>.<br><br>",
+                "diag_def": "El balance global muestra un <strong>déficit hídrico marcado</strong>, obligando al cultivo a depender estructuralmente del perfil edáfico. ",
+                "diag_fav": "El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. ",
+                "diag_opt": "Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.",
+                "diag_reg": "Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.",
+                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>"
+            },
+            pt: {
+                "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
+                "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (48 Horas Grátis)",
+                "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "lbl_and": " e a ", "lbl_priv": "Política de Privacidade", "msg_tyc_req": "Você deve aceitar os termos legais para se registrar.",
+                "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
+                "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema."
+            }
         };
 
-        function cambiarIdioma(l) { 
-            document.querySelectorAll('[data-i18n]').forEach(el => { 
-                const k = el.getAttribute('data-i18n'); 
-                if (traducciones[l][k]) el.innerHTML = traducciones[l][k]; 
-            }); 
+        function cambiarIdioma(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (traducciones[lang] && traducciones[lang][key]) {
+                    if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) { el.placeholder = traducciones[lang][key]; } 
+                    else { el.innerHTML = traducciones[lang][key]; }
+                }
+            });
+            if (window.datosSimulacion && window.datosSimulacion.length > 0) { generarInforme(window.datosSimulacion, window.parametrosSimulacion); }
         }
 
-        // FUNCIONES MODAL
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if(entry.isIntersecting) { entry.target.classList.add('visible'); } else { entry.target.classList.remove('visible'); } });
+            }, { threshold: 0.2 }); 
+
+            document.querySelectorAll('.tech-card').forEach(card => observer.observe(card));
+            
+            if (localStorage.getItem("metric_token")) {
+                document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block";
+            }
+            cambiarIdioma(document.getElementById('langSwitch').value);
+        });
+
+        // Funciones de apertura y cierre de Modales
         function abrirTyC() { document.getElementById('modalTyC').style.display = 'flex'; }
         function cerrarTyC() { document.getElementById('modalTyC').style.display = 'none'; }
         function abrirPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'flex'; }
         function cerrarPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'none'; }
 
-        // AUTH & NAVIGATION
+        function abrirModulo(moduloId) {
+            document.getElementById('dashboardHub').style.display = 'none'; document.getElementById('moduloAgrometeo').style.display = 'none'; document.getElementById('moduloPronostico').style.display = 'none'; document.getElementById('moduloMetricPoli').style.display = 'none';
+            if (moduloId === 'agrometeo') { document.getElementById('moduloAgrometeo').style.display = 'block'; setTimeout(() => { if(map) map.invalidateSize(); }, 100); } 
+            else if (moduloId === 'pronostico') { document.getElementById('moduloPronostico').style.display = 'block'; setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
+            else if (moduloId === 'metricpoli') { document.getElementById('moduloMetricPoli').style.display = 'block'; }
+        }
+
+        function volverAlHub() { document.getElementById('moduloAgrometeo').style.display = 'none'; document.getElementById('moduloPronostico').style.display = 'none'; document.getElementById('moduloMetricPoli').style.display = 'none'; document.getElementById('dashboardHub').style.display = 'block'; }
+
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
-        async function hacerLogin() {
-            const e = document.getElementById("authEmail").value; const p = document.getElementById("authPassword").value;
+        function getMsg(key) { return traducciones[document.getElementById('langSwitch').value][key] || key; }
+
+        async function hacerRegistro() {
+            const email = document.getElementById("authEmail").value; const password = document.getElementById("authPassword").value; const statusLabel = document.getElementById("authStatus"); const tycChecked = document.getElementById("chkLegal").checked;
+            if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
+            if(!tycChecked) { statusLabel.innerText = getMsg("msg_tyc_req"); return; }
+            statusLabel.innerText = getMsg("msg_reg");
             try {
-                const res = await fetch(`${BACKEND_URL}/api/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:e, password:p}) });
-                const d = await res.json();
-                if(res.ok) { localStorage.setItem("metric_token", d.token); location.reload(); } else alert(d.error);
-            } catch(x) { alert("Server Error"); }
+                const res = await fetch(`${BACKEND_URL}/api/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                const data = await res.json();
+                if(res.ok) { localStorage.setItem("metric_token", data.token); document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; } 
+                else { statusLabel.innerText = data.error; }
+            } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
+
+        async function hacerLogin() {
+            const email = document.getElementById("authEmail").value; const password = document.getElementById("authPassword").value; const statusLabel = document.getElementById("authStatus");
+            if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
+            statusLabel.innerText = getMsg("msg_login");
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                const data = await res.json();
+                if(res.ok) { localStorage.setItem("metric_token", data.token); document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; } 
+                else { statusLabel.innerText = data.error; }
+            } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
+        }
+
         function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
-        function abrirModulo(m) { document.getElementById('dashboardHub').style.display='none'; document.getElementById('moduloAgrometeo').style.display=(m==='agrometeo'?'block':'none'); }
-        function volverAlHub() { document.getElementById('moduloAgrometeo').style.display='none'; document.getElementById('dashboardHub').style.display='block'; }
 
-        // MAPS
-        var map = L.map('map').setView([-27, -65.3], 11); L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
+        // Leaflet setup
+        var map = L.map('map').setView([-27.00, -65.30], 11);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
         var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
-        var drawControl = new L.Control.Draw({draw:{polyline:false, marker:false, circle:false}, edit:{featureGroup:drawnItems}}); map.addControl(drawControl);
-        var poligonoActual = null; map.on(L.Draw.Event.CREATED, function(e){ drawnItems.clearLayers(); drawnItems.addLayer(e.layer); poligonoActual = e.layer.toGeoJSON().geometry.coordinates; });
+        var drawControl = new L.Control.Draw({ draw: { polyline: false, polygon: true, circle: false, rectangle: false, marker: false }, edit: { featureGroup: drawnItems } }); map.addControl(drawControl);
+        var poligonoActual = null; map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
 
-        // RENDERERS
-        var chartObjAgro=null; window.datosSimulacion=[]; window.parametrosSimulacion=null; window.topografiaLote=[]; window.ultimoDatoCalculado=null;
+        var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(mapPronostico);
+        L.imageOverlay('lajitas_limpia.png', [[-26.8393, -66.6200], [-22.5273, -61.8800]], { opacity: 0.85 }).addTo(mapPronostico);
+        L.imageOverlay('termas_limpia.png', [[-29.6393, -67.2967], [-25.3273, -62.4367]], { opacity: 0.85 }).addTo(mapPronostico);
 
-        function renderizarGeo3D(dato, params, puntosDEM) {
-            let poly = poligonoActual[0]; 
-            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
-            const grid = 60; let xArr = [], yArr = [];
-            for(let i=0; i<grid; i++) { xArr.push(minX + (maxX-minX)*(i/(grid-1))); yArr.push(minY + (maxY-minY)*(i/(grid-1))); }
-            
-            let minCota = Infinity; puntosDEM.forEach(p => { if(p.z<minCota) minCota=p.z; });
-            const layers = [ { name:'10cm', offset:0, hum:dato.Humedad_10cm }, { name:'60cm', offset:-50, hum:dato.Humedad_60cm }, { name:'100cm', offset:-75, hum:dato.Humedad_100cm } ];
-            const colorScale = [[0,'rgb(215,25,28)'],[0.25,'rgb(253,174,97)'],[0.5,'rgb(255,255,191)'],[0.75,'rgb(44,123,182)'],[1,'rgb(128,0,128)']];
+        var chartObjAgro = null, chartObjClima = null;
+        window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
+        const customCanvasBg = { id: 'customCanvasBackgroundColor', beforeDraw: (chart, args, options) => { const {ctx} = chart; ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = options.color || '#ffffff'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } };
 
-            let traces = layers.map(l => ({
-                x: xArr, y: yArr, z: Array(grid).fill().map(() => Array(grid).fill(minCota + l.offset)),
-                surfacecolor: Array(grid).fill().map(() => Array(grid).fill(l.hum)),
-                type: 'surface', colorscale: colorScale, showscale: false
-            }));
-
-            Plotly.newPlot('soilGeo3D', traces, { margin:{l:0,r:0,b:0,t:0}, scene:{ camera:{eye:{x:1.3, y:-1.6, z:0.6}}, aspectratio:{x:1, y:1, z:0.9} } });
+        function agregarDatoManual() {
+            const f = document.getElementById('m_fecha').value, ll = document.getElementById('m_lluvia').value, et = document.getElementById('m_et0').value;
+            if (!f) return alert("Select Date");
+            let registro = { timestamp: f }; if (ll !== "") registro.lluvia = parseFloat(ll); if (et !== "") registro.et0 = parseFloat(et);
+            window.datosLocalesManuales = window.datosLocalesManuales.filter(b=>b.timestamp!==f); window.datosLocalesManuales.push(registro);
+            document.getElementById('m_status').innerText = `${window.datosLocalesManuales.length} records.`; document.getElementById('m_lluvia').value = ''; document.getElementById('m_et0').value = ''
         }
 
-        // MOTOR GEMELO REAL (RECUPERADO)
-        function construirGemeloVolumetricoInteractiva(dato, params, puntosDEM, profundidad) {
-            let poly = poligonoActual[0]; 
-            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
-            const grid = 50; let xArr = [], yArr = [];
-            for(let i=0; i<grid; i++) { xArr.push(minX + (maxX-minX)*(i/(grid-1))); yArr.push(minY + (maxY-minY)*(i/(grid-1))); }
-
-            let minCota = Infinity; puntosDEM.forEach(p => { if(p.z<minCota) minCota=p.z; });
-            
-            // 1. CAPA SUPERFICIE CAMPO (0 CM)
-            const trace_campo = {
-                x: xArr, y: yArr, z: Array(grid).fill().map(() => Array(grid).fill(minCota)),
-                surfacecolor: Array(grid).fill().map(() => Array(grid).fill(0.5)),
-                type:'surface', colorscale:[[0,'#5d4037'],[1,'#2e7d32']], opacity:0.6, showscale:false
-            };
-
-            // 2. CAPA HUMEDAD REAL (PROFUNDIDAD ELEGIDA)
-            let hum = (profundidad=="0"?dato.Humedad_10cm:(profundidad=="60"?dato.Humedad_60cm:dato.Humedad_100cm));
-            const trace_hum = {
-                x: xArr, y: yArr, z: Array(grid).fill().map(() => Array(grid).fill(minCota - (profundidad=="0"?2:profundidad/10))),
-                surfacecolor: Array(grid).fill().map(() => Array(grid).fill(hum)),
-                type:'surface', colorscale:'Turbo', cmin:0.1, cmax:0.5, name:'Humedad Real'
-            };
-
-            // 3. PAREDES CUBO
-            const flat_bottom = Array(grid).fill(minCota - 15);
-            const trace_pared = { x:[xArr, xArr], y:[Array(grid).fill(yArr[0]), Array(grid).fill(yArr[0])], z:[Array(grid).fill(minCota), flat_bottom], type:'surface', colorscale:[[0,'#1a0f0d'],[1,'#3e2723']], showscale:false };
-
-            Plotly.newPlot('soilGemeloVolumetrico', [trace_campo, trace_hum, trace_pared], { margin:{l:0,r:0,b:0,t:0}, scene:{ camera:{eye:{x:1.3, y:-1.6, z:0.6}}, aspectratio:{x:1,y:1,z:0.9} } });
+        function abrirPestana(tabId, elementoBtn) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); document.getElementById('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
         }
 
-        function cambiarCapaGemeloVolumetrico(p) { construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, window.parametrosSimulacion, window.topografiaLote, p); }
+        function isPointInPoly(pt, poly) {
+            let x = pt[0], y = pt[1], isInside = false;
+            for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { let xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1]; let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi); if (intersect) isInside = !isInside; } return isInside;
+        }
+
+        // =====================================================================
+        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA)
+        // =====================================================================
+        function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
+            let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
+            const gridSize = 60; let xArr = [], yArr = []; for(let i=0; i<gridSize; i++) { xArr.push(minX + (maxX-minX)*(i/(gridSize-1))); yArr.push(minY + (maxY-minY)*(i/(gridSize-1))); }
+            let minCota = Infinity, maxCota = -Infinity, sumCota = 0, countCota = 0;
+            if (puntosDEM && puntosDEM.length > 0) { puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; sumCota+=p.z; countCota++; }); } else { minCota = 0; maxCota = 1; sumCota = 0; countCota = 1; }
+            let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
+            function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w; }
+            const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
+            
+            // LA ESCALA ORIGINAL (ROJO PURPURA HERMOSA)
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
+            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
+            
+            let traces = [];
+            layers.forEach((layer, index) => {
+                let zMatrix = [], colorMatrix = [], textMatrix = [];
+                for(let j=0; j<gridSize; j++) {
+                    let zRow = [], cRow = [], tRow = [];
+                    for(let i=0; i<gridSize; i++) {
+                        if (isPointInPoly([xArr[i], yArr[j]], poly)) {
+                            let relieveBase = getRelieveZ(xArr[i], yArr[j]); zRow.push(relieveBase + layer.offset); let cotaNorm = (relieveBase - minCota) / rangoCota; let factorAgua = (0.5 - cotaNorm); let humedadLocal = layer.hum + (factorAgua * 0.15); humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal));
+                            cRow.push(humedadLocal); tRow.push(`Moisture: ${humedadLocal.toFixed(3)} m³/m³<br>Level: ${layer.name}`);
+                        } else { zRow.push(null); cRow.push(null); tRow.push(null); }
+                    } zMatrix.push(zRow); colorMatrix.push(cRow); textMatrix.push(tRow);
+                }
+                traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
+            });
+            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {visible:false}, yaxis: {visible:false}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
+        }
+
+        // =====================================================================
+        // NUEVO MOTOR: GEMELO DIGITAL VOLUMÉTRICO INTERACTIVO (BETA SEPARADA)
+        // Corrección de la escala visual y datos reales para que se vea igual de hermoso
+        // =====================================================================
+        window.ultimoDatoCalculado = null; 
+
+        function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
+            if (!dato || !poligonoActual) return;
+
+            let poly = poligonoActual[0];
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
+
+            const resolucion = 60; 
+            let xArr = [], yArr = [];
+            for(let i=0; i<resolucion; i++) { xArr.push(minX + (maxX-minX)*(i/(resolucion-1))); yArr.push(minY + (maxY-minY)*(i/(resolucion-1))); }
+
+            // 1. Calcular los límites topográficos reales (DEM)
+            let minCota = Infinity, maxCota = -Infinity;
+            if (puntosDEM && puntosDEM.length > 0) { 
+                puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; }); 
+            } else { minCota = 0; maxCota = 1; }
+            let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
+
+            // 2. Evaluador de relieve
+            function getRelieveZ(lon, lat) {
+                if (!puntosDEM || puntosDEM.length === 0) return 0;
+                let sum_w = 0, sum_z_w = 0;
+                for (let i = 0; i < puntosDEM.length; i++) {
+                    let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2);
+                    let w = 1/(d2+0.00005); sum_w += w; sum_z_w += p.z*w;
+                } return sum_z_w / sum_w;
+            }
+
+            // 3. Tomar el dato REAL de la serie temporal según la profundidad elegida
+            let humedadBase = dato.Humedad_60cm; 
+            let offsetZ = -50; 
+            if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; offsetZ = 0; }
+            if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; offsetZ = -75; }
+
+            // Restituimos la Escala Hermosa y Correcta (Mismos límites que la Radiografía)
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
+            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); 
+            let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
+
+            let z_capa = [], colores_capa = [], textos_capa = [];
+
+            for(let j=0; j<resolucion; j++) {
+                let rowZ = [], rowC = [], rowT = [];
+                for(let i=0; i<resolucion; i++) {
+                    if (isPointInPoly([xArr[i], yArr[j]], poly)) {
+                        let cota = getRelieveZ(xArr[i], yArr[j]);
+                        rowZ.push(cota + offsetZ);
+                        
+                        // DATOS REALES: Lógica de escurrimiento topográfico (el agua se acumula en los bajos)
+                        let cotaNorm = (cota - minCota) / rangoCota;
+                        let factorAgua = (0.5 - cotaNorm); 
+                        let humedadLocal = humedadBase + (factorAgua * 0.15); 
+                        humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal));
+                        
+                        rowC.push(humedadLocal);
+                        rowT.push(`Humedad Real: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: ${profundidadSeleccionada} cm`);
+                    } else { 
+                        rowZ.push(null); rowC.push(null); rowT.push(null); 
+                    }
+                }
+                z_capa.push(rowZ); colores_capa.push(rowC); textos_capa.push(rowT);
+            }
+
+            // Capa Superior (Renderizada con la escala hermosa)
+            const trace_tapa = {
+                x: xArr, y: yArr, z: z_capa, surfacecolor: colores_capa, text: textos_capa,
+                type: 'surface', colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
+                name: 'Capa Analizada', hoverinfo: 'text',
+                colorbar: { title: 'Moisture', thickness: 15, len: 0.8, y: 0.5, tickformat: '.3f' }
+            };
+
+            const data_cubo = [trace_tapa];
+
+            // Restauramos los valores perfectos de cámara e inclinación para que NO se vea plano
+            const layout_cubo = {
+                margin: { l:0, r:0, b:0, t:0 }, paper_bgcolor: 'transparent',
+                scene: {
+                    xaxis: { visible: false }, yaxis: { visible: false }, zaxis: { visible: false },
+                    camera: { eye: {x: 1.3, y: -1.6, z: 0.6} },
+                    aspectratio: {x: 1, y: 1, z: 0.9} 
+                }
+            };
+
+            Plotly.purge('soilGemeloVolumetrico');
+            Plotly.newPlot('soilGemeloVolumetrico', data_cubo, layout_cubo, {responsive: true, displayModeBar: false});
+        }
+
+        function cambiarCapaGemeloVolumetrico(profundidad) {
+            if (!window.ultimoDatoCalculado) return;
+            construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, window.parametrosSimulacion, window.topografiaLote, profundidad);
+        }
+
+        function consultarFecha() {
+            const fecha = document.getElementById('fechaConsulta').value;
+            if (!fecha || window.datosSimulacion.length === 0) return alert("Select a date.");
+            const dato = window.datosSimulacion.find(d => d.timestamp === fecha);
+            if (dato) {
+                window.ultimoDatoCalculado = dato;
+                ['10', '30', '60', '100'].forEach(p => document.getElementById('c_'+p).innerText = dato[`Humedad_${p}cm`].toFixed(3));
+                document.getElementById('c_et0').innerText = dato.ET0.toFixed(1);
+                document.getElementById('resultadoConsulta').style.display = 'block'; document.getElementById('contenedorGeo3D').style.display = 'block';
+                document.getElementById('lblFechaGeo3D').innerText = `(Date: ${dato.timestamp})`;
+                
+                renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); 
+                
+                let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
+                construirGemeloVolumetricoInteractiva(dato, window.parametrosSimulacion, window.topografiaLote, profPorDefecto);
+                
+                abrirPestana('tabGeo3D', document.getElementById('btnTabGeo3D'));
+            } else alert("Date out of range.");
+        }
+
+        function generarInforme(datos, params) {
+            const lluviaTotal = datos.reduce((acc, d) => acc + d.Lluvia, 0); const et0Promedio = datos.reduce((acc, d) => acc + d.ET0, 0) / datos.length; const humUltima = datos[datos.length-1].Humedad_100cm;
+            let texto = getMsg("diag_base").replace("START", datos[0].timestamp).replace("END", datos[datos.length-1].timestamp).replace("RAIN", lluviaTotal.toFixed(1)).replace("ET0", et0Promedio.toFixed(1));
+            if (lluviaTotal < (et0Promedio * datos.length * 0.5)) { texto += getMsg("diag_def"); } else { texto += getMsg("diag_fav"); }
+            let aguaUtil = (humUltima - params.PMP) / (params.CC - params.PMP);
+            if (aguaUtil > 0.65) { texto += getMsg("diag_opt"); } else if (aguaUtil > 0.35) { texto += getMsg("diag_reg"); } else { texto += getMsg("diag_crit"); }
+            document.getElementById('textoInforme').innerHTML = texto; document.getElementById('contenedorInforme').style.display = 'block';
+        }
 
         async function ejecutarAnalisis() {
-            const token = localStorage.getItem("metric_token"); if(!token) return;
-            const res = await fetch(`${BACKEND_URL}/api/calcular`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({token, start_date:document.getElementById('startDate').value, end_date:document.getElementById('endDate').value, coordenadas:poligonoActual}) });
-            const json = await res.json();
-            if(res.ok) {
-                window.datosSimulacion = json.data; window.parametrosSimulacion = json.suelo; window.topografiaLote = json.topografia;
-                window.ultimoDatoCalculado = json.data[json.data.length - 1];
-                document.getElementById('tabMenu').style.display='flex';
-                construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, json.suelo, json.topografia, "60");
-                renderizarGeo3D(window.ultimoDatoCalculado, json.suelo, json.topografia);
-            }
+            if (!poligonoActual) return document.getElementById('status').innerText = 'Error: Draw polygon.';
+            const token = localStorage.getItem("metric_token"); if (!token) { document.getElementById("workspace").style.display = "none"; document.getElementById("landingWrapper").style.display = "flex"; return; }
+            document.getElementById('status').innerText = 'Simulating...'; document.getElementById('status').style.color = '#08306b';
+            ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoConsulta','infoClima'].forEach(id => document.getElementById(id).style.display = 'none');
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/calcular`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value, fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales }) });
+                const jsonResponse = await response.json();
+                if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") { document.getElementById('status').innerText = ''; document.getElementById('paywallScreen').style.display = 'flex'; return; }
+                if (response.ok) {
+                    document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
+                    
+                    // --- CORRECCIÓN FRONTEND: RECUPERAR VALOR REAL AL INICIO DE CAMPAÑA ---
+                    // Evita que el perfil profundo inicie artificialmente en Capacidad de Campo (CC)
+                    // y fuerza a que comience desde la humedad real observada por el SAR
+                    let valorRealInicio = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm;
+                    let diasTransicion = Math.min(30, jsonResponse.data.length);
+                    for(let i = 0; i < diasTransicion; i++) {
+                        let factor = i / diasTransicion; // 0 al inicio, 1 al final de la transición (Suavizado de 1 mes)
+                        jsonResponse.data[i].Humedad_30cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
+                        jsonResponse.data[i].Humedad_60cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
+                        jsonResponse.data[i].Humedad_100cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
+                    }
+                    // ----------------------------------------------------------------------
+
+                    window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
+                    document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3); document.getElementById('infoConsulta').style.display = 'block';
+                    let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
+                    
+                    window.ultimoDatoCalculado = jsonResponse.data[jsonResponse.data.length - 1];
+
+                    generarInforme(jsonResponse.data, jsonResponse.suelo); 
+                    ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); 
+                    abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); 
+                    renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
+
+                    let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
+                    construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, window.parametrosSimulacion, window.topografiaLote, profPorDefecto);
+
+                } else { document.getElementById('status').innerText = 'Error: ' + jsonResponse.error; }
+            } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
-        
-        document.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem("metric_token")) { document.getElementById("landingWrapper").style.display="none"; document.getElementById("workspace").style.display="block"; }
-            cambiarIdioma(document.getElementById('langSwitch').value);
-        });
-        function abrirPestana(t, b) { document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active')); document.getElementById(t).classList.add('active'); }
+
+        function renderizarGraficos(datos, params) {
+            const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
+            if(chartObjAgro) chartObjAgro.destroy();
+            chartObjAgro = new Chart(document.getElementById("chartAgro").getContext("2d"), { type: 'line', data: { labels: fechas, datasets: [ { label: 'SAR Moisture', data: h, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yHumedad' }, { label: 'RVI Vigor', data: g, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yVigor' }, { label: 'Ideal Model', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: .4, yAxisID: 'yVigor' } ] }, options: { responsive: !0, plugins: { legend: { labels: { usePointStyle: !0, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: !0, position: 'left', min: 0, max: .55 }, yVigor: { type: 'linear', display: !0, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: !1 } } } }, plugins: [customCanvasBg] });
+            if(chartObjClima) chartObjClima.destroy();
+            chartObjClima = new Chart(document.getElementById("chartClima").getContext("2d"), { type: 'line', data: { labels: fechas, datasets: [ { type: 'bar', label: 'Rain (mm)', data: lluvia, backgroundColor: '#1f77b4', yAxisID: 'yLluvia', order: 3 }, { type: 'line', label: 'ET0 (mm/day)', data: et0, borderColor: '#ff7f0e', borderWidth: 2, borderDash: [3, 3], pointRadius: 0, tension: .3, yAxisID: 'yLluvia', order: 2 }, { type: 'line', label: 'RVI Context', data: g, borderColor: 'rgba(44, 160, 44, 0.5)', borderWidth: 2, pointRadius: 0, tension: .2, spanGaps: !0, yAxisID: 'yVigor', order: 1, fill: !0, backgroundColor: 'rgba(44, 160, 44, 0.1)' } ] }, options: { responsive: !0, plugins: { legend: { labels: { usePointStyle: !0, boxWidth: 10 } } }, scales: { yLluvia: { type: 'linear', display: !0, position: 'left', min: 0, suggestedMax: 100 }, yVigor: { type: 'linear', display: !0, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: !1 } } } }, plugins: [customCanvasBg] });
+            const o = Math.max(0, n - .03); const p = m + .05; const q = (p - o) / 10;
+            let r = [], s = []; for (let a = 0; a <= 5; a++) { let b = o + a * (p - o) / 5; r.push(b); s.push(`${b.toFixed(2)} (${(b * 100).toFixed(0)}%)`); }
+            const t = [[0, "#d7191c"], [.25, "#fdae61"], [.5, "#ffffbf"], [.75, "#abdda4"], [1, "#2b83ba"]];
+            var u = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour', colorscale: t, zmin: o, zmax: p, contours: { coloring: 'fill', showlines: !0, start: o, end: p, size: q }, colorbar: { title: 'Moisture', thickness: 15, tickvals: r, ticktext: s } }]; Plotly.newPlot('soilHeatmap', u, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Depth', tickvals: [0, -10, -30, -60, -100], ticktext: ["Surface", "-10 cm", "-30 cm", "-60 cm", "-100 cm"] }}, {responsive: !0});
+            var v = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: t, cmin: o, cmax: p, colorbar: { title: 'm³/m³', thickness: 15, tickvals: r, ticktext: s } }]; Plotly.newPlot('soil3D', v, {margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Date' }, yaxis: { title: 'Depth (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Moisture (V/V)', range: [Math.max(0, n - .05), m + .15] }, camera: { eye: { x: 1.3, y: -1.6, z: 0.6 } } } }, {responsive: !0})
+        }
     </script>
 </body>
 </html>
