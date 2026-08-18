@@ -401,7 +401,7 @@
                         </div>
                     </div>
 
-                    <!-- NUEVA PESTAÑA GEMELO (BETA) CON EL SCRIPT EXACTO INTEGRADO -->
+                    <!-- NUEVA PESTAÑA GEMELO (BETA) ARREGLADA (CUBO CORTADO, TAMAÑO FIJO Y BARRA AL COSTADO) -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="gemelo-control-panel">
                             <label>SELECCIÓN DE CAPA EDÁFICA PROFUNDA:</label>
@@ -668,16 +668,9 @@
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
             const gridSize = 50; 
-            let realX = [], realY = [];
-            let plotX = [], plotY = []; // Coordenadas de ploteo
+            let plotX = [], plotY = []; 
 
-            for(let i=0; i<gridSize; i++) {
-                realX.push(minX + (maxX-minX)*(i/(gridSize-1)));
-                realY.push(minY + (maxY-minY)*(i/(gridSize-1)));
-                plotX.push(i);
-                plotY.push(i);
-            }
-
+            // CÁLCULO DE RELIEVE REAL
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) {
                 puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; });
@@ -693,12 +686,51 @@
                 } return sum_z_w / sum_w;
             }
 
+            // DATOS BASE SEGÚN CAPA
             let humedadBase = dato.Humedad_60cm; let visualOffset = 6; 
             if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; visualOffset = 1; }
             if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; visualOffset = 10; }
 
             let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
             let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
+
+            // VAMOS A CREAR UNA "FALDA" QUE RODEA EXACTAMENTE EL POLÍGONO
+            let periX = [], periY = [], periZ_top = [], periZ_bot = [], periC = [];
+            for(let k = 0; k < poly.length; k++) {
+                let pt = poly[k];
+                // Proyectamos los vértices del polígono al espacio de la grilla 50x50
+                let px = (pt[0] - minX) / (maxX - minX) * (gridSize - 1);
+                let py = (pt[1] - minY) / (maxY - minY) * (gridSize - 1);
+                
+                let cotaReal = getRelieveZ(pt[0], pt[1]);
+                let cotaNorm = (cotaReal - minCota) / rangoCota;
+                
+                let baseZ = 8 + (cotaNorm * 4); // Misma base que el terreno
+                let surco = Math.sin(py * 2) * 0.2; 
+                
+                periX.push(px); 
+                periY.push(py);
+                periZ_top.push(baseZ + surco - visualOffset); // Techo del cubo se pega a la humedad
+                periZ_bot.push(-2); // Piso del cubo fijo
+                periC.push(0);
+            }
+            // Cerramos el polígono
+            periX.push(periX[0]); periY.push(periY[0]); periZ_top.push(periZ_top[0]); periZ_bot.push(periZ_bot[0]); periC.push(0);
+
+            // LA FALDA O MURO PERIMETRAL OSCURO (Recortado perfecto a la geometría)
+            const trace_skirt = {
+                x: [periX, periX], y: [periY, periY], z: [periZ_top, periZ_bot],
+                surfacecolor: [periC, periC], type: 'surface',
+                colorscale: [[0, '#0a0a0a'], [1, '#171717']], // Cubo oscuro
+                showscale: false, hoverinfo: 'none', name: 'Bloque Profundo'
+            };
+
+            // PREPARAMOS LAS CAPAS SUPERIORES (TERRENO Y HUMEDAD)
+            for(let i=0; i<gridSize; i++) {
+                plotX.push(i);
+                plotY.push(i);
+            }
 
             let z_surf = [], color_surf = [];
             let z_moist = [], moist = [], text_moist = [];
@@ -707,11 +739,14 @@
                 let r_surf = [], c_surf = [];
                 let r_moist = [], r_m = [], r_t = [];
                 for(let i=0; i<gridSize; i++) {
-                    if (isPointInPoly([realX[i], realY[j]], poly)) {
-                        let cotaReal = getRelieveZ(realX[i], realY[j]);
+                    let rX = minX + (maxX-minX)*(i/(gridSize-1));
+                    let rY = minY + (maxY-minY)*(j/(gridSize-1));
+
+                    if (isPointInPoly([rX, rY], poly)) {
+                        let cotaReal = getRelieveZ(rX, rY);
                         let cotaNorm = (cotaReal - minCota) / rangoCota;
 
-                        // Superficie (Cota normalizada + surcos)
+                        // Superficie Normalizada
                         let baseZ = 8 + (cotaNorm * 4); 
                         let surco = Math.sin(j * 2) * 0.2; 
                         let c_val = surco > 0 ? 1 : 0.2;
@@ -719,7 +754,7 @@
                         r_surf.push(baseZ + surco);
                         c_surf.push(c_val);
 
-                        // Humedad Real (Flotando por debajo de la superficie)
+                        // Humedad Real
                         r_moist.push(baseZ + surco - visualOffset);
                         let factorAgua = (0.5 - cotaNorm); 
                         let humedadLocal = humedadBase + (factorAgua * 0.15);
@@ -745,56 +780,37 @@
 
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
-                colorscale: 'Turbo', cmin: globalMin, cmax: globalMax,
-                colorbar: { title: 'Agua Útil<br>(V/V)', x: 0.95, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 12 },
+                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
+                // CORRECCIÓN BARRA DE COLOR BIEN A LA DERECHA
+                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil -${profundidadSeleccionada} cm`,
                 hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
 
-            // --- EL MALDITO CUBO NEGRO (CONSTRUIDO DE FORMA SEGURA Y EFICIENTE) ---
-            // Nace exactamente por debajo de la capa que elegiste
-            let z_top_cubo = 8 - visualOffset - 0.5; // Techo del cubo negro (justo debajo de la humedad)
-            let z_bot_cubo = -2;                     // Base del cubo negro
+            let data_plot = [trace_surface, trace_moisture, trace_skirt];
             
-            let boxX = [0, gridSize-1];
-            let boxY = [0, gridSize-1];
-            
-            let z_techo = [[z_top_cubo, z_top_cubo], [z_top_cubo, z_top_cubo]];
-            let z_piso = [[z_bot_cubo, z_bot_cubo], [z_bot_cubo, z_bot_cubo]];
-            let col_negro = [[0, '#0a0a0a'], [1, '#171717']];
-
-            // Las paredes y tapas del cubo negro
-            const cubo_techo = { x: boxX, y: boxY, z: z_techo, type: 'surface', showscale: false, colorscale: col_negro, hoverinfo: 'none' };
-            const cubo_pared_s = { x: [boxX, boxX], y: [[0, 0], [0, 0]], z: [z_techo[0], z_piso[0]], type: 'surface', showscale: false, colorscale: col_negro, hoverinfo: 'none' };
-            const cubo_pared_n = { x: [boxX, boxX], y: [[gridSize-1, gridSize-1], [gridSize-1, gridSize-1]], z: [z_techo[1], z_piso[1]], type: 'surface', showscale: false, colorscale: col_negro, hoverinfo: 'none' };
-            const cubo_pared_w = { x: [[0, 0], [0, 0]], y: [boxY, boxY], z: [[z_top_cubo, z_top_cubo], [z_bot_cubo, z_bot_cubo]], type: 'surface', showscale: false, colorscale: col_negro, hoverinfo: 'none' };
-            const cubo_pared_e = { x: [[gridSize-1, gridSize-1], [gridSize-1, gridSize-1]], y: [boxY, boxY], z: [[z_top_cubo, z_top_cubo], [z_bot_cubo, z_bot_cubo]], type: 'surface', showscale: false, colorscale: col_negro, hoverinfo: 'none' };
-            // -------------------------------------------------------------------------
-
-            let data_plot = [trace_surface, trace_moisture, cubo_techo, cubo_pared_s, cubo_pared_n, cubo_pared_w, cubo_pared_e];
-            
-            // Si elige superficie (0cm), no mostramos capa de humedad extra para evitar choques visuales
+            // Si elige superficie (0cm), no mostramos capa flotante
             if (profundidadSeleccionada == "0") {
-                data_plot = [trace_moisture, cubo_techo, cubo_pared_s, cubo_pared_n, cubo_pared_w, cubo_pared_e];
+                data_plot = [trace_moisture, trace_skirt];
             }
 
-            // --- FIJANDO EL TAMAÑO DE LA IMAGEN PARA QUE NO SALTE NUNCA ---
+            // --- FIJANDO EL TAMAÑO DE LA IMAGEN Y LA CÁMARA ---
+            // Le agregamos 'camera' base solo para que mantenga el ángulo, pero bloqueamos el auto-escala del eje Z
             const layout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
                 margin: { l: 0, r: 0, b: 0, t: 0 },
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
-                    camera: { eye: { x: 1.4, y: -1.6, z: 0.8 } }, 
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-1, gridSize] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-1, gridSize] }, 
                     zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, // ESTO IMPIDE QUE SALTE
-                    aspectmode: 'manual', // ESTO IMPIDE EL RESIZE AUTOMÁTICO
+                    aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.5 }, 
                     annotations: [] 
                 }
             };
+            layout.scene.camera = { eye: { x: 1.4, y: -1.6, z: 0.8 } };
 
-            // Usamos react() en vez de newPlot() para limpiar la memoria correctamente y actualizar suavemente
             Plotly.react('soilGemeloVolumetrico', data_plot, layout, {responsive: true, displayModeBar: false});
 
             // FIX DEL CRASH: Evento de clic limpio y único
@@ -807,7 +823,6 @@
                 const punto = datosEvento.points[0];
                 const nombreCapa = punto.data.name;
                 
-                // Ignorar clics en el cubo negro
                 if (!nombreCapa || (!nombreCapa.includes('Perfil') && !nombreCapa.includes('Superficie'))) return;
 
                 let mensaje = "";
