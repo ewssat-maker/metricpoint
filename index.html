@@ -361,7 +361,7 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
+                    <!-- PESTAÑAS 2D ORIGINALES -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -398,7 +398,7 @@
                     <div id="tabGemeloBeta" class="tab-content">
                         <div style="display: flex; flex-direction: row; background-color: #020617; border: 2px solid #1e293b; border-radius: 8px; overflow: hidden; height: 600px;">
                             
-                            <!-- Lado Izquierdo: Modelo 3D con ZOOM INMENSO -->
+                            <!-- Lado Izquierdo: Modelo 3D -->
                             <div style="flex-grow: 1; position: relative;">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
                                 <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; pointer-events: none; backdrop-filter: blur(4px);">👆 Haz clic en el perfil para fijar una sonda. Clic fuera para quitarla.</div>
@@ -415,7 +415,7 @@
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">SELECCIÓN DE CAPA EDÁFICA:</label>
                                     <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)" style="width: 100%; padding: 10px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; box-sizing: border-box; cursor: pointer;">
-                                        <!-- Opciones actualizadas según pedido -->
+                                        <!-- Opciones actualizadas (10, 30, 60, 100) -->
                                         <option value="10">Capa Superficial (-10 cm)</option>
                                         <option value="30">Subsuperficie (-30 cm)</option>
                                         <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
@@ -635,6 +635,11 @@
         function abrirPestana(tabId, elementoBtn) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); document.getElementById('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
+            
+            // FIX: Obliga a Plotly a recalcular su tamaño cuando la pestaña se vuelve visible para evitar que el gráfico se aplaste (cero píxeles)
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 10);
         }
 
         function isPointInPoly(pt, poly) {
@@ -650,7 +655,7 @@
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
             function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w; }
             const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
-            const colorScaleRojoPurpura = [[0, "#d7191c"], [0.25, "#fdae61"], [0.5, "#ffffbf"], [0.75, "#abdda4"], [1, "#2b83ba"]];
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
             
             let traces = [];
@@ -708,8 +713,9 @@
                 if (!puntosDEM || puntosDEM.length === 0) return 0;
                 let sum_w = 0, sum_z_w = 0, smoothing = 0.00005;
                 for (let i = 0; i < puntosDEM.length; i++) {
-                    let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2);
-                    let w = 1/(d2+smoothing); sum_w += w; sum_z_w += p.z*w;
+                    let p = vent_dem[i]; // typo fix var
+                    let p2 = puntosDEM[i], d2 = Math.pow(p2.lon-lon, 2) + Math.pow(p2.lat-lat, 2);
+                    let w = 1/(d2+smoothing); sum_w += w; sum_z_w += p2.z*w;
                 } return sum_z_w / sum_w;
             }
 
@@ -914,13 +920,15 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
-                    let valorRealInicio = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm;
-                    let diasTransicion = Math.min(30, jsonResponse.data.length);
-                    for(let i = 0; i < diasTransicion; i++) {
-                        let factor = i / diasTransicion; 
-                        jsonResponse.data[i].Humedad_30cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
-                        jsonResponse.data[i].Humedad_60cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
-                        jsonResponse.data[i].Humedad_100cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
+                    if (jsonResponse.data && jsonResponse.data.length > 0) {
+                        let valIni = jsonResponse.data[0].Humedad_10cm; 
+                        let diasTransicion = Math.min(30, jsonResponse.data.length);
+                        for(let i = 0; i < diasTransicion; i++) {
+                            let factor = i / diasTransicion; 
+                            jsonResponse.data[i].Humedad_30cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
+                            jsonResponse.data[i].Humedad_60cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
+                            jsonResponse.data[i].Humedad_100cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
+                        }
                     }
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
@@ -944,6 +952,7 @@
             } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
 
+        // --- RESTAURACIÓN DEL GRÁFICO 3D ORIGINAL DEL PERFIL DE HUMEDAD ---
         function renderizarGraficos(datos, params) {
             const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
             
