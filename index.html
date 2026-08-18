@@ -129,10 +129,11 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Controles de Solapas 3D */
+        /* Controles Geo3D */
         .gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
         .gemelo-control-panel label { margin: 0; font-size: 14px; font-weight: bold; }
         .gemelo-control-panel select, .gemelo-control-panel input { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; font-weight: bold; cursor: pointer; }
+
     </style>
 </head>
 <body>
@@ -415,7 +416,9 @@
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">SELECCIÓN DE CAPA EDÁFICA:</label>
                                     <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)" style="width: 100%; padding: 10px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; box-sizing: border-box; cursor: pointer;">
-                                        <option value="0">Superficie Terreno (0 cm)</option>
+                                        <!-- Eliminada capa 0 cm, agregadas 10 y 30 cm -->
+                                        <option value="10">Capa Superficial (-10 cm)</option>
+                                        <option value="30">Subsuperficie (-30 cm)</option>
                                         <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
                                         <option value="100">Fondo de Reserva Estructural (-100 cm)</option>
                                     </select>
@@ -641,7 +644,7 @@
         }
 
         // =====================================================================
-        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA) -> INTACTO
+        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA)
         // =====================================================================
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
             let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
@@ -673,9 +676,9 @@
 
         // =====================================================================
         // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - CORRECCIÓN DEFINITIVA
-        // - Escala perimetral separada
-        // - Zoom INTENSO 
-        // - Clics seguros usando relayout() para no perder la rotación manual
+        // - Clics seguros y sin cuelgues usando relayout
+        // - Selector de capas (10, 30, 60, 100)
+        // - Rotación libre mantenida
         // =====================================================================
         window.ultimoDatoCalculado = null; 
         window.gemeloDataPlot = null;
@@ -714,8 +717,11 @@
                 } return sum_z_w / sum_w;
             }
 
+            // Datos y límites visuales (Adaptado a las nuevas capas 10, 30, 60, 100)
             let humedadBase = dato.Humedad_60cm; let visualOffset = 6; 
-            if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; visualOffset = 1; }
+            if (profundidadSeleccionada == "10") { humedadBase = dato.Humedad_10cm; visualOffset = 1; }
+            if (profundidadSeleccionada == "30") { humedadBase = dato.Humedad_30cm; visualOffset = 3; }
+            if (profundidadSeleccionada == "60") { humedadBase = dato.Humedad_60cm; visualOffset = 6; }
             if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; visualOffset = 10; }
 
             let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
@@ -793,22 +799,20 @@
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
                 colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
-                // AQUÍ: ESCALA PEGADA AL MARGEN DERECHO (x: 1.15 tira la escala fuera del contenedor visual)
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil -${profundidadSeleccionada} cm`,
                 hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
 
+            // La superficie siempre se muestra junto a la humedad y la falda
             window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
-            if (profundidadSeleccionada == "0") window.gemeloDataPlot = [trace_moisture, trace_skirt]; 
 
-            // --- ZOOM INTENSO Y MARGEN PARA LA ESCALA DE COLOR ---
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-                margin: { l: 0, r: 120, b: 0, t: 0 }, // 120px DE MARGEN DERECHO EXCLUSIVO PARA LA ESCALA
+                margin: { l: 0, r: 120, b: 0, t: 0 }, 
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
-                    camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } }, // MÁS ZOOM
+                    camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     zaxis: { visible: false, showgrid: false, zeroline: false, range: [-3, 14] }, 
@@ -818,13 +822,11 @@
                 }
             };
 
-            // Usar newPlot para renderizar la capa limpia
             Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
 
-            // FIX DEL CRASH Y ROTACIÓN: Usar relayout() solo para las anotaciones, sin tocar la cámara
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
             
-            // Destruir oyentes viejos para evitar el loop infinito (fuga de memoria)
+            // BORRAMOS LISTENERS ANTERIORES PARA EVITAR MULTIPLICACIÓN Y CUELGUES
             miGrafico.removeAllListeners('plotly_click');
             
             miGrafico.on('plotly_click', function(datosEvento) {
@@ -832,12 +834,12 @@
                 const punto = datosEvento.points[0];
                 const nombreCapa = punto.data.name;
                 
-                // Si toca fuera o en la falda, limpia la bandera (SOLO USA RELAYOUT, no REACT)
+                // Si toca la falda de tierra, borra la bandera
                 if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
                     Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': []});
                     return;
                 }
-
+                
                 let mensaje = ""; let colorBorde = "#38bdf8"; let colorFondo = "rgba(15, 23, 42, 0.85)";
                 
                 if (nombreCapa.includes('Superficie')) {
@@ -851,13 +853,13 @@
                     else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
                     mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
                 }
-
+                
                 const nuevaBandera = {
                     showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
                     font: { color: 'white', size: 12 }, bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
                 };
                 
-                // Actualización LIGERA: no resetea la cámara, no traba el navegador
+                // USAMOS RELAYOUT PARA NO COLGAR EL MOTOR WEBGL Y MANTENER LA ROTACIÓN
                 Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]});
             });
         }
