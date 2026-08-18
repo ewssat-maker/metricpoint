@@ -10,7 +10,7 @@
 
     <style>
         /* ==========================================
-           1. ESTILOS GLOBALES & IDIOMAS
+           1. ESTILOS GLOBALES & SELECTOR IDIOMA
            ========================================== */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; }
         
@@ -18,7 +18,7 @@
         .lang-selector select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b; }
 
         /* ==========================================
-           2. LANDING PAGE & LOGIN
+           2. LANDING PAGE (SCROLL + VIDEO + LOGIN)
            ========================================== */
         #landingWrapper { display: flex; flex-direction: column; width: 100vw; background-color: #020617; }
         #authScreen { display: flex; width: 100%; height: 100vh; background-color: #ffffff; }
@@ -37,7 +37,7 @@
         .login-box h1 { color: #08306b; margin-top: 0; margin-bottom: 5px; font-size: 28px; }
         .login-box p { font-size: 14px; color: #666; margin-bottom: 30px; }
         .login-box label { font-weight: 600; font-size: 13px; color: #333; display: block; margin-top: 15px; margin-bottom: 5px; }
-        .login-box input[type="email"], .login-box input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
+        .login-box input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
         .login-box input:focus { border-color: #08306b; outline: none; }
         
         .legal-check { display: flex; align-items: flex-start; margin-top: 15px; gap: 8px; }
@@ -45,7 +45,7 @@
         .legal-check label { margin-top: 0; font-size: 12px; font-weight: normal; color: #555; line-height: 1.4; }
         .legal-check a { color: #08306b; text-decoration: underline; cursor: pointer; font-weight: bold; }
 
-        .btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 20px; cursor: pointer; transition: background 0.3s; }
+        .btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 25px; cursor: pointer; transition: background 0.3s; }
         .btn-auth-primary:hover { background-color: #041d42; }
         .btn-auth-secondary { width: 100%; padding: 12px; background-color: #ffffff; color: #08306b; border: 1px solid #08306b; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.3s; margin-top: 15px; }
         .btn-auth-secondary:hover { background-color: #f0f7fa; }
@@ -54,7 +54,7 @@
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
         .divider span { padding: 0 10px; color: #888; font-size: 13px; }
 
-        /* MODALES LEGALES */
+        /* MODALES LEGALES COMPLETOS */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; }
         .modal-content { background: white; width: 90%; max-width: 700px; max-height: 80vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
         .modal-header { background: #08306b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -147,7 +147,7 @@
         </select>
     </div>
 
-    <!-- MODALES -->
+    <!-- MODAL DE TÉRMINOS Y CONDICIONES -->
     <div id="modalTyC" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -169,6 +169,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE PRIVACIDAD -->
     <div id="modalPrivacidad" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -367,7 +368,6 @@
                         <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
                     </div>
 
-                    <!-- SECCIÓN DE SOLAPAS -->
                     <div class="tabs" id="tabMenu">
                         <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)" data-i18n="tab_moist">Moisture & Vigor</button>
                         <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
@@ -390,7 +390,7 @@
                         </div>
                     </div>
 
-                    <!-- CONTENIDO NUEVA SOLAPA BETA -->
+                    <!-- NUEVA SOLAPA BETA (Aislada, no rompe lo demás) -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="gemelo-control-panel">
                             <label>SELECCIÓN DE CAPA EDÁFICA PROFUNDA:</label>
@@ -535,7 +535,6 @@
             cambiarIdioma(document.getElementById('langSwitch').value);
         });
 
-        // Funciones de apertura y cierre de Modales
         function abrirTyC() { document.getElementById('modalTyC').style.display = 'flex'; }
         function cerrarTyC() { document.getElementById('modalTyC').style.display = 'none'; }
         function abrirPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'flex'; }
@@ -580,7 +579,6 @@
 
         function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
 
-        // Leaflet setup
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
         var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
@@ -626,7 +624,6 @@
             function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w; }
             const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
             
-            // LA ESCALA ORIGINAL (ROJO PURPURA HERMOSA)
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
             
@@ -648,8 +645,7 @@
         }
 
         // =====================================================================
-        // NUEVO MOTOR: GEMELO DIGITAL VOLUMÉTRICO INTERACTIVO (BETA SEPARADA)
-        // Corrección de la escala visual y datos reales para que se vea igual de hermoso
+        // NUEVO MOTOR: GEMELO DIGITAL VOLUMÉTRICO INTERACTIVO (CUBO CON DATOS REALES)
         // =====================================================================
         window.ultimoDatoCalculado = null; 
 
@@ -660,18 +656,16 @@
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
-            const resolucion = 60; 
+            const resolucion = 50; 
             let xArr = [], yArr = [];
             for(let i=0; i<resolucion; i++) { xArr.push(minX + (maxX-minX)*(i/(resolucion-1))); yArr.push(minY + (maxY-minY)*(i/(resolucion-1))); }
 
-            // 1. Calcular los límites topográficos reales (DEM)
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) { 
                 puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; }); 
             } else { minCota = 0; maxCota = 1; }
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
 
-            // 2. Evaluador de relieve
             function getRelieveZ(lon, lat) {
                 if (!puntosDEM || puntosDEM.length === 0) return 0;
                 let sum_w = 0, sum_z_w = 0;
@@ -681,52 +675,77 @@
                 } return sum_z_w / sum_w;
             }
 
-            // 3. Tomar el dato REAL de la serie temporal según la profundidad elegida
             let humedadBase = dato.Humedad_60cm; 
             let offsetZ = -50; 
             if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; offsetZ = 0; }
             if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; offsetZ = -75; }
 
-            // Restituimos la Escala Hermosa y Correcta (Mismos límites que la Radiografía)
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); 
             let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
 
-            let z_capa = [], colores_capa = [], textos_capa = [];
+            // Capa 1: Superficie del Terreno (Verde/Marrón)
+            let z_campo = [], color_campo = [];
+            
+            // Capa 2: Lámina de Humedad Real (Se mueve según el selector)
+            let z_hum = [], color_hum = [], texto_hum = [];
+
+            // Profundidad del fondo del bloque
+            let z_piso_bloque = minCota - 100;
 
             for(let j=0; j<resolucion; j++) {
-                let rowZ = [], rowC = [], rowT = [];
+                let rZ_c = [], rC_c = [];
+                let rZ_h = [], rC_h = [], rT_h = [];
+
                 for(let i=0; i<resolucion; i++) {
                     if (isPointInPoly([xArr[i], yArr[j]], poly)) {
                         let cota = getRelieveZ(xArr[i], yArr[j]);
-                        rowZ.push(cota + offsetZ);
                         
-                        // DATOS REALES: Lógica de escurrimiento topográfico (el agua se acumula en los bajos)
+                        // Superficie campo
+                        rZ_c.push(cota); rC_c.push(0.5);
+
+                        // Humedad real con escurrimiento topográfico
+                        rZ_h.push(cota + offsetZ);
                         let cotaNorm = (cota - minCota) / rangoCota;
                         let factorAgua = (0.5 - cotaNorm); 
                         let humedadLocal = humedadBase + (factorAgua * 0.15); 
                         humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal));
-                        
-                        rowC.push(humedadLocal);
-                        rowT.push(`Humedad Real: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: ${profundidadSeleccionada} cm`);
+                        rC_h.push(humedadLocal);
+                        rT_h.push(`Humedad Real: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: ${profundidadSeleccionada} cm`);
                     } else { 
-                        rowZ.push(null); rowC.push(null); rowT.push(null); 
+                        rZ_c.push(null); rC_c.push(null);
+                        rZ_h.push(null); rC_h.push(null); rT_h.push(null); 
                     }
                 }
-                z_capa.push(rowZ); colores_capa.push(rowC); textos_capa.push(rowT);
+                z_campo.push(rZ_c); color_campo.push(rC_c);
+                z_hum.push(rZ_h); color_hum.push(rC_h); texto_hum.push(rT_h);
             }
 
-            // Capa Superior (Renderizada con la escala hermosa)
-            const trace_tapa = {
-                x: xArr, y: yArr, z: z_capa, surfacecolor: colores_capa, text: textos_capa,
-                type: 'surface', colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
-                name: 'Capa Analizada', hoverinfo: 'text',
+            const trace_campo = {
+                x: xArr, y: yArr, z: z_campo, surfacecolor: color_campo, type: 'surface', 
+                colorscale: [[0, '#5d4037'], [1, '#2e7d32']], opacity: 0.65, showscale: false, hoverinfo: 'none'
+            };
+
+            const trace_hum = {
+                x: xArr, y: yArr, z: z_hum, surfacecolor: color_hum, text: texto_hum, type: 'surface', 
+                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, name: 'Humedad Real', hoverinfo: 'text',
                 colorbar: { title: 'Moisture', thickness: 15, len: 0.8, y: 0.5, tickformat: '.3f' }
             };
 
-            const data_cubo = [trace_tapa];
+            // Paredes para hacer el bloque macizo
+            const flat_bottom = Array(resolucion).fill(z_piso_bloque);
+            const col_tierra_oscura = [[0, '#110a08'], [1, '#3e2723']];
 
-            // Restauramos los valores perfectos de cámara e inclinación para que NO se vea plano
+            const trace_pared_sur = {
+                x: [xArr, xArr], y: [Array(resolucion).fill(yArr[0]), Array(resolucion).fill(yArr[0])],
+                z: [z_campo[0], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra_oscura, hoverinfo: 'none'
+            };
+            const trace_pared_norte = {
+                x: [xArr, xArr], y: [Array(resolucion).fill(yArr[resolucion-1]), Array(resolucion).fill(yArr[resolucion-1])],
+                z: [z_campo[resolucion-1], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra_oscura, hoverinfo: 'none'
+            };
+
+            // Mismos parámetros visuales que la Radiografía para que no se deforme
             const layout_cubo = {
                 margin: { l:0, r:0, b:0, t:0 }, paper_bgcolor: 'transparent',
                 scene: {
@@ -737,7 +756,7 @@
             };
 
             Plotly.purge('soilGemeloVolumetrico');
-            Plotly.newPlot('soilGemeloVolumetrico', data_cubo, layout_cubo, {responsive: true, displayModeBar: false});
+            Plotly.newPlot('soilGemeloVolumetrico', [trace_campo, trace_hum, trace_pared_sur, trace_pared_norte], layout_cubo, {responsive: true, displayModeBar: false});
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
@@ -785,20 +804,6 @@
                 if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") { document.getElementById('status').innerText = ''; document.getElementById('paywallScreen').style.display = 'flex'; return; }
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
-                    
-                    // --- CORRECCIÓN FRONTEND: RECUPERAR VALOR REAL AL INICIO DE CAMPAÑA ---
-                    // Evita que el perfil profundo inicie artificialmente en Capacidad de Campo (CC)
-                    // y fuerza a que comience desde la humedad real observada por el SAR
-                    let valorRealInicio = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm;
-                    let diasTransicion = Math.min(30, jsonResponse.data.length);
-                    for(let i = 0; i < diasTransicion; i++) {
-                        let factor = i / diasTransicion; // 0 al inicio, 1 al final de la transición (Suavizado de 1 mes)
-                        jsonResponse.data[i].Humedad_30cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
-                        jsonResponse.data[i].Humedad_60cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
-                        jsonResponse.data[i].Humedad_100cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
-                    }
-                    // ----------------------------------------------------------------------
-
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3); document.getElementById('infoConsulta').style.display = 'block';
                     let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
@@ -808,6 +813,8 @@
                     generarInforme(jsonResponse.data, jsonResponse.suelo); 
                     ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); 
                     abrirPestana('tabAgronomia', document.querySelector('.tab-btn.active')); 
+                    
+                    // ESTO NO SE TOCÓ: MANTIENE TUS GRÁFICOS INTACTOS Y CRUDOS
                     renderizarGraficos(jsonResponse.data, jsonResponse.suelo);
 
                     let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
@@ -817,6 +824,9 @@
             } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
 
+        // =====================================================================
+        // TUS GRÁFICOS ORIGINALES (HEATMAP INTACTO Y LÍNEAS CRUDAS)
+        // =====================================================================
         function renderizarGraficos(datos, params) {
             const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
             if(chartObjAgro) chartObjAgro.destroy();
