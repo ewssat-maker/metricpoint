@@ -148,7 +148,6 @@
 </head>
 <body>
 
-    <!-- SELECTOR DE IDIOMAS -->
     <div class="lang-selector">
         <select id="langSwitch" onchange="cambiarIdioma(this.value)">
             <option value="en">🇬🇧 English</option>
@@ -402,7 +401,7 @@
                         </div>
                     </div>
 
-                    <!-- NUEVA PESTAÑA GEMELO (BETA) CON EL SCRIPT INTEGRADO Y DATOS REALES -->
+                    <!-- NUEVA PESTAÑA GEMELO (BETA) CON EL SCRIPT EXACTO INTEGRADO -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="gemelo-control-panel">
                             <label>SELECCIÓN DE CAPA EDÁFICA PROFUNDA:</label>
@@ -412,7 +411,7 @@
                                 <option value="100">Fondo de Reserva Estructural (-100 cm)</option>
                             </select>
                         </div>
-                        <div class="chart-container" id="contenedorGemeloBeta" style="height: 600px; padding: 0; overflow: hidden; background-color: #020617; border: 2px solid #1e293b;">
+                        <div class="chart-container" id="contenedorGemeloBeta" style="height: 600px; padding: 0; overflow: hidden; background-color: #020617; border: 2px solid #1e293b; position: relative;">
                             <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
                             <div class="instruccion-beta">👆 Haz clic en el perfil para fijar una sonda de humedad</div>
                         </div>
@@ -519,7 +518,7 @@
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
                 "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (48 Horas Grátis)",
                 "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "lbl_and": " e a ", "lbl_priv": "Política de Privacidade", "msg_tyc_req": "Você deve aceitar os termos legais para se registrar.",
-                "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
+                "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 horas. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
                 "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema."
             }
         };
@@ -548,7 +547,6 @@
             cambiarIdioma(document.getElementById('langSwitch').value);
         });
 
-        // Funciones Modales
         function abrirTyC() { document.getElementById('modalTyC').style.display = 'flex'; }
         function cerrarTyC() { document.getElementById('modalTyC').style.display = 'none'; }
         function abrirPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'flex'; }
@@ -593,7 +591,6 @@
 
         function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
 
-        // Mapas
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
         var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
@@ -660,7 +657,6 @@
 
         // =====================================================================
         // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - Integración Exacta
-        // Toma el script independiente y lo adapta con la Topografía y Humedad Reales
         // =====================================================================
         window.ultimoDatoCalculado = null; 
 
@@ -693,37 +689,36 @@
                 } return sum_z_w / sum_w;
             }
 
-            // Datos Base Reales
-            let humedadBase = dato.Humedad_60cm; let offsetZ = -50;
-            if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; offsetZ = -5; }
-            if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; offsetZ = -80; }
+            let humedadBase = dato.Humedad_60cm; let offsetZ = -6; 
+            if (profundidadSeleccionada == "0") { humedadBase = dato.Humedad_10cm; offsetZ = -1; }
+            if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; offsetZ = -10; }
 
-            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10);
-            let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
+            let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
+            let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
 
             let z_surf = [], color_surf = [];
             let z_moist = [], moist = [], text_moist = [];
 
-            // Generar matrices respetando la geometría del polígono dibujado
             for(let j=0; j<gridSize; j++) {
                 let r_surf = [], c_surf = [];
                 let r_moist = [], r_m = [], r_t = [];
                 for(let i=0; i<gridSize; i++) {
                     if (isPointInPoly([xArr[i], yArr[j]], poly)) {
                         let cota = getRelieveZ(xArr[i], yArr[j]);
+                        let cotaNorm = (cota - minCota) / rangoCota;
 
-                        // 1. Capa Superficie (Cota real + textura estética de campo)
+                        // Superficie (Cota real + surcos estéticos)
                         let surco = Math.sin(j * 2) * 0.2; 
                         let c_val = surco > 0 ? 1 : 0.2;
                         r_surf.push(cota + surco);
                         c_surf.push(c_val);
 
-                        // 2. Capa Humedad (Datos Reales satelitales)
+                        // Humedad (Datos Reales)
                         r_moist.push(cota + offsetZ);
-                        let cotaNorm = (cota - minCota) / rangoCota;
                         let factorAgua = (0.5 - cotaNorm);
                         let humedadLocal = humedadBase + (factorAgua * 0.15);
                         humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal));
+                        
                         r_m.push(humedadLocal);
                         r_t.push(`Humedad Real: ${humedadLocal.toFixed(3)} m³/m³<br>Nivel: -${profundidadSeleccionada} cm`);
                     } else {
@@ -735,12 +730,11 @@
                 z_moist.push(r_moist); moist.push(r_m); text_moist.push(r_t);
             }
 
-            // Capas configuradas igual que tu script de prueba
             const trace_surface = {
                 x: xArr, y: yArr, z: z_surf, surfacecolor: color_surf, type: 'surface',
                 colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']], 
-                showscale: false, opacity: 0.8, lighting: { ambient: 0.6, diffuse: 0.9 },
-                name: 'Superficie (0 cm)', hoverinfo: 'none'
+                showscale: false, opacity: 0.6, lighting: { ambient: 0.6, diffuse: 0.9 },
+                name: 'Superficie (0 cm)', hovertemplate: "<b>Lote Superficial</b><br>Elevación: %{z:.2f} m<extra></extra>"
             };
 
             const trace_moisture = {
@@ -751,19 +745,19 @@
                 hovertemplate: "<b>Profundidad: -%{text}</b><br>Humedad: %{surfacecolor:.3f} V/V<extra></extra>"
             };
 
-            // Construcción del Cubo Macizo (Envolviendo la geometría real)
-            const z_bottom = minCota - 100;
+            // Construcción del Cubo Macizo por DEBAJO de la capa elegida
+            const z_bottom = minCota - 20; 
             const flat_bottom = Array(gridSize).fill(z_bottom);
             const col_tierra = [[0, '#1f130e'], [1, '#3b251b']];
 
-            const trace_wall_s = { x: [xArr, xArr], y: [Array(gridSize).fill(yArr[0]), Array(gridSize).fill(yArr[0])], z: [z_surf[0], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
-            const trace_wall_n = { x: [xArr, xArr], y: [Array(gridSize).fill(yArr[gridSize-1]), Array(gridSize).fill(yArr[gridSize-1])], z: [z_surf[gridSize-1], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
-            const trace_wall_w = { x: [Array(gridSize).fill(xArr[0]), Array(gridSize).fill(xArr[0])], y: [yArr, yArr], z: [z_surf.map(r => r[0]), flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
-            const trace_wall_e = { x: [Array(gridSize).fill(xArr[gridSize-1]), Array(gridSize).fill(xArr[gridSize-1])], y: [yArr, yArr], z: [z_surf.map(r => r[gridSize-1]), flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_wall_s = { x: [xArr, xArr], y: [Array(gridSize).fill(yArr[0]), Array(gridSize).fill(yArr[0])], z: [z_moist[0], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_wall_n = { x: [xArr, xArr], y: [Array(gridSize).fill(yArr[gridSize-1]), Array(gridSize).fill(yArr[gridSize-1])], z: [z_moist[gridSize-1], flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_wall_w = { x: [Array(gridSize).fill(xArr[0]), Array(gridSize).fill(xArr[0])], y: [yArr, yArr], z: [z_moist.map(r => r[0]), flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_wall_e = { x: [Array(gridSize).fill(xArr[gridSize-1]), Array(gridSize).fill(xArr[gridSize-1])], y: [yArr, yArr], z: [z_moist.map(r => r[gridSize-1]), flat_bottom], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
+            const trace_base = { x: [[xArr[0], xArr[gridSize-1]], [xArr[0], xArr[gridSize-1]]], y: [[yArr[0], yArr[0]], [yArr[gridSize-1], yArr[gridSize-1]]], z: [[z_bottom, z_bottom], [z_bottom, z_bottom]], type: 'surface', showscale: false, colorscale: col_tierra, hoverinfo: 'none' };
 
-            const data = [trace_surface, trace_moisture, trace_wall_s, trace_wall_n, trace_wall_w, trace_wall_e];
+            const data = [trace_surface, trace_moisture, trace_wall_s, trace_wall_n, trace_wall_w, trace_wall_e, trace_base];
 
-            // Configuración del espacio (Cámara y perspectivas copiadas exactamente de tu script original)
             const layout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
                 margin: { l: 0, r: 0, b: 0, t: 0 },
@@ -781,41 +775,46 @@
             Plotly.purge('soilGemeloVolumetrico');
             Plotly.newPlot('soilGemeloVolumetrico', data, layout, {responsive: true, displayModeBar: false});
 
-            // Motor Interactivo de Banderas al Clic
+            // FIX DEL CRASH: Evento de clic limpio y único
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
-            miGrafico.removeAllListeners('plotly_click'); // Evita eventos duplicados
+            miGrafico.removeAllListeners('plotly_click'); // Borramos cualquier evento anterior
             miGrafico.on('plotly_click', function(datosEvento) {
+                if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
+                
                 const punto = datosEvento.points[0];
                 const nombreCapa = punto.data.name;
-                if (nombreCapa === undefined || (!nombreCapa.includes('Perfil') && !nombreCapa.includes('Superficie'))) return;
+                
+                // Si hace click en una pared oscura (que no tiene nombre) no hacemos nada
+                if (!nombreCapa || (!nombreCapa.includes('Perfil') && !nombreCapa.includes('Superficie'))) return;
 
                 let mensaje = "";
                 let colorBorde = "#38bdf8";
                 let colorFondo = "rgba(15, 23, 42, 0.85)";
 
                 if (nombreCapa.includes('Superficie')) {
-                    mensaje = `<b>PUNTO SUPERFICIAL</b><br>Elevación: ${punto.z.toFixed(2)} m`;
-                    colorBorde = "#10b981";
+                    mensaje = `<b>PUNTO SUPERFICIAL</b><br>Elevación: ${punto.z.toFixed(2)} m<br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
+                    colorBorde = "#10b981"; 
                 } else if (nombreCapa.includes('Perfil')) {
                     const hum = punto.surfacecolor;
                     let estado = "Óptimo";
-                    // Usa los parámetros reales de suelo si existen
-                    let limitePMP = parametros_suelo ? parametros_suelo.PMP + 0.05 : 0.25;
-                    let limiteCC = parametros_suelo ? parametros_suelo.CC - 0.05 : 0.40;
+                    let pmp = parametros_suelo ? parametros_suelo.PMP : 0.15;
+                    let cc = parametros_suelo ? parametros_suelo.CC : 0.35;
                     
-                    if (hum < limitePMP) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
-                    else if (hum > limiteCC) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
+                    if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
+                    else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
                     
-                    mensaje = `<b>PERFIL PROFUNDO</b><br>Agua Útil: ${(hum * 100).toFixed(0)}%<br>${estado}`;
+                    mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
                 }
 
                 const nuevaBandera = {
                     showarrow: true, x: punto.x, y: punto.y, z: punto.z,
-                    ax: 0, ay: -80, text: mensaje, font: { color: 'white', size: 12 },
-                    bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6,
+                    ax: 0, ay: -80, text: mensaje,
+                    font: { color: 'white', size: 12 }, bgcolor: colorFondo,
+                    bordercolor: colorBorde, borderwidth: 2, borderpad: 6,
                     arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
                 };
-                Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]});
+
+                Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]}).catch(err => console.log(err));
             });
         }
 
@@ -864,6 +863,18 @@
                 if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") { document.getElementById('status').innerText = ''; document.getElementById('paywallScreen').style.display = 'flex'; return; }
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
+                    
+                    // --- CORRECCIÓN FRONTEND RECUPERADA (EVITA EL INICIO EN CAPACIDAD DE CAMPO) ---
+                    let valorRealInicio = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm;
+                    let diasTransicion = Math.min(30, jsonResponse.data.length);
+                    for(let i = 0; i < diasTransicion; i++) {
+                        let factor = i / diasTransicion; 
+                        jsonResponse.data[i].Humedad_30cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
+                        jsonResponse.data[i].Humedad_60cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
+                        jsonResponse.data[i].Humedad_100cm = (valorRealInicio * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
+                    }
+                    // ------------------------------------------------------------------------------
+
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3); document.getElementById('infoConsulta').style.display = 'block';
                     let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
