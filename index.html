@@ -371,7 +371,7 @@
                     <!-- PERFIL 3D DE CAMPAÑA RESTAURADO (INTACTO COMO ANTES) -->
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL (CORREGIDA, ESCALA FIJA A PARÁMETROS DEL SUELO) -->
+                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -388,6 +388,7 @@
                             </div>
                         </div>
 
+                        <!-- CONTENEDOR RESTAURADO PARA QUE NO QUEDE OCULTO -->
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
                             <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
                                 <span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span>
@@ -661,7 +662,6 @@
             const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             
-            // FIX DEFINITIVO: Escala fijada estrictamente a los parámetros de suelo
             let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
             let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
             
@@ -729,9 +729,12 @@
             if (profundidadSeleccionada == "60") { humedadBase = dato.Humedad_60cm; visualOffset = 6; }
             if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; visualOffset = 10; }
 
-            let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
+            // LÍMITES DE ESCALA FIJOS SEGÚN SUELO
+            let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.03) : 0.1;
             let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
-            const colorScaleAgronomica = [[0, "#d7191c"], [0.25, "#fdae61"], [0.5, "#ffffbf"], [0.75, "#abdda4"], [1, "#2b83ba"]];
+            
+            // LA PALETA ROJO-PURPURA EXACTA DE LA RADIOGRAFÍA
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
 
             let periX = [], periY = [], periZ_top = [], periZ_bot = [], periC = [];
             for(let k = 0; k < poly.length; k++) {
@@ -801,15 +804,15 @@
 
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
-                colorscale: colorScaleAgronomica, cmin: globalMin, cmax: globalMax, cauto: false, 
+                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, cauto: false, 
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil Profundo`,
                 hovertemplate: "<b>%{text}</b><extra></extra>"
             };
 
-            let data_plot = [trace_surface, trace_moisture, trace_skirt];
+            window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
 
-            const layout = {
+            window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
                 margin: { l: 0, r: 120, b: 0, t: 0 }, 
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
@@ -824,7 +827,48 @@
                 }
             };
 
-            Plotly.newPlot('soilGemeloVolumetrico', data_plot, layout, {responsive: true, displayModeBar: false});
+            Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
+
+            const miGrafico = document.getElementById('soilGemeloVolumetrico');
+            
+            if (!miGrafico.hasAttribute('data-click-bound')) {
+                miGrafico.on('plotly_click', function(datosEvento) {
+                    if (window.isPlotlyClicking) return;
+                    window.isPlotlyClicking = true;
+                    setTimeout(() => { window.isPlotlyClicking = false; }, 500);
+                    
+                    if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
+                    const punto = datosEvento.points[0];
+                    const nombreCapa = punto.data.name;
+                    
+                    if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
+                        Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': []}).catch(e=>{});
+                        return;
+                    }
+
+                    let mensaje = ""; let colorBorde = "#38bdf8"; let colorFondo = "rgba(15, 23, 42, 0.85)";
+                    
+                    if (nombreCapa.includes('Superficie')) {
+                        mensaje = `<b>PUNTO SUPERFICIAL</b><br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
+                        colorBorde = "#10b981"; 
+                    } else if (nombreCapa.includes('Perfil')) {
+                        const hum = punto.surfacecolor; let estado = "Óptimo";
+                        let pmp = window.parametrosSimulacion ? window.parametrosSimulacion.PMP : 0.15;
+                        let cc = window.parametrosSimulacion ? window.parametrosSimulacion.CC : 0.35;
+                        if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
+                        else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
+                        mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
+                    }
+
+                    const nuevaBandera = {
+                        showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
+                        font: { color: 'white', size: 12 }, bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
+                    };
+                    
+                    Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]}).catch(e=>{});
+                });
+                miGrafico.setAttribute('data-click-bound', 'true');
+            }
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
