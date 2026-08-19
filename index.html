@@ -388,8 +388,11 @@
                             </div>
                         </div>
 
+                        <!-- CONTENEDOR RESTAURADO PARA QUE NO QUEDE OCULTO -->
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
-                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;"><span data-i18n="tab_xray">Spatial X-Ray</span></h4>
+                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
+                                <span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span>
+                            </h4>
                             <div id="soilGeo3D" style="width: 100%; height: 100%;"></div>
                         </div>
                     </div>
@@ -415,7 +418,6 @@
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">SELECCIÓN DE CAPA EDÁFICA:</label>
                                     <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)" style="width: 100%; padding: 10px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; box-sizing: border-box; cursor: pointer;">
-                                        <!-- Opciones actualizadas (10, 30, 60, 100) sin Superficie 0cm -->
                                         <option value="10">Capa Superficial (-10 cm)</option>
                                         <option value="30">Subsuperficie (-30 cm)</option>
                                         <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
@@ -648,7 +650,7 @@
         }
 
         // =====================================================================
-        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA) -> INTACTO
+        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA)
         // =====================================================================
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
             let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
@@ -679,7 +681,7 @@
         }
 
         // =====================================================================
-        // MOTOR GEM惹O DIGITAL VOLUMÉTRICO (BETA) - CORRECCIÓN DEFINITIVA
+        // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - CORRECCIÓN DEFINITIVA
         // - Cero clicks personalizados (cero cuelgues), solo hover nativo
         // - Colores arreglados (cauto: false + paleta Agronómica Red-Blue)
         // - Opciones actualizadas (10, 30, 60, 100)
@@ -845,6 +847,11 @@
                 document.getElementById('rG_10').innerText = dato.Humedad_10cm.toFixed(3); document.getElementById('rG_30').innerText = dato.Humedad_30cm.toFixed(3); document.getElementById('rG_60').innerText = dato.Humedad_60cm.toFixed(3); document.getElementById('rG_100').innerText = dato.Humedad_100cm.toFixed(3); document.getElementById('rG_et0').innerText = dato.ET0.toFixed(1);
                 document.getElementById('rB_10').innerText = dato.Humedad_10cm.toFixed(3); document.getElementById('rB_30').innerText = dato.Humedad_30cm.toFixed(3); document.getElementById('rB_60').innerText = dato.Humedad_60cm.toFixed(3); document.getElementById('rB_100').innerText = dato.Humedad_100cm.toFixed(3);
                 document.getElementById('resGeo3D').style.display = 'block'; document.getElementById('resGemelo').style.display = 'block';
+                
+                // ACTUALIZACIÓN DEL TÍTULO DE RADIOGRAFÍA ESPACIAL CON LA FECHA CORRECTA
+                document.getElementById('contenedorGeo3D').style.display = 'block';
+                document.getElementById('lblFechaGeo3D').innerText = `(Date: ${dato.timestamp})`;
+                
                 document.getElementById('fechaConsultaGeo3D').value = fecha; document.getElementById('fechaConsultaGemelo').value = fecha;
                 renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); 
                 let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
