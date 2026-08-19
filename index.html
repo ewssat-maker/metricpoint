@@ -371,7 +371,7 @@
                     <!-- PERFIL 3D DE CAMPAÑA RESTAURADO (INTACTO COMO ANTES) -->
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL -->
+                    <!-- RADIOGRAFÍA ESPACIAL (CORREGIDA, ESCALA FIJA A PARÁMETROS DEL SUELO) -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -388,7 +388,6 @@
                             </div>
                         </div>
 
-                        <!-- CONTENEDOR RESTAURADO PARA QUE NO QUEDE OCULTO -->
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
                             <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
                                 <span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span>
@@ -418,6 +417,7 @@
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">SELECCIÓN DE CAPA EDÁFICA:</label>
                                     <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)" style="width: 100%; padding: 10px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; box-sizing: border-box; cursor: pointer;">
+                                        <!-- Opciones actualizadas -->
                                         <option value="10">Capa Superficial (-10 cm)</option>
                                         <option value="30">Subsuperficie (-30 cm)</option>
                                         <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
@@ -638,7 +638,6 @@
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); document.getElementById('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
             
-            // FIX: Obliga a Plotly a recalcular su tamaño cuando la pestaña se vuelve visible para evitar que el gráfico se aplaste (cero píxeles)
             setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
             }, 10);
@@ -650,7 +649,7 @@
         }
 
         // =====================================================================
-        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA)
+        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA) -> FIJADO A PARÁMETROS DE SUELO
         // =====================================================================
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
             let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
@@ -661,7 +660,10 @@
             function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w; }
             const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
-            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
+            
+            // FIX DEFINITIVO: Escala fijada estrictamente a los parámetros de suelo
+            let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
+            let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
             
             let traces = [];
             layers.forEach((layer, index) => {
@@ -675,18 +677,17 @@
                         } else { zRow.push(null); cRow.push(null); tRow.push(null); }
                     } zMatrix.push(zRow); colorMatrix.push(cRow); textMatrix.push(tRow);
                 }
-                traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cauto: false, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
+                traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
             });
             Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {visible:false}, yaxis: {visible:false}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
         }
 
         // =====================================================================
         // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - CORRECCIÓN DEFINITIVA
-        // - Cero clicks personalizados (cero cuelgues), solo hover nativo
-        // - Colores arreglados (cauto: false + paleta Agronómica Red-Blue)
-        // - Opciones actualizadas (10, 30, 60, 100)
         // =====================================================================
         window.ultimoDatoCalculado = null; 
+        window.gemeloDataPlot = null;
+        window.gemeloLayout = null;
 
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -716,27 +717,22 @@
                 if (!puntosDEM || puntosDEM.length === 0) return 0;
                 let sum_w = 0, sum_z_w = 0, smoothing = 0.00005;
                 for (let i = 0; i < puntosDEM.length; i++) {
-                    let p2 = puntosDEM[i]; // FIX: Error corregido
+                    let p2 = puntosDEM[i]; 
                     let d2 = Math.pow(p2.lon-lon, 2) + Math.pow(p2.lat-lat, 2);
                     let w = 1/(d2+smoothing); sum_w += w; sum_z_w += p2.z*w;
                 } return sum_z_w / sum_w;
             }
 
-            // Datos Base (Opciones actualizadas)
             let humedadBase = dato.Humedad_60cm; let visualOffset = 6; 
             if (profundidadSeleccionada == "10") { humedadBase = dato.Humedad_10cm; visualOffset = 1; }
             if (profundidadSeleccionada == "30") { humedadBase = dato.Humedad_30cm; visualOffset = 3; }
             if (profundidadSeleccionada == "60") { humedadBase = dato.Humedad_60cm; visualOffset = 6; }
             if (profundidadSeleccionada == "100") { humedadBase = dato.Humedad_100cm; visualOffset = 10; }
 
-            // LÍMITES DE ESCALA FIJOS Y REALES
             let globalMin = parametros_suelo ? Math.max(0, parametros_suelo.PMP - 0.05) : 0.1;
             let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
-            
-            // LA PALETA AGRONÓMICA (Rojo=Seco, Azul=Húmedo) IGUAL AL HEATMAP 2D
             const colorScaleAgronomica = [[0, "#d7191c"], [0.25, "#fdae61"], [0.5, "#ffffbf"], [0.75, "#abdda4"], [1, "#2b83ba"]];
 
-            // 1. LA FALDA DE TIERRA 
             let periX = [], periY = [], periZ_top = [], periZ_bot = [], periC = [];
             for(let k = 0; k < poly.length; k++) {
                 let pt = poly[k];
@@ -750,7 +746,7 @@
                 periX.push(px); 
                 periY.push(py);
                 periZ_top.push(baseZ + surco - visualOffset); 
-                periZ_bot.push(-5); // Z Fondo más profundo para evitar recortes raros
+                periZ_bot.push(-5); 
                 periC.push(0);
             }
             periX.push(periX[0]); periY.push(periY[0]); periZ_top.push(periZ_top[0]); periZ_bot.push(periZ_bot[0]); periC.push(0);
@@ -762,7 +758,6 @@
                 showscale: false, hoverinfo: 'none', name: 'Bloque Profundo'
             };
 
-            // 2. CAPA SUPERFICIAL Y CAPA DE HUMEDAD
             let z_surf = [], color_surf = [];
             let z_moist = [], moist = [], text_moist = [];
 
@@ -806,7 +801,7 @@
 
             const trace_moisture = {
                 x: plotX, y: plotY, z: z_moist, surfacecolor: moist, text: text_moist, type: 'surface',
-                colorscale: colorScaleAgronomica, cmin: globalMin, cmax: globalMax, cauto: false, // FORZADO A ESCALA CORRECTA
+                colorscale: colorScaleAgronomica, cmin: globalMin, cmax: globalMax, cauto: false, 
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 lighting: { ambient: 0.9, diffuse: 0.8 }, name: `Perfil Profundo`,
                 hovertemplate: "<b>%{text}</b><extra></extra>"
@@ -822,14 +817,13 @@
                     camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
-                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-6, 14] }, // Rango estático
+                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-6, 14] }, 
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.5 }, 
                     annotations: [] 
                 }
             };
 
-            // Usamos newPlot para generar el grafico limpio y SIN eventos de clic manuales (esto soluciona el cuelgue por completo)
             Plotly.newPlot('soilGemeloVolumetrico', data_plot, layout, {responsive: true, displayModeBar: false});
         }
 
@@ -848,7 +842,6 @@
                 document.getElementById('rB_10').innerText = dato.Humedad_10cm.toFixed(3); document.getElementById('rB_30').innerText = dato.Humedad_30cm.toFixed(3); document.getElementById('rB_60').innerText = dato.Humedad_60cm.toFixed(3); document.getElementById('rB_100').innerText = dato.Humedad_100cm.toFixed(3);
                 document.getElementById('resGeo3D').style.display = 'block'; document.getElementById('resGemelo').style.display = 'block';
                 
-                // ACTUALIZACIÓN DEL TÍTULO DE RADIOGRAFÍA ESPACIAL CON LA FECHA CORRECTA
                 document.getElementById('contenedorGeo3D').style.display = 'block';
                 document.getElementById('lblFechaGeo3D').innerText = `(Date: ${dato.timestamp})`;
                 
