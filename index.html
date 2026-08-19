@@ -371,7 +371,7 @@
                     <!-- PERFIL 3D DE CAMPAÑA RESTAURADO (INTACTO COMO ANTES) -->
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL RESTAURADA PERFECTA -->
+                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL RESTAURADA PERFECTA (ESCALA DINÁMICA ORIGINAL) -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -417,7 +417,6 @@
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">SELECCIÓN DE CAPA EDÁFICA:</label>
                                     <select id="selProfundidadGemelo" onchange="cambiarCapaGemeloVolumetrico(this.value)" style="width: 100%; padding: 10px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; box-sizing: border-box; cursor: pointer;">
-                                        <!-- Opciones actualizadas -->
                                         <option value="10">Capa Superficial (-10 cm)</option>
                                         <option value="30">Subsuperficie (-30 cm)</option>
                                         <option value="60" selected>Nivel de Raíces Activas (-60 cm)</option>
@@ -915,16 +914,44 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
+                    // --- RESTAURACIÓN: CÁLCULO DE HUMEDAD Y FILTRADO REAL (BALANCE HÍDRICO) ---
                     if (jsonResponse.data && jsonResponse.data.length > 0) {
-                        let valIni = jsonResponse.data[0].Humedad_10cm; 
-                        let diasTransicion = Math.min(30, jsonResponse.data.length);
-                        for(let i = 0; i < diasTransicion; i++) {
-                            let factor = i / diasTransicion; 
-                            jsonResponse.data[i].Humedad_30cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
-                            jsonResponse.data[i].Humedad_60cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
-                            jsonResponse.data[i].Humedad_100cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
+                        let cc = jsonResponse.suelo.CC;
+                        let pmp = jsonResponse.suelo.PMP;
+                        
+                        // Forzamos el estado inicial si hay satélite
+                        let inicial = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm || (cc * 0.7);
+                        jsonResponse.data[0].Humedad_10cm = inicial;
+                        jsonResponse.data[0].Humedad_30cm = inicial;
+                        jsonResponse.data[0].Humedad_60cm = inicial * 0.95;
+                        jsonResponse.data[0].Humedad_100cm = inicial * 0.90;
+
+                        for (let i = 1; i < jsonResponse.data.length; i++) {
+                            let prev = jsonResponse.data[i - 1];
+                            let curr = jsonResponse.data[i];
+                            let lluvia = curr.Lluvia || 0;
+                            let et0 = curr.ET0 || 0;
+
+                            // 1. Capa Superficial (10cm): Dato de satélite manda. Si no hay, balance simple.
+                            if (curr.Proxy_Humedad) {
+                                curr.Humedad_10cm = curr.Proxy_Humedad;
+                            } else {
+                                curr.Humedad_10cm = prev.Humedad_10cm + (lluvia * 0.008) - (et0 * 0.003);
+                            }
+
+                            // 2. Filtrado a capas inferiores (Redistribución y percolación)
+                            curr.Humedad_30cm = prev.Humedad_30cm + ((curr.Humedad_10cm - prev.Humedad_30cm) * 0.15) + (lluvia > 5 ? 0.005 : 0) - (et0 * 0.001);
+                            curr.Humedad_60cm = prev.Humedad_60cm + ((curr.Humedad_30cm - prev.Humedad_60cm) * 0.10) + (lluvia > 15 ? 0.003 : 0) - (et0 * 0.0005);
+                            curr.Humedad_100cm = prev.Humedad_100cm + ((curr.Humedad_60cm - prev.Humedad_100cm) * 0.05) + (lluvia > 30 ? 0.002 : 0);
+
+                            // 3. Limitar según propiedades del suelo
+                            curr.Humedad_10cm = Math.max(pmp, Math.min(cc, curr.Humedad_10cm));
+                            curr.Humedad_30cm = Math.max(pmp, Math.min(cc, curr.Humedad_30cm));
+                            curr.Humedad_60cm = Math.max(pmp, Math.min(cc, curr.Humedad_60cm));
+                            curr.Humedad_100cm = Math.max(pmp, Math.min(cc, curr.Humedad_100cm));
                         }
                     }
+                    // --------------------------------------------------------------------------
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
