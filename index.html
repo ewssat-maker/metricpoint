@@ -64,15 +64,41 @@
         .modal-footer { padding: 15px 20px; background: #f4f7f6; text-align: right; border-top: 1px solid #ddd; }
         .btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* SECCIÓN TÉCNICA (SCROLL) */
-        #techSection { padding: 100px 50px; display: flex; flex-direction: column; align-items: center; gap: 40px; background-color: #020617; overflow: hidden; }
-        .tech-header { text-align: center; margin-bottom: 20px; }
-        .tech-header h2 { color: #38bdf8; font-size: 32px; margin: 0; }
-        .tech-header p { color: #94a3b8; font-size: 16px; margin-top: 10px;}
-        .tech-card { background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #10b981; border-radius: 8px; padding: 30px; max-width: 800px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; transform: translateY(60px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
-        .tech-card.visible { opacity: 1; transform: translateY(0); }
-        .tech-card h3 { color: #10b981; margin-top: 0; font-size: 20px; display: flex; align-items: center; gap: 10px;}
-        .tech-card p { color: #cbd5e1; font-size: 15px; line-height: 1.6; margin-bottom: 0; }
+        /* ==========================================
+           SECCIÓN TÉCNICA (NUEVAS SOLAPAS DE INTRODUCCIÓN)
+           ========================================== */
+        #techSection { padding: 80px 20px; background-color: #020617; overflow: hidden; }
+        
+        .intro-tabs-container { width: 100%; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.85); border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        .intro-tabs-header { display: flex; background: #0f172a; border-bottom: 2px solid #1e293b; }
+        .intro-tab-btn { flex: 1; padding: 20px 10px; font-size: 16px; font-weight: bold; color: #94a3b8; background: none; border: none; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; text-align: center; }
+        .intro-tab-btn:hover { color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
+        .intro-tab-btn.active { color: #38bdf8; border-bottom-color: #38bdf8; background: rgba(15, 23, 42, 1); }
+        
+        .intro-tab-content { padding: 40px; display: none; color: #cbd5e1; line-height: 1.6; }
+        .intro-tab-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .about-text { font-size: 17px; margin-bottom: 20px; text-align: justify; }
+        
+        .product-showcase { display: flex; gap: 30px; margin-bottom: 40px; align-items: center; background: rgba(30, 41, 59, 0.5); padding: 25px; border-radius: 8px; border-left: 4px solid #10b981; transition: transform 0.3s ease; }
+        .product-showcase:hover { transform: translateY(-5px); }
+        .product-showcase video { width: 50%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); object-fit: cover; border: 1px solid #1e293b; }
+        .product-info { width: 50%; }
+        .product-info h3 { margin-top: 0; font-size: 24px; margin-bottom: 15px; }
+        .product-info p { font-size: 15px; color: #cbd5e1; line-height: 1.6; }
+        
+        .contact-form { display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin: 0 auto; background: rgba(30, 41, 59, 0.5); padding: 30px; border-radius: 8px; border: 1px solid #1e293b; }
+        .contact-form input, .contact-form textarea { padding: 15px; border-radius: 6px; border: 1px solid #1e293b; background: #0f172a; color: white; font-family: inherit; font-size: 15px; transition: border-color 0.3s; }
+        .contact-form input:focus, .contact-form textarea:focus { border-color: #38bdf8; outline: none; }
+        .contact-form button { padding: 15px; background: #38bdf8; color: #020617; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
+        .contact-form button:hover { background: #0ea5e9; }
+        
+        @media (max-width: 768px) {
+            .product-showcase { flex-direction: column !important; }
+            .product-showcase video, .product-info { width: 100%; }
+            .intro-tabs-header { flex-direction: column; }
+        }
 
         /* ==========================================
            3. ESTILOS DEL WORKSPACE
@@ -129,7 +155,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Controles de Solapas 3D */
         .gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
         .gemelo-control-panel label { margin: 0; font-size: 14px; font-weight: bold; }
         .gemelo-control-panel select, .gemelo-control-panel input { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; font-weight: bold; cursor: pointer; }
@@ -232,22 +257,56 @@
             </div>
         </div>
 
+        <!-- NUEVA SECCIÓN DE INTRODUCCIÓN (TABS COMERCIALES) -->
         <div id="techSection">
-            <div class="tech-header">
-                <h2 data-i18n="tech_title">Suite Architecture</h2>
-                <p data-i18n="tech_desc">Technological infrastructure behind MetricPoint</p>
-            </div>
-            <div class="tech-card">
-                <h3 data-i18n="card1_title">🛰️ SAR Edaphic Analysis (Sentinel-1)</h3>
-                <p data-i18n="card1_desc">Our platform injects raw C-band microwave data from the European Space Agency. Unlike optical images, radar penetrates vegetation cover and clouds, allowing us to calculate the real volumetric soil moisture from the first centimeters to the deep root zone, detecting stress before the plant shows visual symptoms.</p>
-            </div>
-            <div class="tech-card" style="border-left-color: #38bdf8;">
-                <h3 style="color:#38bdf8;" data-i18n="card2_title">📡 Live SINARAME Integration</h3>
-                <p data-i18n="card2_desc">Direct real-time connection with the weather radar network of the National Meteorological Service (SMN). We mathematically clean the reflectivity (dBZ) by cutting garbage visual vectors to overlay millimeter storm echoes over your lots. Anticipate hail fronts and severe convective storms minutes before they occur.</p>
-            </div>
-            <div class="tech-card" style="border-left-color: #f59e0b;">
-                <h3 style="color:#f59e0b;" data-i18n="card3_title">🧊 Topographic Digital Twins</h3>
-                <p data-i18n="card3_desc">We transform the view of your fields from 2D planes to massive 3D blocks by extracting Digital Elevation Models (DEM). Our graphics engine allows you to take "spatial X-rays" of the terrain at different depths, interacting with heat maps and discovering endorheic basins, runoff routes and areas prone to wilting or chronic waterlogging.</p>
+            <div class="intro-tabs-container">
+                <div class="intro-tabs-header">
+                    <button class="intro-tab-btn active" onclick="abrirIntroTab('introWho', this)" data-i18n="tab_intro_who">Quiénes Somos</button>
+                    <button class="intro-tab-btn" onclick="abrirIntroTab('introProd', this)" data-i18n="tab_intro_prod">Nuestros Productos</button>
+                    <button class="intro-tab-btn" onclick="abrirIntroTab('introContact', this)" data-i18n="tab_intro_contact">Contacto</button>
+                </div>
+                
+                <div id="introWho" class="intro-tab-content active">
+                    <h2 style="color: #38bdf8; font-size: 32px; margin-top: 0;" data-i18n="who_title">MetricPoint: Inteligencia Geoespacial</h2>
+                    <p class="about-text" data-i18n="who_p1">MetricPoint es una empresa AgTech de vanguardia especializada en inteligencia geoespacial y análisis edáfico profundo utilizando tecnología SAR (Radar de Apertura Sintética).</p>
+                    <p class="about-text" data-i18n="who_p2">Operando actualmente en Estados Unidos, estamos expandiendo nuestras fronteras tecnológicas para potenciar la agricultura de precisión con topografía milimétrica y modelado fisiológico de cultivos.</p>
+                    <p class="about-text" data-i18n="who_p3">Con un próximo desembarco en Argentina, traemos el futuro de la toma de decisiones agronómicas a las fértiles tierras de Sudamérica, prediciendo el estrés hídrico antes de que sea visible.</p>
+                </div>
+
+                <div id="introProd" class="intro-tab-content">
+                    <div class="product-showcase">
+                        <video autoplay loop muted playsinline><source src="gemelos_digitales.mp4" type="video/mp4"></video>
+                        <div class="product-info">
+                            <h3 style="color: #10b981;" data-i18n="prod_gem_title">Gemelos Digitales Volumétricos</h3>
+                            <p data-i18n="prod_gem_desc">Transforme sus lotes 2D en modelos topográficos 3D interactivos. Revele la dinámica de la humedad del suelo capa por capa e identifique riesgos de marchitez o anegamiento con precisión milimétrica.</p>
+                        </div>
+                    </div>
+                    <div class="product-showcase" style="border-left-color: #f59e0b; flex-direction: row-reverse;">
+                        <video autoplay loop muted playsinline><source src="RVI_vigor.mp4" type="video/mp4"></video>
+                        <div class="product-info">
+                            <h3 style="color: #f59e0b;" data-i18n="prod_rvi_title">Vigor RVI y Predicción de Rinde</h3>
+                            <p data-i18n="prod_rvi_desc">Vaya más allá de los índices ópticos tradicionales. Correlacionamos el vigor estructural del cultivo (Radar Vegetation Index) con el balance hídrico profundo para pronosticar con precisión el potencial productivo, sin interferencia de nubes.</p>
+                        </div>
+                    </div>
+                    <div class="product-showcase" style="border-left-color: #38bdf8;">
+                        <video autoplay loop muted playsinline><source src="polinizacion.mp4" type="video/mp4"></video>
+                        <div class="product-info">
+                            <h3 style="color: #38bdf8;" data-i18n="prod_pol_title">MetricPoli: Polinización y Fenología</h3>
+                            <p data-i18n="prod_pol_desc">Suite integral de polinización. Monitoree el rendimiento de las colmenas y las etapas fenológicas del cultivo para maximizar el cuajado de frutos, asegurando cosechas sostenibles y altamente productivas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="introContact" class="intro-tab-content">
+                    <h2 style="color: #38bdf8; text-align: center; margin-top: 0; font-size: 32px;" data-i18n="contact_title">Póngase en Contacto</h2>
+                    <p style="text-align: center; margin-bottom: 30px; font-size: 16px;" data-i18n="contact_desc">¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.</p>
+                    <div class="contact-form">
+                        <input type="text" data-i18n="contact_name" placeholder="Nombre Completo">
+                        <input type="email" data-i18n="lbl_email" placeholder="Correo Electrónico">
+                        <textarea rows="5" data-i18n="contact_msg" placeholder="Su Mensaje"></textarea>
+                        <button type="button" data-i18n="btn_send" onclick="alert('Mensaje enviado (Simulado)')">Enviar Mensaje</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -262,7 +321,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO -->
+    <!-- ESPACIO DE TRABAJO (INTACTO) -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -368,10 +427,8 @@
                     </div>
                     <div id="tabClima" class="tab-content"><div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div></div>
                     
-                    <!-- PERFIL 3D DE CAMPAÑA RESTAURADO (INTACTO COMO ANTES) -->
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL RESTAURADA PERFECTA (ESCALA DINÁMICA ORIGINAL) -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -396,17 +453,14 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (BETA) INTACTO Y SELLADO -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div style="display: flex; flex-direction: row; background-color: #020617; border: 2px solid #1e293b; border-radius: 8px; overflow: hidden; height: 600px;">
                             
-                            <!-- Lado Izquierdo: Modelo 3D -->
                             <div style="flex-grow: 1; position: relative;">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
                                 <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; pointer-events: none; backdrop-filter: blur(4px);">👆 Pasa el mouse sobre el perfil para ver los datos y arrastra para rotar.</div>
                             </div>
                             
-                            <!-- Lado Derecho: Controles y Resultados -->
                             <div style="width: 320px; background: #0f172a; border-left: 2px solid #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">FECHA A CONSULTAR:</label>
@@ -483,10 +537,25 @@
                 "lbl_read": "I have read and accept the ", "lbl_tyc": "Terms and Conditions", "lbl_and": " and the ", "lbl_priv": "Privacy Policy", "msg_tyc_req": "You must accept the legal terms to register.",
                 "legal_title": "Terms and Conditions of Use", "legal_p1": "By registering, accessing or using the MetricPoint platform, you agree to be bound by these terms.", "legal_h1": "1. Agronomic Disclaimer", "legal_p2": "The Platform provides satellite and radar telemetry tools. You understand that it is strictly a decision assistance tool and does not replace agronomic judgment in the field. MetricPoint assumes no liability for yield losses or crop damage resulting from decisions made based on the platform.", "legal_h2": "2. Third Party Data Sources", "legal_p3": "The architecture is fed by the European Space Agency (Copernicus) and the National Meteorological Service (SMN). We do not guarantee 100% uptime in case of government server crashes.", "legal_h3": "3. Use and Licenses", "legal_p4": "Trial access lasts 48 hours. Web scraping, resale of information or sharing credentials without a commercial license is explicitly prohibited.", "btn_close": "Close",
                 "priv_title": "Privacy Policy", "priv_h1": "1. Information we collect", "priv_p1": "We collect your email (with encrypted password) and the geospatial coordinates (polygons) of the analyzed lots for calculating water balances.", "priv_h2": "2. Sharing with Third Parties", "priv_p2": "MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.", "priv_h3": "3. User Rights", "priv_p3": "In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the system administrator.",
-                "tech_title": "Suite Architecture", "tech_desc": "Technological infrastructure behind MetricPoint",
-                "card1_title": "🛰️ SAR Edaphic Analysis (Sentinel-1)", "card1_desc": "Our platform injects raw C-band microwave data from the European Space Agency. Unlike optical images, radar penetrates vegetation cover and clouds, allowing us to calculate the real volumetric soil moisture from the first centimeters to the deep root zone, detecting stress before the plant shows visual symptoms.",
-                "card2_title": "📡 Live SINARAME Integration", "card2_desc": "Direct real-time connection with the weather radar network of the National Meteorological Service (SMN). We mathematically clean the reflectivity (dBZ) by cutting garbage visual vectors to overlay millimeter storm echoes over your lots. Anticipate hail fronts and severe convective storms minutes before they occur.",
-                "card3_title": "🧊 Topographic Digital Twins", "card3_desc": "We transform the view of your fields from 2D planes to massive 3D blocks by extracting Digital Elevation Models (DEM). Our graphics engine allows you to take \"spatial X-rays\" of the terrain at different depths, interacting with heat maps and discovering endorheic basins, runoff routes and areas prone to wilting or chronic waterlogging.",
+                
+                // NUEVAS TRADUCCIONES INTRODUCCIÓN
+                "tab_intro_who": "Who We Are", "tab_intro_prod": "Our Products", "tab_intro_contact": "Contact Us",
+                "who_title": "MetricPoint: Geospatial Intelligence",
+                "who_p1": "MetricPoint is a cutting-edge AgTech company specializing in geospatial intelligence and deep edaphic analysis using SAR (Synthetic Aperture Radar) technology.",
+                "who_p2": "Currently operating in the United States, we are expanding our technological boundaries to empower precision agriculture with millimeter-level topographic insights and physiological crop modeling.",
+                "who_p3": "Soon launching in Argentina, we bring the future of agronomic decision-making to the fertile lands of South America, predicting stress before it becomes visible.",
+                "prod_gem_title": "Volumetric Digital Twins",
+                "prod_gem_desc": "Transform your 2D fields into interactive 3D topographic models. Reveal soil moisture dynamics layer by layer and identify risks of wilting or waterlogging with pinpoint accuracy.",
+                "prod_rvi_title": "RVI Vigor & Yield Prediction",
+                "prod_rvi_desc": "Go beyond traditional optical indices. We correlate structural crop vigor (Radar Vegetation Index) with deep soil water balance to accurately forecast productive potential, ignoring cloud cover.",
+                "prod_pol_title": "MetricPoli: Pollination & Phenology",
+                "prod_pol_desc": "Comprehensive pollination suite. Monitor hive performance and phenological crop stages to maximize fruit set, ensuring sustainable and highly productive harvests.",
+                "contact_title": "Get in Touch",
+                "contact_desc": "Interested in bringing MetricPoint's technology to your fields? Drop us a message.",
+                "contact_name": "Full Name",
+                "contact_msg": "Your Message",
+                "btn_send": "Send Message",
+
                 "paywall_title": "Trial Period Expired", "paywall_desc": "Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.", "btn_upgrade": "Get Premium License", "btn_logout": "Sign Out",
                 "hub_subtitle": "Select the analysis module you want to use", "hub_vid_title": "MetricMoisture 3D Engine", "hub_vid_desc": "Interactive Volumetric Digital Twins for precision monitoring.",
                 "mod_moisture_desc": "Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.", "mod_weather_title": "Weather Forecast", "mod_weather_desc": "Atmospheric modeling, live SMN radars and predictive meteorological variables.", "mod_poli_desc": "Comprehensive pollination suite, hive monitoring and advanced phenological analysis.",
@@ -511,10 +580,25 @@
                 "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "lbl_and": " y la ", "lbl_priv": "Política de Privacidad", "msg_tyc_req": "Debes aceptar los términos legales para registrarte.",
                 "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
                 "priv_title": "Aviso de Privacidad", "priv_h1": "1. Información que recopilamos", "priv_p1": "Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.", "priv_h2": "2. Compartición con Terceros", "priv_p2": "MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.", "priv_h3": "3. Derechos del Usuario", "priv_p3": "En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.",
-                "tech_title": "Arquitectura de la Suite", "tech_desc": "Infraestructura tecnológica detrás de MetricPoint",
-                "card1_title": "🛰️ Análisis Edáfico SAR (Sentinel-1)", "card1_desc": "Nuestra plataforma inyecta datos crudos de microondas en banda C procedentes de la Agencia Espacial Europea. A diferencia de las imágenes ópticas, el radar penetra la cobertura vegetal y las nubes, permitiéndonos calcular la humedad volumétrica real del suelo desde los primeros centímetros hasta la zona radicular profunda, detectando estrés antes de que la planta muestre síntomas visuales.",
-                "card2_title": "📡 Integración SINARAME en Vivo", "card2_desc": "Conexión directa en tiempo real con la red de radares meteorológicos del Servicio Meteorológico Nacional (SMN). Limpiamos matemáticamente la reflectividad (dBZ) cortando vectores visuales basura para superponer ecos de tormenta milimétricos sobre sus lotes. Anticípese a frentes de granizo y tormentas convectivas severas minutos antes de que ocurran.",
-                "card3_title": "🧊 Gemelos Digitales Topográficos", "card3_desc": "Transformamos la vista de sus campos de planos 2D a bloques macizos 3D extrayendo Modelos Digitales de Elevación (DEM). Nuestro motor gráfico le permite hacer \"radiografías espaciales\" del terreno a distintas profundidades, interactuando con mapas de calor y descubriendo cuencas endorreicas, vías de escurrimiento y zonas propensas a la marchitez o al anegamiento crónico.",
+                
+                // NUEVAS TRADUCCIONES INTRODUCCIÓN
+                "tab_intro_who": "Quiénes Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contacto",
+                "who_title": "MetricPoint: Inteligencia Geoespacial",
+                "who_p1": "MetricPoint es una empresa AgTech de vanguardia especializada en inteligencia geoespacial y análisis edáfico profundo utilizando tecnología SAR (Radar de Apertura Sintética).",
+                "who_p2": "Operando actualmente en Estados Unidos, estamos expandiendo nuestras fronteras tecnológicas para potenciar la agricultura de precisión con topografía milimétrica y modelado fisiológico de cultivos.",
+                "who_p3": "Con un próximo desembarco en Argentina, traemos el futuro de la toma de decisiones agronómicas a las fértiles tierras de Sudamérica, prediciendo el estrés hídrico antes de que sea visible.",
+                "prod_gem_title": "Gemelos Digitales Volumétricos",
+                "prod_gem_desc": "Transforme sus lotes 2D en modelos topográficos 3D interactivos. Revele la dinámica de la humedad del suelo capa por capa e identifique riesgos de marchitez o anegamiento con precisión milimétrica.",
+                "prod_rvi_title": "Vigor RVI y Predicción de Rinde",
+                "prod_rvi_desc": "Vaya más allá de los índices ópticos tradicionales. Correlacionamos el vigor estructural del cultivo (Radar Vegetation Index) con el balance hídrico profundo para pronosticar con precisión el potencial productivo, sin interferencia de nubes.",
+                "prod_pol_title": "MetricPoli: Polinización y Fenología",
+                "prod_pol_desc": "Suite integral de polinización. Monitoree el rendimiento de las colmenas y las etapas fenológicas del cultivo para maximizar el cuajado de frutos, asegurando cosechas sostenibles y altamente productivas.",
+                "contact_title": "Póngase en Contacto",
+                "contact_desc": "¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.",
+                "contact_name": "Nombre Completo",
+                "contact_msg": "Su Mensaje",
+                "btn_send": "Enviar Mensaje",
+
                 "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 48 horas de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
                 "hub_subtitle": "Seleccione el módulo de análisis que desea utilizar", "hub_vid_title": "Motor 3D MetricMoisture", "hub_vid_desc": "Gemelos Digitales Volumétricos para monitoreo de precisión.",
                 "mod_moisture_desc": "Análisis de humedad edáfica profunda con satélites SAR, topografía 3D y balance hídrico.", "mod_weather_title": "Pronóstico del Tiempo", "mod_weather_desc": "Modelado atmosférico, radares del SMN en vivo y variables predictivas meteorológicas.", "mod_poli_desc": "Suite integral de polinización, monitoreo de colmenas y análisis fenológico avanzado.",
@@ -538,7 +622,25 @@
                 "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (48 Horas Grátis)",
                 "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "lbl_and": " e a ", "lbl_priv": "Política de Privacidade", "msg_tyc_req": "Você deve aceitar os termos legais para se registrar.",
                 "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
-                "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema."
+                "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema.",
+                
+                // NUEVAS TRADUCCIONES INTRODUCCIÓN
+                "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nossos Produtos", "tab_intro_contact": "Contato",
+                "who_title": "MetricPoint: Inteligência Geoespacial",
+                "who_p1": "A MetricPoint é uma empresa AgTech de ponta especializada em inteligência geoespacial e análise edáfica profunda usando tecnologia SAR (Radar de Abertura Sintética).",
+                "who_p2": "Atuando atualmente nos Estados Unidos, estamos expandindo nossas fronteiras tecnológicas para capacitar a agricultura de precisão com insights topográficos milimétricos e modelagem fisiológica de culturas.",
+                "who_p3": "Com lançamento em breve na Argentina, trazemos o futuro da tomada de decisões agronômicas para as férteis terras da América do Sul, prevendo o estresse antes que se torne visível.",
+                "prod_gem_title": "Gêmeos Digitais Volumétricos",
+                "prod_gem_desc": "Transforme seus campos 2D em modelos topográficos 3D interativos. Revele a dinâmica da umidade do solo camada por camada e identifique riscos de murcha ou alagamento com extrema precisão.",
+                "prod_rvi_title": "Vigor RVI e Previsão de Safra",
+                "prod_rvi_desc": "Vá além dos índices ópticos tradicionais. Correlacionamos o vigor estrutural da cultura (Radar Vegetation Index) com o balanço hídrico profundo do solo para prever com precisão o potencial produtivo, sem interferência de nuvens.",
+                "prod_pol_title": "MetricPoli: Polinização e Fenologia",
+                "prod_pol_desc": "Suite completa de polinização. Monitore o desempenho das colmeias e as fases fenológicas da cultura para maximizar a frutificação, garantindo colheitas sustentáveis e altamente produtivas.",
+                "contact_title": "Entre em Contato",
+                "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
+                "contact_name": "Nome Completo",
+                "contact_msg": "Sua Mensagem",
+                "btn_send": "Enviar Mensagem"
             }
         };
 
@@ -546,8 +648,11 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (traducciones[lang] && traducciones[lang][key]) {
-                    if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) { el.placeholder = traducciones[lang][key]; } 
-                    else { el.innerHTML = traducciones[lang][key]; }
+                    if ((el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && el.hasAttribute('placeholder')) { 
+                        el.placeholder = traducciones[lang][key]; 
+                    } else { 
+                        el.innerHTML = traducciones[lang][key]; 
+                    }
                 }
             });
             if (window.datosSimulacion && window.datosSimulacion.length > 0) { generarInforme(window.datosSimulacion, window.parametrosSimulacion); }
@@ -565,6 +670,13 @@
             }
             cambiarIdioma(document.getElementById('langSwitch').value);
         });
+
+        function abrirIntroTab(tabId, elementoBtn) {
+            document.querySelectorAll('.intro-tab-content').forEach(tab => tab.classList.remove('active')); 
+            document.querySelectorAll('.intro-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active'); 
+            elementoBtn.classList.add('active'); 
+        }
 
         function abrirTyC() { document.getElementById('modalTyC').style.display = 'flex'; }
         function cerrarTyC() { document.getElementById('modalTyC').style.display = 'none'; }
@@ -647,9 +759,6 @@
             for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { let xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1]; let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi); if (intersect) isInside = !isInside; } return isInside;
         }
 
-        // =====================================================================
-        // MOTOR RENDER GRÁFICO 3D ORIGINAL (RADIOGRAFÍA ESPACIAL MULTICAPA) -> RESTAURADO A ORIGINAL
-        // =====================================================================
         function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
             let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
             const gridSize = 60; let xArr = [], yArr = []; for(let i=0; i<gridSize; i++) { xArr.push(minX + (maxX-minX)*(i/(gridSize-1))); yArr.push(minY + (maxY-minY)*(i/(gridSize-1))); }
@@ -660,7 +769,6 @@
             const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             
-            // LA CORRECCIÓN: Volver al cálculo original dinámico, sin forzar CC ni PMP
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); 
             let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
             
@@ -681,9 +789,6 @@
             Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {visible:false}, yaxis: {visible:false}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
         }
 
-        // =====================================================================
-        // MOTOR GEMELO DIGITAL VOLUMÉTRICO (BETA) - INTACTO
-        // =====================================================================
         window.ultimoDatoCalculado = null; 
         window.gemeloDataPlot = null;
         window.gemeloLayout = null;
@@ -808,6 +913,7 @@
             };
 
             window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
+            if (profundidadSeleccionada == "0") window.gemeloDataPlot = [trace_moisture, trace_skirt]; 
 
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -824,8 +930,8 @@
                 }
             };
 
-            Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
-            
+            Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
+
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
             
             if (!miGrafico.hasAttribute('data-click-bound')) {
@@ -914,12 +1020,10 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
-                    // --- RESTAURACIÓN: CÁLCULO DE HUMEDAD Y FILTRADO REAL (BALANCE HÍDRICO) ---
                     if (jsonResponse.data && jsonResponse.data.length > 0) {
                         let cc = jsonResponse.suelo.CC;
                         let pmp = jsonResponse.suelo.PMP;
                         
-                        // Forzamos el estado inicial si hay satélite
                         let inicial = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm || (cc * 0.7);
                         jsonResponse.data[0].Humedad_10cm = inicial;
                         jsonResponse.data[0].Humedad_30cm = inicial;
@@ -932,26 +1036,22 @@
                             let lluvia = curr.Lluvia || 0;
                             let et0 = curr.ET0 || 0;
 
-                            // 1. Capa Superficial (10cm): Dato de satélite manda. Si no hay, balance simple.
                             if (curr.Proxy_Humedad) {
                                 curr.Humedad_10cm = curr.Proxy_Humedad;
                             } else {
                                 curr.Humedad_10cm = prev.Humedad_10cm + (lluvia * 0.008) - (et0 * 0.003);
                             }
 
-                            // 2. Filtrado a capas inferiores (Redistribución y percolación)
                             curr.Humedad_30cm = prev.Humedad_30cm + ((curr.Humedad_10cm - prev.Humedad_30cm) * 0.15) + (lluvia > 5 ? 0.005 : 0) - (et0 * 0.001);
                             curr.Humedad_60cm = prev.Humedad_60cm + ((curr.Humedad_30cm - prev.Humedad_60cm) * 0.10) + (lluvia > 15 ? 0.003 : 0) - (et0 * 0.0005);
                             curr.Humedad_100cm = prev.Humedad_100cm + ((curr.Humedad_60cm - prev.Humedad_100cm) * 0.05) + (lluvia > 30 ? 0.002 : 0);
 
-                            // 3. Limitar según propiedades del suelo
                             curr.Humedad_10cm = Math.max(pmp, Math.min(cc, curr.Humedad_10cm));
                             curr.Humedad_30cm = Math.max(pmp, Math.min(cc, curr.Humedad_30cm));
                             curr.Humedad_60cm = Math.max(pmp, Math.min(cc, curr.Humedad_60cm));
                             curr.Humedad_100cm = Math.max(pmp, Math.min(cc, curr.Humedad_100cm));
                         }
                     }
-                    // --------------------------------------------------------------------------
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
@@ -974,7 +1074,6 @@
             } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
         }
 
-        // --- RESTAURACIÓN DEL GRÁFICO 3D ORIGINAL DEL PERFIL DE HUMEDAD ---
         function renderizarGraficos(datos, params) {
             const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
             
