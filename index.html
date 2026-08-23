@@ -64,10 +64,12 @@
         .modal-footer { padding: 15px 20px; background: #f4f7f6; text-align: right; border-top: 1px solid #ddd; }
         .btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* SECCIÓN TÉCNICA (SCROLL) */
+        /* ==========================================
+           SECCIÓN TÉCNICA (SOLAPAS COMERCIALES)
+           ========================================== */
         #techSection { padding: 80px 20px; background-color: #020617; overflow: hidden; }
         
-        .intro-tabs-container { width: 100%; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.85); border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        .intro-tabs-container { width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.85); border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
         .intro-tabs-header { display: flex; background: #0f172a; border-bottom: 2px solid #1e293b; }
         .intro-tab-btn { flex: 1; padding: 20px 10px; font-size: 16px; font-weight: bold; color: #94a3b8; background: none; border: none; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; text-align: center; }
         .intro-tab-btn:hover { color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
@@ -79,19 +81,19 @@
 
         .about-text { font-size: 17px; margin-bottom: 20px; text-align: justify; }
         
-        .product-showcase { display: flex; gap: 30px; margin-bottom: 40px; align-items: center; background: rgba(30, 41, 59, 0.5); padding: 25px; border-radius: 8px; border-left: 4px solid #10b981; transition: transform 0.3s ease; }
+        .product-showcase { display: flex; gap: 40px; margin-bottom: 40px; align-items: center; background: rgba(30, 41, 59, 0.5); padding: 30px; border-radius: 12px; border-left: 4px solid #10b981; transition: transform 0.3s ease; }
         .product-showcase:hover { transform: translateY(-5px); }
-        .product-showcase video { width: 50%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); object-fit: cover; border: 1px solid #1e293b; }
+        .product-showcase video { width: 50%; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); object-fit: cover; border: 1px solid #1e293b; }
         .product-info { width: 50%; }
-        .product-info h3 { margin-top: 0; font-size: 24px; margin-bottom: 15px; }
-        .product-info p { font-size: 15px; color: #cbd5e1; line-height: 1.6; }
+        .product-info h3 { margin-top: 0; font-size: 26px; margin-bottom: 15px; }
+        .product-info p { font-size: 16px; color: #cbd5e1; line-height: 1.6; }
         
-        .contact-form { display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin: 0 auto; background: rgba(30, 41, 59, 0.5); padding: 30px; border-radius: 8px; border: 1px solid #1e293b; }
+        .contact-form { display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin: 0 auto; background: rgba(30, 41, 59, 0.5); padding: 40px; border-radius: 12px; border: 1px solid #1e293b; }
         .contact-form input, .contact-form textarea { padding: 15px; border-radius: 6px; border: 1px solid #1e293b; background: #0f172a; color: white; font-family: inherit; font-size: 15px; transition: border-color 0.3s; }
         .contact-form input:focus, .contact-form textarea:focus { border-color: #38bdf8; outline: none; }
         .contact-form button { padding: 15px; background: #38bdf8; color: #020617; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
         .contact-form button:hover { background: #0ea5e9; }
-        
+
         /* ==========================================
            3. ESTILOS DEL WORKSPACE
            ========================================== */
@@ -161,37 +163,32 @@
            DISEÑO RESPONSIVO (COMPUTADORA Y CELULAR)
            ========================================== */
         @media (max-width: 900px) {
-            /* Intro / Login */
             .auth-right, .auth-left { width: 100% !important; }
             #authScreen { flex-direction: column; height: auto; }
             .auth-left { height: 40vh; }
             .auth-right { height: 60vh; padding: 20px 0; }
+            
             .intro-tabs-header { flex-direction: column; }
             .product-showcase { flex-direction: column !important; }
             .product-showcase video, .product-info { width: 100%; }
 
-            /* App principal (Layout y Solapas) */
             .container { flex-direction: column; }
             .sidebar { width: 100%; box-sizing: border-box; }
             .main-content { width: 100%; box-sizing: border-box; }
             .tabs { flex-wrap: wrap; }
             .tab-btn { flex-grow: 1; text-align: center; font-size: 13px; padding: 10px 5px; border-bottom: 2px solid transparent;}
             
-            /* Gemelo Digital: Se vuelve vertical (Caja arriba, controles abajo) */
             .split-layout { flex-direction: column; height: auto; }
             .split-layout-left { height: 450px; width: 100%; }
             .split-layout-right { width: 100%; border-left: none; border-top: 2px solid #1e293b; height: auto;}
             
-            /* Controles del X-Ray */
             .gemelo-control-panel { flex-direction: column; align-items: stretch; gap: 10px; }
             .gemelo-control-panel > div { flex-direction: column; width: 100%; gap: 10px; }
             .gemelo-control-panel button { margin-left: 0 !important; width: 100% !important; margin-top: 5px !important;}
             
-            /* Ajustes menores de header */
             .header { flex-direction: column; text-align: center; gap: 15px; }
             .header-left h1 { font-size: 20px; }
             
-            /* Plotly Charts en Celular */
             #map, #mapPronostico { height: 400px; }
             .chart-container { padding: 10px; }
         }
@@ -294,7 +291,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL -->
+        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -305,9 +302,9 @@
                 
                 <div id="introWho" class="intro-tab-content active">
                     <h2 style="color: #38bdf8; font-size: 32px; margin-top: 0;" data-i18n="who_title">MetricPoint: Inteligencia Geoespacial</h2>
-                    <p class="about-text" data-i18n="who_p1">MetricPoint es una empresa AgTech de vanguardia especializada en inteligencia geoespacial y análisis edáfico profundo utilizando tecnología SAR (Radar de Apertura Sintética).</p>
-                    <p class="about-text" data-i18n="who_p2">Operando actualmente en Estados Unidos, estamos expandiendo nuestras fronteras tecnológicas para potenciar la agricultura de precisión con topografía milimétrica y modelado fisiológico de cultivos.</p>
-                    <p class="about-text" data-i18n="who_p3">Con un próximo desembarco en Argentina, traemos el futuro de la toma de decisiones agronómicas a las fértiles tierras de Sudamérica, prediciendo el estrés hídrico antes de que sea visible.</p>
+                    <p class="about-text" data-i18n="who_p1">MetricPoint es una plataforma AgTech de vanguardia especializada en inteligencia geoespacial y modelado agronómico mediante tecnología satelital SAR.</p>
+                    <p class="about-text" data-i18n="who_p2">Con una base sólida de operaciones e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.</p>
+                    <p class="about-text" data-i18n="who_p3">Nos preparamos para un gran desembarco en Argentina, trayendo nuestra suite para revolucionar la agricultura de precisión en Sudamérica, anticipándonos al estrés hídrico con precisión milimétrica.</p>
                 </div>
 
                 <div id="introProd" class="intro-tab-content">
@@ -315,21 +312,21 @@
                         <video autoplay loop muted playsinline><source src="gemelos_digitales.mp4" type="video/mp4"></video>
                         <div class="product-info">
                             <h3 style="color: #10b981;" data-i18n="prod_gem_title">Gemelos Digitales Volumétricos</h3>
-                            <p data-i18n="prod_gem_desc">Transforme sus lotes 2D en modelos topográficos 3D interactivos. Revele la dinámica de la humedad del suelo capa por capa e identifique riesgos de marchitez o anegamiento con precisión milimétrica.</p>
+                            <p data-i18n="prod_gem_desc">Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.</p>
                         </div>
                     </div>
                     <div class="product-showcase" style="border-left-color: #f59e0b; flex-direction: row-reverse;">
                         <video autoplay loop muted playsinline><source src="RVI_vigor.mp4" type="video/mp4"></video>
                         <div class="product-info">
-                            <h3 style="color: #f59e0b;" data-i18n="prod_rvi_title">Vigor RVI y Predicción de Rinde</h3>
-                            <p data-i18n="prod_rvi_desc">Vaya más allá de los índices ópticos tradicionales. Correlacionamos el vigor estructural del cultivo (Radar Vegetation Index) con el balance hídrico profundo para pronosticar con precisión el potencial productivo, sin interferencia de nubes.</p>
+                            <h3 style="color: #f59e0b;" data-i18n="prod_rvi_title">Vigor RVI y Monitoreo Fenológico</h3>
+                            <p data-i18n="prod_rvi_desc">Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real y la estructura de la biomasa sin importar la nubosidad, asegurando un seguimiento ininterrumpido del desarrollo de su cultivo.</p>
                         </div>
                     </div>
                     <div class="product-showcase" style="border-left-color: #38bdf8;">
                         <video autoplay loop muted playsinline><source src="polinizacion.mp4" type="video/mp4"></video>
                         <div class="product-info">
-                            <h3 style="color: #38bdf8;" data-i18n="prod_pol_title">MetricPoli: Polinización y Fenología</h3>
-                            <p data-i18n="prod_pol_desc">Suite integral de polinización. Monitoree el rendimiento de las colmenas y las etapas fenológicas del cultivo para maximizar el cuajado de frutos, asegurando cosechas sostenibles y altamente productivas.</p>
+                            <h3 style="color: #38bdf8;" data-i18n="prod_pol_title">MetricPoli: Polinización Inteligente</h3>
+                            <p data-i18n="prod_pol_desc">Maximice su rendimiento comprendiendo la interacción entre el clima y los polinizadores. Analice variables meteorológicas en tiempo real para predecir ventanas óptimas de vuelo, garantizando un cuajado de frutos excepcional y cosechas sostenibles.</p>
                         </div>
                     </div>
                 </div>
@@ -464,8 +461,10 @@
                     </div>
                     <div id="tabClima" class="tab-content"><div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div></div>
                     
+                    <!-- PERFIL 3D DE CAMPAÑA RESTAURADO (INTACTO COMO ANTES) -->
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
+                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL RESTAURADA -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -482,6 +481,7 @@
                             </div>
                         </div>
 
+                        <!-- CONTENEDOR RESTAURADO PARA QUE NO QUEDE OCULTO -->
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
                             <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
                                 <span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span>
@@ -490,8 +490,10 @@
                         </div>
                     </div>
 
+                    <!-- GEMELO VOLUMÉTRICO (BETA) DISEÑO SPLIT FINAL -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
+                            
                             <!-- Lado Izquierdo: Modelo 3D -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
@@ -524,6 +526,7 @@
                                     <div style="display: flex; justify-content: space-between;"><strong style="color:#10b981;">Res:</strong> <span><span id="rB_100">--</span> m³/m³</span></div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -567,6 +570,7 @@
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <script>
+        // TRADUCCIONES AGREGADAS (INCLUYENDO INTRODUCCIÓN)
         const traducciones = {
             en: {
                 "landing_title": "Geospatial Intelligence", "landing_subtitle": "Direct SAR telemetry to your agronomic control center.", "landing_scroll": "▼ Discover MetricPoint's architecture ▼",
@@ -577,15 +581,15 @@
                 
                 "tab_intro_who": "Who We Are", "tab_intro_prod": "Our Products", "tab_intro_contact": "Contact Us",
                 "who_title": "MetricPoint: Geospatial Intelligence",
-                "who_p1": "MetricPoint is a cutting-edge AgTech company specializing in geospatial intelligence and deep edaphic analysis using SAR (Synthetic Aperture Radar) technology.",
-                "who_p2": "Currently operating in the United States, we are expanding our technological boundaries to empower precision agriculture with millimeter-level topographic insights and physiological crop modeling.",
-                "who_p3": "Soon launching in Argentina, we bring the future of agronomic decision-making to the fertile lands of South America, predicting stress before it becomes visible.",
+                "who_p1": "MetricPoint is a cutting-edge AgTech platform specializing in geospatial intelligence and agronomic modeling using SAR satellite technology.",
+                "who_p2": "With a solid base of operations and research in the United States, we develop solutions that push the boundaries of crop monitoring.",
+                "who_p3": "We are preparing for a major launch in Argentina, bringing our suite to revolutionize precision agriculture in South America, anticipating water stress with millimeter accuracy.",
                 "prod_gem_title": "Volumetric Digital Twins",
-                "prod_gem_desc": "Transform your 2D fields into interactive 3D topographic models. Reveal soil moisture dynamics layer by layer and identify risks of wilting or waterlogging with pinpoint accuracy.",
-                "prod_rvi_title": "RVI Vigor & Yield Prediction",
-                "prod_rvi_desc": "Go beyond traditional optical indices. We correlate structural crop vigor (Radar Vegetation Index) with deep soil water balance to accurately forecast productive potential, ignoring cloud cover.",
-                "prod_pol_title": "MetricPoli: Pollination & Phenology",
-                "prod_pol_desc": "Comprehensive pollination suite. Monitor hive performance and phenological crop stages to maximize fruit set, ensuring sustainable and highly productive harvests.",
+                "prod_gem_desc": "Visualize your field's subsoil like never before. Our 3D technology allows real-time terrain tomography, identifying the exact distribution of edaphic moisture to optimize irrigation and prevent water stress before it becomes irreversible.",
+                "prod_rvi_title": "RVI Vigor & Phenological Monitoring",
+                "prod_rvi_desc": "We overcome the limitations of traditional optical indices (NDVI). Using Synthetic Aperture Radar (SAR), we measure real vigor and biomass structure regardless of cloud cover, ensuring uninterrupted tracking of your crop's development.",
+                "prod_pol_title": "MetricPoli: Smart Pollination",
+                "prod_pol_desc": "Maximize your yield by understanding the interaction between climate and pollinators. Analyze real-time meteorological variables to predict optimal flight windows, guaranteeing exceptional fruit set and sustainable harvests.",
                 "contact_title": "Get in Touch",
                 "contact_desc": "Interested in bringing MetricPoint's technology to your fields? Drop us a message.",
                 "contact_name": "Full Name",
@@ -619,15 +623,15 @@
                 
                 "tab_intro_who": "Quiénes Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contacto",
                 "who_title": "MetricPoint: Inteligencia Geoespacial",
-                "who_p1": "MetricPoint es una empresa AgTech de vanguardia especializada en inteligencia geoespacial y análisis edáfico profundo utilizando tecnología SAR (Radar de Apertura Sintética).",
-                "who_p2": "Operando actualmente en Estados Unidos, estamos expandiendo nuestras fronteras tecnológicas para potenciar la agricultura de precisión con topografía milimétrica y modelado fisiológico de cultivos.",
-                "who_p3": "Con un próximo desembarco en Argentina, traemos el futuro de la toma de decisiones agronómicas a las fértiles tierras de Sudamérica, prediciendo el estrés hídrico antes de que sea visible.",
+                "who_p1": "MetricPoint es una plataforma AgTech de vanguardia especializada en inteligencia geoespacial y modelado agronómico mediante tecnología satelital SAR.",
+                "who_p2": "Con una base sólida de operaciones e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.",
+                "who_p3": "Nos preparamos para un gran desembarco en Argentina, trayendo nuestra suite para revolucionar la agricultura de precisión en Sudamérica, anticipándonos al estrés hídrico con precisión milimétrica.",
                 "prod_gem_title": "Gemelos Digitales Volumétricos",
-                "prod_gem_desc": "Transforme sus lotes 2D en modelos topográficos 3D interactivos. Revele la dinámica de la humedad del suelo capa por capa e identifique riesgos de marchitez o anegamiento con precisión milimétrica.",
-                "prod_rvi_title": "Vigor RVI y Predicción de Rinde",
-                "prod_rvi_desc": "Vaya más allá de los índices ópticos tradicionales. Correlacionamos el vigor estructural del cultivo (Radar Vegetation Index) con el balance hídrico profundo para pronosticar con precisión el potencial productivo, sin interferencia de nubes.",
-                "prod_pol_title": "MetricPoli: Polinización y Fenología",
-                "prod_pol_desc": "Suite integral de polinización. Monitoree el rendimiento de las colmenas y las etapas fenológicas del cultivo para maximizar el cuajado de frutos, asegurando cosechas sostenibles y altamente productivas.",
+                "prod_gem_desc": "Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.",
+                "prod_rvi_title": "Vigor RVI y Monitoreo Fenológico",
+                "prod_rvi_desc": "Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real y la estructura de la biomasa sin importar la nubosidad, asegurando un seguimiento ininterrumpido del desarrollo de su cultivo.",
+                "prod_pol_title": "MetricPoli: Polinización Inteligente",
+                "prod_pol_desc": "Maximice su rendimiento comprendiendo la interacción entre el clima y los polinizadores. Analice variables meteorológicas en tiempo real para predecir ventanas óptimas de vuelo, garantizando un cuajado de frutos excepcional y cosechas sostenibles.",
                 "contact_title": "Póngase en Contacto",
                 "contact_desc": "¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.",
                 "contact_name": "Nombre Completo",
@@ -661,15 +665,15 @@
                 
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nossos Produtos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
-                "who_p1": "A MetricPoint é uma empresa AgTech de ponta especializada em inteligência geoespacial e análise edáfica profunda usando tecnologia SAR (Radar de Abertura Sintética).",
-                "who_p2": "Atuando atualmente nos Estados Unidos, estamos expandindo nossas fronteiras tecnológicas para capacitar a agricultura de precisão com insights topográficos milimétricos e modelagem fisiológica de culturas.",
-                "who_p3": "Com lançamento em breve na Argentina, trazemos o futuro da tomada de decisões agronômicas para as férteis terras da América do Sul, prevendo o estresse antes que se torne visível.",
+                "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
+                "who_p2": "Com uma base sólida de operações e pesquisas nos Estados Unidos, desenvolvemos soluções que ultrapassam os limites do monitoramento de safras.",
+                "who_p3": "Estamos nos preparando para um grande lançamento na Argentina, trazendo nossa suíte para revolucionar a agricultura de precisão na América do Sul, antecipando o estresse hídrico com precisão milimétrica.",
                 "prod_gem_title": "Gêmeos Digitais Volumétricos",
-                "prod_gem_desc": "Transforme seus campos 2D em modelos topográficos 3D interativos. Revele a dinâmica da umidade do solo camada por camada e identifique riscos de murcha ou alagamento com extrema precisão.",
-                "prod_rvi_title": "Vigor RVI e Previsão de Safra",
-                "prod_rvi_desc": "Vá além dos índices ópticos tradicionais. Correlacionamos o vigor estrutural da cultura (Radar Vegetation Index) com o balanço hídrico profundo do solo para prever com precisão o potencial produtivo, sem interferência de nuvens.",
-                "prod_pol_title": "MetricPoli: Polinização e Fenologia",
-                "prod_pol_desc": "Suite completa de polinização. Monitore o desempenho das colmeias e as fases fenológicas da cultura para maximizar a frutificação, garantindo colheitas sustentáveis e altamente produtivas.",
+                "prod_gem_desc": "Visualize o subsolo do seu campo como nunca antes. Nossa tecnologia 3D permite tomografia de terreno em tempo real, identificando a distribuição exata da umidade edáfica para otimizar a irrigação e prevenir o estresse hídrico antes que seja irreversível.",
+                "prod_rvi_title": "Vigor RVI e Monitoramento Fenológico",
+                "prod_rvi_desc": "Superamos as limitações dos índices ópticos tradicionais (NDVI). Utilizando Radar de Abertura Sintética (SAR), medimos o vigor real e a estrutura da biomassa independente da nebulosidade, garantindo o acompanhamento ininterrupto do desenvolvimento da sua cultura.",
+                "prod_pol_title": "MetricPoli: Polinização Inteligente",
+                "prod_pol_desc": "Maximize seu rendimento compreendendo a interação entre o clima e os polinizadores. Analise variáveis meteorológicas em tempo real para prever janelas de voo ideais, garantindo frutificação excepcional e colheitas sustentáveis.",
                 "contact_title": "Entre em Contato",
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
@@ -697,7 +701,7 @@
                 entries.forEach(entry => { if(entry.isIntersecting) { entry.target.classList.add('visible'); } else { entry.target.classList.remove('visible'); } });
             }, { threshold: 0.2 }); 
 
-            document.querySelectorAll('.tech-card').forEach(card => observer.observe(card));
+            document.querySelectorAll('.tech-card, .product-showcase').forEach(card => observer.observe(card));
             
             if (localStorage.getItem("metric_token")) {
                 document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block";
@@ -824,8 +828,6 @@
         }
 
         window.ultimoDatoCalculado = null; 
-        window.gemeloDataPlot = null;
-        window.gemeloLayout = null;
 
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -947,6 +949,7 @@
             };
 
             window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
+            if (profundidadSeleccionada == "0") window.gemeloDataPlot = [trace_moisture, trace_skirt]; 
 
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -963,7 +966,48 @@
                 }
             };
 
-            Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
+            Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
+
+            const miGrafico = document.getElementById('soilGemeloVolumetrico');
+            
+            if (!miGrafico.hasAttribute('data-click-bound')) {
+                miGrafico.on('plotly_click', function(datosEvento) {
+                    if (window.isPlotlyClicking) return;
+                    window.isPlotlyClicking = true;
+                    setTimeout(() => { window.isPlotlyClicking = false; }, 500);
+                    
+                    if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
+                    const punto = datosEvento.points[0];
+                    const nombreCapa = punto.data.name;
+                    
+                    if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
+                        Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': []}).catch(e=>{});
+                        return;
+                    }
+
+                    let mensaje = ""; let colorBorde = "#38bdf8"; let colorFondo = "rgba(15, 23, 42, 0.85)";
+                    
+                    if (nombreCapa.includes('Superficie')) {
+                        mensaje = `<b>PUNTO SUPERFICIAL</b><br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
+                        colorBorde = "#10b981"; 
+                    } else if (nombreCapa.includes('Perfil')) {
+                        const hum = punto.surfacecolor; let estado = "Óptimo";
+                        let pmp = window.parametrosSimulacion ? window.parametrosSimulacion.PMP : 0.15;
+                        let cc = window.parametrosSimulacion ? window.parametrosSimulacion.CC : 0.35;
+                        if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
+                        else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
+                        mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
+                    }
+
+                    const nuevaBandera = {
+                        showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
+                        font: { color: 'white', size: 12 }, bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
+                    };
+                    
+                    Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]}).catch(e=>{});
+                });
+                miGrafico.setAttribute('data-click-bound', 'true');
+            }
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
@@ -1011,9 +1055,6 @@
                 if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") { document.getElementById('status').innerText = ''; document.getElementById('paywallScreen').style.display = 'flex'; return; }
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
-                    
-                    // --- MANTENIDO: SIN EL OVERRIDE QUE ROMPÍA LA FÍSICA ---
-                    // Todo se calcula ahora con precisión desde el Backend (Python)
                     
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
