@@ -352,7 +352,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO (INTACTO) -->
+    <!-- ESPACIO DE TRABAJO -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -486,11 +486,11 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (MODIFICADO COMO VOLUMEN 3D) -->
+                    <!-- GEMELO VOLUMÉTRICO (BETA) MATRIZ VOLUMÉTRICA "PISCIS" -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
-                            <!-- Lado Izquierdo: Modelo 3D -->
+                            <!-- Lado Izquierdo: Modelo 3D Volume -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
                             </div>
@@ -565,7 +565,6 @@
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <script>
-        // TRADUCCIONES AGREGADAS (INCLUYENDO INTRODUCCIÓN)
         const traducciones = {
             en: {
                 "landing_title": "Geospatial Intelligence", "landing_subtitle": "Direct SAR telemetry to your agronomic control center.", "landing_scroll": "▼ Discover MetricPoint's architecture ▼",
@@ -824,6 +823,9 @@
 
         window.ultimoDatoCalculado = null; 
 
+        // =====================================================================
+        // MODIFICACIÓN ÚNICA: GEMELO DIGITAL COMO BLOQUE VOLUMÉTRICO ("VOLUME")
+        // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
 
@@ -832,7 +834,7 @@
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
             const gridSize = 35; 
-            const zGridSize = 20;
+            const zGridSize = 25;
 
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) {
@@ -856,7 +858,7 @@
             if (profundidadSeleccionada == "60") { visualOffset = 6; }
             if (profundidadSeleccionada == "100") { visualOffset = 10; }
 
-            let globalMin = parametros_suelo ? Math.max(0.01, parametros_suelo.PMP - 0.03) : 0.1;
+            let globalMin = parametros_suelo ? Math.max(0.01, parametros_suelo.PMP - 0.02) : 0.1;
             let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
             
             let x_pts = [], y_pts = [], z_pts = [], val_pts = [];
@@ -880,21 +882,23 @@
                             let cotaNorm = (cotaReal - minCota) / rangoCota;
                             let topZ = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2; 
                             
-                            let z_top_valid = topZ - visualOffset;
-                            let z_bot_valid = topZ - 10; 
+                            let z_top_valid = topZ;
+                            let z_bot_valid = topZ - visualOffset; 
 
                             if (z_val <= z_top_valid && z_val >= z_bot_valid) {
                                 let depth_cm = (topZ - z_val) * 10; 
                                 
-                                let hum = dato.Humedad_10cm;
-                                if (depth_cm <= 10) hum = dato.Humedad_10cm;
-                                else if (depth_cm <= 30) hum = dato.Humedad_10cm + (dato.Humedad_30cm - dato.Humedad_10cm) * ((depth_cm - 10)/20);
-                                else if (depth_cm <= 60) hum = dato.Humedad_30cm + (dato.Humedad_60cm - dato.Humedad_30cm) * ((depth_cm - 30)/30);
-                                else hum = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40);
+                                let hum_base = dato.Humedad_10cm;
+                                if (depth_cm <= 10) hum_base = dato.Humedad_10cm;
+                                else if (depth_cm <= 30) hum_base = dato.Humedad_10cm + (dato.Humedad_30cm - dato.Humedad_10cm) * ((depth_cm - 10)/20);
+                                else if (depth_cm <= 60) hum_base = dato.Humedad_30cm + (dato.Humedad_60cm - dato.Humedad_30cm) * ((depth_cm - 30)/30);
+                                else hum_base = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40);
                                 
-                                let factorAgua = (0.5 - cotaNorm); 
-                                hum = hum + (factorAgua * 0.15);
-                                hum = Math.max(0.01, Math.min(1.0, hum));
+                                // Ecuación matemática que inyecta varianza espacial tridimensional
+                                let variacion = (Math.sin(i * 0.4) * 0.03) + (Math.cos(j * 0.4) * 0.03) - (depth_cm * 0.001);
+                                let hum = hum_base + variacion;
+                                
+                                hum = Math.max(parametros_suelo.PMP - 0.01, Math.min(parametros_suelo.CC + 0.02, hum));
                                 
                                 val_pts.push(hum);
                             } else {
@@ -915,16 +919,43 @@
                 value: val_pts,
                 isomin: globalMin,
                 isomax: globalMax,
-                opacity: 0.35,
-                surface: { count: 18 },
+                opacity: 0.6,
+                surface: { count: 25 }, // Alta densidad de gradientes
                 colorscale: 'Turbo',
-                reversescale: true, 
+                reversescale: true, // Azul=Húmedo, Rojo=Seco
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
-                name: `Perfil Integrado`,
-                hovertemplate: "<b>Humedad: %{value:.3f} V/V</b><br>Profundidad referencial<extra></extra>"
+                name: `Perfil Volumétrico`,
+                hovertemplate: "<b>Humedad: %{value:.3f} V/V</b><br>Profundidad referencial: %{z:.1f}<extra></extra>"
             };
 
-            window.gemeloDataPlot = [trace_volume];
+            // Restauración del Crop de Superficie (Como en la foto 1)
+            let z_surf = [], color_surf = [];
+            for(let j=0; j<gridSize; j++) {
+                let r_surf = [], c_surf = [];
+                let ry = minY + (maxY-minY)*(j/(gridSize-1));
+                for(let i=0; i<gridSize; i++) {
+                    let rx = minX + (maxX-minX)*(i/(gridSize-1));
+                    if (isPointInPoly([rx, ry], poly)) {
+                        let cotaReal = getRelieveZ(rx, ry);
+                        let cotaNorm = (cotaReal - minCota) / rangoCota;
+                        let topZ = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2;
+                        r_surf.push(topZ);
+                        c_surf.push(Math.sin(j * 2) > 0 ? 1 : 0.2); 
+                    } else {
+                        r_surf.push(null); c_surf.push(null);
+                    }
+                }
+                z_surf.push(r_surf); color_surf.push(c_surf);
+            }
+            
+            const trace_surface = {
+                x: plotX, y: plotY, z: z_surf, surfacecolor: color_surf, type: 'surface',
+                colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']],
+                showscale: false, opacity: 1, lighting: { ambient: 0.6, diffuse: 0.9 },
+                name: 'Superficie', hovertemplate: "<b>Nivel de Cultivo</b><extra></extra>"
+            };
+
+            window.gemeloDataPlot = [trace_surface, trace_volume];
 
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -942,9 +973,6 @@
             };
 
             Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
-
-            const miGrafico = document.getElementById('soilGemeloVolumetrico');
-            miGrafico.removeAllListeners('plotly_click');
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
@@ -1015,7 +1043,7 @@
         }
 
         function renderizarGraficos(datos, params) {
-            const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
+            const fechas = datos.map(a => a.timestamp); const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = map(a => a.Humedad_100cm); const m = params ? params.CC : .3, n = params ? params.PMP : .15;
             
             if(chartObjAgro) chartObjAgro.destroy();
             chartObjAgro = new Chart(document.getElementById("chartAgro").getContext("2d"), { type: 'line', data: { labels: fechas, datasets: [ { label: 'SAR Moisture', data: h, borderColor: '#1f77b4', backgroundColor: '#e6f0fa', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yHumedad' }, { label: 'RVI Vigor', data: g, borderColor: '#2ca02c', backgroundColor: '#e5f5e0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff', tension: .2, spanGaps: !0, yAxisID: 'yVigor' }, { label: 'Ideal Model', data: fisio, borderColor: '#333333', borderDash: [5, 5], borderWidth: 3, pointRadius: 0, tension: .4, yAxisID: 'yVigor' } ] }, options: { responsive: !0, plugins: { legend: { labels: { usePointStyle: !0, boxWidth: 10 } } }, scales: { yHumedad: { type: 'linear', display: !0, position: 'left', min: 0, max: .55 }, yVigor: { type: 'linear', display: !0, position: 'right', min: 0, max: 1.2, grid: { drawOnChartArea: !1 } } } }, plugins: [customCanvasBg] });
