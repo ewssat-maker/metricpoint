@@ -64,9 +64,7 @@
         .modal-footer { padding: 15px 20px; background: #f4f7f6; text-align: right; border-top: 1px solid #ddd; }
         .btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* ==========================================
-           SECCIÓN TÉCNICA (NUEVAS SOLAPAS DE INTRODUCCIÓN)
-           ========================================== */
+        /* SECCIÓN TÉCNICA (SCROLL) */
         #techSection { padding: 80px 20px; background-color: #020617; overflow: hidden; }
         
         .intro-tabs-container { width: 100%; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.85); border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
@@ -93,12 +91,6 @@
         .contact-form input:focus, .contact-form textarea:focus { border-color: #38bdf8; outline: none; }
         .contact-form button { padding: 15px; background: #38bdf8; color: #020617; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
         .contact-form button:hover { background: #0ea5e9; }
-        
-        @media (max-width: 768px) {
-            .product-showcase { flex-direction: column !important; }
-            .product-showcase video, .product-info { width: 100%; }
-            .intro-tabs-header { flex-direction: column; }
-        }
 
         /* ==========================================
            3. ESTILOS DEL WORKSPACE
@@ -155,9 +147,32 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* Controles Geo3D */
         .gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
         .gemelo-control-panel label { margin: 0; font-size: 14px; font-weight: bold; }
         .gemelo-control-panel select, .gemelo-control-panel input { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; font-weight: bold; cursor: pointer; }
+
+        /* ==========================================
+           MODIFICACIÓN DE DISEÑO RESPONSIVO (MÓVILES)
+           ========================================== */
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; box-sizing: border-box; }
+            .main-content { width: 100%; box-sizing: border-box; }
+            .tabs { flex-wrap: wrap; }
+            .tab-btn { flex-grow: 1; text-align: center; font-size: 13px; padding: 10px 5px; }
+            
+            #tabGemeloBeta > div { flex-direction: column !important; height: auto !important; }
+            #tabGemeloBeta > div > div:first-child { height: 450px; width: 100%; }
+            #tabGemeloBeta > div > div:last-child { width: 100% !important; border-left: none !important; border-top: 2px solid #1e293b; }
+            
+            .gemelo-control-panel { flex-direction: column; align-items: stretch; gap: 10px; }
+            .gemelo-control-panel > div { flex-direction: column; width: 100%; gap: 10px; }
+            .gemelo-control-panel button { margin-left: 0 !important; width: 100% !important; margin-top: 5px !important;}
+            
+            .header { flex-direction: column; text-align: center; gap: 15px; }
+            .header-left h1 { font-size: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -321,7 +336,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO (INTACTO) -->
+    <!-- ESPACIO DE TRABAJO -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -913,7 +928,6 @@
             };
 
             window.gemeloDataPlot = [trace_surface, trace_moisture, trace_skirt];
-            if (profundidadSeleccionada == "0") window.gemeloDataPlot = [trace_moisture, trace_skirt]; 
 
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -930,8 +944,8 @@
                 }
             };
 
-            Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
-
+            Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
+            
             const miGrafico = document.getElementById('soilGemeloVolumetrico');
             
             if (!miGrafico.hasAttribute('data-click-bound')) {
