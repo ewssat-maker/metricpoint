@@ -91,7 +91,7 @@
         .contact-form input:focus, .contact-form textarea:focus { border-color: #38bdf8; outline: none; }
         .contact-form button { padding: 15px; background: #38bdf8; color: #020617; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
         .contact-form button:hover { background: #0ea5e9; }
-
+        
         /* ==========================================
            3. ESTILOS DEL WORKSPACE
            ========================================== */
@@ -152,26 +152,48 @@
         .gemelo-control-panel label { margin: 0; font-size: 14px; font-weight: bold; }
         .gemelo-control-panel select, .gemelo-control-panel input { padding: 6px 12px; border-radius: 4px; background: #1e293b; color: white; font-weight: bold; cursor: pointer; }
 
+        /* CONTENEDOR GEMELO 3D SPLIT */
+        .split-layout { display: flex; flex-direction: row; background-color: #020617; border: 2px solid #1e293b; border-radius: 8px; overflow: hidden; height: 600px; }
+        .split-layout-left { flex-grow: 1; position: relative; height: 100%; }
+        .split-layout-right { width: 320px; background: #0f172a; border-left: 2px solid #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; overflow-y: auto;}
+
         /* ==========================================
-           MODIFICACIÓN DE DISEÑO RESPONSIVO (MÓVILES)
+           DISEÑO RESPONSIVO (COMPUTADORA Y CELULAR)
            ========================================== */
         @media (max-width: 900px) {
+            /* Intro / Login */
+            .auth-right, .auth-left { width: 100% !important; }
+            #authScreen { flex-direction: column; height: auto; }
+            .auth-left { height: 40vh; }
+            .auth-right { height: 60vh; padding: 20px 0; }
+            .intro-tabs-header { flex-direction: column; }
+            .product-showcase { flex-direction: column !important; }
+            .product-showcase video, .product-info { width: 100%; }
+
+            /* App principal (Layout y Solapas) */
             .container { flex-direction: column; }
             .sidebar { width: 100%; box-sizing: border-box; }
             .main-content { width: 100%; box-sizing: border-box; }
             .tabs { flex-wrap: wrap; }
-            .tab-btn { flex-grow: 1; text-align: center; font-size: 13px; padding: 10px 5px; }
+            .tab-btn { flex-grow: 1; text-align: center; font-size: 13px; padding: 10px 5px; border-bottom: 2px solid transparent;}
             
-            #tabGemeloBeta > div { flex-direction: column !important; height: auto !important; }
-            #tabGemeloBeta > div > div:first-child { height: 450px; width: 100%; }
-            #tabGemeloBeta > div > div:last-child { width: 100% !important; border-left: none !important; border-top: 2px solid #1e293b; }
+            /* Gemelo Digital: Se vuelve vertical (Caja arriba, controles abajo) */
+            .split-layout { flex-direction: column; height: auto; }
+            .split-layout-left { height: 450px; width: 100%; }
+            .split-layout-right { width: 100%; border-left: none; border-top: 2px solid #1e293b; height: auto;}
             
+            /* Controles del X-Ray */
             .gemelo-control-panel { flex-direction: column; align-items: stretch; gap: 10px; }
             .gemelo-control-panel > div { flex-direction: column; width: 100%; gap: 10px; }
             .gemelo-control-panel button { margin-left: 0 !important; width: 100% !important; margin-top: 5px !important;}
             
+            /* Ajustes menores de header */
             .header { flex-direction: column; text-align: center; gap: 15px; }
             .header-left h1 { font-size: 20px; }
+            
+            /* Plotly Charts en Celular */
+            #map, #mapPronostico { height: 400px; }
+            .chart-container { padding: 10px; }
         }
     </style>
 </head>
@@ -272,7 +294,7 @@
             </div>
         </div>
 
-        <!-- NUEVA SECCIÓN DE INTRODUCCIÓN (TABS COMERCIALES) -->
+        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -336,7 +358,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO -->
+    <!-- ESPACIO DE TRABAJO (INTACTO) -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -469,14 +491,15 @@
                     </div>
 
                     <div id="tabGemeloBeta" class="tab-content">
-                        <div style="display: flex; flex-direction: row; background-color: #020617; border: 2px solid #1e293b; border-radius: 8px; overflow: hidden; height: 600px;">
-                            
-                            <div style="flex-grow: 1; position: relative;">
+                        <div class="split-layout">
+                            <!-- Lado Izquierdo: Modelo 3D -->
+                            <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
                                 <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; pointer-events: none; backdrop-filter: blur(4px);">👆 Pasa el mouse sobre el perfil para ver los datos y arrastra para rotar.</div>
                             </div>
                             
-                            <div style="width: 320px; background: #0f172a; border-left: 2px solid #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box;">
+                            <!-- Lado Derecho: Controles y Resultados -->
+                            <div class="split-layout-right">
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">FECHA A CONSULTAR:</label>
                                     <input type="date" id="fechaConsultaGemelo" style="width: 100%; padding: 10px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; box-sizing: border-box;">
@@ -501,7 +524,6 @@
                                     <div style="display: flex; justify-content: space-between;"><strong style="color:#10b981;">Res:</strong> <span><span id="rB_100">--</span> m³/m³</span></div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -553,7 +575,6 @@
                 "legal_title": "Terms and Conditions of Use", "legal_p1": "By registering, accessing or using the MetricPoint platform, you agree to be bound by these terms.", "legal_h1": "1. Agronomic Disclaimer", "legal_p2": "The Platform provides satellite and radar telemetry tools. You understand that it is strictly a decision assistance tool and does not replace agronomic judgment in the field. MetricPoint assumes no liability for yield losses or crop damage resulting from decisions made based on the platform.", "legal_h2": "2. Third Party Data Sources", "legal_p3": "The architecture is fed by the European Space Agency (Copernicus) and the National Meteorological Service (SMN). We do not guarantee 100% uptime in case of government server crashes.", "legal_h3": "3. Use and Licenses", "legal_p4": "Trial access lasts 48 hours. Web scraping, resale of information or sharing credentials without a commercial license is explicitly prohibited.", "btn_close": "Close",
                 "priv_title": "Privacy Policy", "priv_h1": "1. Information we collect", "priv_p1": "We collect your email (with encrypted password) and the geospatial coordinates (polygons) of the analyzed lots for calculating water balances.", "priv_h2": "2. Sharing with Third Parties", "priv_p2": "MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.", "priv_h3": "3. User Rights", "priv_p3": "In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the system administrator.",
                 
-                // NUEVAS TRADUCCIONES INTRODUCCIÓN
                 "tab_intro_who": "Who We Are", "tab_intro_prod": "Our Products", "tab_intro_contact": "Contact Us",
                 "who_title": "MetricPoint: Geospatial Intelligence",
                 "who_p1": "MetricPoint is a cutting-edge AgTech company specializing in geospatial intelligence and deep edaphic analysis using SAR (Synthetic Aperture Radar) technology.",
@@ -596,7 +617,6 @@
                 "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
                 "priv_title": "Aviso de Privacidad", "priv_h1": "1. Información que recopilamos", "priv_p1": "Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.", "priv_h2": "2. Compartición con Terceros", "priv_p2": "MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.", "priv_h3": "3. Derechos del Usuario", "priv_p3": "En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.",
                 
-                // NUEVAS TRADUCCIONES INTRODUCCIÓN
                 "tab_intro_who": "Quiénes Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contacto",
                 "who_title": "MetricPoint: Inteligencia Geoespacial",
                 "who_p1": "MetricPoint es una empresa AgTech de vanguardia especializada en inteligencia geoespacial y análisis edáfico profundo utilizando tecnología SAR (Radar de Apertura Sintética).",
@@ -639,7 +659,6 @@
                 "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
                 "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema.",
                 
-                // NUEVAS TRADUCCIONES INTRODUCCIÓN
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nossos Produtos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma empresa AgTech de ponta especializada em inteligência geoespacial e análise edáfica profunda usando tecnologia SAR (Radar de Abertura Sintética).",
@@ -945,47 +964,6 @@
             };
 
             Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
-            
-            const miGrafico = document.getElementById('soilGemeloVolumetrico');
-            
-            if (!miGrafico.hasAttribute('data-click-bound')) {
-                miGrafico.on('plotly_click', function(datosEvento) {
-                    if (window.isPlotlyClicking) return;
-                    window.isPlotlyClicking = true;
-                    setTimeout(() => { window.isPlotlyClicking = false; }, 500);
-                    
-                    if (!datosEvento || !datosEvento.points || datosEvento.points.length === 0) return;
-                    const punto = datosEvento.points[0];
-                    const nombreCapa = punto.data.name;
-                    
-                    if (!nombreCapa || nombreCapa === 'Bloque Profundo') {
-                        Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': []}).catch(e=>{});
-                        return;
-                    }
-
-                    let mensaje = ""; let colorBorde = "#38bdf8"; let colorFondo = "rgba(15, 23, 42, 0.85)";
-                    
-                    if (nombreCapa.includes('Superficie')) {
-                        mensaje = `<b>PUNTO SUPERFICIAL</b><br>Sector: ${punto.surfacecolor > 0.5 ? 'Cultivo' : 'Suelo Desnudo'}`;
-                        colorBorde = "#10b981"; 
-                    } else if (nombreCapa.includes('Perfil')) {
-                        const hum = punto.surfacecolor; let estado = "Óptimo";
-                        let pmp = window.parametrosSimulacion ? window.parametrosSimulacion.PMP : 0.15;
-                        let cc = window.parametrosSimulacion ? window.parametrosSimulacion.CC : 0.35;
-                        if (hum <= pmp + 0.05) { estado = "⚠️ Riesgo de Marchitez"; colorBorde = "#ef4444"; colorFondo = "rgba(127, 29, 29, 0.85)"; }
-                        else if (hum >= cc - 0.02) { estado = "💧 Exceso hídrico"; colorBorde = "#3b82f6"; colorFondo = "rgba(30, 58, 138, 0.85)"; }
-                        mensaje = `<b>PERFIL PROFUNDO</b><br>Humedad: ${hum.toFixed(3)} V/V<br>${estado}`;
-                    }
-
-                    const nuevaBandera = {
-                        showarrow: true, x: punto.x, y: punto.y, z: punto.z, ax: 0, ay: -80, text: mensaje,
-                        font: { color: 'white', size: 12 }, bgcolor: colorFondo, bordercolor: colorBorde, borderwidth: 2, borderpad: 6, arrowcolor: colorBorde, arrowsize: 2, arrowwidth: 2
-                    };
-                    
-                    Plotly.relayout('soilGemeloVolumetrico', {'scene.annotations': [nuevaBandera]}).catch(e=>{});
-                });
-                miGrafico.setAttribute('data-click-bound', 'true');
-            }
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
@@ -1034,39 +1012,9 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
-                    if (jsonResponse.data && jsonResponse.data.length > 0) {
-                        let cc = jsonResponse.suelo.CC;
-                        let pmp = jsonResponse.suelo.PMP;
-                        
-                        let inicial = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm || (cc * 0.7);
-                        jsonResponse.data[0].Humedad_10cm = inicial;
-                        jsonResponse.data[0].Humedad_30cm = inicial;
-                        jsonResponse.data[0].Humedad_60cm = inicial * 0.95;
-                        jsonResponse.data[0].Humedad_100cm = inicial * 0.90;
-
-                        for (let i = 1; i < jsonResponse.data.length; i++) {
-                            let prev = jsonResponse.data[i - 1];
-                            let curr = jsonResponse.data[i];
-                            let lluvia = curr.Lluvia || 0;
-                            let et0 = curr.ET0 || 0;
-
-                            if (curr.Proxy_Humedad) {
-                                curr.Humedad_10cm = curr.Proxy_Humedad;
-                            } else {
-                                curr.Humedad_10cm = prev.Humedad_10cm + (lluvia * 0.008) - (et0 * 0.003);
-                            }
-
-                            curr.Humedad_30cm = prev.Humedad_30cm + ((curr.Humedad_10cm - prev.Humedad_30cm) * 0.15) + (lluvia > 5 ? 0.005 : 0) - (et0 * 0.001);
-                            curr.Humedad_60cm = prev.Humedad_60cm + ((curr.Humedad_30cm - prev.Humedad_60cm) * 0.10) + (lluvia > 15 ? 0.003 : 0) - (et0 * 0.0005);
-                            curr.Humedad_100cm = prev.Humedad_100cm + ((curr.Humedad_60cm - prev.Humedad_100cm) * 0.05) + (lluvia > 30 ? 0.002 : 0);
-
-                            curr.Humedad_10cm = Math.max(pmp, Math.min(cc, curr.Humedad_10cm));
-                            curr.Humedad_30cm = Math.max(pmp, Math.min(cc, curr.Humedad_30cm));
-                            curr.Humedad_60cm = Math.max(pmp, Math.min(cc, curr.Humedad_60cm));
-                            curr.Humedad_100cm = Math.max(pmp, Math.min(cc, curr.Humedad_100cm));
-                        }
-                    }
-
+                    // --- MANTENIDO: SIN EL OVERRIDE QUE ROMPÍA LA FÍSICA ---
+                    // Todo se calcula ahora con precisión desde el Backend (Python)
+                    
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
                     let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
