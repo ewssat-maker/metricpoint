@@ -288,6 +288,7 @@
             </div>
         </div>
 
+        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -450,7 +451,7 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES -->
+                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -483,11 +484,11 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (BETA) -->
+                    <!-- GEMELO VOLUMÉTRICO (BETA) DISEÑO SPLIT FINAL -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
-                            <!-- Lado Izquierdo: Modelo 3D -->
+                            <!-- Lado Izquierdo: Modelo 3D Volume -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
                             </div>
@@ -814,6 +815,7 @@
 
         // =====================================================================
         // MODIFICACIÓN ÚNICA: GEMELO DIGITAL COMO BLOQUE VOLUMÉTRICO ("VOLUME")
+        // Y CERO ERRORES JS.
         // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -822,8 +824,8 @@
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
-            const gridSize = 40; 
-            const zGridSize = 30;
+            const gridSize = 30; 
+            const zGridSize = 20;
 
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) {
@@ -847,12 +849,12 @@
             if (profundidadSeleccionada == "60") { visualOffset = 6.0; }
             if (profundidadSeleccionada == "100") { visualOffset = 10.0; }
 
-            let globalMin = 0; 
-            let globalMax = parametros_suelo ? parametros_suelo.CC : 0.45;
+            let globalMin = parametros_suelo ? Math.max(0.01, parametros_suelo.PMP - 0.02) : 0.1;
+            let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
             
             let x_pts = [], y_pts = [], z_pts = [], val_pts = [];
             
-            let z_min_absoluto = -6; 
+            let z_min_absoluto = -4; 
             let z_max_absoluto = 14;
 
             for(let k=0; k<zGridSize; k++) {
@@ -872,7 +874,7 @@
                             let topZ = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2; 
                             
                             let z_top_valid = topZ - visualOffset; 
-                            let z_bot_valid = topZ - 11.0; // Fondo a 110 cm
+                            let z_bot_valid = topZ - 11.0; // Fondo a -110 cm
 
                             if (z_val <= z_top_valid && z_val >= z_bot_valid) {
                                 let depth_cm = (topZ - z_val) * 10; 
@@ -886,18 +888,16 @@
                                 
                                 let variacion_x = Math.sin(i * 0.8) * 0.02;
                                 let variacion_y = Math.cos(j * 0.8) * 0.02;
-                                let variacion_z = Math.sin(depth_cm * 0.2) * 0.03;
                                 
-                                let hum = hum_base + variacion_x + variacion_y + variacion_z;
-                                
+                                let hum = hum_base + variacion_x + variacion_y;
                                 hum = Math.max(globalMin, Math.min(globalMax, hum));
                                 
                                 val_pts.push(hum);
                             } else {
-                                val_pts.push(null);
+                                val_pts.push(-100); 
                             }
                         } else {
-                            val_pts.push(null);
+                            val_pts.push(-100);
                         }
                     }
                 }
@@ -905,14 +905,12 @@
 
             const trace_volume = {
                 type: 'volume',
-                x: x_pts,
-                y: y_pts,
-                z: z_pts,
+                x: x_pts, y: y_pts, z: z_pts,
                 value: val_pts,
                 isomin: globalMin,
                 isomax: globalMax,
-                opacity: 0.8,
-                surface: { count: 21 }, 
+                opacity: 0.6,
+                surface: { count: 15 }, 
                 colorscale: 'Turbo',
                 reversescale: true, 
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
@@ -1015,6 +1013,39 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
+                    if (jsonResponse.data && jsonResponse.data.length > 0) {
+                        let cc = jsonResponse.suelo.CC;
+                        let pmp = jsonResponse.suelo.PMP;
+                        
+                        let inicial = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm || (cc * 0.7);
+                        jsonResponse.data[0].Humedad_10cm = inicial;
+                        jsonResponse.data[0].Humedad_30cm = inicial;
+                        jsonResponse.data[0].Humedad_60cm = inicial * 0.95;
+                        jsonResponse.data[0].Humedad_100cm = inicial * 0.90;
+
+                        for (let i = 1; i < jsonResponse.data.length; i++) {
+                            let prev = jsonResponse.data[i - 1];
+                            let curr = jsonResponse.data[i];
+                            let lluvia = curr.Lluvia || 0;
+                            let et0 = curr.ET0 || 0;
+
+                            if (curr.Proxy_Humedad) {
+                                curr.Humedad_10cm = curr.Proxy_Humedad;
+                            } else {
+                                curr.Humedad_10cm = prev.Humedad_10cm + (lluvia * 0.008) - (et0 * 0.003);
+                            }
+
+                            curr.Humedad_30cm = prev.Humedad_30cm + ((curr.Humedad_10cm - prev.Humedad_30cm) * 0.15) + (lluvia > 5 ? 0.005 : 0) - (et0 * 0.001);
+                            curr.Humedad_60cm = prev.Humedad_60cm + ((curr.Humedad_30cm - prev.Humedad_60cm) * 0.10) + (lluvia > 15 ? 0.003 : 0) - (et0 * 0.0005);
+                            curr.Humedad_100cm = prev.Humedad_100cm + ((curr.Humedad_60cm - prev.Humedad_100cm) * 0.05) + (lluvia > 30 ? 0.002 : 0);
+
+                            curr.Humedad_10cm = Math.max(pmp, Math.min(cc, curr.Humedad_10cm));
+                            curr.Humedad_30cm = Math.max(pmp, Math.min(cc, curr.Humedad_30cm));
+                            curr.Humedad_60cm = Math.max(pmp, Math.min(cc, curr.Humedad_60cm));
+                            curr.Humedad_100cm = Math.max(pmp, Math.min(cc, curr.Humedad_100cm));
+                        }
+                    }
+
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
                     let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
