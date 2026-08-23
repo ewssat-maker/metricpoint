@@ -64,7 +64,7 @@
         .modal-footer { padding: 15px 20px; background: #f4f7f6; text-align: right; border-top: 1px solid #ddd; }
         .btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* SECCIÓN TÉCNICA (SCROLL) */
+        /* SECCIÓN TÉCNICA (SOLAPAS COMERCIALES) */
         #techSection { padding: 80px 20px; background-color: #020617; overflow: hidden; }
         
         .intro-tabs-container { width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.85); border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
@@ -288,7 +288,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -451,7 +450,7 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
+                    <!-- PESTAÑAS 2D ORIGINALES -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -484,14 +483,13 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (BETA) DISEÑO SPLIT FINAL -->
+                    <!-- GEMELO VOLUMÉTRICO (BETA) -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
                             <!-- Lado Izquierdo: Modelo 3D -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
-                                <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: white; pointer-events: none; backdrop-filter: blur(4px);">👆 Pasa el mouse sobre el perfil para ver los datos y arrastra para rotar.</div>
                             </div>
                             
                             <!-- Lado Derecho: Controles y Resultados -->
@@ -617,7 +615,7 @@
                 "who_p2": "Con una base sólida de operaciones e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.",
                 "who_p3": "Nos preparamos para un gran desembarco en Argentina, trayendo nuestra suite para revolucionar la agricultura de precisión en Sudamérica, anticipándonos al estrés hídrico con precisión milimétrica.",
                 "prod_gem_title": "Gemelos Digitales Volumétricos",
-                "prod_gem_desc": "Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.",
+                "prod_gem_desc": "Visualice el subsolo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.",
                 "prod_rvi_title": "Vigor RVI y Monitoreo Fenológico",
                 "prod_rvi_desc": "Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real y la estructura de la biomasa sin importar la nubosidad, asegurando un seguimiento ininterrumpido del desarrollo de su cultivo.",
                 "prod_pol_title": "MetricPoli: Polinización Inteligente",
@@ -824,8 +822,8 @@
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
-            const gridSize = 35; 
-            const zGridSize = 25;
+            const gridSize = 40; 
+            const zGridSize = 30;
 
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) {
@@ -843,18 +841,18 @@
                 } return sum_z_w / sum_w;
             }
 
-            let visualOffset = 1; 
-            if (profundidadSeleccionada == "10") { visualOffset = 1; }
-            if (profundidadSeleccionada == "30") { visualOffset = 3; }
-            if (profundidadSeleccionada == "60") { visualOffset = 6; }
-            if (profundidadSeleccionada == "100") { visualOffset = 10; }
+            let visualOffset = 1.0; 
+            if (profundidadSeleccionada == "10") { visualOffset = 1.0; }
+            if (profundidadSeleccionada == "30") { visualOffset = 3.0; }
+            if (profundidadSeleccionada == "60") { visualOffset = 6.0; }
+            if (profundidadSeleccionada == "100") { visualOffset = 10.0; }
 
-            let globalMin = parametros_suelo ? Math.max(0.01, parametros_suelo.PMP - 0.02) : 0.1;
-            let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
+            let globalMin = 0; 
+            let globalMax = parametros_suelo ? parametros_suelo.CC : 0.45;
             
             let x_pts = [], y_pts = [], z_pts = [], val_pts = [];
             
-            let z_min_absoluto = -4; 
+            let z_min_absoluto = -6; 
             let z_max_absoluto = 14;
 
             for(let k=0; k<zGridSize; k++) {
@@ -873,8 +871,8 @@
                             let cotaNorm = (cotaReal - minCota) / rangoCota;
                             let topZ = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2; 
                             
-                            let z_top_valid = topZ;
-                            let z_bot_valid = topZ - visualOffset; 
+                            let z_top_valid = topZ - visualOffset; 
+                            let z_bot_valid = topZ - 11.0; // Fondo a 110 cm
 
                             if (z_val <= z_top_valid && z_val >= z_bot_valid) {
                                 let depth_cm = (topZ - z_val) * 10; 
@@ -883,10 +881,14 @@
                                 if (depth_cm <= 10) hum_base = dato.Humedad_10cm;
                                 else if (depth_cm <= 30) hum_base = dato.Humedad_10cm + (dato.Humedad_30cm - dato.Humedad_10cm) * ((depth_cm - 10)/20);
                                 else if (depth_cm <= 60) hum_base = dato.Humedad_30cm + (dato.Humedad_60cm - dato.Humedad_30cm) * ((depth_cm - 30)/30);
-                                else hum_base = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40);
+                                else if (depth_cm <= 100) hum_base = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40);
+                                else hum_base = dato.Humedad_100cm - ((depth_cm - 100) * 0.002);
                                 
-                                let variacion = (Math.sin(i * 0.4) * 0.03) + (Math.cos(j * 0.4) * 0.03) - (depth_cm * 0.001);
-                                let hum = hum_base + variacion;
+                                let variacion_x = Math.sin(i * 0.8) * 0.02;
+                                let variacion_y = Math.cos(j * 0.8) * 0.02;
+                                let variacion_z = Math.sin(depth_cm * 0.2) * 0.03;
+                                
+                                let hum = hum_base + variacion_x + variacion_y + variacion_z;
                                 
                                 hum = Math.max(globalMin, Math.min(globalMax, hum));
                                 
@@ -909,8 +911,8 @@
                 value: val_pts,
                 isomin: globalMin,
                 isomax: globalMax,
-                opacity: 0.6,
-                surface: { count: 25 }, 
+                opacity: 0.8,
+                surface: { count: 21 }, 
                 colorscale: 'Turbo',
                 reversescale: true, 
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
@@ -957,7 +959,7 @@
                     camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
-                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [z_min_absoluto, z_max_absoluto] }, 
+                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-4, 14] }, 
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.6 }, 
                     annotations: [] 
