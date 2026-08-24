@@ -288,7 +288,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -451,17 +450,15 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
+                    <!-- PESTAÑAS 2D ORIGINALES -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
                     </div>
                     <div id="tabClima" class="tab-content"><div class="chart-container" id="contenedorLineasClima" style="display: none;"><canvas id="chartClima" height="120"></canvas></div></div>
                     
-                    <!-- PERFIL 3D DE CAMPAÑA RESTAURADO (INTACTO) -->
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL RESTAURADA PERFECTA (INTACTA) -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -486,13 +483,13 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (MODIFICADO COMO VOLUMEN 3D TIPO PISCIS) -->
+                    <!-- GEMELO VOLUMÉTRICO (BETA) MATRIZ VOLUMÉTRICA "PISCIS" -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
                             <!-- Lado Izquierdo: Modelo 3D Volume -->
                             <div class="split-layout-left">
-                                <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
+                                <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%; cursor: crosshair;"></div>
                             </div>
                             
                             <!-- Lado Derecho: Controles y Resultados -->
@@ -594,7 +591,7 @@
                 "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
                 "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "EXECUTE ANALYSIS",
                 "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):",
-                "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):",
+                "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan 3D Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):",
                 "lbl_climate_data": "Climate Data", "lbl_total_rain": "Total Accumulated Rain:", "lbl_diag": "Agrometeorological Diagnostics",
                 "tab_moist": "Moisture & Vigor", "tab_clim": "Climate & Rain", "tab_3d": "3D Model (Campaign)", "tab_xray": "Spatial X-Ray",
                 "mod2_subtitle": "SINARAME Network - Live Precipitation Echoes", "lbl_layers": "Layer Control", "lbl_layer_desc": "Real-time monitoring of rain echoes using the National Meteorological Service radar network.", "btn_refresh": "Refresh Radar",
@@ -618,7 +615,7 @@
                 "who_p2": "Con una base sólida de operaciones e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.",
                 "who_p3": "Nos preparamos para un gran desembarco en Argentina, trayendo nuestra suite para revolucionar la agricultura de precisión en Sudamérica, anticipándonos al estrés hídrico con precisión milimétrica.",
                 "prod_gem_title": "Gemelos Digitales Volumétricos",
-                "prod_gem_desc": "Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.",
+                "prod_gem_desc": "Visualice el subsolo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.",
                 "prod_rvi_title": "Vigor RVI y Monitoreo Fenológico",
                 "prod_rvi_desc": "Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real y la estructura de la biomasa sin importar la nubosidad, asegurando un seguimiento ininterrumpido del desarrollo de su cultivo.",
                 "prod_pol_title": "MetricPoli: Polinización Inteligente",
@@ -660,9 +657,9 @@
                 "prod_gem_title": "Gêmeos Digitais Volumétricos",
                 "prod_gem_desc": "Visualize o subsolo do seu campo como nunca antes. Nossa tecnologia 3D permite tomografia de terreno em tempo real, identificando a distribuição exata da umidade edáfica para otimizar a irrigação e prevenir o estresse hídrico antes que seja irreversível.",
                 "prod_rvi_title": "Vigor RVI e Monitoramento Fenológico",
-                "prod_rvi_desc": "Superamos as limitações dos índices ópticos tradicionais (NDVI). Utilizando Radar de Abertura Sintética (SAR), medimos o vigor real e a estrutura da biomassa independente da nebulosidade, garantindo o acompanhamento ininterrupto do desenvolvimento da sua cultura.",
-                "prod_pol_title": "MetricPoli: Polinização Inteligente",
-                "prod_pol_desc": "Maximize seu rendimento compreendendo a interação entre o clima e os polinizadores. Analise variáveis meteorológicas em tempo real para prever janelas de voo ideais, garantindo frutificação excepcional e colheitas sustentáveis.",
+                "prod_rvi_desc": "Vá além dos índices ópticos tradicionais. Correlacionamos o vigor estrutural da cultura (Radar Vegetation Index) com o balanço hídrico profundo do solo para prever com precisão o potencial produtivo, sem interferência de nuvens.",
+                "prod_pol_title": "MetricPoli: Polinização e Fenologia",
+                "prod_pol_desc": "Suite completa de polinização. Monitore o desempenho das colmeias e as fases fenológicas da cultura para maximizar a frutificação, garantindo colheitas sustentáveis e altamente produtivas.",
                 "contact_title": "Entre em Contato",
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
@@ -816,8 +813,8 @@
         window.ultimoDatoCalculado = null; 
 
         // =====================================================================
-        // MODIFICACIÓN ÚNICA: GEMELO DIGITAL COMO BLOQUE VOLUMÉTRICO ("VOLUME")
-        // Y CERO ERRORES JS.
+        // MODIFICACIÓN ÚNICA: GEMELO DIGITAL COMO EFECTO PERCOLACIÓN SCATTER3D
+        // (IDÉNTICO A LA FÓRMULA PYTHON MOSTRADA POR EL USUARIO)
         // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -826,9 +823,8 @@
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
-            const gridSize = 30; 
-            const zGridSize = 25;
-
+            const gridSize = 30; // Grid optimizado (30x30)
+            
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) {
                 puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; });
@@ -845,111 +841,169 @@
                 } return sum_z_w / sum_w;
             }
 
-            let visualOffset = 1.0; 
-            if (profundidadSeleccionada == "10") { visualOffset = 1.0; }
-            if (profundidadSeleccionada == "30") { visualOffset = 3.0; }
-            if (profundidadSeleccionada == "60") { visualOffset = 6.0; }
-            if (profundidadSeleccionada == "100") { visualOffset = 10.0; }
-
-            let globalMin = parametros_suelo ? Math.max(0.01, parametros_suelo.PMP - 0.02) : 0.1;
-            let globalMax = parametros_suelo ? parametros_suelo.CC + 0.05 : 0.45;
+            let profTop = parseInt(profundidadSeleccionada);
+            let profBot = 100;
             
-            let x_pts = [], y_pts = [], z_pts = [], val_pts = [];
+            let globalMin = 0.0; 
+            let globalMax = parametros_suelo ? parametros_suelo.CC : 0.45;
+
+            // Arrays para las 3 Superficies (Capa 1: Crop, Capa 2: Límite Superior, Capa 3: Límite Inferior)
+            let z_crop = [], c_crop = [];
+            let z_top = [], c_top = [];
+            let z_bot = [], c_bot = [];
             
-            let z_min_absoluto = -4; 
-            let z_max_absoluto = 14;
+            // Arrays para el Scatter Interior
+            let scat_x = [], scat_y = [], scat_z = [], scat_c = [];
 
-            for(let k=0; k<zGridSize; k++) {
-                let z_val = z_min_absoluto + (z_max_absoluto - z_min_absoluto) * (k / (zGridSize - 1));
-                for(let j=0; j<gridSize; j++) {
-                    let ry = minY + (maxY-minY)*(j/(gridSize-1));
-                    for(let i=0; i<gridSize; i++) {
-                        let rx = minX + (maxX-minX)*(i/(gridSize-1));
-                        
-                        x_pts.push(i);
-                        y_pts.push(j);
-                        z_pts.push(z_val);
-
-                        if (isPointInPoly([rx, ry], poly)) {
-                            let cotaReal = getRelieveZ(rx, ry);
-                            let cotaNorm = (cotaReal - minCota) / rangoCota;
-                            let topZ = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2; 
-                            
-                            let z_top_valid = topZ - visualOffset; 
-                            let z_bot_valid = topZ - 11.0; // Fondo a -110 cm
-
-                            if (z_val <= z_top_valid && z_val >= z_bot_valid) {
-                                let depth_cm = (topZ - z_val) * 10; 
-                                
-                                let hum_base = dato.Humedad_10cm;
-                                if (depth_cm <= 10) hum_base = dato.Humedad_10cm;
-                                else if (depth_cm <= 30) hum_base = dato.Humedad_10cm + (dato.Humedad_30cm - dato.Humedad_10cm) * ((depth_cm - 10)/20);
-                                else if (depth_cm <= 60) hum_base = dato.Humedad_30cm + (dato.Humedad_60cm - dato.Humedad_30cm) * ((depth_cm - 30)/30);
-                                else if (depth_cm <= 100) hum_base = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40);
-                                else hum_base = dato.Humedad_100cm - ((depth_cm - 100) * 0.002);
-                                
-                                let variacion_x = Math.sin(i * 0.8) * 0.02;
-                                let variacion_y = Math.cos(j * 0.8) * 0.02;
-                                
-                                let hum = hum_base + variacion_x + variacion_y;
-                                hum = Math.max(globalMin, Math.min(globalMax, hum));
-                                
-                                val_pts.push(hum);
-                            } else {
-                                val_pts.push(-100); 
-                            }
-                        } else {
-                            val_pts.push(-100);
-                        }
-                    }
-                }
+            // Función de interpolación de humedad
+            function getHumedad(depth_cm, i, j) {
+                let hum_base = dato.Humedad_10cm;
+                if (depth_cm <= 10) hum_base = dato.Humedad_10cm;
+                else if (depth_cm <= 30) hum_base = dato.Humedad_10cm + (dato.Humedad_30cm - dato.Humedad_10cm) * ((depth_cm - 10)/20);
+                else if (depth_cm <= 60) hum_base = dato.Humedad_30cm + (dato.Humedad_60cm - dato.Humedad_30cm) * ((depth_cm - 30)/30);
+                else if (depth_cm <= 100) hum_base = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40);
+                
+                // Variación matemática (ondas acopladas simulando percolación)
+                let variacion = (Math.sin(i * 0.5) * 0.02) + (Math.cos(j * 0.5) * 0.02) - (depth_cm * 0.0005);
+                let hum = hum_base + variacion;
+                return Math.max(globalMin, Math.min(globalMax, hum));
             }
 
-            const trace_volume = {
-                type: 'volume',
-                x: x_pts, y: y_pts, z: z_pts,
-                value: val_pts,
-                isomin: globalMin,
-                isomax: globalMax,
-                opacity: 0.6,
-                surface: { count: 15 }, 
-                colorscale: 'Turbo',
-                reversescale: true, 
-                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
-                name: `Perfil Volumétrico`,
-                hovertemplate: "<b>Humedad: %{value:.3f} V/V</b><br>Profundidad referencial: %{z:.1f}<extra></extra>"
-            };
-
-            let z_surf = [], color_surf = [];
-            let plotX = [], plotY = []; 
+            let plotX = [], plotY = [];
             for(let j=0; j<gridSize; j++) {
                 plotX.push(j);
                 plotY.push(j);
-                let r_surf = [], c_surf = [];
+                
+                let row_z_crop = [], row_c_crop = [];
+                let row_z_top = [], row_c_top = [];
+                let row_z_bot = [], row_c_bot = [];
+
                 let ry = minY + (maxY-minY)*(j/(gridSize-1));
+                
                 for(let i=0; i<gridSize; i++) {
                     let rx = minX + (maxX-minX)*(i/(gridSize-1));
+                    
                     if (isPointInPoly([rx, ry], poly)) {
                         let cotaReal = getRelieveZ(rx, ry);
                         let cotaNorm = (cotaReal - minCota) / rangoCota;
-                        let topZ = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2;
-                        r_surf.push(topZ);
-                        c_surf.push(Math.sin(j * 2) > 0 ? 1 : 0.2); 
+                        let topRelieve = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2;
+                        
+                        // Superficie del cultivo
+                        row_z_crop.push(topRelieve);
+                        row_c_crop.push(Math.sin(j * 2) > 0 ? 1 : 0.2);
+                        
+                        // Límite superior de la capa de humedad elegida
+                        let z_superficie_top = topRelieve - (profTop / 10.0);
+                        let hum_top = getHumedad(profTop, i, j);
+                        row_z_top.push(z_superficie_top);
+                        row_c_top.push(hum_top);
+
+                        // Límite inferior (100 cm)
+                        let z_superficie_bot = topRelieve - (profBot / 10.0);
+                        let hum_bot = getHumedad(profBot, i, j);
+                        row_z_bot.push(z_superficie_bot);
+                        row_c_bot.push(hum_bot);
+
+                        // Llenado Volumétrico del Interior (Scatter3d)
+                        let steps = 6; 
+                        for (let s = 1; s < steps; s++) {
+                            let w = s / steps;
+                            let current_depth_cm = profTop + w * (profBot - profTop);
+                            let current_z = topRelieve - (current_depth_cm / 10.0);
+                            let current_hum = getHumedad(current_depth_cm, i, j);
+                            
+                            scat_x.push(i);
+                            scat_y.push(j);
+                            scat_z.push(current_z);
+                            scat_c.push(current_hum);
+                        }
                     } else {
-                        r_surf.push(null); c_surf.push(null);
+                        row_z_crop.push(null); row_c_crop.push(null);
+                        row_z_top.push(null); row_c_top.push(null);
+                        row_z_bot.push(null); row_c_bot.push(null);
                     }
                 }
-                z_surf.push(r_surf); color_surf.push(c_surf);
+                z_crop.push(row_z_crop); c_crop.push(row_c_crop);
+                z_top.push(row_z_top); c_top.push(row_c_top);
+                z_bot.push(row_z_bot); c_bot.push(row_c_bot);
             }
-            
-            const trace_surface = {
-                x: plotX, y: plotY, z: z_surf, surfacecolor: color_surf, type: 'surface',
+
+            // 1. CAPA: EL CULTIVO (Superficie 2D Verde/Marrón)
+            const trace_crop = {
+                x: plotX, y: plotY, z: z_crop, surfacecolor: c_crop, type: 'surface',
                 colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']],
                 showscale: false, opacity: 1, lighting: { ambient: 0.6, diffuse: 0.9 },
-                name: 'Superficie', hovertemplate: "<b>Nivel de Cultivo</b><extra></extra>"
+                name: 'Superficie', hovertemplate: "<b>Capa Vegetal</b><extra></extra>"
             };
 
-            window.gemeloDataPlot = [trace_surface, trace_volume];
+            // 2. CAPA: FRONTERA SUPERIOR DE HUMEDAD (Superficie 2D Opaca + Contornos)
+            const trace_hum_top = {
+                x: plotX, y: plotY, z: z_top, surfacecolor: c_top, type: 'surface',
+                colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
+                showscale: true, 
+                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
+                opacity: 1.0, 
+                contours: { z: { show: true, color: 'black', width: 3, usecolormap: false } },
+                name: `Capa Consultada`,
+                hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -"+profTop+" cm<extra></extra>"
+            };
+
+            // 3. CAPA: FRONTERA INFERIOR DE HUMEDAD (100cm) (Superficie 2D Opaca + Contornos)
+            const trace_hum_bot = {
+                x: plotX, y: plotY, z: z_bot, surfacecolor: c_bot, type: 'surface',
+                colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
+                showscale: false,
+                opacity: 1.0,
+                contours: { z: { show: true, color: 'black', width: 3, usecolormap: false } },
+                name: `Fondo de Humedad`,
+                hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -100 cm<extra></extra>"
+            };
+
+            // 4. CAPA: INTERIOR DEL VOLUMEN (Scatter3d al 8% de Opacidad)
+            const trace_scatter = {
+                x: scat_x, y: scat_y, z: scat_z,
+                mode: 'markers',
+                type: 'scatter3d',
+                marker: {
+                    size: 5,
+                    color: scat_c,
+                    colorscale: 'Turbo',
+                    reversescale: true,
+                    cmin: globalMin,
+                    cmax: globalMax,
+                    opacity: 0.08
+                },
+                name: 'Interior',
+                showlegend: false,
+                hovertemplate: "Humedad Integ: %{marker.color:.3f} V/V<extra></extra>"
+            };
+
+            // 5. CAPA: BLOQUE DE TIERRA BASE (100 a 110 cm)
+            let periX = [], periY = [], periZ_100 = [], periZ_110 = [], periC = [];
+            for(let k = 0; k < poly.length; k++) {
+                let pt = poly[k];
+                let px = (pt[0] - minX) / (maxX - minX) * (gridSize - 1);
+                let py = (pt[1] - minY) / (maxY - minY) * (gridSize - 1);
+                let cotaReal = getRelieveZ(pt[0], pt[1]);
+                let cotaNorm = (cotaReal - minCota) / rangoCota;
+                let topRelieve = 8 + (cotaNorm * 4) + Math.sin(py * 0.2) * 0.2; 
+                
+                periX.push(px); 
+                periY.push(py);
+                periZ_100.push(topRelieve - 10.0); 
+                periZ_110.push(topRelieve - 11.0); 
+                periC.push(0);
+            }
+            periX.push(periX[0]); periY.push(periY[0]); periZ_100.push(periZ_100[0]); periZ_110.push(periZ_110[0]); periC.push(0);
+
+            const trace_skirt = {
+                x: [periX, periX], y: [periY, periY], z: [periZ_100, periZ_110],
+                surfacecolor: [periC, periC], type: 'surface',
+                colorscale: [[0, '#3e2723'], [1, '#3e2723']],
+                showscale: false, hoverinfo: 'none', name: 'Base Sólida (-110cm)'
+            };
+
+            window.gemeloDataPlot = [trace_crop, trace_hum_top, trace_hum_bot, trace_scatter, trace_skirt];
 
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -959,14 +1013,14 @@
                     camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
                     xaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
                     yaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
-                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-4, 14] }, 
+                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-5, 14] }, 
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.6 }, 
                     annotations: [] 
                 }
             };
 
-            Plotly.newPlot('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
+            Plotly.react('soilGemeloVolumetrico', window.gemeloDataPlot, window.gemeloLayout, {responsive: true, displayModeBar: false});
         }
 
         function cambiarCapaGemeloVolumetrico(profundidad) {
