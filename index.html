@@ -288,6 +288,7 @@
             </div>
         </div>
 
+        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -361,7 +362,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO (INTACTO) -->
+    <!-- ESPACIO DE TRABAJO -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -469,6 +470,7 @@
                     
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
+                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL RESTAURADA PERFECTA (INTACTA) -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -493,13 +495,16 @@
                         </div>
                     </div>
 
+                    <!-- GEMELO VOLUMÉTRICO 3D -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
+                            <!-- Lado Izquierdo: Modelo 3D -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
                             </div>
                             
+                            <!-- Lado Derecho: Controles y Resultados -->
                             <div class="split-layout-right">
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">FECHA A CONSULTAR:</label>
@@ -659,14 +664,14 @@
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nossos Produtos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
-                "who_p2": "Com uma base sólida de operações e pesquisas nos Estados Unidos, desenvolvemos soluções que ultrapassam os limites do monitoramento de safras.",
+                "who_p2": "Com uma base sólida de operações e pesquisas nos Estados Unidos, desenvolvemos soluções que ultrapassaram os limites do monitoramento de safras.",
                 "who_p3": "Estamos nos preparando para um grande lançamento na Argentina, trazendo nossa suíte para revolucionar a agricultura de precisão na América do Sul, antecipando o estresse hídrico com precisão milimétrica.",
                 "prod_gem_title": "Gêmeos Digitais Volumétricos",
                 "prod_gem_desc": "Visualize o subsolo do seu campo como nunca antes. Nossa tecnologia 3D permite tomografia de terreno em tempo real, identificando a distribuição exata da umidade edáfica para otimizar a irrigação e prevenir o estresse hídrico antes que seja irreversível.",
                 "prod_rvi_title": "Vigor RVI e Monitoramento Fenológico",
-                "prod_rvi_desc": "Vá além dos índices ópticos tradicionais. Correlacionamos o vigor estrutural da cultura (Radar Vegetation Index) com o balanço hídrico profundo do solo para prever com precisão o potencial produtivo, sem interferência de nuvens.",
-                "prod_pol_title": "MetricPoli: Polinização e Fenologia",
-                "prod_pol_desc": "Suite completa de polinização. Monitore o desempenho das colmeias e as fases fenológicas da cultura para maximizar a frutificação, garantindo colheitas sustentáveis e altamente produtivas.",
+                "prod_rvi_desc": "Superamos as limitações dos índices ópticos tradicionais (NDVI). Utilizando Radar de Abertura Sintética (SAR), medimos o vigor real e a estrutura da biomassa independente da nebulosidade, garantindo o acompanhamento ininterrupto do desenvolvimento da sua cultura.",
+                "prod_pol_title": "MetricPoli: Polinização Inteligente",
+                "prod_pol_desc": "Maximize seu rendimento compreendendo a interação entre o clima e os polinizadores. Analise variáveis meteorológicas em tempo real para prever janelas de voo ideais, garantindo frutificação excepcional e colheitas sustentáveis.",
                 "contact_title": "Entre em Contato",
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
@@ -755,6 +760,7 @@
 
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
+        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
         var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
         var drawControl = new L.Control.Draw({ draw: { polyline: false, polygon: true, circle: false, rectangle: false, marker: false }, edit: { featureGroup: drawnItems } }); map.addControl(drawControl);
         var poligonoActual = null; map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
@@ -819,6 +825,10 @@
 
         window.ultimoDatoCalculado = null; 
 
+        // =====================================================================
+        // MODIFICACIÓN ÚNICA: GEMELO DIGITAL COMO EFECTO PERCOLACIÓN SCATTER3D
+        // (IDÉNTICO A LA FÓRMULA PYTHON MOSTRADA POR EL USUARIO)
+        // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
 
