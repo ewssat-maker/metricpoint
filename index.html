@@ -288,7 +288,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -428,6 +427,8 @@
                     </div>
 
                     <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">EXECUTE ANALYSIS</button>
+                    <!-- BOTÓN DE DESCARGA CSV AÑADIDO AQUÍ -->
+                    <button class="btn-secondary" id="btnDownloadCSV" onclick="descargarCSV()" style="display:none; width: 100%; margin-top: 10px; background-color: #f59e0b; border: none;">⬇️ Descargar Datos (CSV)</button>
                     <div id="status"></div>
                     
                     <div class="soil-card" id="infoSuelo">
@@ -470,7 +471,7 @@
                     
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL RESTAURADA PERFECTA (INTACTA) -->
+                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL (MODIFICADA CON EJES LAT/LON) -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -495,7 +496,7 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO 3D -->
+                    <!-- GEMELO VOLUMÉTRICO (MODIFICADO CON LAT/LON) -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
@@ -664,14 +665,14 @@
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nossos Produtos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
-                "who_p2": "Com uma base sólida de operações e pesquisas nos Estados Unidos, desenvolvemos soluções que ultrapassaram os limites do monitoramento de safras.",
+                "who_p2": "Com uma base sólida de operações e pesquisas nos Estados Unidos, desenvolvemos soluções que ultrapassam os limites do monitoramento de safras.",
                 "who_p3": "Estamos nos preparando para um grande lançamento na Argentina, trazendo nossa suíte para revolucionar a agricultura de precisão na América do Sul, antecipando o estresse hídrico com precisão milimétrica.",
                 "prod_gem_title": "Gêmeos Digitais Volumétricos",
                 "prod_gem_desc": "Visualize o subsolo do seu campo como nunca antes. Nossa tecnologia 3D permite tomografia de terreno em tempo real, identificando a distribuição exata da umidade edáfica para otimizar a irrigação e prevenir o estresse hídrico antes que seja irreversível.",
                 "prod_rvi_title": "Vigor RVI e Monitoramento Fenológico",
-                "prod_rvi_desc": "Superamos as limitações dos índices ópticos tradicionais (NDVI). Utilizando Radar de Abertura Sintética (SAR), medimos o vigor real e a estrutura da biomassa independente da nebulosidade, garantindo o acompanhamento ininterrupto do desenvolvimento da sua cultura.",
-                "prod_pol_title": "MetricPoli: Polinização Inteligente",
-                "prod_pol_desc": "Maximize seu rendimento compreendendo a interação entre o clima e os polinizadores. Analise variáveis meteorológicas em tempo real para prever janelas de voo ideais, garantindo frutificação excepcional e colheitas sustentáveis.",
+                "prod_rvi_desc": "Vá além dos índices ópticos tradicionais. Correlacionamos o vigor estrutural da cultura (Radar Vegetation Index) com o balanço hídrico profundo do solo para prever com precisão o potencial produtivo, sem interferência de nuvens.",
+                "prod_pol_title": "MetricPoli: Polinização e Fenologia",
+                "prod_pol_desc": "Suite completa de polinização. Monitore o desempenho das colmeias e as fases fenológicas da cultura para maximizar a frutificação, garantindo colheitas sustentáveis e altamente produtivas.",
                 "contact_title": "Entre em Contato",
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
@@ -782,6 +783,24 @@
             document.getElementById('m_status').innerText = `${window.datosLocalesManuales.length} records.`; document.getElementById('m_lluvia').value = ''; document.getElementById('m_et0').value = ''
         }
 
+        function descargarCSV() {
+            if (!window.datosSimulacion || window.datosSimulacion.length === 0) return alert("No hay datos para descargar.");
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Fecha,Lluvia_mm,ET0_mm,Humedad_10cm,Humedad_30cm,Humedad_60cm,Humedad_100cm,Proxy_Sat_Bruto,RVI_Vigor\n";
+            window.datosSimulacion.forEach(row => {
+                let proxy = row.Proxy_Humedad !== null ? row.Proxy_Humedad : "";
+                let rvi = row.RVI_Crudo !== null ? row.RVI_Crudo : "";
+                csvContent += `${row.timestamp},${row.Lluvia},${row.ET0},${row.Humedad_10cm},${row.Humedad_30cm},${row.Humedad_60cm},${row.Humedad_100cm},${proxy},${rvi}\n`;
+            });
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "MetricPoint_Data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         function abrirPestana(tabId, elementoBtn) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); document.getElementById('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
@@ -820,14 +839,14 @@
                 }
                 traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cauto: false, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
             });
-            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {visible:false}, yaxis: {visible:false}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
+            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true, tickformat: '.4f', gridcolor: '#ccc'}, yaxis: {title: 'Latitud', visible: true, tickformat: '.4f', gridcolor: '#ccc'}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
         }
 
         window.ultimoDatoCalculado = null; 
 
         // =====================================================================
         // MODIFICACIÓN ÚNICA: GEMELO DIGITAL COMO EFECTO PERCOLACIÓN SCATTER3D
-        // (IDÉNTICO A LA FÓRMULA PYTHON MOSTRADA POR EL USUARIO)
+        // (IDÉNTICO A LA FÓRMULA PYTHON MOSTRADA POR EL USUARIO) + EJES LAT/LON
         // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -879,18 +898,18 @@
             }
 
             let plotX = [], plotY = [];
+            for(let i=0; i<gridSize; i++) plotX.push(minX + (maxX-minX)*(i/(gridSize-1)));
+            for(let j=0; j<gridSize; j++) plotY.push(minY + (maxY-minY)*(j/(gridSize-1)));
+
             for(let j=0; j<gridSize; j++) {
-                plotX.push(j);
-                plotY.push(j);
-                
                 let row_z_crop = [], row_c_crop = [];
                 let row_z_top = [], row_c_top = [];
                 let row_z_bot = [], row_c_bot = [];
 
-                let ry = minY + (maxY-minY)*(j/(gridSize-1));
+                let ry = plotY[j];
                 
                 for(let i=0; i<gridSize; i++) {
-                    let rx = minX + (maxX-minX)*(i/(gridSize-1));
+                    let rx = plotX[i];
                     
                     if (isPointInPoly([rx, ry], poly)) {
                         let cotaReal = getRelieveZ(rx, ry);
@@ -917,8 +936,8 @@
                             let current_z = topRelieve - (current_depth_cm / 10.0);
                             let current_hum = getHumedad(current_depth_cm, i, j);
                             
-                            scat_x.push(i);
-                            scat_y.push(j);
+                            scat_x.push(rx);
+                            scat_y.push(ry);
                             scat_z.push(current_z);
                             scat_c.push(current_hum);
                         }
@@ -982,14 +1001,12 @@
             let periX = [], periY = [], periZ_100 = [], periZ_110 = [], periC = [];
             for(let k = 0; k < poly.length; k++) {
                 let pt = poly[k];
-                let px = (pt[0] - minX) / (maxX - minX) * (gridSize - 1);
-                let py = (pt[1] - minY) / (maxY - minY) * (gridSize - 1);
                 let cotaReal = getRelieveZ(pt[0], pt[1]);
                 let cotaNorm = (cotaReal - minCota) / rangoCota;
-                let topRelieve = 8 + (cotaNorm * 4) + Math.sin(py * 0.2) * 0.2; 
+                let topRelieve = 8 + (cotaNorm * 4) + Math.sin(pt[1] * 0.2) * 0.2; 
                 
-                periX.push(px); 
-                periY.push(py);
+                periX.push(pt[0]); 
+                periY.push(pt[1]);
                 periZ_100.push(topRelieve - 10.0); 
                 periZ_110.push(topRelieve - 11.0); 
                 periC.push(0);
@@ -1011,8 +1028,8 @@
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
                     camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
-                    xaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
-                    yaxis: { visible: false, showgrid: false, zeroline: false, range: [-2, gridSize+1] }, 
+                    xaxis: { title: 'Longitud', visible: true, tickformat: '.4f', gridcolor: '#1e293b' }, 
+                    yaxis: { title: 'Latitud', visible: true, tickformat: '.4f', gridcolor: '#1e293b' }, 
                     zaxis: { visible: false, showgrid: false, zeroline: false, range: [-5, 14] }, 
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.6 }, 
@@ -1069,38 +1086,7 @@
                 if (response.ok) {
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
-                    if (jsonResponse.data && jsonResponse.data.length > 0) {
-                        let cc = jsonResponse.suelo.CC;
-                        let pmp = jsonResponse.suelo.PMP;
-                        
-                        let inicial = jsonResponse.data[0].Proxy_Humedad || jsonResponse.data[0].Humedad_10cm || (cc * 0.7);
-                        jsonResponse.data[0].Humedad_10cm = inicial;
-                        jsonResponse.data[0].Humedad_30cm = inicial;
-                        jsonResponse.data[0].Humedad_60cm = inicial * 0.95;
-                        jsonResponse.data[0].Humedad_100cm = inicial * 0.90;
-
-                        for (let i = 1; i < jsonResponse.data.length; i++) {
-                            let prev = jsonResponse.data[i - 1];
-                            let curr = jsonResponse.data[i];
-                            let lluvia = curr.Lluvia || 0;
-                            let et0 = curr.ET0 || 0;
-
-                            if (curr.Proxy_Humedad) {
-                                curr.Humedad_10cm = curr.Proxy_Humedad;
-                            } else {
-                                curr.Humedad_10cm = prev.Humedad_10cm + (lluvia * 0.008) - (et0 * 0.003);
-                            }
-
-                            curr.Humedad_30cm = prev.Humedad_30cm + ((curr.Humedad_10cm - prev.Humedad_30cm) * 0.15) + (lluvia > 5 ? 0.005 : 0) - (et0 * 0.001);
-                            curr.Humedad_60cm = prev.Humedad_60cm + ((curr.Humedad_30cm - prev.Humedad_60cm) * 0.10) + (lluvia > 15 ? 0.003 : 0) - (et0 * 0.0005);
-                            curr.Humedad_100cm = prev.Humedad_100cm + ((curr.Humedad_60cm - prev.Humedad_100cm) * 0.05) + (lluvia > 30 ? 0.002 : 0);
-
-                            curr.Humedad_10cm = Math.max(pmp, Math.min(cc, curr.Humedad_10cm));
-                            curr.Humedad_30cm = Math.max(pmp, Math.min(cc, curr.Humedad_30cm));
-                            curr.Humedad_60cm = Math.max(pmp, Math.min(cc, curr.Humedad_60cm));
-                            curr.Humedad_100cm = Math.max(pmp, Math.min(cc, curr.Humedad_100cm));
-                        }
-                    }
+                    document.getElementById('btnDownloadCSV').style.display = 'block';
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
