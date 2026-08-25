@@ -288,6 +288,7 @@
             </div>
         </div>
 
+        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -427,7 +428,7 @@
                     </div>
 
                     <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">EXECUTE ANALYSIS</button>
-                    <!-- BOTÓN DE DESCARGA CSV AÑADIDO AQUÍ -->
+                    <!-- BOTÓN DE DESCARGA CSV -->
                     <button class="btn-secondary" id="btnDownloadCSV" onclick="descargarCSV()" style="display:none; width: 100%; margin-top: 10px; background-color: #f59e0b; border: none;">⬇️ Descargar Datos (CSV)</button>
                     <div id="status"></div>
                     
@@ -462,7 +463,7 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
+                    <!-- PESTAÑAS 2D ORIGINALES (RESTAURADAS A COMO ESTABAN EN TU ORIGINAL) -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -471,7 +472,7 @@
                     
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL (MODIFICADA CON EJES LAT/LON) -->
+                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -496,11 +497,11 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (MODIFICADO CON LAT/LON) -->
+                    <!-- GEMELO VOLUMÉTRICO (BETA) MATRIZ "PISCIS" CON EJES Y CONTORNOS -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
-                            <!-- Lado Izquierdo: Modelo 3D -->
+                            <!-- Lado Izquierdo: Modelo 3D Volume -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
                             </div>
@@ -604,7 +605,7 @@
                 "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
                 "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "EXECUTE ANALYSIS",
                 "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):",
-                "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan 3D Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):",
+                "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):",
                 "lbl_climate_data": "Climate Data", "lbl_total_rain": "Total Accumulated Rain:", "lbl_diag": "Agrometeorological Diagnostics",
                 "tab_moist": "Moisture & Vigor", "tab_clim": "Climate & Rain", "tab_3d": "3D Model (Campaign)", "tab_xray": "Spatial X-Ray",
                 "mod2_subtitle": "SINARAME Network - Live Precipitation Echoes", "lbl_layers": "Layer Control", "lbl_layer_desc": "Real-time monitoring of rain echoes using the National Meteorological Service radar network.", "btn_refresh": "Refresh Radar",
@@ -839,7 +840,7 @@
                 }
                 traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cauto: false, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
             });
-            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true, tickformat: '.4f', gridcolor: '#ccc'}, yaxis: {title: 'Latitud', visible: true, tickformat: '.4f', gridcolor: '#ccc'}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
+            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#ccc'}, yaxis: {title: 'Latitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#ccc'}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
         }
 
         window.ultimoDatoCalculado = null; 
@@ -965,7 +966,7 @@
                 showscale: true, 
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 opacity: 1.0, 
-                contours: { z: { show: true, color: 'black', width: 3, usecolormap: false } },
+                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: (globalMax - globalMin) / 15 } },
                 name: `Capa Consultada`,
                 hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -"+profTop+" cm<extra></extra>"
             };
@@ -975,7 +976,7 @@
                 colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
                 showscale: false,
                 opacity: 1.0,
-                contours: { z: { show: true, color: 'black', width: 3, usecolormap: false } },
+                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: (globalMax - globalMin) / 15 } },
                 name: `Fondo de Humedad`,
                 hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -100 cm<extra></extra>"
             };
@@ -1028,8 +1029,8 @@
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
                     camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
-                    xaxis: { title: 'Longitud', visible: true, tickformat: '.4f', gridcolor: '#1e293b' }, 
-                    yaxis: { title: 'Latitud', visible: true, tickformat: '.4f', gridcolor: '#1e293b' }, 
+                    xaxis: { title: 'Longitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#1e293b' }, 
+                    yaxis: { title: 'Latitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#1e293b' }, 
                     zaxis: { visible: false, showgrid: false, zeroline: false, range: [-5, 14] }, 
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.6 }, 
@@ -1087,6 +1088,18 @@
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
                     document.getElementById('btnDownloadCSV').style.display = 'block';
+
+                    // RESTAURADO EL ALGORITMO ORIGINAL QUE HABÍAS PULIDO
+                    if (jsonResponse.data && jsonResponse.data.length > 0) {
+                        let valIni = jsonResponse.data[0].Humedad_10cm; 
+                        let diasTransicion = Math.min(30, jsonResponse.data.length);
+                        for(let i = 0; i < diasTransicion; i++) {
+                            let factor = i / diasTransicion; 
+                            jsonResponse.data[i].Humedad_30cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
+                            jsonResponse.data[i].Humedad_60cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
+                            jsonResponse.data[i].Humedad_100cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
+                        }
+                    }
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
