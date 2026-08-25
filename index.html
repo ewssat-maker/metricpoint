@@ -65,7 +65,7 @@
         .btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
         /* SECCIÓN TÉCNICA (SOLAPAS COMERCIALES) */
-        #techSection { padding: 80px 20px; background-color: #020617; overflow: hidden; }
+        #techSection { padding: 80px 20px 40px 20px; background-color: #020617; overflow: hidden; }
         
         .intro-tabs-container { width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.85); border-radius: 12px; border: 1px solid #1e293b; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
         .intro-tabs-header { display: flex; background: #0f172a; border-bottom: 2px solid #1e293b; }
@@ -288,7 +288,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE INTRODUCCIÓN COMERCIAL CON SOLAPAS Y VIDEOS -->
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
@@ -340,6 +339,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- FOOTER / REDES SOCIALES -->
+        <footer style="background-color: #0f172a; padding: 20px; text-align: center; border-top: 1px solid #1e293b;">
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 10px;">Síguenos en nuestras redes sociales:</p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <a href="https://x.com/metric_point" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: bold; font-size: 16px;">𝕏 (Twitter)</a>
+                <a href="https://www.instagram.com/metricpoint.service/" target="_blank" style="color: #e1306c; text-decoration: none; font-weight: bold; font-size: 16px;">📸 Instagram</a>
+            </div>
+            <p style="color: #64748b; font-size: 12px; margin-top: 15px;">© 2026 Suite MetricPoint. Todos los derechos reservados.</p>
+        </footer>
     </div>
 
     <!-- Muro de Pago -->
@@ -352,7 +361,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO -->
+    <!-- ESPACIO DE TRABAJO (INTACTO) -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -484,16 +493,13 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (MODIFICADO CON SCATTER3D Y SUPERFICIES SOLIDAS) -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
-                            <!-- Lado Izquierdo: Modelo 3D -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
                             </div>
                             
-                            <!-- Lado Derecho: Controles y Resultados -->
                             <div class="split-layout-right">
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">FECHA A CONSULTAR:</label>
@@ -658,9 +664,9 @@
                 "prod_gem_title": "Gêmeos Digitais Volumétricos",
                 "prod_gem_desc": "Visualize o subsolo do seu campo como nunca antes. Nossa tecnologia 3D permite tomografia de terreno em tempo real, identificando a distribuição exata da umidade edáfica para otimizar a irrigação e prevenir o estresse hídrico antes que seja irreversível.",
                 "prod_rvi_title": "Vigor RVI e Monitoramento Fenológico",
-                "prod_rvi_desc": "Superamos as limitações dos índices ópticos tradicionais (NDVI). Utilizando Radar de Abertura Sintética (SAR), medimos o vigor real e a estrutura da biomassa independente da nebulosidade, garantindo o acompanhamento ininterrupto do desenvolvimento da sua cultura.",
-                "prod_pol_title": "MetricPoli: Polinização Inteligente",
-                "prod_pol_desc": "Maximize seu rendimento compreendendo a interação entre o clima e os polinizadores. Analise variáveis meteorológicas em tempo real para prever janelas de voo ideais, garantindo frutificação excepcional e colheitas sustentáveis.",
+                "prod_rvi_desc": "Vá além dos índices ópticos tradicionais. Correlacionamos o vigor estrutural da cultura (Radar Vegetation Index) com o balanço hídrico profundo do solo para prever com precisão o potencial produtivo, sem interferência de nuvens.",
+                "prod_pol_title": "MetricPoli: Polinização e Fenologia",
+                "prod_pol_desc": "Suite completa de polinização. Monitore o desempenho das colmeias e as fases fenológicas da cultura para maximizar a frutificação, garantindo colheitas sustentáveis e altamente produtivas.",
                 "contact_title": "Entre em Contato",
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
@@ -813,9 +819,6 @@
 
         window.ultimoDatoCalculado = null; 
 
-        // =====================================================================
-        // MODIFICACIÓN ÚNICA: ESCALA ROJO-PÚRPURA EN GEMELO DIGITAL
-        // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
 
@@ -847,18 +850,10 @@
             let globalMin = 0.0; 
             let globalMax = parametros_suelo ? parametros_suelo.CC : 0.45;
 
-            // LA MISMA ESCALA DEL X-RAY
-            const colorScaleRojoPurpura = [
-                [0.0, 'rgb(215,25,28)'], 
-                [0.25, 'rgb(253,174,97)'], 
-                [0.5, 'rgb(255,255,191)'], 
-                [0.75, 'rgb(44,123,182)'], 
-                [1.0, 'rgb(128,0,128)']
-            ];
-
             let z_crop = [], c_crop = [];
             let z_top = [], c_top = [];
             let z_bot = [], c_bot = [];
+            
             let scat_x = [], scat_y = [], scat_z = [], scat_c = [];
 
             function getHumedad(depth_cm, i, j) {
@@ -937,7 +932,7 @@
 
             const trace_hum_top = {
                 x: plotX, y: plotY, z: z_top, surfacecolor: c_top, type: 'surface',
-                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
+                colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
                 showscale: true, 
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 opacity: 1.0, 
@@ -948,7 +943,7 @@
 
             const trace_hum_bot = {
                 x: plotX, y: plotY, z: z_bot, surfacecolor: c_bot, type: 'surface',
-                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax,
+                colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
                 showscale: false,
                 opacity: 1.0,
                 contours: { z: { show: true, color: 'black', width: 3, usecolormap: false } },
@@ -963,7 +958,8 @@
                 marker: {
                     size: 5,
                     color: scat_c,
-                    colorscale: colorScaleRojoPurpura,
+                    colorscale: 'Turbo',
+                    reversescale: true,
                     cmin: globalMin,
                     cmax: globalMax,
                     opacity: 0.08
