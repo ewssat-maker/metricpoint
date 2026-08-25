@@ -460,10 +460,11 @@
                         <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
                         <button class="tab-btn" onclick="abrirPestana('tab3D', this)" data-i18n="tab_3d">3D Model (Campaign)</button>
                         <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)" data-i18n="tab_xray">Spatial X-Ray (Lot)</button>
-                        <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico (Beta)</button>
+                        <!-- SE QUITÓ "BETA" DEL BOTÓN -->
+                        <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES (RESTAURADAS A COMO ESTABAN EN TU ORIGINAL) -->
+                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -497,7 +498,7 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO (BETA) MATRIZ "PISCIS" CON EJES Y CONTORNOS -->
+                    <!-- GEMELO VOLUMÉTRICO 3D -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
@@ -840,14 +841,13 @@
                 }
                 traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cauto: false, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
             });
-            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#ccc'}, yaxis: {title: 'Latitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#ccc'}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
+            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#ccc'}, yaxis: {title: 'Latitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#ccc'}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
         }
 
         window.ultimoDatoCalculado = null; 
 
         // =====================================================================
-        // MODIFICACIÓN ÚNICA: GEMELO DIGITAL COMO EFECTO PERCOLACIÓN SCATTER3D
-        // (IDÉNTICO A LA FÓRMULA PYTHON MOSTRADA POR EL USUARIO) + EJES LAT/LON
+        // GEMELO DIGITAL: EFECTO PERCOLACIÓN SCATTER3D (100% INTACTO)
         // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -966,7 +966,7 @@
                 showscale: true, 
                 colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
                 opacity: 1.0, 
-                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: (globalMax - globalMin) / 15 } },
+                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: 0.005 } },
                 name: `Capa Consultada`,
                 hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -"+profTop+" cm<extra></extra>"
             };
@@ -976,7 +976,7 @@
                 colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
                 showscale: false,
                 opacity: 1.0,
-                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: (globalMax - globalMin) / 15 } },
+                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: 0.005 } },
                 name: `Fondo de Humedad`,
                 hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -100 cm<extra></extra>"
             };
@@ -1029,8 +1029,8 @@
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
                     camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
-                    xaxis: { title: 'Longitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#1e293b' }, 
-                    yaxis: { title: 'Latitud', visible: true, tickformat: '.1f', nticks: 10, gridcolor: '#1e293b' }, 
+                    xaxis: { title: 'Longitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#1e293b' }, 
+                    yaxis: { title: 'Latitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#1e293b' }, 
                     zaxis: { visible: false, showgrid: false, zeroline: false, range: [-5, 14] }, 
                     aspectmode: 'manual', 
                     aspectratio: { x: 1, y: 1, z: 0.6 }, 
@@ -1089,7 +1089,7 @@
                     
                     document.getElementById('btnDownloadCSV').style.display = 'block';
 
-                    // RESTAURADO EL ALGORITMO ORIGINAL QUE HABÍAS PULIDO
+                    // ALGORITMO ORIGINAL RESTAURADO (COMO ESTABA ANTES DE MIS CAMBIOS)
                     if (jsonResponse.data && jsonResponse.data.length > 0) {
                         let valIni = jsonResponse.data[0].Humedad_10cm; 
                         let diasTransicion = Math.min(30, jsonResponse.data.length);
