@@ -547,18 +547,59 @@
         <div id="moduloPronostico" style="display: none;">
             <div class="header">
                 <div class="header-left">
-                    <h1 data-i18n="mod_weather_title">Weather Forecast (SMN)</h1>
-                    <span data-i18n="mod2_subtitle">SINARAME Network - Live Precipitation Echoes</span>
+                    <h1 data-i18n="mod_weather_title">Weather Forecast (Agro)</h1>
+                    <span data-i18n="mod2_subtitle">Condiciones en Tiempo Real, Pronóstico y Tendencias</span>
                 </div>
                 <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             <div class="container">
                 <div class="sidebar">
-                    <h3 data-i18n="lbl_layers">Layer Control</h3>
-                    <p style="font-size: 13px; color: #666;" data-i18n="lbl_layer_desc">Real-time monitoring of rain echoes using the National Meteorological Service radar network.</p>
-                    <button class="btn-primary" onclick="alert('Refrescado')" data-i18n="btn_refresh">Refresh Radar</button>
+                    <h3>Panel de Control</h3>
+                    <label>Ubicación (Lat, Lon):</label>
+                    <input type="text" id="coordPronostico" value="-26.82, -65.22">
+                    <button class="btn-primary" onclick="actualizarPronosticoGlobal()">Cargar Datos</button>
+                    
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 20px 0;">
+                    
+                    <div class="ingesta-card" style="display: block; background: #eef7f9; border-color: #38bdf8;">
+                        <h4 style="color: #08306b;">Tiempo Actual</h4>
+                        <p><strong>Temperatura:</strong> <span id="resTemp">--</span> °C</p>
+                        <p><strong>Humedad Relativa:</strong> <span id="resHum">--</span> %</p>
+                        <p><strong>Viento (Ráfagas):</strong> <span id="resViento">--</span> km/h</p>
+                        <p><strong>ET0 Hoy:</strong> <span id="resEt0">--</span> mm</p>
+                    </div>
                 </div>
-                <div class="main-content"><div id="mapPronostico"></div></div>
+                
+                <div class="main-content">
+                    <!-- Sub-Solapas del Módulo Meteorológico -->
+                    <div class="tabs" style="display: flex; margin-bottom: 15px;">
+                        <button class="tab-btn active" onclick="abrirPestanaPronostico('tabRadar', this)">Radar en Vivo (SMN)</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)">Pronóstico Agronómico</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología</button>
+                    </div>
+
+                    <div id="tabRadar" class="tab-content active" style="height: 600px; position: relative;">
+                        <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 8px; border: 2px solid #ccc; z-index: 1;"></div>
+                    </div>
+                    
+                    <div id="tabForecast" class="tab-content">
+                        <div class="chart-container" style="min-height: 600px;">
+                            <h4 style="color: #08306b; margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 10px;">Proyección a 7 Días</h4>
+                            <div id="forecastGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                                <!-- Inyectado vía JS -->
+                            </div>
+                            <canvas id="chartForecast" height="100"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="tabClimatologia" class="tab-content">
+                        <div class="chart-container" style="min-height: 600px;">
+                            <h4 style="color: #08306b; margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 10px;">Análisis Climático Local</h4>
+                            <p style="font-size: 13px; color: #666;">Datos históricos agregados para la coordenada seleccionada (Promedio 2020-2025).</p>
+                            <canvas id="chartClimaHist" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1162,6 +1203,142 @@
                 } 
             }, {responsive: !0});
         }
+
+        // =====================================================================
+        // MÓDULO WEATHER FORECAST 2.0 (AGROMETEOROLÓGICO)
+        // =====================================================================
+        let chartObjForecast = null;
+        let chartObjClimaHist = null;
+
+        function abrirPestanaPronostico(tabId, elementoBtn) {
+            document.querySelectorAll('#moduloPronostico .tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#moduloPronostico .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            elementoBtn.classList.add('active');
+            
+            if(tabId === 'tabRadar') { setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
+        }
+
+        async function actualizarPronosticoGlobal() {
+            const coords = document.getElementById('coordPronostico').value.split(',');
+            if(coords.length !== 2) return alert("Formato de coordenada inválido. Use: Latitud, Longitud");
+            const lat = parseFloat(coords[0].trim());
+            const lon = parseFloat(coords[1].trim());
+
+            try {
+                // 1. Llamada Tiempo Actual y Pronóstico 7 días
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_gusts_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`);
+                const data = await res.json();
+
+                // Actualizar Panel Lateral
+                document.getElementById('resTemp').innerText = data.current.temperature_2m;
+                document.getElementById('resHum').innerText = data.current.relative_humidity_2m;
+                document.getElementById('resViento').innerText = data.current.wind_gusts_10m;
+                document.getElementById('resEt0').innerText = data.daily.et0_fao_evapotranspiration[0].toFixed(1);
+
+                // Generar Tarjetas
+                const fg = document.getElementById('forecastGrid');
+                fg.innerHTML = '';
+                for(let i=0; i<7; i++) {
+                    fg.innerHTML += `
+                        <div style="background: #f4f7f6; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #ccc;">
+                            <strong style="color: #08306b; display: block; margin-bottom: 5px;">${data.daily.time[i].substring(5)}</strong>
+                            <span style="color: #d73027; font-weight: bold;">${data.daily.temperature_2m_max[i]}°</span> | 
+                            <span style="color: #3182bd; font-weight: bold;">${data.daily.temperature_2m_min[i]}°</span>
+                            <div style="margin-top: 5px; font-size: 12px; color: #10b981;">Lluvia: ${data.daily.precipitation_sum[i]} mm</div>
+                        </div>
+                    `;
+                }
+
+                // Generar Gráfico Pronóstico
+                if(chartObjForecast) chartObjForecast.destroy();
+                chartObjForecast = new Chart(document.getElementById("chartForecast").getContext("2d"), {
+                    type: 'line',
+                    data: {
+                        labels: data.daily.time,
+                        datasets: [
+                            { type: 'bar', label: 'Precipitación (mm)', data: data.daily.precipitation_sum, backgroundColor: '#38bdf8', yAxisID: 'yLluvia' },
+                            { type: 'line', label: 'ET0 (mm)', data: data.daily.et0_fao_evapotranspiration, borderColor: '#f59e0b', borderWidth: 2, tension: 0.3, yAxisID: 'yLluvia' }
+                        ]
+                    },
+                    options: { responsive: true, scales: { yLluvia: { type: 'linear', position: 'left', beginAtZero: true } } },
+                    plugins: [customCanvasBg]
+                });
+
+                // 2. Llamada Histórica Real (API Archive 2020-2025)
+                renderizarClimatologia(lat, lon);
+
+                // Centrar Radar
+                mapPronostico.setView([lat, lon], 7);
+
+            } catch(e) {
+                alert("Error al conectar con el servidor meteorológico.");
+            }
+        }
+
+        async function renderizarClimatologia(lat, lon) {
+            try {
+                // Obtener los últimos 5 años para hacer un promedio mensual robusto (2020 a 2025)
+                const start_date = '2020-01-01';
+                const end_date = '2025-12-31';
+                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${start_date}&end_date=${end_date}&daily=precipitation_sum&timezone=auto`;
+                
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (!data || !data.daily || !data.daily.time) return;
+
+                // Diccionario para sumar por año-mes
+                const sumasPorAnoMes = {};
+
+                data.daily.time.forEach((fecha, index) => {
+                    const parts = fecha.split('-'); 
+                    const ano = parts[0];
+                    const mes = parseInt(parts[1], 10) - 1; 
+                    const lluvia = data.daily.precipitation_sum[index] || 0;
+                    
+                    const key = `${ano}-${mes}`;
+                    if (!sumasPorAnoMes[key]) sumasPorAnoMes[key] = 0;
+                    sumasPorAnoMes[key] += lluvia;
+                });
+
+                // Promediar por mes
+                const sumaTotalMensual = new Array(12).fill(0);
+                const cantidadAnosMes = new Array(12).fill(0);
+
+                for (const [key, lluvia] of Object.entries(sumasPorAnoMes)) {
+                    const mes = parseInt(key.split('-')[1], 10);
+                    sumaTotalMensual[mes] += lluvia;
+                    cantidadAnosMes[mes] += 1;
+                }
+
+                const lluviaHist = sumaTotalMensual.map((suma, mes) => {
+                    return cantidadAnosMes[mes] > 0 ? parseFloat((suma / cantidadAnosMes[mes]).toFixed(1)) : 0;
+                });
+
+                const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                
+                if(chartObjClimaHist) chartObjClimaHist.destroy();
+                chartObjClimaHist = new Chart(document.getElementById("chartClimaHist").getContext("2d"), {
+                    type: 'bar',
+                    data: {
+                        labels: meses,
+                        datasets: [{ label: 'Precipitación Histórica Media (mm) [2020-2025]', data: lluviaHist, backgroundColor: '#0868ac' }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'Milímetros (mm)' } } } },
+                    plugins: [customCanvasBg]
+                });
+            } catch(e) {
+                console.error("Error cargando climatología: ", e);
+            }
+        }
+        
+        // Listener para actualizar al presionar Enter en el input
+        document.getElementById('coordPronostico').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                actualizarPronosticoGlobal();
+            }
+        });
     </script>
 </body>
 </html>
