@@ -642,7 +642,7 @@
                 "contact_desc": "¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.",
                 "contact_name": "Nombre Completo",
                 "contact_msg": "Su Mensaje",
-                "btn_send": "Enviar Mensagem",
+                "btn_send": "Enviar Mensaje",
                 "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 48 horas de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
                 "hub_subtitle": "Seleccione el módulo de análisis que desea utilizar", "hub_vid_title": "Motor 3D MetricMoisture", "hub_vid_desc": "Gemelos Digitales Volumétricos para monitoreo de precisión.",
                 "mod_moisture_desc": "Análisis de humedad edáfica profunda con satélites SAR, topografía 3D y balance hídrico.", "mod_weather_title": "Pronóstico del Tiempo", "mod_weather_desc": "Modelado atmosférico, radares del SMN en vivo y variables predictivas meteorológicas.", "mod_poli_desc": "Suite integral de polinización, monitoreo de colmenas y análisis fenológico avanzado.",
@@ -849,9 +849,6 @@
 
         window.ultimoDatoCalculado = null; 
 
-        // =====================================================================
-        // GEMELO DIGITAL: EFECTO PERCOLACIÓN SCATTER3D + ESCALA UNIFICADA X-RAY
-        // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
 
@@ -1097,41 +1094,14 @@
                     
                     document.getElementById('btnDownloadCSV').style.display = 'block';
 
-                    // ECUACIONES ORIGINALES RESTAURADAS (PERCOLACIÓN ORGÁNICA)
                     if (jsonResponse.data && jsonResponse.data.length > 0) {
-                        let sumHum = 0;
-                        let diasCalc = Math.min(30, jsonResponse.data.length);
-                        for(let i=0; i<diasCalc; i++) sumHum += jsonResponse.data[i].Humedad_10cm;
-                        let valIni = sumHum / diasCalc;
-
-                        jsonResponse.data[0].Humedad_10cm = valIni;
-                        jsonResponse.data[0].Humedad_30cm = valIni;
-                        jsonResponse.data[0].Humedad_60cm = valIni;
-                        jsonResponse.data[0].Humedad_100cm = valIni;
-
-                        let cc = jsonResponse.suelo.CC;
-                        let pmp = jsonResponse.suelo.PMP;
-
-                        for (let i = 1; i < jsonResponse.data.length; i++) {
-                            let prev = jsonResponse.data[i - 1];
-                            let curr = jsonResponse.data[i];
-                            let lluvia = curr.Lluvia || 0;
-                            let et0 = curr.ET0 || 0;
-
-                            if (curr.Proxy_Humedad) {
-                                curr.Humedad_10cm = curr.Proxy_Humedad;
-                            } else {
-                                curr.Humedad_10cm = prev.Humedad_10cm + (lluvia * 0.008) - (et0 * 0.003);
-                            }
-
-                            curr.Humedad_30cm = prev.Humedad_30cm + ((curr.Humedad_10cm - prev.Humedad_30cm) * 0.15) + (lluvia > 5 ? 0.005 : 0) - (et0 * 0.001);
-                            curr.Humedad_60cm = prev.Humedad_60cm + ((curr.Humedad_30cm - prev.Humedad_60cm) * 0.10) + (lluvia > 15 ? 0.003 : 0) - (et0 * 0.0005);
-                            curr.Humedad_100cm = prev.Humedad_100cm + ((curr.Humedad_60cm - prev.Humedad_100cm) * 0.05) + (lluvia > 30 ? 0.002 : 0);
-
-                            curr.Humedad_10cm = Math.max(pmp, Math.min(cc, curr.Humedad_10cm));
-                            curr.Humedad_30cm = Math.max(pmp, Math.min(cc, curr.Humedad_30cm));
-                            curr.Humedad_60cm = Math.max(pmp, Math.min(cc, curr.Humedad_60cm));
-                            curr.Humedad_100cm = Math.max(pmp, Math.min(cc, curr.Humedad_100cm));
+                        let valIni = jsonResponse.data[0].Humedad_10cm; 
+                        let diasTransicion = Math.min(30, jsonResponse.data.length);
+                        for(let i = 0; i < diasTransicion; i++) {
+                            let factor = i / diasTransicion; 
+                            jsonResponse.data[i].Humedad_30cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
+                            jsonResponse.data[i].Humedad_60cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
+                            jsonResponse.data[i].Humedad_100cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
                         }
                     }
 
