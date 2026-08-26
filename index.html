@@ -1270,20 +1270,23 @@
         let chartObjForecast = null;
         let chartObjClimaHist = null;
 
-        // Mapeo de Códigos WMO a iconos animados SVG de Meteocons
+        // Mapeo de Códigos WMO a iconos animados SVG de AmCharts
         const wmoToIcon = {
-            0: 'clear-day', 1: 'partly-cloudy-day', 2: 'partly-cloudy-day', 3: 'overcast-day',
-            45: 'fog-day', 48: 'fog-day',
-            51: 'drizzle', 53: 'drizzle', 55: 'drizzle',
-            61: 'rain', 63: 'rain', 65: 'rain',
-            71: 'snow', 73: 'snow', 75: 'snow',
-            80: 'rain', 81: 'rain', 82: 'rain',
-            95: 'thunderstorms-rain', 96: 'thunderstorms-rain', 99: 'thunderstorms-rain'
+            0: 'day', 
+            1: 'cloudy-day-1', 
+            2: 'cloudy-day-2', 
+            3: 'cloudy',
+            45: 'cloudy', 48: 'cloudy',
+            51: 'rainy-4', 53: 'rainy-5', 55: 'rainy-6',
+            61: 'rainy-4', 63: 'rainy-5', 65: 'rainy-6',
+            71: 'snowy-4', 73: 'snowy-5', 75: 'snowy-6',
+            80: 'rainy-4', 81: 'rainy-5', 82: 'rainy-6',
+            95: 'thunder', 96: 'thunder', 99: 'thunder'
         };
 
         function getMeteoconUrl(code) {
-            let name = wmoToIcon[code] || 'clear-day';
-            return `https://bmcdn.nl/assets/weather-icons/v3.0/fill/svg/${name}.svg`;
+            let name = wmoToIcon[code] || 'day';
+            return `https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/${name}.svg`;
         }
 
         function abrirPestanaPronostico(tabId, elementoBtn) {
