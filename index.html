@@ -92,6 +92,12 @@
         .contact-form button { padding: 15px; background: #38bdf8; color: #020617; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
         .contact-form button:hover { background: #0ea5e9; }
 
+        /* FOOTER */
+        footer { background-color: #0f172a; padding: 20px; text-align: center; border-top: 1px solid #1e293b; }
+        footer p { color: #94a3b8; font-size: 14px; margin-bottom: 10px; }
+        footer a { color: #38bdf8; text-decoration: none; font-weight: bold; font-size: 16px; margin: 0 10px; }
+        footer a:hover { color: #0ea5e9; }
+
         /* ==========================================
            3. ESTILOS DEL WORKSPACE
            ========================================== */
@@ -460,11 +466,11 @@
                         <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
                         <button class="tab-btn" onclick="abrirPestana('tab3D', this)" data-i18n="tab_3d">3D Model (Campaign)</button>
                         <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)" data-i18n="tab_xray">Spatial X-Ray (Lot)</button>
-                        <!-- SE QUITÓ "BETA" DEL BOTÓN -->
+                        <!-- SIN ETIQUETA BETA -->
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES (INTACTAS) -->
+                    <!-- PESTAÑAS 2D ORIGINALES -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -498,7 +504,7 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO 3D -->
+                    <!-- GEMELO VOLUMÉTRICO 3D (RESTAURADO COLOR, EJES, CONTORNOS) -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
@@ -841,13 +847,13 @@
                 }
                 traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cauto: false, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
             });
-            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#ccc'}, yaxis: {title: 'Latitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#ccc'}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
+            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true, tickformat: '.4f', nticks: 10, gridcolor: '#ccc'}, yaxis: {title: 'Latitud', visible: true, tickformat: '.4f', nticks: 10, gridcolor: '#ccc'}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
         }
 
         window.ultimoDatoCalculado = null; 
 
         // =====================================================================
-        // GEMELO DIGITAL: EFECTO PERCOLACIÓN SCATTER3D (100% INTACTO)
+        // GEMELO DIGITAL: EFECTO PERCOLACIÓN SCATTER3D + ESCALAS IGUALES A X-RAY
         // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
@@ -877,9 +883,16 @@
             let profTop = parseInt(profundidadSeleccionada);
             let profBot = 100;
             
-            let globalMin = 0.0; 
-            let globalMax = parametros_suelo ? parametros_suelo.CC : 0.45;
+            // LA MISMA ESCALA EXACTA DEL X-RAY
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
+            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); 
+            let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
 
+            // Offsets z referenciales
+            let zOffsets = { 10: 0, 30: -25, 60: -50, 100: -75 };
+            let current_z_offset_top = zOffsets[profTop];
+            let current_z_offset_bot = -75; // Fondo en -100cm
+            
             let z_crop = [], c_crop = [];
             let z_top = [], c_top = [];
             let z_bot = [], c_bot = [];
@@ -914,33 +927,35 @@
                     
                     if (isPointInPoly([rx, ry], poly)) {
                         let cotaReal = getRelieveZ(rx, ry);
-                        let cotaNorm = (cotaReal - minCota) / rangoCota;
-                        let topRelieve = 8 + (cotaNorm * 4) + Math.sin(j * 0.2) * 0.2;
                         
-                        row_z_crop.push(topRelieve);
+                        // Separar el cultivo un poco para que no choque con la capa superficial
+                        let topCrop = cotaReal + 15;
+                        row_z_crop.push(topCrop);
                         row_c_crop.push(Math.sin(j * 2) > 0 ? 1 : 0.2);
                         
-                        let z_superficie_top = topRelieve - (profTop / 10.0);
+                        let z_superficie_top = cotaReal + current_z_offset_top;
                         let hum_top = getHumedad(profTop, i, j);
                         row_z_top.push(z_superficie_top);
                         row_c_top.push(hum_top);
 
-                        let z_superficie_bot = topRelieve - (profBot / 10.0);
+                        let z_superficie_bot = cotaReal + current_z_offset_bot;
                         let hum_bot = getHumedad(profBot, i, j);
                         row_z_bot.push(z_superficie_bot);
                         row_c_bot.push(hum_bot);
 
                         let steps = 6; 
-                        for (let s = 1; s < steps; s++) {
-                            let w = s / steps;
-                            let current_depth_cm = profTop + w * (profBot - profTop);
-                            let current_z = topRelieve - (current_depth_cm / 10.0);
-                            let current_hum = getHumedad(current_depth_cm, i, j);
-                            
-                            scat_x.push(rx);
-                            scat_y.push(ry);
-                            scat_z.push(current_z);
-                            scat_c.push(current_hum);
+                        if (profTop < 100) {
+                            for (let s = 1; s < steps; s++) {
+                                let w = s / steps;
+                                let current_depth_cm = profTop + w * (profBot - profTop);
+                                let current_z = cotaReal + current_z_offset_top + w * (current_z_offset_bot - current_z_offset_top);
+                                let current_hum = getHumedad(current_depth_cm, i, j);
+                                
+                                scat_x.push(rx);
+                                scat_y.push(ry);
+                                scat_z.push(current_z);
+                                scat_c.push(current_hum);
+                            }
                         }
                     } else {
                         row_z_crop.push(null); row_c_crop.push(null);
@@ -962,23 +977,23 @@
 
             const trace_hum_top = {
                 x: plotX, y: plotY, z: z_top, surfacecolor: c_top, type: 'surface',
-                colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
+                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, cauto: false,
                 showscale: true, 
-                colorbar: { title: 'Agua Útil<br>(V/V)', x: 1.15, y: 0.5, tickfont: {color: 'white'}, titlefont: {color: 'white'}, thickness: 15 },
+                colorbar: { title: 'Moisture', thickness: 15, len: 0.8, y: 0.5, tickformat: '.3f' },
                 opacity: 1.0, 
-                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: 0.005 } },
+                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: 0.007 } },
                 name: `Capa Consultada`,
-                hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -"+profTop+" cm<extra></extra>"
+                hovertemplate: "<b>Humedad: %{surfacecolor:.3f} m³/m³</b><br>Prof: -"+profTop+" cm<extra></extra>"
             };
 
             const trace_hum_bot = {
                 x: plotX, y: plotY, z: z_bot, surfacecolor: c_bot, type: 'surface',
-                colorscale: 'Turbo', reversescale: true, cmin: globalMin, cmax: globalMax,
+                colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, cauto: false,
                 showscale: false,
                 opacity: 1.0,
-                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: 0.005 } },
+                contours: { z: { show: true, color: 'black', width: 2, start: globalMin, end: globalMax, size: 0.007 } },
                 name: `Fondo de Humedad`,
-                hovertemplate: "<b>Humedad: %{surfacecolor:.3f} V/V</b><br>Prof: -100 cm<extra></extra>"
+                hovertemplate: "<b>Humedad: %{surfacecolor:.3f} m³/m³</b><br>Prof: -100 cm<extra></extra>"
             };
 
             const trace_scatter = {
@@ -988,28 +1003,26 @@
                 marker: {
                     size: 5,
                     color: scat_c,
-                    colorscale: 'Turbo',
-                    reversescale: true,
+                    colorscale: colorScaleRojoPurpura,
                     cmin: globalMin,
                     cmax: globalMax,
+                    cauto: false,
                     opacity: 0.08
                 },
                 name: 'Interior',
                 showlegend: false,
-                hovertemplate: "Humedad Integ: %{marker.color:.3f} V/V<extra></extra>"
+                hovertemplate: "Humedad Integ: %{marker.color:.3f} m³/m³<extra></extra>"
             };
 
             let periX = [], periY = [], periZ_100 = [], periZ_110 = [], periC = [];
             for(let k = 0; k < poly.length; k++) {
                 let pt = poly[k];
                 let cotaReal = getRelieveZ(pt[0], pt[1]);
-                let cotaNorm = (cotaReal - minCota) / rangoCota;
-                let topRelieve = 8 + (cotaNorm * 4) + Math.sin(pt[1] * 0.2) * 0.2; 
                 
                 periX.push(pt[0]); 
                 periY.push(pt[1]);
-                periZ_100.push(topRelieve - 10.0); 
-                periZ_110.push(topRelieve - 11.0); 
+                periZ_100.push(cotaReal - 75.0); 
+                periZ_110.push(cotaReal - 85.0); 
                 periC.push(0);
             }
             periX.push(periX[0]); periY.push(periY[0]); periZ_100.push(periZ_100[0]); periZ_110.push(periZ_110[0]); periC.push(0);
@@ -1023,17 +1036,18 @@
 
             window.gemeloDataPlot = [trace_crop, trace_hum_top, trace_hum_bot, trace_scatter, trace_skirt];
 
+            // CÁMARA Y EJES IDÉNTICOS AL X-RAY (4 DECIMALES PARA LAT/LON)
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
                 margin: { l: 0, r: 120, b: 0, t: 0 }, 
                 hoverlabel: { bgcolor: "#0f172a", font: { color: "white", family: "Segoe UI" }, bordercolor: "#38bdf8" },
                 scene: {
-                    camera: { eye: { x: 0.85, y: -1.0, z: 0.45 } },
-                    xaxis: { title: 'Longitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#1e293b' }, 
-                    yaxis: { title: 'Latitud', visible: true, tickformat: '.4f', nticks: 6, gridcolor: '#1e293b' }, 
-                    zaxis: { visible: false, showgrid: false, zeroline: false, range: [-5, 14] }, 
+                    camera: { eye: { x: 1.3, y: -1.6, z: 0.6 } },
+                    xaxis: { title: 'Longitud', visible: true, tickformat: '.4f', nticks: 10, gridcolor: '#ccc' }, 
+                    yaxis: { title: 'Latitud', visible: true, tickformat: '.4f', nticks: 10, gridcolor: '#ccc' }, 
+                    zaxis: { visible: false, showgrid: false, zeroline: false }, 
                     aspectmode: 'manual', 
-                    aspectratio: { x: 1, y: 1, z: 0.6 }, 
+                    aspectratio: { x: 1, y: 1, z: 0.9 }, 
                     annotations: [] 
                 }
             };
@@ -1088,18 +1102,6 @@
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
                     document.getElementById('btnDownloadCSV').style.display = 'block';
-
-                    // ALGORITMO ORIGINAL RESTAURADO (COMO ESTABA ANTES DE MIS CAMBIOS)
-                    if (jsonResponse.data && jsonResponse.data.length > 0) {
-                        let valIni = jsonResponse.data[0].Humedad_10cm; 
-                        let diasTransicion = Math.min(30, jsonResponse.data.length);
-                        for(let i = 0; i < diasTransicion; i++) {
-                            let factor = i / diasTransicion; 
-                            jsonResponse.data[i].Humedad_30cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
-                            jsonResponse.data[i].Humedad_60cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
-                            jsonResponse.data[i].Humedad_100cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
-                        }
-                    }
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
