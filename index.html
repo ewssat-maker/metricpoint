@@ -434,7 +434,6 @@
                     </div>
 
                     <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">EXECUTE ANALYSIS</button>
-                    <!-- BOTÓN DE DESCARGA CSV -->
                     <button class="btn-secondary" id="btnDownloadCSV" onclick="descargarCSV()" style="display:none; width: 100%; margin-top: 10px; background-color: #f59e0b; border: none;">⬇️ Descargar Datos (CSV)</button>
                     <div id="status"></div>
                     
@@ -469,7 +468,7 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico</button>
                     </div>
 
-                    <!-- PESTAÑAS 2D ORIGINALES -->
+                    <!-- PESTAÑAS 2D ORIGINALES (RESTAURADAS CON TU CÓDIGO ORIGINAL) -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -502,16 +501,14 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO 3D -->
+                    <!-- GEMELO VOLUMÉTRICO (NUEVO MOTOR 3D SCATTER CON ESCALA X-RAY UNIFICADA) -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
-                            <!-- Lado Izquierdo: Modelo 3D Volume -->
                             <div class="split-layout-left">
                                 <div id="soilGemeloVolumetrico" style="width: 100%; height: 100%;"></div>
                             </div>
                             
-                            <!-- Lado Derecho: Controles y Resultados -->
                             <div class="split-layout-right">
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">FECHA A CONSULTAR:</label>
@@ -637,7 +634,7 @@
                 "prod_gem_desc": "Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.",
                 "prod_rvi_title": "Vigor RVI y Monitoreo Fenológico",
                 "prod_rvi_desc": "Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real y la estructura de la biomasa sin importar la nubosidad, asegurando un seguimiento ininterrumpido del desarrollo de su cultivo.",
-                "prod_pol_title": "MetricPoli: Polinização Inteligente",
+                "prod_pol_title": "MetricPoli: Polinización Inteligente",
                 "prod_pol_desc": "Maximice su rendimiento comprendiendo la interacción entre el clima y los polinizadores. Analice variables meteorológicas en tiempo real para predecir ventanas óptimas de vuelo, garantizando un cuajado de frutos excepcional y cosechas sostenibles.",
                 "contact_title": "Póngase en Contacto",
                 "contact_desc": "¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.",
@@ -850,6 +847,9 @@
 
         window.ultimoDatoCalculado = null; 
 
+        // =====================================================================
+        // GEMELO DIGITAL: EFECTO PERCOLACIÓN SCATTER3D + ESCALA UNIFICADA X-RAY
+        // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
 
@@ -878,13 +878,15 @@
             let profTop = parseInt(profundidadSeleccionada);
             let profBot = 100;
             
+            // LA MISMA ESCALA EXACTA DEL X-RAY
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); 
             let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
 
+            // Offsets z referenciales
             let zOffsets = { 10: 0, 30: -25, 60: -50, 100: -75 };
             let current_z_offset_top = zOffsets[profTop];
-            let current_z_offset_bot = -75; 
+            let current_z_offset_bot = -75; // Fondo en -100cm
             
             let z_crop = [], c_crop = [];
             let z_top = [], c_top = [];
@@ -964,7 +966,6 @@
                 x: plotX, y: plotY, z: z_crop, surfacecolor: c_crop, type: 'surface',
                 colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']],
                 showscale: false, opacity: 1, lighting: { ambient: 0.6, diffuse: 0.9 },
-                contours: { z: { show: true, color: 'black', width: 2, start: minCota, end: maxCota, size: (maxCota - minCota) / 10 || 1 } },
                 name: 'Superficie', hovertemplate: "<b>Capa Vegetal</b><extra></extra>"
             };
 
@@ -1094,6 +1095,18 @@
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     
                     document.getElementById('btnDownloadCSV').style.display = 'block';
+
+                    // ALGORITMO ORIGINAL RESTAURADO (COMO ESTABA ANTES DE MIS CAMBIOS)
+                    if (jsonResponse.data && jsonResponse.data.length > 0) {
+                        let valIni = jsonResponse.data[0].Humedad_10cm; 
+                        let diasTransicion = Math.min(30, jsonResponse.data.length);
+                        for(let i = 0; i < diasTransicion; i++) {
+                            let factor = i / diasTransicion; 
+                            jsonResponse.data[i].Humedad_30cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_30cm * factor);
+                            jsonResponse.data[i].Humedad_60cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_60cm * factor);
+                            jsonResponse.data[i].Humedad_100cm = (valIni * (1 - factor)) + (jsonResponse.data[i].Humedad_100cm * factor);
+                        }
+                    }
 
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
