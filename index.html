@@ -896,15 +896,18 @@
             
             let scat_x = [], scat_y = [], scat_z = [], scat_c = [];
 
-            function getHumedad(depth_cm, i, j) {
+            function getHumedad(depth_cm, cotaReal) {
                 let hum_base = dato.Humedad_10cm;
                 if (depth_cm <= 10) hum_base = dato.Humedad_10cm;
                 else if (depth_cm <= 30) hum_base = dato.Humedad_10cm + (dato.Humedad_30cm - dato.Humedad_10cm) * ((depth_cm - 10)/20);
                 else if (depth_cm <= 60) hum_base = dato.Humedad_30cm + (dato.Humedad_60cm - dato.Humedad_30cm) * ((depth_cm - 30)/30);
                 else if (depth_cm <= 100) hum_base = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40);
                 
-                let variacion = (Math.sin(i * 0.5) * 0.02) + (Math.cos(j * 0.5) * 0.02) - (depth_cm * 0.0005);
-                let hum = hum_base + variacion;
+                // Aplicamos la misma lógica topográfica del X-Ray
+                let cotaNorm = (cotaReal - minCota) / rangoCota;
+                let factorAgua = (0.5 - cotaNorm);
+                let hum = hum_base + (factorAgua * 0.15);
+                
                 return Math.max(globalMin, Math.min(globalMax, hum));
             }
 
@@ -931,12 +934,12 @@
                         row_c_crop.push(Math.sin(j * 2) > 0 ? 1 : 0.2);
                         
                         let z_superficie_top = cotaReal + current_z_offset_top;
-                        let hum_top = getHumedad(profTop, i, j);
+                        let hum_top = getHumedad(profTop, cotaReal);
                         row_z_top.push(z_superficie_top);
                         row_c_top.push(hum_top);
 
                         let z_superficie_bot = cotaReal + current_z_offset_bot;
-                        let hum_bot = getHumedad(profBot, i, j);
+                        let hum_bot = getHumedad(profBot, cotaReal);
                         row_z_bot.push(z_superficie_bot);
                         row_c_bot.push(hum_bot);
 
@@ -946,7 +949,7 @@
                                 let w = s / steps;
                                 let current_depth_cm = profTop + w * (profBot - profTop);
                                 let current_z = cotaReal + current_z_offset_top + w * (current_z_offset_bot - current_z_offset_top);
-                                let current_hum = getHumedad(current_depth_cm, i, j);
+                                let current_hum = getHumedad(current_depth_cm, cotaReal);
                                 
                                 scat_x.push(rx);
                                 scat_y.push(ry);
