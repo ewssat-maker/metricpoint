@@ -465,8 +465,7 @@
                         <button class="tab-btn active" onclick="abrirPestana('tabAgronomia', this)" data-i18n="tab_moist">Moisture & Vigor</button>
                         <button class="tab-btn" onclick="abrirPestana('tabClima', this)" data-i18n="tab_clim">Climate & Rain</button>
                         <button class="tab-btn" onclick="abrirPestana('tab3D', this)" data-i18n="tab_3d">3D Model (Campaign)</button>
-                        <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)" data-i18n="tab_xray">Spatial X-Ray (Lot)</button>
-                        <!-- SIN ETIQUETA BETA -->
+                        <button class="tab-btn" id="btnTabGeo3D" onclick="abrirPestana('tabGeo3D', this)" data-i18n="tab_xray">Spatial X-Ray</button>
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico</button>
                     </div>
 
@@ -479,7 +478,6 @@
                     
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
-                    <!-- RADIOGRAFÍA ESPACIAL ORIGINAL -->
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
@@ -504,7 +502,7 @@
                         </div>
                     </div>
 
-                    <!-- GEMELO VOLUMÉTRICO 3D (RESTAURADO COLOR, EJES, CONTORNOS) -->
+                    <!-- GEMELO VOLUMÉTRICO 3D -->
                     <div id="tabGemeloBeta" class="tab-content">
                         <div class="split-layout">
                             
@@ -639,7 +637,7 @@
                 "prod_gem_desc": "Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.",
                 "prod_rvi_title": "Vigor RVI y Monitoreo Fenológico",
                 "prod_rvi_desc": "Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real y la estructura de la biomasa sin importar la nubosidad, asegurando un seguimiento ininterrumpido del desarrollo de su cultivo.",
-                "prod_pol_title": "MetricPoli: Polinización Inteligente",
+                "prod_pol_title": "MetricPoli: Polinização Inteligente",
                 "prod_pol_desc": "Maximice su rendimiento comprendiendo la interacción entre el clima y los polinizadores. Analice variables meteorológicas en tiempo real para predecir ventanas óptimas de vuelo, garantizando un cuajado de frutos excepcional y cosechas sostenibles.",
                 "contact_title": "Póngase en Contacto",
                 "contact_desc": "¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.",
@@ -852,9 +850,6 @@
 
         window.ultimoDatoCalculado = null; 
 
-        // =====================================================================
-        // GEMELO DIGITAL: EFECTO PERCOLACIÓN SCATTER3D + ESCALAS IGUALES A X-RAY
-        // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
 
@@ -883,15 +878,13 @@
             let profTop = parseInt(profundidadSeleccionada);
             let profBot = 100;
             
-            // LA MISMA ESCALA EXACTA DEL X-RAY
             const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
             let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); 
             let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
 
-            // Offsets z referenciales
             let zOffsets = { 10: 0, 30: -25, 60: -50, 100: -75 };
             let current_z_offset_top = zOffsets[profTop];
-            let current_z_offset_bot = -75; // Fondo en -100cm
+            let current_z_offset_bot = -75; 
             
             let z_crop = [], c_crop = [];
             let z_top = [], c_top = [];
@@ -928,7 +921,6 @@
                     if (isPointInPoly([rx, ry], poly)) {
                         let cotaReal = getRelieveZ(rx, ry);
                         
-                        // Separar el cultivo un poco para que no choque con la capa superficial
                         let topCrop = cotaReal + 15;
                         row_z_crop.push(topCrop);
                         row_c_crop.push(Math.sin(j * 2) > 0 ? 1 : 0.2);
@@ -972,6 +964,7 @@
                 x: plotX, y: plotY, z: z_crop, surfacecolor: c_crop, type: 'surface',
                 colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']],
                 showscale: false, opacity: 1, lighting: { ambient: 0.6, diffuse: 0.9 },
+                contours: { z: { show: true, color: 'black', width: 2, start: minCota, end: maxCota, size: (maxCota - minCota) / 10 || 1 } },
                 name: 'Superficie', hovertemplate: "<b>Capa Vegetal</b><extra></extra>"
             };
 
@@ -1036,7 +1029,6 @@
 
             window.gemeloDataPlot = [trace_crop, trace_hum_top, trace_hum_bot, trace_scatter, trace_skirt];
 
-            // CÁMARA Y EJES IDÉNTICOS AL X-RAY (4 DECIMALES PARA LAT/LON)
             window.gemeloLayout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
                 margin: { l: 0, r: 120, b: 0, t: 0 }, 
