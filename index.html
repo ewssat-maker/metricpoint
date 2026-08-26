@@ -859,7 +859,7 @@
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
 
-            const gridSize = 30; 
+            const gridSize = 60; // IGUALAMOS LA RESOLUCIÓN A LA DE LA RADIOGRAFÍA (X-RAY)
             
             let minCota = Infinity, maxCota = -Infinity;
             if (puntosDEM && puntosDEM.length > 0) {
@@ -908,7 +908,8 @@
                 let factorAgua = (0.5 - cotaNorm);
                 let hum = hum_base + (factorAgua * 0.15);
                 
-                return Math.max(globalMin, Math.min(globalMax, hum));
+                // CORRECCIÓN: Usamos límites físicos reales (0.01 a 1.0) en lugar de límites visuales (globalMin/Max)
+                return Math.max(0.01, Math.min(1.0, hum));
             }
 
             let plotX = [], plotY = [];
@@ -945,16 +946,20 @@
 
                         let steps = 6; 
                         if (profTop < 100) {
-                            for (let s = 1; s < steps; s++) {
-                                let w = s / steps;
-                                let current_depth_cm = profTop + w * (profBot - profTop);
-                                let current_z = cotaReal + current_z_offset_top + w * (current_z_offset_bot - current_z_offset_top);
-                                let current_hum = getHumedad(current_depth_cm, cotaReal);
-                                
-                                scat_x.push(rx);
-                                scat_y.push(ry);
-                                scat_z.push(current_z);
-                                scat_c.push(current_hum);
+                            // OPTIMIZACIÓN DE RENDIMIENTO: Renderizamos los puntos internos intercalados
+                            // para evitar que el aumento de resolución a 60x60 sobrecargue la memoria.
+                            if (i % 2 === 0 && j % 2 === 0) {
+                                for (let s = 1; s < steps; s++) {
+                                    let w = s / steps;
+                                    let current_depth_cm = profTop + w * (profBot - profTop);
+                                    let current_z = cotaReal + current_z_offset_top + w * (current_z_offset_bot - current_z_offset_top);
+                                    let current_hum = getHumedad(current_depth_cm, cotaReal);
+                                    
+                                    scat_x.push(rx);
+                                    scat_y.push(ry);
+                                    scat_z.push(current_z);
+                                    scat_c.push(current_hum);
+                                }
                             }
                         }
                     } else {
