@@ -163,7 +163,7 @@
         .split-layout-right { width: 320px; background: #0f172a; border-left: 2px solid #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; overflow-y: auto;}
 
         /* ==========================================
-           ESTILOS ESPECÍFICOS: WEATHER FORECAST TECH
+           ESTILOS ESPECÍFICOS: WEATHER FORECAST TECH (SCI-FI HUD)
            ========================================== */
         #moduloPronostico .container { background-color: #0f172a; border: 1px solid #1e293b; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 20px; color: #e2e8f0; }
         #moduloPronostico .sidebar { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; box-shadow: none; }
@@ -173,17 +173,67 @@
         #moduloPronostico .btn-primary { background-color: #38bdf8; color: #0f172a; border: none; }
         #moduloPronostico .btn-primary:hover { background-color: #0ea5e9; }
         
-        .agro-tech-card { background: linear-gradient(145deg, #0f172a, #1e293b); border: 1px solid #38bdf8; border-radius: 12px; box-shadow: 0 4px 15px rgba(56,189,248,0.1); padding: 15px; position: relative; overflow: hidden; }
-        .agro-tech-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #38bdf8, #10b981); }
-        .agro-tech-card h4 { color: #38bdf8; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        /* Sci-Fi HUD Container */
+        .hud-container {
+            background: linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(2,6,23,1) 100%);
+            border: 1px solid #1e293b; border-radius: 8px;
+            position: relative; overflow: hidden; padding: 20px;
+        }
         
-        /* Geotermómetros y Sensores */
-        .geo-layer { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #334155; transition: background 0.3s; }
-        .geo-layer:hover { background: rgba(56, 189, 248, 0.1); }
-        .geo-layer:last-child { border-bottom: none; }
-        .geo-depth { font-weight: bold; color: #94a3b8; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-        .geo-temp { font-family: 'Courier New', Courier, monospace; font-size: 18px; font-weight: bold; color: #10b981; text-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
+        /* Grid Background with Scanline */
+        .hud-container::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 25px 25px; z-index: 0; pointer-events: none;
+        }
+        .hud-container::after {
+            content: ''; position: absolute; top: -100%; left: 0; right: 0; height: 200%;
+            background: linear-gradient(to bottom, transparent 40%, rgba(56, 189, 248, 0.1) 50%, transparent 60%);
+            animation: scanline 8s linear infinite; pointer-events: none; z-index: 0;
+        }
+        @keyframes scanline { 0% { transform: translateY(0); } 100% { transform: translateY(100%); } }
+
+        /* HUD Sci-Fi Cards with Chamfered Corners */
+        .hud-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 2px solid #38bdf8;
+            box-shadow: inset 0 0 20px rgba(56,189,248,0.05);
+            backdrop-filter: blur(5px);
+            padding: 15px; position: relative; z-index: 1;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+            transition: all 0.3s ease;
+        }
+        .hud-card:hover { background: rgba(30, 41, 59, 0.8); box-shadow: inset 0 0 30px rgba(56,189,248,0.1); }
+        .hud-card.soil { border-left-color: #f59e0b; box-shadow: inset 0 0 20px rgba(245,158,11,0.05); }
+        .hud-card.moist { border-left-color: #10b981; box-shadow: inset 0 0 20px rgba(16,185,129,0.05); }
         
+        .hud-title {
+            color: #e2e8f0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .hud-title-icon { color: #38bdf8; font-family: monospace; }
+        .hud-card.soil .hud-title-icon { color: #f59e0b; }
+        .hud-card.moist .hud-title-icon { color: #10b981; }
+
+        .hud-stat { display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center; }
+        .hud-label { color: #94a3b8; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Glowing Monospace Numbers */
+        .hud-value { font-family: 'Courier New', Courier, monospace; font-size: 18px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 8px rgba(56,189,248,0.6); }
+        .hud-value.alert { color: #f87171; text-shadow: 0 0 8px rgba(248,113,113,0.6); }
+        .hud-value.warn { color: #f59e0b; text-shadow: 0 0 8px rgba(245,158,11,0.6); }
+        .hud-value.good { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.6); }
+        .hud-value.purple { color: #a78bfa; text-shadow: 0 0 8px rgba(167,139,250,0.6); }
+        .hud-value.neutral { color: #cbd5e1; text-shadow: 0 0 5px rgba(203,213,225,0.4); font-size: 15px; }
+
+        /* Pulsing Dot */
+        .live-pulse {
+            width: 8px; height: 8px; background-color: #ef4444; border-radius: 50%; display: inline-block; margin-right: 8px;
+            box-shadow: 0 0 10px #ef4444; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+
         /* Grid de Pronóstico 7 Días */
         .forecast-day-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 15px 10px; text-align: center; transition: transform 0.3s, border-color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
         .forecast-day-card:hover { transform: translateY(-5px); border-color: #38bdf8; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.2); }
@@ -581,7 +631,7 @@
         </div>
 
         <!-- ==========================================
-             MÓDULO WEATHER FORECAST 2.0 (TECH)
+             MÓDULO WEATHER FORECAST 2.0 (TECH SCI-FI HUD)
              ========================================== -->
         <div id="moduloPronostico" style="display: none;">
             <div class="header" style="background: linear-gradient(90deg, #0f172a, #1e293b); border: 1px solid #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.2);">
@@ -602,7 +652,7 @@
                     
                     <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px dashed #10b981; border-radius: 8px; text-align: center;">
                         <span style="font-size: 24px;">📡</span>
-                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #10b981; font-weight: bold;">CONEXIÓN ESTABLE</p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #10b981; font-weight: bold; letter-spacing: 1px;">CONEXIÓN ESTABLE</p>
                         <p style="margin: 5px 0 0 0; font-size: 11px; color: #94a3b8;">Sincronizado con red satelital.</p>
                     </div>
                 </div>
@@ -614,43 +664,55 @@
                         <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología Agrícola</button>
                     </div>
 
-                    <!-- PESTAÑA 1: TIEMPO REAL -->
-                    <div id="tabTiempoReal" class="tab-content active">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                            <div class="agro-tech-card">
-                                <h4>Atmósfera Superficial</h4>
-                                <div class="geo-layer"><span class="geo-depth">🌡️ Temp. Aire</span><span class="geo-temp" id="rtTemp" style="color: #f87171;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">💧 Humedad</span><span class="geo-temp" id="rtHum" style="color: #60a5fa;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">🌫️ Pto. Rocío</span><span class="geo-temp" id="rtDew" style="color: #a78bfa;">--</span></div>
+                    <!-- PESTAÑA 1: TIEMPO REAL (SCI-FI HUD) -->
+                    <div id="tabTiempoReal" class="tab-content active hud-container" style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; z-index: 1; position: relative;">
+                            <div style="color: #38bdf8; font-family: monospace; font-size: 14px;"><span class="live-pulse"></span> TELEMETRÍA EN VIVO_</div>
+                            <div style="color: #94a3b8; font-size: 12px; letter-spacing: 1px;">SISTEMA NOMINAL</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                            <!-- ATMOSFERA SUPERFICIAL -->
+                            <div class="hud-card">
+                                <div class="hud-title"><span>ATMÓSFERA SUPERFICIAL</span> <span class="hud-title-icon">[ 01 ]</span></div>
+                                <div class="hud-stat"><span class="hud-label">Temp. Aire</span><span class="hud-value alert" id="rtTemp">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Humedad</span><span class="hud-value good" id="rtHum">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Pto. Rocío</span><span class="hud-value purple" id="rtDew">--</span></div>
                             </div>
-                            <div class="agro-tech-card">
-                                <h4>Dinámica de Fluidos</h4>
-                                <div class="geo-layer"><span class="geo-depth">☀️ Rad. Solar</span><span class="geo-temp" id="rtRad" style="color: #fcd34d;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">🌬️ Viento</span><span class="geo-temp" id="rtWind" style="color: #cbd5e1; font-size: 14px;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">⬇️ Presión</span><span class="geo-temp" id="rtPres" style="color: #cbd5e1; font-size: 14px;">--</span></div>
+
+                            <!-- DINAMICA DE FLUIDOS -->
+                            <div class="hud-card">
+                                <div class="hud-title"><span>DINÁMICA DE FLUIDOS</span> <span class="hud-title-icon">[ 02 ]</span></div>
+                                <div class="hud-stat"><span class="hud-label">Rad. Solar</span><span class="hud-value warn" id="rtRad">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Viento</span><span class="hud-value neutral" id="rtWind">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Presión</span><span class="hud-value neutral" id="rtPres">--</span></div>
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                            <div class="agro-tech-card" style="border-color: #f59e0b;">
-                                <h4 style="color: #f59e0b; border-bottom-color: #451a03;">Geotermómetros (Suelo)</h4>
-                                <div class="geo-layer"><span class="geo-depth">Superficie (0cm)</span><span class="geo-temp" id="rtGeo0" style="color:#f59e0b;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">Siembra (6cm)</span><span class="geo-temp" id="rtGeo6" style="color:#f59e0b;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">Raíz (18cm)</span><span class="geo-temp" id="rtGeo18" style="color:#f59e0b;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">Profundo (54cm)</span><span class="geo-temp" id="rtGeo54" style="color:#f59e0b;">--</span></div>
+                        <!-- SUELO -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                            <!-- GEOTERMÓMETROS -->
+                            <div class="hud-card soil">
+                                <div class="hud-title"><span style="color:#f59e0b;">GEOTERMÓMETROS</span> <span class="hud-title-icon">[ 03 ]</span></div>
+                                <div class="hud-stat"><span class="hud-label">Superficie (0cm)</span><span class="hud-value warn" id="rtGeo0">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Siembra (6cm)</span><span class="hud-value warn" id="rtGeo6">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Raíz (18cm)</span><span class="hud-value warn" id="rtGeo18">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Profundo (54cm)</span><span class="hud-value warn" id="rtGeo54">--</span></div>
                             </div>
-                            <div class="agro-tech-card" style="border-color: #38bdf8;">
-                                <h4 style="color: #38bdf8; border-bottom-color: #082f49;">Humedad Superficial (V/V)</h4>
-                                <div class="geo-layer"><span class="geo-depth">Capa 0-1 cm</span><span class="geo-temp" id="rtMoist0" style="color:#38bdf8;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">Capa 1-3 cm</span><span class="geo-temp" id="rtMoist1" style="color:#38bdf8;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth">Capa 3-9 cm</span><span class="geo-temp" id="rtMoist3" style="color:#38bdf8;">--</span></div>
-                                <div class="geo-layer"><span class="geo-depth" style="font-size:11px; font-style:italic;">*Asimilación Microondas</span></div>
+
+                            <!-- HUMEDAD SUPERFICIAL -->
+                            <div class="hud-card moist">
+                                <div class="hud-title"><span style="color:#10b981;">HUMEDAD SUPERFICIAL</span> <span class="hud-title-icon">[ 04 ]</span></div>
+                                <div class="hud-stat"><span class="hud-label">Capa 0-1 cm</span><span class="hud-value good" id="rtMoist0">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Capa 1-3 cm</span><span class="hud-value good" id="rtMoist1">--</span></div>
+                                <div class="hud-stat"><span class="hud-label">Capa 3-9 cm</span><span class="hud-value good" id="rtMoist3">--</span></div>
+                                <div style="text-align: right; margin-top: 10px;"><span style="color: #10b981; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">* Asimilación Microondas</span></div>
                             </div>
                         </div>
 
-                        <div style="height: 400px; position: relative;">
-                            <h4 style="color: #38bdf8; margin-top: 0; margin-bottom: 10px; font-size: 14px; text-transform: uppercase;">Radar de Precipitaciones en Vivo (SINARAME)</h4>
-                            <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 8px; border: 1px solid #334155; z-index: 1;"></div>
+                        <div style="height: 350px; position: relative; z-index: 1;">
+                            <div class="hud-title" style="border:none; margin-bottom: 5px;"><span>RADAR SINARAME_</span></div>
+                            <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 0; border: 1px solid #38bdf8; clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px)); box-shadow: 0 0 15px rgba(56,189,248,0.2);"></div>
                         </div>
                     </div>
                     
@@ -1270,7 +1332,7 @@
         }
 
         // =====================================================================
-        // MÓDULO WEATHER FORECAST 2.0 (AGROMETEOROLÓGICO TECH)
+        // MÓDULO WEATHER FORECAST 2.0 (TECH SCI-FI HUD)
         // =====================================================================
         let chartObjForecast = null;
         let chartObjClimaHist = null;
@@ -1310,7 +1372,7 @@
             const lon = parseFloat(coords[1].trim());
 
             try {
-                // 1. Llamada Tiempo Real (Agrometeorología Avanzada) y Pronóstico 7 días
+                // 1. Llamada Tiempo Real y Pronóstico 7 días
                 const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m,direct_radiation,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`;
                 
                 const res = await fetch(endpoint);
