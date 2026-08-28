@@ -654,7 +654,13 @@
 
                     <!-- PESTAÑA 1: TIEMPO REAL (SCI-FI HUD MINIMALISTA) -->
                     <div id="tabTiempoReal" class="tab-content active scifi-panel">
-                        <div id="scifiGridContainer" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div class="scifi-header" style="color: #f8fafc; margin: 0;">[ TELEMETRÍA EN VIVO ]</div>
+                            <div style="font-family: monospace; font-size: 12px; color: #777;">COORD: <span id="lblCoordScifi">--</span> <span class="live-pulse" style="margin-left: 10px; vertical-align: middle;"></span></div>
+                        </div>
+                        <div class="scifi-line"></div>
+
+                        <div id="scifiGridContainer" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 20px;">
                             <!-- LEFT: MAPA RADAR -->
                             <div style="display: flex; flex-direction: column;">
                                 <div class="scifi-header">[ TARGET LOCATION / SATELLITE SCAN ]</div>
@@ -683,7 +689,7 @@
                                     <div class="scifi-line"></div>
                                 </div>
 
-                                <!-- GEOTERMÓMETROS 3D -->
+                                <!-- GEOTERMÓMETROS VOLUMÉTRICOS 3D -->
                                 <div>
                                     <div class="scifi-header">[ PERFIL TÉRMICO VOLUMÉTRICO ]</div>
                                     <div id="thermalCube3D" style="width: 100%; height: 180px; margin-bottom: 10px;"></div>
@@ -935,7 +941,6 @@
         var poligonoActual = null; map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
 
         var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
-        // REEMPLAZO A MAPA SATELITAL REAL Y ELIMINACIÓN DE RADAR CARTO
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(mapPronostico);
 
         var chartObjAgro = null, chartObjClima = null;
@@ -1323,12 +1328,8 @@
         let chartObjClimaHist = null;
         let markerPronostico = null;
 
-        // Mapeo de Códigos WMO a iconos animados SVG de AmCharts
         const wmoToIcon = {
-            0: 'day', 
-            1: 'cloudy-day-1', 
-            2: 'cloudy-day-2', 
-            3: 'cloudy',
+            0: 'day', 1: 'cloudy-day-1', 2: 'cloudy-day-2', 3: 'cloudy',
             45: 'cloudy', 48: 'cloudy',
             51: 'rainy-4', 53: 'rainy-5', 55: 'rainy-6',
             61: 'rainy-4', 63: 'rainy-5', 65: 'rainy-6',
@@ -1358,13 +1359,12 @@
             const lon = parseFloat(coords[1].trim());
 
             try {
-                // 1. Llamada Tiempo Real y Pronóstico 7 días
                 const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m,direct_radiation,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`;
                 
                 const res = await fetch(endpoint);
                 const data = await res.json();
 
-                // Actualizar Tiempo Real Atmosférico
+                // Atmosfera
                 document.getElementById('rtTemp').innerText = data.current.temperature_2m.toFixed(1) + " °C";
                 document.getElementById('rtHum').innerText = data.current.relative_humidity_2m + " %";
                 document.getElementById('rtDew').innerText = data.current.dew_point_2m.toFixed(1) + " °C";
@@ -1372,18 +1372,21 @@
                 document.getElementById('rtWind').innerText = data.current.wind_speed_10m.toFixed(1) + " km/h (" + data.current.wind_direction_10m + "°)";
                 document.getElementById('rtPres').innerText = data.current.surface_pressure.toFixed(1) + " hPa";
 
-                // Renderizar Cubo Térmico 3D
+                // Renderizar Cubo Térmico Volumétrico Continuo
                 const t0 = data.current.soil_temperature_0cm;
                 const t6 = data.current.soil_temperature_6cm;
                 const t18 = data.current.soil_temperature_18cm;
                 const t54 = data.current.soil_temperature_54cm;
                 renderizarCuboTermico(t0, t6, t18, t54);
                 
+                // Humedad
                 document.getElementById('rtMoist0').innerText = data.current.soil_moisture_0_to_1cm.toFixed(3) + " m³/m³";
                 document.getElementById('rtMoist1').innerText = data.current.soil_moisture_1_to_3cm.toFixed(3) + " m³/m³";
                 document.getElementById('rtMoist3').innerText = data.current.soil_moisture_3_to_9cm.toFixed(3) + " m³/m³";
 
-                // Generar Tarjetas de Pronóstico (Grid)
+                document.getElementById('lblCoordScifi').innerText = `${lat}, ${lon}`;
+
+                // Forecast
                 const fg = document.getElementById('forecastGrid');
                 fg.innerHTML = '';
                 for(let i=0; i<7; i++) {
@@ -1412,7 +1415,6 @@
                     `;
                 }
 
-                // Generar Gráfico Pronóstico
                 if(chartObjForecast) chartObjForecast.destroy();
                 Chart.defaults.color = '#94a3b8';
                 Chart.defaults.borderColor = '#334155';
@@ -1429,12 +1431,10 @@
                     options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { grid: { display: false } }, yLluvia: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#334155' } } } }
                 });
 
-                // 2. Llamada Histórica Real (API Archive)
                 renderizarClimatologia(lat, lon);
 
                 // Centrar Radar y Agregar Marcador Sci-Fi
                 mapPronostico.setView([lat, lon], 9);
-                
                 if(markerPronostico) mapPronostico.removeLayer(markerPronostico);
                 const sciFiIcon = L.divIcon({
                     className: 'scifi-marker',
@@ -1449,33 +1449,59 @@
             }
         }
 
+        // MOTOR VOLUMÉTRICO: Interpola las sondas térmicas en una grilla 3D continua
         function renderizarCuboTermico(t0, t6, t18, t54) {
-            let x = [0, 1], y = [0, 1];
+            const xArr = [], yArr = [], zArr = [], valArr = [];
+            const gridSizeXY = 12; // Resolución horizontal
+            const gridSizeZ = 12;  // Resolución vertical
+            
+            const minZ = -54;
+            const maxZ = 0;
+            
+            // Interpolación lineal del perfil físico del suelo
+            function getBaseTemp(z) {
+                if (z >= -6) return t6 + ((z - (-6)) / 6) * (t0 - t6);
+                if (z >= -18) return t18 + ((z - (-18)) / 12) * (t6 - t18);
+                return t54 + ((z - (-54)) / 36) * (t18 - t54);
+            }
+
+            for (let ix = 0; ix < gridSizeXY; ix++) {
+                let x = ix / (gridSizeXY - 1);
+                for (let iy = 0; iy < gridSizeXY; iy++) {
+                    let y = iy / (gridSizeXY - 1);
+                    for (let iz = 0; iz < gridSizeZ; iz++) {
+                        let z = minZ + (maxZ - minZ) * (iz / (gridSizeZ - 1));
+                        
+                        let temp = getBaseTemp(z);
+                        
+                        // Simulación de variabilidad térmica espacial (microrelieve / humedad)
+                        // Se amortigua a medida que profundiza (ley de conducción de Fourier)
+                        let atenuacion = Math.max(0, (z - minZ) / (maxZ - minZ)); 
+                        let variacion = (Math.sin(x * 8) * Math.cos(y * 8)) * (0.8 * atenuacion); 
+                        
+                        xArr.push(x);
+                        yArr.push(y);
+                        zArr.push(z);
+                        valArr.push(temp + variacion);
+                    }
+                }
+            }
+
             let minT = Math.min(t0, t6, t18, t54) - 0.5;
             let maxT = Math.max(t0, t6, t18, t54) + 0.5;
 
-            let layers = [
-                { z: 0, temp: t0, name: '0cm' },
-                { z: -6, temp: t6, name: '6cm' },
-                { z: -18, temp: t18, name: '18cm' },
-                { z: -54, temp: t54, name: '54cm' }
-            ];
-
-            let traces = layers.map(layer => {
-                return {
-                    type: 'surface',
-                    x: x, y: y,
-                    z: [[layer.z, layer.z], [layer.z, layer.z]],
-                    surfacecolor: [[layer.temp, layer.temp], [layer.temp, layer.temp]],
-                    cmin: minT, cmax: maxT,
-                    colorscale: 'Inferno',
-                    showscale: layer.z === 0,
-                    colorbar: { title: '°C', thickness: 10, len: 0.8, tickfont: {color: '#777'} },
-                    name: layer.name,
-                    hovertemplate: `Prof: ${layer.name}<br>Temp: ${layer.temp}°C<extra></extra>`,
-                    opacity: 0.9
-                };
-            });
+            let trace = {
+                type: 'volume',
+                x: xArr, y: yArr, z: zArr,
+                value: valArr,
+                isomin: minT,
+                isomax: maxT,
+                opacity: 0.3, 
+                surface: { count: 15 },
+                colorscale: 'Turbo', 
+                colorbar: { title: 'Temp °C', thickness: 10, len: 0.9, tickfont: {color: '#777', size: 10}, titlefont: {color: '#aaa', size: 11} },
+                hovertemplate: 'Prof: %{z:.1f}cm<br>Temp: %{value:.2f}°C<extra></extra>'
+            };
 
             let layout = {
                 paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
@@ -1484,15 +1510,15 @@
                     xaxis: {visible: false},
                     yaxis: {visible: false},
                     zaxis: {
-                        title: 'Prof. (cm)', gridcolor: '#222', color: '#777',
-                        tickvals: [0, -6, -18, -54], range: [-60, 5]
+                        title: '', gridcolor: '#222', color: '#fff',
+                        tickvals: [0, -27, -54], ticktext: ['Sup', 'Mtd', 'Inf'], range: [-55, 2]
                     },
-                    camera: { eye: {x: 1.5, y: -1.5, z: 0.5} },
-                    aspectratio: {x: 1, y: 1, z: 1.5}
+                    camera: { eye: {x: 1.5, y: -1.5, z: 0.4} },
+                    aspectratio: {x: 1, y: 1, z: 0.7} 
                 }
             };
 
-            Plotly.react('thermalCube3D', traces, layout, {displayModeBar: false});
+            Plotly.react('thermalCube3D', [trace], layout, {displayModeBar: false});
         }
 
         async function renderizarClimatologia(lat, lon) {
