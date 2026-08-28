@@ -177,7 +177,7 @@
         .agro-tech-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #38bdf8, #10b981); }
         .agro-tech-card h4 { color: #38bdf8; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
         
-        /* Geotermómetros */
+        /* Geotermómetros y Sensores */
         .geo-layer { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #334155; transition: background 0.3s; }
         .geo-layer:hover { background: rgba(56, 189, 248, 0.1); }
         .geo-layer:last-child { border-bottom: none; }
@@ -196,7 +196,7 @@
         .fc-stats { font-size: 12px; color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 4px; width: 90%; }
         .fc-stats span { color: #f59e0b; display: block; margin-top: 3px; font-size: 11px; }
 
-        #moduloPronostico .tab-btn { color: #94a3b8; border-bottom-color: #334155; }
+        #moduloPronostico .tab-btn { color: #94a3b8; border-bottom-color: #334155; background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; border-bottom: 2px solid transparent;}
         #moduloPronostico .tab-btn:hover { color: #38bdf8; }
         #moduloPronostico .tab-btn.active { color: #38bdf8; border-bottom-color: #38bdf8; }
         #moduloPronostico .chart-container { background: #1e293b; border: 1px solid #334155; }
@@ -444,7 +444,9 @@
             </div>
         </div>
 
-        <!-- MÓDULO METRICMOISTURE (INTACTO) -->
+        <!-- ==========================================
+             MÓDULO METRICMOISTURE (INTACTO/BLINDADO)
+             ========================================== -->
         <div id="moduloAgrometeo" style="display: none;">
             <div class="header">
                 <div class="header-left">
@@ -593,67 +595,69 @@
             <div class="container" style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 20px;">
                 <div class="sidebar" style="background: #1e293b; border: 1px solid #334155; color: white;">
                     <h3 style="color: #38bdf8; margin-top: 0;">Centro de Comando</h3>
+                    <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px;">Ingrese las coordenadas del lote para asimilar los datos de la red de estaciones automáticas más cercana.</p>
                     <label style="color: #94a3b8;">Ubicación (Latitud, Longitud):</label>
-                    <input type="text" id="coordPronostico" value="-26.82, -65.22" style="background: #0f172a; border: 1px solid #38bdf8; color: white; font-weight: bold;">
-                    <button class="btn-primary" style="background-color: #38bdf8; color: #0f172a; margin-top: 10px;" onclick="actualizarPronosticoGlobal()">Escanear Atmósfera</button>
+                    <input type="text" id="coordPronostico" value="-26.82, -65.22" style="background: #0f172a; border: 1px solid #38bdf8; color: white; font-weight: bold; margin-bottom: 10px;">
+                    <button class="btn-primary" style="background-color: #38bdf8; color: #0f172a; margin-top: 5px;" onclick="actualizarPronosticoGlobal()">Escanear Atmósfera</button>
                     
-                    <hr style="border: 0; border-top: 1px solid #334155; margin: 20px 0;">
-                    
-                    <div class="agro-tech-card" style="margin-bottom: 20px;">
-                        <h4>Atmosférico Superficial (2m)</h4>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">🌡️ Temp. Aire:</span>
-                            <span class="geo-temp" id="resTemp" style="color: #f87171;">-- °C</span>
-                        </div>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">💧 Humedad Rel:</span>
-                            <span class="geo-temp" id="resHum" style="color: #60a5fa;">-- %</span>
-                        </div>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">🌬️ Ráfagas:</span>
-                            <span class="geo-temp" id="resViento" style="color: #cbd5e1;">-- km/h</span>
-                        </div>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">☀️ ET0 (Hoy):</span>
-                            <span class="geo-temp" id="resEt0" style="color: #f59e0b;">-- mm</span>
-                        </div>
-                    </div>
-
-                    <div class="agro-tech-card">
-                        <h4>Geotermómetros Activos</h4>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Superficie (0cm)</span>
-                            <span class="geo-temp" id="resGeo0">-- °C</span>
-                        </div>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Siembra (6cm)</span>
-                            <span class="geo-temp" id="resGeo6">-- °C</span>
-                        </div>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Raíz Activa (18cm)</span>
-                            <span class="geo-temp" id="resGeo18">-- °C</span>
-                        </div>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Profundo (54cm)</span>
-                            <span class="geo-temp" id="resGeo54">-- °C</span>
-                        </div>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px dashed #10b981; border-radius: 8px; text-align: center;">
+                        <span style="font-size: 24px;">📡</span>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #10b981; font-weight: bold;">CONEXIÓN ESTABLE</p>
+                        <p style="margin: 5px 0 0 0; font-size: 11px; color: #94a3b8;">Sincronizado con red satelital.</p>
                     </div>
                 </div>
                 
                 <div class="main-content">
                     <div class="tabs" style="display: flex; margin-bottom: 15px;">
-                        <button class="tab-btn active" onclick="abrirPestanaPronostico('tabRadar', this)">Radar en Vivo (SMN)</button>
-                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)">Modelado 7 Días</button>
-                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología Histórica</button>
+                        <button class="tab-btn active" onclick="abrirPestanaPronostico('tabTiempoReal', this)">Tiempo Real</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)">Pronóstico de Alta Resolución</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología Agrícola</button>
                     </div>
 
-                    <div id="tabRadar" class="tab-content active" style="height: 600px; position: relative;">
-                        <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 8px; border: 1px solid #38bdf8; z-index: 1;"></div>
+                    <!-- PESTAÑA 1: TIEMPO REAL -->
+                    <div id="tabTiempoReal" class="tab-content active">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div class="agro-tech-card">
+                                <h4>Atmósfera Superficial</h4>
+                                <div class="geo-layer"><span class="geo-depth">🌡️ Temp. Aire</span><span class="geo-temp" id="rtTemp" style="color: #f87171;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">💧 Humedad</span><span class="geo-temp" id="rtHum" style="color: #60a5fa;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">🌫️ Pto. Rocío</span><span class="geo-temp" id="rtDew" style="color: #a78bfa;">--</span></div>
+                            </div>
+                            <div class="agro-tech-card">
+                                <h4>Dinámica de Fluidos</h4>
+                                <div class="geo-layer"><span class="geo-depth">☀️ Rad. Solar</span><span class="geo-temp" id="rtRad" style="color: #fcd34d;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">🌬️ Viento</span><span class="geo-temp" id="rtWind" style="color: #cbd5e1; font-size: 14px;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">⬇️ Presión</span><span class="geo-temp" id="rtPres" style="color: #cbd5e1; font-size: 14px;">--</span></div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                            <div class="agro-tech-card" style="border-color: #f59e0b;">
+                                <h4 style="color: #f59e0b; border-bottom-color: #451a03;">Geotermómetros (Suelo)</h4>
+                                <div class="geo-layer"><span class="geo-depth">Superficie (0cm)</span><span class="geo-temp" id="rtGeo0" style="color:#f59e0b;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">Siembra (6cm)</span><span class="geo-temp" id="rtGeo6" style="color:#f59e0b;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">Raíz (18cm)</span><span class="geo-temp" id="rtGeo18" style="color:#f59e0b;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">Profundo (54cm)</span><span class="geo-temp" id="rtGeo54" style="color:#f59e0b;">--</span></div>
+                            </div>
+                            <div class="agro-tech-card" style="border-color: #38bdf8;">
+                                <h4 style="color: #38bdf8; border-bottom-color: #082f49;">Humedad Superficial (V/V)</h4>
+                                <div class="geo-layer"><span class="geo-depth">Capa 0-1 cm</span><span class="geo-temp" id="rtMoist0" style="color:#38bdf8;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">Capa 1-3 cm</span><span class="geo-temp" id="rtMoist1" style="color:#38bdf8;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth">Capa 3-9 cm</span><span class="geo-temp" id="rtMoist3" style="color:#38bdf8;">--</span></div>
+                                <div class="geo-layer"><span class="geo-depth" style="font-size:11px; font-style:italic;">*Asimilación Microondas</span></div>
+                            </div>
+                        </div>
+
+                        <div style="height: 400px; position: relative;">
+                            <h4 style="color: #38bdf8; margin-top: 0; margin-bottom: 10px; font-size: 14px; text-transform: uppercase;">Radar de Precipitaciones en Vivo (SINARAME)</h4>
+                            <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 8px; border: 1px solid #334155; z-index: 1;"></div>
+                        </div>
                     </div>
                     
+                    <!-- PESTAÑA 2: PRONÓSTICO -->
                     <div id="tabForecast" class="tab-content">
                         <div class="chart-container" style="min-height: 600px; background: #1e293b; border: 1px solid #334155;">
-                            <h4 style="color: #38bdf8; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Proyección Sinóptica</h4>
+                            <h4 style="color: #38bdf8; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Proyección Sinóptica (7 Días)</h4>
                             <div id="forecastGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 25px;">
                                 <!-- Inyectado vía JS -->
                             </div>
@@ -661,6 +665,7 @@
                         </div>
                     </div>
 
+                    <!-- PESTAÑA 3: CLIMATOLOGÍA -->
                     <div id="tabClimatologia" class="tab-content">
                         <div class="chart-container" style="min-height: 600px; background: #1e293b; border: 1px solid #334155;">
                             <h4 style="color: #38bdf8; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Análisis Climático Espacial</h4>
@@ -1295,7 +1300,7 @@
             document.getElementById(tabId).classList.add('active');
             elementoBtn.classList.add('active');
             
-            if(tabId === 'tabRadar') { setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
+            if(tabId === 'tabTiempoReal') { setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
         }
 
         async function actualizarPronosticoGlobal() {
@@ -1305,23 +1310,29 @@
             const lon = parseFloat(coords[1].trim());
 
             try {
-                // 1. Llamada Tiempo Actual (incluyendo Perfiles de Suelo) y Pronóstico 7 días
-                const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_gusts_10m,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`;
+                // 1. Llamada Tiempo Real (Agrometeorología Avanzada) y Pronóstico 7 días
+                const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m,direct_radiation,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`;
                 
                 const res = await fetch(endpoint);
                 const data = await res.json();
 
-                // Actualizar Panel Lateral (Atmosférico)
-                document.getElementById('resTemp').innerText = data.current.temperature_2m.toFixed(1);
-                document.getElementById('resHum').innerText = data.current.relative_humidity_2m;
-                document.getElementById('resViento').innerText = data.current.wind_gusts_10m.toFixed(1);
-                document.getElementById('resEt0').innerText = data.daily.et0_fao_evapotranspiration[0].toFixed(1);
+                // Actualizar Tiempo Real Atmosférico
+                document.getElementById('rtTemp').innerText = data.current.temperature_2m.toFixed(1) + " °C";
+                document.getElementById('rtHum').innerText = data.current.relative_humidity_2m + " %";
+                document.getElementById('rtDew').innerText = data.current.dew_point_2m.toFixed(1) + " °C";
+                document.getElementById('rtRad').innerText = data.current.direct_radiation + " W/m²";
+                document.getElementById('rtWind').innerText = data.current.wind_speed_10m.toFixed(1) + " km/h (" + data.current.wind_direction_10m + "°)";
+                document.getElementById('rtPres').innerText = data.current.surface_pressure.toFixed(1) + " hPa";
 
-                // Actualizar Geotermómetros
-                document.getElementById('resGeo0').innerText = data.current.soil_temperature_0cm.toFixed(1) + " °C";
-                document.getElementById('resGeo6').innerText = data.current.soil_temperature_6cm.toFixed(1) + " °C";
-                document.getElementById('resGeo18').innerText = data.current.soil_temperature_18cm.toFixed(1) + " °C";
-                document.getElementById('resGeo54').innerText = data.current.soil_temperature_54cm.toFixed(1) + " °C";
+                // Actualizar Tiempo Real Suelo
+                document.getElementById('rtGeo0').innerText = data.current.soil_temperature_0cm.toFixed(1) + " °C";
+                document.getElementById('rtGeo6').innerText = data.current.soil_temperature_6cm.toFixed(1) + " °C";
+                document.getElementById('rtGeo18').innerText = data.current.soil_temperature_18cm.toFixed(1) + " °C";
+                document.getElementById('rtGeo54').innerText = data.current.soil_temperature_54cm.toFixed(1) + " °C";
+                
+                document.getElementById('rtMoist0').innerText = data.current.soil_moisture_0_to_1cm.toFixed(3) + " m³/m³";
+                document.getElementById('rtMoist1').innerText = data.current.soil_moisture_1_to_3cm.toFixed(3) + " m³/m³";
+                document.getElementById('rtMoist3').innerText = data.current.soil_moisture_3_to_9cm.toFixed(3) + " m³/m³";
 
                 // Generar Tarjetas de Pronóstico (Grid)
                 const fg = document.getElementById('forecastGrid');
@@ -1352,10 +1363,8 @@
                     `;
                 }
 
-                // Generar Gráfico Pronóstico (Fondo Oscuro Tech)
+                // Generar Gráfico Pronóstico
                 if(chartObjForecast) chartObjForecast.destroy();
-                
-                // Color configuration for Dark Mode Chart
                 Chart.defaults.color = '#94a3b8';
                 Chart.defaults.borderColor = '#334155';
 
@@ -1368,17 +1377,10 @@
                             { type: 'line', label: 'Evapotranspiración ET0 (mm)', data: data.daily.et0_fao_evapotranspiration, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.2)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#0f172a', yAxisID: 'yLluvia' }
                         ]
                     },
-                    options: { 
-                        responsive: true, 
-                        plugins: { legend: { position: 'top' } },
-                        scales: { 
-                            x: { grid: { display: false } },
-                            yLluvia: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#334155' } } 
-                        } 
-                    }
+                    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { grid: { display: false } }, yLluvia: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#334155' } } } }
                 });
 
-                // 2. Llamada Histórica Real (API Archive 2020-2025)
+                // 2. Llamada Histórica Real (API Archive)
                 renderizarClimatologia(lat, lon);
 
                 // Centrar Radar
@@ -1391,31 +1393,23 @@
 
         async function renderizarClimatologia(lat, lon) {
             try {
-                // Obtener los últimos 5 años para hacer un promedio mensual robusto (2020 a 2025)
-                const start_date = '2020-01-01';
-                const end_date = '2025-12-31';
-                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${start_date}&end_date=${end_date}&daily=precipitation_sum&timezone=auto`;
-                
+                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=2020-01-01&end_date=2025-12-31&daily=precipitation_sum&timezone=auto`;
                 const res = await fetch(url);
                 const data = await res.json();
                 
                 if (!data || !data.daily || !data.daily.time) return;
 
-                // Diccionario para sumar por año-mes
                 const sumasPorAnoMes = {};
-
                 data.daily.time.forEach((fecha, index) => {
                     const parts = fecha.split('-'); 
                     const ano = parts[0];
                     const mes = parseInt(parts[1], 10) - 1; 
                     const lluvia = data.daily.precipitation_sum[index] || 0;
-                    
                     const key = `${ano}-${mes}`;
                     if (!sumasPorAnoMes[key]) sumasPorAnoMes[key] = 0;
                     sumasPorAnoMes[key] += lluvia;
                 });
 
-                // Promediar por mes
                 const sumaTotalMensual = new Array(12).fill(0);
                 const cantidadAnosMes = new Array(12).fill(0);
 
@@ -1436,32 +1430,15 @@
                     type: 'bar',
                     data: {
                         labels: meses,
-                        datasets: [{ 
-                            label: 'Lluvia Acumulada Media Mensual (mm)', 
-                            data: lluviaHist, 
-                            backgroundColor: '#10b981',
-                            borderRadius: 6,
-                            barPercentage: 0.6
-                        }]
+                        datasets: [{ label: 'Lluvia Acumulada Media Mensual (mm)', data: lluviaHist, backgroundColor: '#10b981', borderRadius: 6, barPercentage: 0.6 }]
                     },
-                    options: { 
-                        responsive: true, 
-                        scales: { 
-                            x: { grid: { display: false } },
-                            y: { beginAtZero: true, title: { display: true, text: 'Milímetros (mm)', color: '#94a3b8' }, grid: { color: '#334155' } } 
-                        } 
-                    }
+                    options: { responsive: true, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: 'Milímetros (mm)', color: '#94a3b8' }, grid: { color: '#334155' } } } }
                 });
-            } catch(e) {
-                console.error("Error cargando climatología: ", e);
-            }
+            } catch(e) { console.error("Error cargando climatología", e); }
         }
         
-        // Listener para actualizar al presionar Enter en el input
         document.getElementById('coordPronostico').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                actualizarPronosticoGlobal();
-            }
+            if (e.key === 'Enter') actualizarPronosticoGlobal();
         });
     </script>
 </body>
