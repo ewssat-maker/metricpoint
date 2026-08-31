@@ -510,11 +510,50 @@
 
     <!-- Muro de Pago -->
     <div id="paywallScreen" class="modal-overlay" style="z-index: 9999;">
-        <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px;">
-            <h2 style="color: #d73027;" data-i18n="paywall_title">Trial Period Expired</h2>
-            <p style="color: #333;" data-i18n="paywall_desc">Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.</p>
-            <button class="btn-primary" onclick="alert('Payment gateway in construction...')" data-i18n="btn_upgrade">Get Premium License</button>
-            <button class="btn-secondary" style="margin-top: 15px; background: transparent; color: #666;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
+        <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="font-size: 40px; margin-bottom: 10px;">⏳</div>
+            <h2 style="color: #d73027; margin-top: 0;" data-i18n="paywall_title">Trial Period Expired</h2>
+            <p style="color: #333; line-height: 1.5;" data-i18n="paywall_desc">Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.</p>
+            <button class="btn-primary" style="background-color: #6366f1; font-size: 16px; padding: 12px; margin-top: 20px;" onclick="abrirPasarelaPago()" data-i18n="btn_upgrade">Get Premium License</button>
+            <button class="btn-secondary" style="margin-top: 15px; background: transparent; color: #64748b; border: 1px solid #cbd5e1;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
+        </div>
+    </div>
+
+    <!-- Pasarela de Pago Simulada (Estilo Stripe) -->
+    <div id="paymentModal" class="modal-overlay" style="z-index: 10000; display: none;">
+        <div style="background: white; padding: 0; border-radius: 12px; width: 100%; max-width: 450px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+            <div style="background: #f8fafc; padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #0f172a; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #6366f1; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">PRO</span> MetricPoint Premium
+                </h3>
+                <span style="cursor: pointer; font-size: 24px; color: #64748b;" onclick="cerrarPasarelaPago()">&times;</span>
+            </div>
+            
+            <div style="padding: 30px;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h2 style="margin: 0; font-size: 32px; color: #0f172a;">$99<span style="font-size: 16px; color: #64748b;">/mes</span></h2>
+                    <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Facturación recurrente. Cancela cuando quieras.</p>
+                </div>
+
+                <label style="font-size: 12px; color: #475569; font-weight: bold; margin-bottom: 5px; display: block;">DATOS DE LA TARJETA</label>
+                <div style="border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; margin-bottom: 20px;">
+                    <input type="text" placeholder="Número de tarjeta" style="width: 100%; border: none; border-bottom: 1px solid #cbd5e1; padding: 12px; font-size: 15px; box-sizing: border-box; outline: none;">
+                    <div style="display: flex;">
+                        <input type="text" placeholder="MM / AA" style="width: 50%; border: none; border-right: 1px solid #cbd5e1; padding: 12px; font-size: 15px; box-sizing: border-box; outline: none;">
+                        <input type="text" placeholder="CVC" style="width: 50%; border: none; padding: 12px; font-size: 15px; box-sizing: border-box; outline: none;">
+                    </div>
+                </div>
+
+                <label style="font-size: 12px; color: #475569; font-weight: bold; margin-bottom: 5px; display: block;">NOMBRE EN LA TARJETA</label>
+                <input type="text" placeholder="Ej. Fernando Suárez" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; font-size: 15px; box-sizing: border-box; outline: none; margin-bottom: 25px;">
+
+                <button id="btnProcesarPago" style="width: 100%; background: #0f172a; color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s;" onclick="procesarPagoSimulado()">
+                    Pagar $99.00
+                </button>
+                <div style="text-align: center; margin-top: 15px; color: #94a3b8; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    🔒 Pagos seguros cifrados con SSL de 256 bits
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1674,6 +1713,41 @@
                 const s = totalSeconds % 60;
                 timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             }, 1000);
+        }
+
+        // =====================================================================
+        // MÓDULO DE PAGOS SIMULADO
+        // =====================================================================
+        function abrirPasarelaPago() {
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function cerrarPasarelaPago() {
+            document.getElementById('paymentModal').style.display = 'none';
+            document.getElementById('btnProcesarPago').innerText = "Pagar $99.00";
+            document.getElementById('btnProcesarPago').style.background = "#0f172a";
+            document.getElementById('btnProcesarPago').disabled = false;
+        }
+
+        function procesarPagoSimulado() {
+            const btn = document.getElementById('btnProcesarPago');
+            btn.innerText = "Procesando...";
+            btn.style.background = "#475569";
+            btn.disabled = true;
+
+            // Simulación de delay de red (2 segundos)
+            setTimeout(() => {
+                btn.innerText = "✓ ¡Pago Exitoso!";
+                btn.style.background = "#10b981";
+                
+                // Redirigir o recargar después del éxito
+                setTimeout(() => {
+                    alert("Licencia Premium activada. Bienvenido a MetricPoint Pro.");
+                    cerrarPasarelaPago();
+                    document.getElementById('paywallScreen').style.display = 'none';
+                    // Aquí iría la lógica real para actualizar el token JWT en localStorage
+                }, 1500);
+            }, 2000);
         }
     </script>
 </body>
