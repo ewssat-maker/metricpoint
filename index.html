@@ -324,11 +324,11 @@
         </select>
     </div>
 
-    <!-- WIDGET FLOTANTE SMS -->
+    <!-- WIDGET FLOTANTE SMS (VISIBLE SIEMPRE) -->
     <div id="smsWidget" class="sms-float">
         <div class="sms-message-box">
             <strong>Soporte MetricPoint</strong>
-            Canal habilitado. Haz clic para enviarnos un mensaje de texto (SMS).
+            Canal habilitado para contacto, envíanos tu pregunta.
         </div>
         <a href="sms:+19314042678" class="sms-icon" title="Enviar SMS">
             <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
@@ -489,7 +489,7 @@
                 <strong>MetricPoint LLC.</strong><br>
                 424 Innovation Drive, Suite 250<br>
                 Memphis, Tennessee 38152, USA<br>
-                📞 Global Contact: <a href="tel:+19314042678" style="color: #38bdf8; text-decoration: none; font-weight: bold;">+1 (931) 404-2678</a>
+                📞 Global Contact: <a href="sms:+19314042678" style="color: #38bdf8; text-decoration: none; font-weight: bold;">+1 (931) 404-2678</a>
             </div>
 
             <p style="color: #64748b; font-size: 12px; margin-top: 20px;">© 2026 Suite MetricPoint. Todos los derechos reservados.</p>
@@ -944,7 +944,6 @@
                 document.getElementById("landingWrapper").style.display = "none";
                 document.getElementById("workspace").style.display = "block"; 
                 document.getElementById("dashboardHub").style.display = "block";
-                document.getElementById("smsWidget").style.display = "none"; // Ocultar widget si está logueado
             }
             cambiarIdioma(document.getElementById('langSwitch').value);
         });
@@ -986,7 +985,6 @@
                     document.getElementById("landingWrapper").style.display = "none"; 
                     document.getElementById("workspace").style.display = "block"; 
                     document.getElementById("dashboardHub").style.display = "block"; 
-                    document.getElementById("smsWidget").style.display = "none"; // Ocultar
                 } 
                 else { statusLabel.innerText = data.error; }
             } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
@@ -1004,7 +1002,6 @@
                     document.getElementById("landingWrapper").style.display = "none"; 
                     document.getElementById("workspace").style.display = "block"; 
                     document.getElementById("dashboardHub").style.display = "block";
-                    document.getElementById("smsWidget").style.display = "none"; // Ocultar
                 } 
                 else { statusLabel.innerText = data.error; }
             } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
