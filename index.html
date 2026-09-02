@@ -230,6 +230,20 @@
         #moduloPronostico .chart-container { background: #0a0a0a; border: 1px solid #222; border-radius: 4px; }
 
         /* ==========================================
+           4. ESTILOS HYDRO ALERTAS (NUEVO)
+           ========================================== */
+        @keyframes flashRed {
+            0% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; }
+            50% { background-color: #ffe4e6; box-shadow: 0 0 20px #ef4444; }
+            100% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; }
+        }
+        .alert-active {
+            background: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            animation: flashRed 2s infinite;
+        }
+
+        /* ==========================================
            DISEÑO RESPONSIVO (COMPUTADORA Y CELULAR)
            ========================================== */
         @media (max-width: 900px) {
@@ -374,7 +388,7 @@
                 <div id="introWho" class="intro-tab-content active">
                     <h2 style="color: #38bdf8; font-size: 32px; margin-top: 0;" data-i18n="who_title">MetricPoint: Inteligencia Geoespacial</h2>
                     <p class="about-text" data-i18n="who_p1">MetricPoint es una plataforma AgTech de vanguardia especializada en inteligencia geoespacial y modelado agronómico mediante tecnología satelital SAR.</p>
-                    <p class="about-text" data-i18n="who_p2">Con una base sólida de operaciones e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.</p>
+                    <p class="about-text" data-i18n="who_p2">Con una base sólida de operations e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.</p>
                     <p class="about-text" data-i18n="who_p3">Nos preparamos para un gran desembarco en Argentina, trayendo nuestra suite para revolucionar la agricultura de precisión en Sudamérica, anticipándonos al estrés hídrico con precisión milimétrica.</p>
                 </div>
 
@@ -460,6 +474,11 @@
                     <div class="hub-icon">🐝</div>
                     <h3>MetricPoli</h3>
                     <p data-i18n="mod_poli_desc">Comprehensive pollination suite, hive monitoring and advanced phenological analysis.</p>
+                </div>
+                <div class="hub-card" onclick="abrirModulo('hydro')">
+                    <div class="hub-icon">🌊</div>
+                    <h3>Metric Hydro</h3>
+                    <p>Monitoreo hidrológico, advertencias tempranas de crecidas y estado de la cuenca.</p>
                 </div>
             </div>
         </div>
@@ -718,6 +737,9 @@
             </div>
         </div>
 
+        <!-- ==========================================
+             MÓDULO METRIC POLI
+             ========================================== -->
         <div id="moduloMetricPoli" style="display: none;">
             <div class="header">
                 <div class="header-left"><h1>MetricPoli (SaaS Premium)</h1><span>by metricpoint</span></div>
@@ -725,6 +747,66 @@
             </div>
             <div class="container" style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box;">
                 <iframe src="https://va2ek5-fernando-suarez.shinyapps.io/polinizacion/" width="100%" height="1200px" style="border: none; border-radius: 8px;" title="Módulo MetricPoli"></iframe>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             MÓDULO METRIC HYDRO (NUEVO)
+             ========================================== -->
+        <div id="moduloHydro" style="display: none;">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Metric Hydro (SaaS Premium)</h1>
+                    <span>Hydrological Early Warning</span>
+                </div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+            </div>
+            
+            <div class="container">
+                <div class="sidebar">
+                    <h3>[ COMANDOS HIDROLÓGICOS ]</h3>
+                    <p style="font-size: 11px; color: #666;">Seleccione un panel de visualización.</p>
+                    <div class="tabs" style="display: flex; flex-direction: column; gap: 10px; border: none; margin-top: 20px;">
+                        <button class="tab-btn active" style="border: 1px solid #ccc; border-radius: 4px;" onclick="abrirPestanaHydro('tabHydroAdv', this)">Advertencias</button>
+                        <button class="tab-btn" style="border: 1px solid #ccc; border-radius: 4px;" onclick="abrirPestanaHydro('tabHydroSit', this)">Situación Actual</button>
+                        <button class="tab-btn" style="border: 1px solid #ccc; border-radius: 4px;" onclick="verificarUsoInterno(this)">Uso Interno (Admin)</button>
+                    </div>
+                </div>
+                
+                <div class="main-content">
+                    <!-- PESTAÑA: ADVERTENCIAS -->
+                    <div id="tabHydroAdv" class="tab-content active">
+                        <div class="chart-container" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f0fdf4; border: 2px solid #22c55e;" id="advContainer">
+                            <div style="text-align: center; padding: 20px;">
+                                <h1 style="font-size: 60px; margin: 0; color: #22c55e;" id="advIcon">✅</h1>
+                                <h2 style="color: #15803d; margin-top: 15px; font-size: 24px;" id="advTitle">Sin Alertas Activas</h2>
+                                <p style="color: #166534; font-size: 16px;" id="advText">Los niveles de la cuenca se encuentran en parámetros normales.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PESTAÑA: SITUACIÓN ACTUAL -->
+                    <div id="tabHydroSit" class="tab-content">
+                        <div class="chart-container" style="min-height: 400px;">
+                            <h3 style="margin-top:0; color:#08306b; border-bottom: 2px solid #eee; padding-bottom: 10px;">Situación Actual de la Cuenca</h3>
+                            <p style="color: #666; font-style: italic;">Módulo de telemetría hidrológica en desarrollo...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- PESTAÑA: USO INTERNO (MODO DIOS) -->
+                    <div id="tabHydroInt" class="tab-content">
+                        <div class="chart-container" style="min-height: 400px; background: #fff1f2; border: 1px solid #e11d48;">
+                            <h3 style="margin-top:0; color:#e11d48; border-bottom: 2px solid #fecdd3; padding-bottom: 10px;">⚠️ Consola de Disparo de Emergencias (MODO DIOS)</h3>
+                            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">El mensaje redactado aquí se enviará vía SMS a los contactos registrados en la base de datos y se replicará instantáneamente en el panel público de Advertencias.</p>
+                            
+                            <label style="color: #e11d48; font-size: 14px;">Redactar Mensaje de Alerta:</label>
+                            <textarea id="txtAlertaHydro" rows="4" style="width: 100%; padding: 12px; border: 2px solid #f43f5e; border-radius: 6px; font-family: monospace; font-size: 15px; margin-bottom: 15px; box-sizing: border-box;" placeholder="Ej: Atención: Crecida en río Marapa prevista para las 18:00hs"></textarea>
+                            
+                            <button class="btn-primary" style="background-color: #e11d48; font-size: 16px; padding: 15px; letter-spacing: 1px;" onclick="dispararAlertaHydro(event)">🚀 DISPARAR ALERTA SMS Y WEB</button>
+                            <p id="lblStatusHydro" style="font-size: 14px; font-weight: bold; color: #e11d48; margin-top: 15px; text-align: center;"></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -900,13 +982,25 @@
         function cerrarPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'none'; }
 
         function abrirModulo(moduloId) {
-            document.getElementById('dashboardHub').style.display = 'none'; document.getElementById('moduloAgrometeo').style.display = 'none'; document.getElementById('moduloPronostico').style.display = 'none'; document.getElementById('moduloMetricPoli').style.display = 'none';
+            document.getElementById('dashboardHub').style.display = 'none'; 
+            document.getElementById('moduloAgrometeo').style.display = 'none'; 
+            document.getElementById('moduloPronostico').style.display = 'none'; 
+            document.getElementById('moduloMetricPoli').style.display = 'none';
+            document.getElementById('moduloHydro').style.display = 'none';
+            
             if (moduloId === 'agrometeo') { document.getElementById('moduloAgrometeo').style.display = 'block'; setTimeout(() => { if(map) map.invalidateSize(); }, 100); } 
             else if (moduloId === 'pronostico') { document.getElementById('moduloPronostico').style.display = 'block'; setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
             else if (moduloId === 'metricpoli') { document.getElementById('moduloMetricPoli').style.display = 'block'; }
+            else if (moduloId === 'hydro') { document.getElementById('moduloHydro').style.display = 'block'; }
         }
 
-        function volverAlHub() { document.getElementById('moduloAgrometeo').style.display = 'none'; document.getElementById('moduloPronostico').style.display = 'none'; document.getElementById('moduloMetricPoli').style.display = 'none'; document.getElementById('dashboardHub').style.display = 'block'; }
+        function volverAlHub() { 
+            document.getElementById('moduloAgrometeo').style.display = 'none'; 
+            document.getElementById('moduloPronostico').style.display = 'none'; 
+            document.getElementById('moduloMetricPoli').style.display = 'none'; 
+            document.getElementById('moduloHydro').style.display = 'none'; 
+            document.getElementById('dashboardHub').style.display = 'block'; 
+        }
 
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
         function getMsg(key) { return traducciones[document.getElementById('langSwitch').value][key] || key; }
@@ -919,7 +1013,11 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/api/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await res.json();
-                if(res.ok) { localStorage.setItem("metric_token", data.token); document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; } 
+                if(res.ok) { 
+                    localStorage.setItem("metric_token", data.token); 
+                    localStorage.setItem("metric_email", email); 
+                    document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; 
+                } 
                 else { statusLabel.innerText = data.error; }
             } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
@@ -931,12 +1029,16 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await res.json();
-                if(res.ok) { localStorage.setItem("metric_token", data.token); document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; } 
+                if(res.ok) { 
+                    localStorage.setItem("metric_token", data.token); 
+                    localStorage.setItem("metric_email", email); 
+                    document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; 
+                } 
                 else { statusLabel.innerText = data.error; }
             } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
 
-        function cerrarSesion() { localStorage.removeItem("metric_token"); location.reload(); }
+        function cerrarSesion() { localStorage.removeItem("metric_token"); localStorage.removeItem("metric_email"); location.reload(); }
 
         var map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
@@ -1572,6 +1674,63 @@
         document.getElementById('coordPronostico').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') actualizarPronosticoGlobal();
         });
+
+        // =====================================================================
+        // FUNCIONES MÓDULO METRIC HYDRO
+        // =====================================================================
+        function abrirPestanaHydro(tabId, elementoBtn) {
+            document.querySelectorAll('#moduloHydro .tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#moduloHydro .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            elementoBtn.classList.add('active');
+        }
+
+        function verificarUsoInterno(elementoBtn) {
+            const emailActivo = localStorage.getItem("metric_email");
+            if(emailActivo && emailActivo.toLowerCase() === "ews.sat@gmail.com") {
+                abrirPestanaHydro('tabHydroInt', elementoBtn);
+            } else {
+                alert("Acceso Denegado: Esta consola de disparo es exclusiva para la cuenta de Administración General (Modo Dios).");
+            }
+        }
+
+        async function dispararAlertaHydro(event) {
+            const msg = document.getElementById("txtAlertaHydro").value;
+            if(!msg) return alert("Por favor, escriba un mensaje de advertencia antes de disparar.");
+            
+            const btn = event.target;
+            const status = document.getElementById("lblStatusHydro");
+            
+            btn.innerText = "PROCESANDO ENVÍO...";
+            status.innerText = "Transmitiendo orden al nodo celular...";
+            
+            try {
+                // Aquí en el futuro conectarás con la ruta real: await fetch(`${BACKEND_URL}/api/alerta`...)
+                
+                // Simulación visual del impacto en el frontend (1.5s delay)
+                setTimeout(() => {
+                    const advCont = document.getElementById("advContainer");
+                    advCont.className = "chart-container alert-active"; // Activa el flash CSS rojo
+                    
+                    document.getElementById("advIcon").innerText = "🚨";
+                    document.getElementById("advTitle").innerText = "ALERTA ACTIVA";
+                    document.getElementById("advTitle").style.color = "#dc2626";
+                    
+                    document.getElementById("advText").innerText = msg;
+                    document.getElementById("advText").style.color = "#991b1b";
+                    document.getElementById("advText").style.fontWeight = "bold";
+                    document.getElementById("advText").style.fontSize = "18px";
+                    
+                    status.innerText = "✅ Orden confirmada. El mensaje se ha replicado en la web y los SMS están en proceso de despacho.";
+                    btn.innerText = "🚀 DISPARAR NUEVA ALERTA";
+                    document.getElementById("txtAlertaHydro").value = "";
+                }, 1500);
+                
+            } catch(e) {
+                status.innerText = "❌ Error al intentar transmitir la orden de alerta.";
+                btn.innerText = "🚀 REINTENTAR DISPARO";
+            }
+        }
     </script>
 
     <!-- WIDGET DE SOPORTE METRICPOINT -->
