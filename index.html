@@ -388,7 +388,7 @@
                 <div id="introWho" class="intro-tab-content active">
                     <h2 style="color: #38bdf8; font-size: 32px; margin-top: 0;" data-i18n="who_title">MetricPoint: Inteligencia Geoespacial</h2>
                     <p class="about-text" data-i18n="who_p1">MetricPoint es una plataforma AgTech de vanguardia especializada en inteligencia geoespacial y modelado agronómico mediante tecnología satelital SAR.</p>
-                    <p class="about-text" data-i18n="who_p2">Con una base sólida de operations e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.</p>
+                    <p class="about-text" data-i18n="who_p2">Con una base sólida de operaciones e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.</p>
                     <p class="about-text" data-i18n="who_p3">Nos preparamos para un gran desembarco en Argentina, trayendo nuestra suite para revolucionar la agricultura de precisión en Sudamérica, anticipándonos al estrés hídrico con precisión milimétrica.</p>
                 </div>
 
@@ -762,18 +762,18 @@
                 <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             
-            <div class="container">
-                <div class="sidebar">
-                    <h3>[ COMANDOS HIDROLÓGICOS ]</h3>
-                    <p style="font-size: 11px; color: #666;">Seleccione un panel de visualización.</p>
-                    <div class="tabs" style="display: flex; flex-direction: column; gap: 10px; border: none; margin-top: 20px;">
-                        <button class="tab-btn active" style="border: 1px solid #ccc; border-radius: 4px;" onclick="abrirPestanaHydro('tabHydroAdv', this)">Advertencias</button>
-                        <button class="tab-btn" style="border: 1px solid #ccc; border-radius: 4px;" onclick="abrirPestanaHydro('tabHydroSit', this)">Situación Actual</button>
-                        <button class="tab-btn" style="border: 1px solid #ccc; border-radius: 4px;" onclick="verificarUsoInterno(this)">Uso Interno (Admin)</button>
-                    </div>
+            <div class="container" style="display: block; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0; color: #08306b;">[ COMANDOS HIDROLÓGICOS ]</h3>
+                <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Seleccione un panel de visualización.</p>
+                
+                <!-- TABS EN FORMATO HORIZONTAL ARRIBA -->
+                <div class="tabs" style="display: flex; flex-wrap: wrap; gap: 5px; border-bottom: 2px solid #ccc; margin-bottom: 20px;">
+                    <button class="tab-btn active" style="padding: 10px 20px; border: none; border-bottom: 3px solid transparent;" onclick="abrirPestanaHydro('tabHydroAdv', this)">Advertencias</button>
+                    <button class="tab-btn" style="padding: 10px 20px; border: none; border-bottom: 3px solid transparent;" onclick="abrirPestanaHydro('tabHydroSit', this)">Situación Actual</button>
+                    <button class="tab-btn" style="padding: 10px 20px; border: none; border-bottom: 3px solid transparent;" onclick="verificarUsoInterno(this)">Uso Interno (Admin)</button>
                 </div>
                 
-                <div class="main-content">
+                <div class="main-content" style="width: 100%;">
                     <!-- PESTAÑA: ADVERTENCIAS -->
                     <div id="tabHydroAdv" class="tab-content active">
                         <div class="chart-container" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f0fdf4; border: 2px solid #22c55e;" id="advContainer">
@@ -1702,15 +1702,20 @@
             const status = document.getElementById("lblStatusHydro");
             
             btn.innerText = "PROCESANDO ENVÍO...";
-            status.innerText = "Transmitiendo orden al nodo celular...";
+            status.innerText = "Conectando con el servidor MetricPoint...";
             
             try {
-                // Aquí en el futuro conectarás con la ruta real: await fetch(`${BACKEND_URL}/api/alerta`...)
+                // CONEXIÓN REAL AL BACKEND PYTHON
+                const response = await fetch(`${BACKEND_URL}/api/alerta`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensaje: msg })
+                });
                 
-                // Simulación visual del impacto en el frontend (1.5s delay)
-                setTimeout(() => {
+                if(response.ok) {
+                    // Flash visual de la baliza roja
                     const advCont = document.getElementById("advContainer");
-                    advCont.className = "chart-container alert-active"; // Activa el flash CSS rojo
+                    advCont.className = "chart-container alert-active"; 
                     
                     document.getElementById("advIcon").innerText = "🚨";
                     document.getElementById("advTitle").innerText = "ALERTA ACTIVA";
@@ -1721,13 +1726,15 @@
                     document.getElementById("advText").style.fontWeight = "bold";
                     document.getElementById("advText").style.fontSize = "18px";
                     
-                    status.innerText = "✅ Orden confirmada. El mensaje se ha replicado en la web y los SMS están en proceso de despacho.";
+                    status.innerText = "✅ Orden enviada. El servidor Python está comunicándose con tu Motorola.";
                     btn.innerText = "🚀 DISPARAR NUEVA ALERTA";
                     document.getElementById("txtAlertaHydro").value = "";
-                }, 1500);
-                
+                } else {
+                    status.innerText = "❌ El servidor rechazó la orden. ¿Actualizaste app_moisture.py?";
+                    btn.innerText = "🚀 REINTENTAR DISPARO";
+                }
             } catch(e) {
-                status.innerText = "❌ Error al intentar transmitir la orden de alerta.";
+                status.innerText = "❌ Error de red. Asegúrate de que el backend de Render esté encendido y actualizado.";
                 btn.innerText = "🚀 REINTENTAR DISPARO";
             }
         }
