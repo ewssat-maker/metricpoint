@@ -232,6 +232,23 @@
         /* ==========================================
            4. ESTILOS HYDRO ALERTAS (NUEVO)
            ========================================== */
+        .hydro-cmd-btn {
+            background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-size: 14px; flex-grow: 1; justify-content: center;
+        }
+        .hydro-cmd-btn.active {
+            background: #0f172a; color: #38bdf8; border-color: #0f172a; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .hydro-cmd-btn:hover:not(.active) {
+            background: #e2e8f0; color: #0f172a;
+        }
+        
+        .alert-history-item {
+            background: #1e293b; padding: 12px; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 8px; font-size: 13px; color: #cbd5e1;
+        }
+        .alert-history-time {
+            font-weight: bold; color: #94a3b8; display: block; margin-bottom: 4px; font-size: 11px; font-family: monospace;
+        }
+
         @keyframes flashRed {
             0% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; }
             50% { background-color: #ffe4e6; box-shadow: 0 0 20px #ef4444; }
@@ -277,6 +294,8 @@
             .chart-container { padding: 10px; }
 
             #scifiGridContainer { grid-template-columns: 1fr !important; }
+            
+            #hydroSplitGrid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -764,23 +783,41 @@
             
             <div class="container" style="display: block; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                 <h3 style="margin-top: 0; color: #08306b;">[ COMANDOS HIDROLÓGICOS ]</h3>
-                <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Seleccione un panel de visualización.</p>
                 
-                <!-- TABS EN FORMATO HORIZONTAL ARRIBA -->
-                <div class="tabs" style="display: flex; flex-wrap: wrap; gap: 5px; border-bottom: 2px solid #ccc; margin-bottom: 20px;">
-                    <button class="tab-btn active" style="padding: 10px 20px; border: none; border-bottom: 3px solid transparent;" onclick="abrirPestanaHydro('tabHydroAdv', this)">Advertencias</button>
-                    <button class="tab-btn" style="padding: 10px 20px; border: none; border-bottom: 3px solid transparent;" onclick="abrirPestanaHydro('tabHydroSit', this)">Situación Actual</button>
-                    <button class="tab-btn" style="padding: 10px 20px; border: none; border-bottom: 3px solid transparent;" onclick="verificarUsoInterno(this)">Uso Interno (Admin)</button>
+                <!-- TABS EN FORMATO HORIZONTAL ARRIBA (PROFESIONALES) -->
+                <div class="tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
+                    <button class="hydro-cmd-btn active" onclick="abrirPestanaHydro('tabHydroAdv', this)">⚠️ Panel de Advertencias</button>
+                    <button class="hydro-cmd-btn" onclick="abrirPestanaHydro('tabHydroSit', this)">📊 Situación Actual</button>
+                    <button class="hydro-cmd-btn" onclick="verificarUsoInterno(this)">⚙️ Uso Interno (Admin)</button>
                 </div>
                 
                 <div class="main-content" style="width: 100%;">
                     <!-- PESTAÑA: ADVERTENCIAS -->
                     <div id="tabHydroAdv" class="tab-content active">
-                        <div class="chart-container" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #f0fdf4; border: 2px solid #22c55e;" id="advContainer">
-                            <div style="text-align: center; padding: 20px;">
-                                <h1 style="font-size: 60px; margin: 0; color: #22c55e;" id="advIcon">✅</h1>
-                                <h2 style="color: #15803d; margin-top: 15px; font-size: 24px;" id="advTitle">Sin Alertas Activas</h2>
-                                <p style="color: #166534; font-size: 16px;" id="advText">Los niveles de la cuenca se encuentran en parámetros normales.</p>
+                        <div id="hydroSplitGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            
+                            <!-- ALERTA PRINCIPAL -->
+                            <div class="chart-container" style="background: #f0fdf4; border: 2px solid #22c55e; display: flex; align-items: center; justify-content: center; min-height: 300px; text-align: center; padding: 30px;" id="advContainer">
+                                <div>
+                                    <h1 style="font-size: 60px; margin: 0; color: #22c55e;" id="advIcon">✅</h1>
+                                    <h2 style="color: #15803d; margin-top: 15px; font-size: 24px;" id="advTitle">Nivel Operativo Normal</h2>
+                                    <p style="color: #166534; font-size: 16px;" id="advText">La cuenca no registra anomalías hídricas en este momento.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- MAPA DE RIESGO -->
+                            <div class="chart-container" style="padding: 0; overflow: hidden; border: 2px solid #1e293b; min-height: 300px; position: relative;">
+                                <div id="hydroMap" style="width: 100%; height: 100%; min-height: 300px; background: #000;"></div>
+                                <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 4px; font-size: 11px; z-index: 1000; font-family: monospace; border: 1px solid #333;">RADAR SATELITAL ACTIVO</div>
+                            </div>
+                            
+                        </div>
+
+                        <!-- HISTORIAL DE ALERTAS -->
+                        <div class="chart-container" style="background: #0f172a; border: 1px solid #1e293b;">
+                            <h3 style="color: #38bdf8; margin-top: 0; border-bottom: 1px solid #1e293b; padding-bottom: 10px; font-size: 15px;">[ HISTORIAL DE EVENTOS ]</h3>
+                            <div id="historialAlertas" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; padding-right: 10px;">
+                                <div id="msgSinHistorial" style="color: #64748b; font-size: 13px; font-style: italic;">No hay eventos registrados en la sesión actual.</div>
                             </div>
                         </div>
                     </div>
@@ -797,10 +834,10 @@
                     <div id="tabHydroInt" class="tab-content">
                         <div class="chart-container" style="min-height: 400px; background: #fff1f2; border: 1px solid #e11d48;">
                             <h3 style="margin-top:0; color:#e11d48; border-bottom: 2px solid #fecdd3; padding-bottom: 10px;">⚠️ Consola de Disparo de Emergencias (MODO DIOS)</h3>
-                            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">El mensaje redactado aquí se enviará vía SMS a los contactos registrados en la base de datos y se replicará instantáneamente en el panel público de Advertencias.</p>
+                            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.</p>
                             
-                            <label style="color: #e11d48; font-size: 14px;">Redactar Mensaje de Alerta:</label>
-                            <textarea id="txtAlertaHydro" rows="4" style="width: 100%; padding: 12px; border: 2px solid #f43f5e; border-radius: 6px; font-family: monospace; font-size: 15px; margin-bottom: 15px; box-sizing: border-box;" placeholder="Ej: Atención: Crecida en río Marapa prevista para las 18:00hs"></textarea>
+                            <label style="color: #e11d48; font-size: 14px; font-weight: bold;">Redactar Mensaje de Alerta:</label>
+                            <textarea id="txtAlertaHydro" rows="4" style="width: 100%; padding: 15px; border: 2px solid #f43f5e; border-radius: 6px; font-family: monospace; font-size: 16px; margin-bottom: 15px; box-sizing: border-box;" placeholder="Ej: Atención: Crecida en río Marapa (La Madrid) prevista para las 18:00hs"></textarea>
                             
                             <button class="btn-primary" style="background-color: #e11d48; font-size: 16px; padding: 15px; letter-spacing: 1px;" onclick="dispararAlertaHydro(event)">🚀 DISPARAR ALERTA SMS Y WEB</button>
                             <p id="lblStatusHydro" style="font-size: 14px; font-weight: bold; color: #e11d48; margin-top: 15px; text-align: center;"></p>
@@ -991,7 +1028,16 @@
             if (moduloId === 'agrometeo') { document.getElementById('moduloAgrometeo').style.display = 'block'; setTimeout(() => { if(map) map.invalidateSize(); }, 100); } 
             else if (moduloId === 'pronostico') { document.getElementById('moduloPronostico').style.display = 'block'; setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
             else if (moduloId === 'metricpoli') { document.getElementById('moduloMetricPoli').style.display = 'block'; }
-            else if (moduloId === 'hydro') { document.getElementById('moduloHydro').style.display = 'block'; }
+            else if (moduloId === 'hydro') { 
+                document.getElementById('moduloHydro').style.display = 'block'; 
+                // Inicializa el mapa Hydro si no existe, centrado en La Madrid, Tucumán
+                if (!window.hydroMap) {
+                    window.hydroMap = L.map('hydroMap').setView([-27.633, -65.250], 10);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(window.hydroMap);
+                } else {
+                    setTimeout(() => window.hydroMap.invalidateSize(), 100);
+                }
+            }
         }
 
         function volverAlHub() { 
@@ -1142,7 +1188,6 @@
             } else { minCota = 0; maxCota = 1; }
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
 
-            // FUNCIÓN CORREGIDA: puntosDEM en lugar de pontosDEM
             function getRelieveZ(lon, lat) {
                 if (!puntosDEM || puntosDEM.length === 0) return 0;
                 let sum_w = 0, sum_z_w = 0, smoothing = 0.00005;
@@ -1679,11 +1724,18 @@
         // =====================================================================
         // FUNCIONES MÓDULO METRIC HYDRO
         // =====================================================================
+        let hydroAlertHistory = [];
+        let hydroMapPolygon = null;
+
         function abrirPestanaHydro(tabId, elementoBtn) {
             document.querySelectorAll('#moduloHydro .tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('#moduloHydro .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('#moduloHydro .hydro-cmd-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             elementoBtn.classList.add('active');
+
+            if (tabId === 'tabHydroAdv' && window.hydroMap) {
+                setTimeout(() => window.hydroMap.invalidateSize(), 100);
+            }
         }
 
         function verificarUsoInterno(elementoBtn) {
@@ -1714,10 +1766,28 @@
                 });
                 
                 if(response.ok) {
-                    // Flash visual de la baliza roja
+                    // 1. Obtener la hora actual
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    const dateString = now.toLocaleDateString('es-AR');
+                    const timestamp = `${dateString} - ${timeString}`;
+
+                    // 2. Guardar en historial
+                    hydroAlertHistory.unshift({ time: timestamp, text: msg });
+                    
+                    // 3. Renderizar el historial
+                    const historialDiv = document.getElementById("historialAlertas");
+                    document.getElementById("msgSinHistorial").style.display = "none";
+                    historialDiv.innerHTML = hydroAlertHistory.map(alerta => `
+                        <div class="alert-history-item">
+                            <span class="alert-history-time">📅 ${alerta.time}</span>
+                            ${alerta.text}
+                        </div>
+                    `).join('');
+
+                    // 4. Actualizar baliza principal (Rojo intermitente)
                     const advCont = document.getElementById("advContainer");
                     advCont.className = "chart-container alert-active"; 
-                    
                     document.getElementById("advIcon").innerText = "🚨";
                     document.getElementById("advTitle").innerText = "ALERTA ACTIVA";
                     document.getElementById("advTitle").style.color = "#dc2626";
@@ -1727,6 +1797,19 @@
                     document.getElementById("advText").style.fontWeight = "bold";
                     document.getElementById("advText").style.fontSize = "18px";
                     
+                    // 5. Dibujar zona de riesgo en el mapa (Río Marapa / La Madrid)
+                    if (window.hydroMap) {
+                        if (hydroMapPolygon) window.hydroMap.removeLayer(hydroMapPolygon);
+                        hydroMapPolygon = L.circle([-27.633, -65.250], {
+                            color: '#ef4444',
+                            fillColor: '#f43f5e',
+                            fillOpacity: 0.5,
+                            radius: 12000 // 12 km radio de impacto
+                        }).addTo(window.hydroMap);
+                        window.hydroMap.fitBounds(hydroMapPolygon.getBounds());
+                    }
+
+                    // 6. Confirmación
                     status.innerText = "✅ Orden enviada. El servidor Python está comunicándose con tu Motorola.";
                     btn.innerText = "🚀 DISPARAR NUEVA ALERTA";
                     document.getElementById("txtAlertaHydro").value = "";
