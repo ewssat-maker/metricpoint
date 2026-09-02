@@ -18,6 +18,48 @@
         .lang-selector select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b; }
 
         /* ==========================================
+           1.5 WIDGET SMS (NUEVO)
+           ========================================== */
+        .sms-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            z-index: 10000;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .sms-message-box {
+            background: #ffffff;
+            border-left: 4px solid #38bdf8;
+            padding: 12px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 13px;
+            color: #333;
+            max-width: 220px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .sms-message-box strong { color: #08306b; display: block; margin-bottom: 5px; font-size: 14px;}
+        .sms-icon {
+            width: 55px;
+            height: 55px;
+            background-color: #38bdf8;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        .sms-icon:hover { transform: scale(1.1); background-color: #0ea5e9; }
+
+        /* ==========================================
            2. LANDING PAGE & LOGIN
            ========================================== */
         #landingWrapper { display: flex; flex-direction: column; width: 100vw; background-color: #020617; }
@@ -236,52 +278,6 @@
         #moduloPronostico .chart-container { background: #0a0a0a; border: 1px solid #222; border-radius: 4px; }
 
         /* ==========================================
-           WIDGET WHATSAPP Y CRONÓMETRO
-           ========================================== */
-        #wa-widget {
-            position: fixed;
-            bottom: 25px;
-            left: 25px;
-            background: #25D366;
-            color: white;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            padding: 8px 20px 8px 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            z-index: 10000;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: transform 0.3s ease;
-        }
-        #wa-widget:hover {
-            transform: scale(1.05);
-        }
-        .wa-icon {
-            width: 40px;
-            height: 40px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 12px;
-        }
-        .wa-content p {
-            margin: 0;
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 1.2;
-        }
-        #wa-timer {
-            font-size: 16px;
-            font-family: monospace;
-            font-weight: bold;
-            margin-top: 3px;
-            letter-spacing: 1px;
-            color: #d1fae5;
-        }
-
-        /* ==========================================
            DISEÑO RESPONSIVO (COMPUTADORA Y CELULAR)
            ========================================== */
         @media (max-width: 900px) {
@@ -315,15 +311,6 @@
             .chart-container { padding: 10px; }
             
             #scifiGridContainer { grid-template-columns: 1fr !important; }
-            
-            #wa-widget {
-                bottom: 15px;
-                left: 15px;
-                padding: 6px 15px 6px 6px;
-            }
-            .wa-icon { width: 32px; height: 32px; }
-            .wa-content p { font-size: 10px; }
-            #wa-timer { font-size: 14px; }
         }
     </style>
 </head>
@@ -335,6 +322,20 @@
             <option value="es">🇪🇸 Español</option>
             <option value="pt">🇧🇷 Português</option>
         </select>
+    </div>
+
+    <!-- WIDGET FLOTANTE SMS (VISIBLE SIEMPRE) -->
+    <div id="smsWidget" class="sms-float">
+        <div class="sms-message-box">
+            <strong>Soporte MetricPoint</strong>
+            Canal habilitado para contacto, envíanos tu pregunta.
+        </div>
+        <a href="sms:+19314042678" class="sms-icon" title="Enviar SMS">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/>
+                <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
+            </svg>
+        </a>
     </div>
 
     <!-- MODAL TÉRMINOS -->
@@ -476,36 +477,23 @@
             </div>
         </div>
 
-        <!-- FOOTER / REDES SOCIALES Y DIRECCIÓN -->
-        <footer style="background-color: #0f172a; padding: 30px 20px 20px 20px; text-align: center; border-top: 1px solid #1e293b;">
-            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;" data-i18n="footer_follow">Síguenos en nuestras redes sociales:</p>
-            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 25px;">
+        <!-- FOOTER / REDES SOCIALES (ACTUALIZADO CON DIRECCIÓN) -->
+        <footer style="background-color: #0f172a; padding: 20px; text-align: center; border-top: 1px solid #1e293b;">
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 10px;">Síguenos en nuestras redes sociales:</p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
                 <a href="https://x.com/metric_point" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: bold; font-size: 16px;">𝕏 (Twitter)</a>
                 <a href="https://www.instagram.com/metricpoint.service/" target="_blank" style="color: #e1306c; text-decoration: none; font-weight: bold; font-size: 16px;">📸 Instagram</a>
             </div>
             
-            <div style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 20px; font-family: monospace;">
-                <strong style="color: white; font-size: 15px;">MetricPoint HQ</strong><br>
-                120 Innovation Drive, Suite 300<br>
-                Knoxville, TN 37932, United States<br>
-                <span style="color: #10b981; font-weight: bold; margin-top: 5px; display: inline-block;">📞 +1 931 404 2678</span>
+            <div style="margin-top: 25px; color: #94a3b8; font-size: 13px; line-height: 1.6;">
+                <strong>MetricPoint LLC.</strong><br>
+                424 Innovation Drive, Suite 250<br>
+                Memphis, Tennessee 38152, USA<br>
+                📞 Global Contact: <a href="sms:+19314042678" style="color: #38bdf8; text-decoration: none; font-weight: bold;">+1 (931) 404-2678</a>
             </div>
-            
-            <p style="color: #64748b; font-size: 12px; margin-top: 15px;">© 2026 Suite MetricPoint. Todos los derechos reservados.</p>
-        </footer>
-    </div>
 
-    <!-- WIDGET WHATSAPP FLOTANTE -->
-    <div id="wa-widget">
-        <div class="wa-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.99 0C5.366 0 0 5.366 0 11.99C0 14.636 1.05 17.066 2.805 18.995L.897 23.364L5.5 21.61C7.387 23.167 9.58 24 11.99 24C18.614 24 24 18.614 24 11.99C24 5.366 18.614 0 11.99 0ZM18.064 16.536C17.8 17.26 16.52 17.848 15.827 17.962C15.26 18.055 14.444 18.136 11.83 17.065C8.483 15.694 6.332 12.274 6.166 12.052C6.002 11.83 4.82 10.25 4.82 8.615C4.82 6.98 5.644 6.177 5.973 5.83C6.236 5.553 6.666 5.42 7.06 5.42C7.19 5.42 7.307 5.427 7.405 5.433C7.734 5.453 7.898 5.473 8.113 5.992C8.375 6.618 9.015 8.18 9.098 8.344C9.18 8.508 9.278 8.72 9.162 8.95C9.05 9.167 8.95 9.284 8.786 9.48C8.622 9.678 8.468 9.81 8.303 10.024C8.156 10.203 7.975 10.398 8.172 10.742C8.368 11.086 9.01 12.134 9.962 12.98C11.188 14.07 12.186 14.42 12.564 14.582C12.86 14.713 13.204 14.68 13.435 14.434C13.73 14.12 14.108 13.578 14.485 13.036C14.764 12.64 15.14 12.59 15.5 12.722C15.86 12.853 17.776 13.805 18.153 14.002C18.53 14.2 18.776 14.298 18.86 14.445C18.94 14.593 18.94 15.3 18.064 16.536Z"/>
-            </svg>
-        </div>
-        <div class="wa-content">
-            <p data-i18n="wa_legend">Pronto canal habilitado para<br>clientes de Argentina</p>
-            <div id="wa-timer">36:00:00</div>
-        </div>
+            <p style="color: #64748b; font-size: 12px; margin-top: 20px;">© 2026 Suite MetricPoint. Todos los derechos reservados.</p>
+        </footer>
     </div>
 
     <!-- Muro de Pago -->
@@ -864,9 +852,7 @@
                 "diag_fav": "The global balance shows a <strong>favorable</strong> atmospheric behavior. ",
                 "diag_opt": "Currently, the deep reserve of the lot (100 cm) is at <strong>optimal</strong> levels (above 65% of useful water), guaranteeing root stability against upcoming heat waves.",
                 "diag_reg": "Currently, the deep reserve (100 cm) is in a state of <strong>regular transition</strong>. It is suggested to monitor surface drying to avoid phenological stress.",
-                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>",
-                "footer_follow": "Follow us on our social networks:",
-                "wa_legend": "WhatsApp channel for Argentina<br>opening soon"
+                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>"
             },
             es: {
                 "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
@@ -906,16 +892,14 @@
                 "diag_fav": "El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. ",
                 "diag_opt": "Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.",
                 "diag_reg": "Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.",
-                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>",
-                "footer_follow": "Síguenos en nuestras redes sociales:",
-                "wa_legend": "Pronto canal habilitado para<br>clientes de Argentina"
+                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>"
             },
             pt: {
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
                 "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (48 Horas Grátis)",
                 "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "lbl_and": " e a ", "lbl_priv": "Política de Privacidade", "msg_tyc_req": "Você deve aceitar os termos legais para se registrar.",
                 "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantizamos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
-                "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema.",
+                "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciales (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema.",
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nossos Produtos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
@@ -931,9 +915,7 @@
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
                 "contact_msg": "Sua Mensagem",
-                "btn_send": "Enviar Mensagem",
-                "footer_follow": "Siga-nos em nossas redes sociais:",
-                "wa_legend": "Em breve canal habilitado para<br>clientes da Argentina"
+                "btn_send": "Enviar Mensagem"
             }
         };
 
@@ -959,11 +941,11 @@
             document.querySelectorAll('.tech-card, .product-showcase').forEach(card => observer.observe(card));
             
             if (localStorage.getItem("metric_token")) {
-                document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block";
+                document.getElementById("landingWrapper").style.display = "none";
+                document.getElementById("workspace").style.display = "block"; 
+                document.getElementById("dashboardHub").style.display = "block";
             }
             cambiarIdioma(document.getElementById('langSwitch').value);
-            
-            iniciarCronometroWA(); // Iniciar cronómetro de WhatsApp
         });
 
         function abrirIntroTab(tabId, elementoBtn) {
@@ -998,7 +980,12 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/api/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await res.json();
-                if(res.ok) { localStorage.setItem("metric_token", data.token); document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; } 
+                if(res.ok) { 
+                    localStorage.setItem("metric_token", data.token); 
+                    document.getElementById("landingWrapper").style.display = "none"; 
+                    document.getElementById("workspace").style.display = "block"; 
+                    document.getElementById("dashboardHub").style.display = "block"; 
+                } 
                 else { statusLabel.innerText = data.error; }
             } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
@@ -1010,7 +997,12 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await res.json();
-                if(res.ok) { localStorage.setItem("metric_token", data.token); document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; } 
+                if(res.ok) { 
+                    localStorage.setItem("metric_token", data.token); 
+                    document.getElementById("landingWrapper").style.display = "none"; 
+                    document.getElementById("workspace").style.display = "block"; 
+                    document.getElementById("dashboardHub").style.display = "block";
+                } 
                 else { statusLabel.innerText = data.error; }
             } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
@@ -1654,27 +1646,6 @@
         document.getElementById('coordPronostico').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') actualizarPronosticoGlobal();
         });
-
-        // =====================================================================
-        // CRONÓMETRO WIDGET WHATSAPP (36 HORAS)
-        // =====================================================================
-        function iniciarCronometroWA() {
-            const timerEl = document.getElementById("wa-timer");
-            let totalSeconds = 36 * 3600; // 36 horas en segundos
-            
-            const interval = setInterval(() => {
-                if (totalSeconds <= 0) {
-                    clearInterval(interval);
-                    timerEl.innerText = "00:00:00";
-                    return;
-                }
-                totalSeconds--;
-                const h = Math.floor(totalSeconds / 3600);
-                const m = Math.floor((totalSeconds % 3600) / 60);
-                const s = totalSeconds % 60;
-                timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            }, 1000);
-        }
     </script>
 </body>
 </html>
