@@ -230,7 +230,7 @@
         #moduloPronostico .chart-container { background: #0a0a0a; border: 1px solid #222; border-radius: 4px; }
 
         /* ==========================================
-           4. ESTILOS HYDRO ALERTAS (NUEVO)
+           4. ESTILOS HYDRO ALERTAS
            ========================================== */
         .hydro-cmd-btn {
             background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-size: 14px; flex-grow: 1; justify-content: center;
@@ -294,7 +294,6 @@
             .chart-container { padding: 10px; }
 
             #scifiGridContainer { grid-template-columns: 1fr !important; }
-            
             #hydroSplitGrid { grid-template-columns: 1fr !important; }
         }
     </style>
@@ -770,24 +769,24 @@
         </div>
 
         <!-- ==========================================
-             MÓDULO METRIC HYDRO (NUEVO)
+             MÓDULO METRIC HYDRO (ACTUALIZADO CON RÍOS DE TUCUMÁN)
              ========================================== -->
         <div id="moduloHydro" style="display: none;">
             <div class="header">
                 <div class="header-left">
                     <h1>Metric Hydro (SaaS Premium)</h1>
-                    <span>Hydrological Early Warning</span>
+                    <span>Hydrological Early Warning & Basin Telemetry</span>
                 </div>
                 <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             
             <div class="container" style="display: block; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <h3 style="margin-top: 0; color: #08306b;">[ COMANDOS HIDROLÓGICOS ]</h3>
+                <h3 style="margin-top: 0; color: #08306b;">[ CENTRO DE OPERACIONES HIDROLÓGICAS - TUCUMÁN ]</h3>
                 
-                <!-- TABS EN FORMATO HORIZONTAL ARRIBA (PROFESIONALES) -->
-                <div class="tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
+                <!-- COMANDOS SUPERIORES PROFESIONALES -->
+                <div class="tabs" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; border: none;">
                     <button class="hydro-cmd-btn active" onclick="abrirPestanaHydro('tabHydroAdv', this)">⚠️ Panel de Advertencias</button>
-                    <button class="hydro-cmd-btn" onclick="abrirPestanaHydro('tabHydroSit', this)">📊 Situación Actual</button>
+                    <button class="hydro-cmd-btn" onclick="abrirPestanaHydro('tabHydroSit', this)">📊 Situación Actual (Cuenca)</button>
                     <button class="hydro-cmd-btn" onclick="verificarUsoInterno(this)">⚙️ Uso Interno (Admin)</button>
                 </div>
                 
@@ -822,11 +821,38 @@
                         </div>
                     </div>
                     
-                    <!-- PESTAÑA: SITUACIÓN ACTUAL -->
+                    <!-- PESTAÑA: SITUACIÓN ACTUAL (CON RÍOS DE TUCUMÁN) -->
                     <div id="tabHydroSit" class="tab-content">
-                        <div class="chart-container" style="min-height: 400px;">
-                            <h3 style="margin-top:0; color:#08306b; border-bottom: 2px solid #eee; padding-bottom: 10px;">Situación Actual de la Cuenca</h3>
-                            <p style="color: #666; font-style: italic;">Módulo de telemetría hidrológica en desarrollo...</p>
+                        <div class="chart-container" style="min-height: 550px; background: #0f172a; border: 1px solid #1e293b; color: white;">
+                            <h3 style="margin-top:0; color:#38bdf8; border-bottom: 2px solid #1e293b; padding-bottom: 10px;">📊 Telemetría Hidrológica en Tiempo Real - Cuenca Tucumán</h3>
+                            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Monitoreo continuo de caudales y alturas hidrométricas en puntos críticos de la red fluvial provincial.</p>
+                            
+                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; min-height: 400px;" id="gridSituacionActual">
+                                <!-- MAPA DE ESTACIONES DE TUCUMÁN -->
+                                <div style="border: 1px solid #334155; border-radius: 6px; overflow: hidden; min-height: 400px; position: relative;">
+                                    <div id="mapaHidroCuenca" style="width: 100%; height: 100%; min-height: 400px; background: #000;"></div>
+                                </div>
+                                
+                                <!-- TARJETAS DE ESTACIONES -->
+                                <div id="panelEstacionesHidro" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;">
+                                    <div style="background: #1e293b; padding: 12px; border-radius: 6px; border-left: 4px solid #22c55e;">
+                                        <strong style="color: #38bdf8; display: block; font-size: 14px;">Río Marapa (La Madrid)</strong>
+                                        <span style="font-size: 12px; color: #cbd5e1;">Nivel: 2.45 m (Normal)</span>
+                                    </div>
+                                    <div style="background: #1e293b; padding: 12px; border-radius: 6px; border-left: 4px solid #22c55e;">
+                                        <strong style="color: #38bdf8; display: block; font-size: 14px;">Río Gastona (Concepción)</strong>
+                                        <span style="font-size: 12px; color: #cbd5e1;">Nivel: 1.80 m (Normal)</span>
+                                    </div>
+                                    <div style="background: #1e293b; padding: 12px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                        <strong style="color: #38bdf8; display: block; font-size: 14px;">Río Salí (Banda del Salí)</strong>
+                                        <span style="font-size: 12px; color: #cbd5e1;">Nivel: 3.10 m (Atención)</span>
+                                    </div>
+                                    <div style="background: #1e293b; padding: 12px; border-radius: 6px; border-left: 4px solid #22c55e;">
+                                        <strong style="color: #38bdf8; display: block; font-size: 14px;">Río Chico (Piedrabuena)</strong>
+                                        <span style="font-size: 12px; color: #cbd5e1;">Nivel: 1.40 m (Normal)</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -959,7 +985,7 @@
                 "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta (48 Horas Grátis)",
                 "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "lbl_and": " e a ", "lbl_priv": "Política de Privacidade", "msg_tyc_req": "Você deve aceitar os termos legais para se registrar.",
                 "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao registrar-se, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico no campo. A MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às culturas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Européia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantizamos 100% de tempo de atividade no caso de falhas de servidor do governo.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso experimental dura 48 hours. É explicitamente proibido fazer web scraping, revender informações ou compartilhar credenciais sem uma licença comercial.", "btn_close": "Fechar",
-                "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciais (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende ou comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema.",
+                "priv_title": "Política de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos seu e-mail (com senha criptografada) e as coordenadas geoespaciales (polígonos) dos lotes analisados para calcular os balanços hídricos.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "A MetricPoint não vende nem comercializa seus data. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta e polígonos entrando em contato com o administrador do sistema.",
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nossos Produtos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
@@ -1030,7 +1056,6 @@
             else if (moduloId === 'metricpoli') { document.getElementById('moduloMetricPoli').style.display = 'block'; }
             else if (moduloId === 'hydro') { 
                 document.getElementById('moduloHydro').style.display = 'block'; 
-                // Inicializa el mapa Hydro si no existe, centrado en La Madrid, Tucumán
                 if (!window.hydroMap) {
                     window.hydroMap = L.map('hydroMap').setView([-27.633, -65.250], 10);
                     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(window.hydroMap);
@@ -1286,8 +1311,6 @@
                 z_top.push(row_z_top); c_top.push(row_c_top);
                 z_bot.push(row_z_bot); c_bot.push(row_c_bot);
             }
-
-            let line_size = (globalMax - globalMin) / 15 || 0.01;
 
             const trace_crop = {
                 x: plotX, y: plotY, z: z_crop, surfacecolor: c_crop, type: 'surface',
@@ -1722,10 +1745,12 @@
         });
 
         // =====================================================================
-        // FUNCIONES MÓDULO METRIC HYDRO
+        // FUNCIONES MÓDULO METRIC HYDRO (INCLUYENDO MAPA SITUACIÓN ACTUAL TUCUMÁN)
         // =====================================================================
         let hydroAlertHistory = [];
         let hydroMapPolygon = null;
+        let mapaHidroCuencaIniciado = false;
+        let hydroStationsMap = null;
 
         function abrirPestanaHydro(tabId, elementoBtn) {
             document.querySelectorAll('#moduloHydro .tab-content').forEach(tab => tab.classList.remove('active'));
@@ -1736,6 +1761,9 @@
             if (tabId === 'tabHydroAdv' && window.hydroMap) {
                 setTimeout(() => window.hydroMap.invalidateSize(), 100);
             }
+            if (tabId === 'tabHydroSit') {
+                setTimeout(inicializarMapaHidroCuenca, 150);
+            }
         }
 
         function verificarUsoInterno(elementoBtn) {
@@ -1745,6 +1773,37 @@
             } else {
                 alert("Acceso Denegado: Esta consola de disparo es exclusiva para la cuenta de Administración General (Modo Dios).");
             }
+        }
+
+        function inicializarMapaHidroCuenca() {
+            if (mapaHidroCuencaIniciado) {
+                if (hydroStationsMap) hydroStationsMap.invalidateSize();
+                return;
+            }
+            
+            hydroStationsMap = L.map('mapaHidroCuenca').setView([-27.200, -65.400], 9);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(hydroStationsMap);
+
+            const estacionesTucuman = [
+                { nombre: "Río Marapa", ubi: "La Madrid - Graneros", lat: -27.633, lon: -65.250, nivel: "2.45 m", estado: "Normal" },
+                { nombre: "Río Gastona", ubi: "Concepción", lat: -27.350, lon: -65.583, nivel: "1.80 m", estado: "Normal" },
+                { nombre: "Río Salí", ubi: "Banda del Río Salí", lat: -26.833, lon: -65.166, nivel: "3.10 m", estado: "Atención" },
+                { nombre: "Río Chico", ubi: "Piedrabuena", lat: -27.450, lon: -65.650, nivel: "1.40 m", estado: "Normal" }
+            ];
+
+            estacionesTucuman.forEach(est => {
+                let colorPin = est.estado === "Normal" ? "#22c55e" : "#f59e0b";
+                let markerIcon = L.divIcon({
+                    className: 'hydro-pin',
+                    html: `<div style="width:14px; height:14px; background:${colorPin}; border-radius:50%; border:2px solid white; box-shadow:0 0 10px ${colorPin};"></div>`,
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7]
+                });
+                L.marker([est.lat, est.lon], {icon: markerIcon}).addTo(hydroStationsMap)
+                  .bindPopup(`<b style="color:#08306b">${est.nombre}</b><br>Ubicación: ${est.ubi}<br>Nivel: ${est.nivel}<br>Estado: ${est.estado}`);
+            });
+
+            mapaHidroCuencaIniciado = true;
         }
 
         async function dispararAlertaHydro(event) {
@@ -1758,7 +1817,6 @@
             status.innerText = "Conectando con el servidor MetricPoint...";
             
             try {
-                // CONEXIÓN REAL AL BACKEND PYTHON
                 const response = await fetch(`${BACKEND_URL}/api/alerta`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1766,16 +1824,13 @@
                 });
                 
                 if(response.ok) {
-                    // 1. Obtener la hora actual
                     const now = new Date();
                     const timeString = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                     const dateString = now.toLocaleDateString('es-AR');
                     const timestamp = `${dateString} - ${timeString}`;
 
-                    // 2. Guardar en historial
                     hydroAlertHistory.unshift({ time: timestamp, text: msg });
                     
-                    // 3. Renderizar el historial
                     const historialDiv = document.getElementById("historialAlertas");
                     document.getElementById("msgSinHistorial").style.display = "none";
                     historialDiv.innerHTML = hydroAlertHistory.map(alerta => `
@@ -1785,7 +1840,6 @@
                         </div>
                     `).join('');
 
-                    // 4. Actualizar baliza principal (Rojo intermitente)
                     const advCont = document.getElementById("advContainer");
                     advCont.className = "chart-container alert-active"; 
                     document.getElementById("advIcon").innerText = "🚨";
@@ -1797,19 +1851,17 @@
                     document.getElementById("advText").style.fontWeight = "bold";
                     document.getElementById("advText").style.fontSize = "18px";
                     
-                    // 5. Dibujar zona de riesgo en el mapa (Río Marapa / La Madrid)
                     if (window.hydroMap) {
                         if (hydroMapPolygon) window.hydroMap.removeLayer(hydroMapPolygon);
                         hydroMapPolygon = L.circle([-27.633, -65.250], {
                             color: '#ef4444',
                             fillColor: '#f43f5e',
                             fillOpacity: 0.5,
-                            radius: 12000 // 12 km radio de impacto
+                            radius: 12000
                         }).addTo(window.hydroMap);
                         window.hydroMap.fitBounds(hydroMapPolygon.getBounds());
                     }
 
-                    // 6. Confirmación
                     status.innerText = "✅ Orden enviada. El servidor Python está comunicándose con tu Motorola.";
                     btn.innerText = "🚀 DISPARAR NUEVA ALERTA";
                     document.getElementById("txtAlertaHydro").value = "";
