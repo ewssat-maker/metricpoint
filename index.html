@@ -1142,11 +1142,12 @@
             } else { minCota = 0; maxCota = 1; }
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
 
+            // FUNCIÓN CORREGIDA: puntosDEM en lugar de pontosDEM
             function getRelieveZ(lon, lat) {
                 if (!puntosDEM || puntosDEM.length === 0) return 0;
                 let sum_w = 0, sum_z_w = 0, smoothing = 0.00005;
-                for (let i = 0; i < pontosDEM.length; i++) {
-                    let p2 = pontosDEM[i]; 
+                for (let i = 0; i < puntosDEM.length; i++) {
+                    let p2 = puntosDEM[i]; 
                     let d2 = Math.pow(p2.lon-lon, 2) + Math.pow(p2.lat-lat, 2);
                     let w = 1/(d2+smoothing); sum_w += w; sum_z_w += p2.z*w;
                 } return sum_z_w / sum_w;
