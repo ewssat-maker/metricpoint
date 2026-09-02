@@ -165,41 +165,121 @@
         /* ==========================================
            ESTILOS ESPECÍFICOS: WEATHER FORECAST TECH
            ========================================== */
-        #moduloPronostico .container { background-color: #0f172a; border: 1px solid #1e293b; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 20px; color: #e2e8f0; }
-        #moduloPronostico .sidebar { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; box-shadow: none; }
-        #moduloPronostico .sidebar h3, #moduloPronostico .sidebar h4 { color: #38bdf8; }
-        #moduloPronostico .sidebar label { color: #94a3b8; }
-        #moduloPronostico input[type="text"] { background: #0f172a; border: 1px solid #38bdf8; color: white; font-weight: bold; }
-        #moduloPronostico .btn-primary { background-color: #38bdf8; color: #0f172a; border: none; }
-        #moduloPronostico .btn-primary:hover { background-color: #0ea5e9; }
+        #moduloPronostico .container { background-color: #0d0d0d; border: 1px solid #1e293b; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 20px; color: #e2e8f0; }
+        #moduloPronostico .sidebar { background: #0d0d0d; border: 1px solid #222; color: #e2e8f0; box-shadow: none; border-radius: 4px;}
+        #moduloPronostico .sidebar h3, #moduloPronostico .sidebar h4 { color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: monospace; font-size: 14px;}
+        #moduloPronostico .sidebar label { color: #888; font-family: monospace; font-size: 11px;}
+        #moduloPronostico input[type="text"] { background: #0a0a0a; border: 1px solid #444; color: white; font-weight: bold; font-family: monospace; }
+        #moduloPronostico input[type="text"]:focus { border-color: #fff; }
+        #moduloPronostico .btn-primary { background-color: #fff; color: #000; border: none; font-family: monospace; text-transform: uppercase; }
+        #moduloPronostico .btn-primary:hover { background-color: #ccc; }
         
-        .agro-tech-card { background: linear-gradient(145deg, #0f172a, #1e293b); border: 1px solid #38bdf8; border-radius: 12px; box-shadow: 0 4px 15px rgba(56,189,248,0.1); padding: 15px; position: relative; overflow: hidden; }
-        .agro-tech-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, #38bdf8, #10b981); }
-        .agro-tech-card h4 { color: #38bdf8; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        /* Sci-Fi Minimalist Panel */
+        #moduloPronostico .scifi-panel {
+            background-color: #0a0a0a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; 
+            padding: 20px; border: 1px solid #222; border-radius: 4px;
+        }
+        #moduloPronostico .scifi-line {
+            position: relative; border-top: 1px solid #333; margin: 15px 0;
+        }
+        #moduloPronostico .scifi-line::before, #moduloPronostico .scifi-line::after {
+            content: ''; position: absolute; width: 4px; height: 4px; background: #888; border-radius: 50%; top: -2.5px;
+        }
+        #moduloPronostico .scifi-line::before { left: 0; }
+        #moduloPronostico .scifi-line::after { right: 0; }
         
-        /* Geotermómetros */
-        .geo-layer { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #334155; transition: background 0.3s; }
-        .geo-layer:hover { background: rgba(56, 189, 248, 0.1); }
-        .geo-layer:last-child { border-bottom: none; }
-        .geo-depth { font-weight: bold; color: #94a3b8; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-        .geo-temp { font-family: 'Courier New', Courier, monospace; font-size: 18px; font-weight: bold; color: #10b981; text-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
+        #moduloPronostico .scifi-header {
+            font-family: monospace; letter-spacing: 2px; color: #aaa; font-size: 12px; text-transform: uppercase; margin-bottom: 15px;
+        }
+        #moduloPronostico .scifi-row {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px;
+        }
+        #moduloPronostico .scifi-label { color: #777; font-weight: 500; letter-spacing: 0.5px;}
+        #moduloPronostico .scifi-val { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; }
         
-        /* Grid de Pronóstico 7 Días */
-        .forecast-day-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 15px 10px; text-align: center; transition: transform 0.3s, border-color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-        .forecast-day-card:hover { transform: translateY(-5px); border-color: #38bdf8; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.2); }
-        .fc-date { color: #cbd5e1; font-weight: bold; font-size: 14px; margin-bottom: 10px; display: block; }
-        .fc-icon { width: 65px; height: 65px; margin-bottom: 10px; filter: drop-shadow(0 0 4px rgba(255,255,255,0.2)); }
-        .fc-temps { font-size: 16px; margin-bottom: 8px; }
-        .fc-tmax { color: #f87171; font-weight: bold; }
-        .fc-tmin { color: #60a5fa; font-weight: bold; }
-        .fc-amp { font-size: 11px; color: #94a3b8; background: #0f172a; padding: 2px 6px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #334155; }
-        .fc-stats { font-size: 12px; color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 4px; width: 90%; }
-        .fc-stats span { color: #f59e0b; display: block; margin-top: 3px; font-size: 11px; }
+        #moduloPronostico .val-orange { color: #ff5722; text-shadow: 0 0 5px rgba(255, 87, 34, 0.3); }
+        #moduloPronostico .val-blue { color: #2962ff; text-shadow: 0 0 5px rgba(41, 98, 255, 0.3); }
+        #moduloPronostico .val-green { color: #00e676; }
+        #moduloPronostico .val-white { color: #f8fafc; }
 
-        #moduloPronostico .tab-btn { color: #94a3b8; border-bottom-color: #334155; }
-        #moduloPronostico .tab-btn:hover { color: #38bdf8; }
-        #moduloPronostico .tab-btn.active { color: #38bdf8; border-bottom-color: #38bdf8; }
-        #moduloPronostico .chart-container { background: #1e293b; border: 1px solid #334155; }
+        #moduloPronostico .scifi-map-box {
+            border: 1px solid #333; padding: 4px; background: #0d0d0d; position: relative;
+        }
+        #moduloPronostico .scifi-map-box::before, #moduloPronostico .scifi-map-box::after {
+            content:''; position:absolute; width: 10px; height: 10px; border: 1px solid #fff;
+        }
+        #moduloPronostico .scifi-map-box::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+        #moduloPronostico .scifi-map-box::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+        /* Pulsing Dot */
+        .live-pulse {
+            width: 8px; height: 8px; background-color: #ff5722; border-radius: 50%; display: inline-block;
+            box-shadow: 0 0 10px #ff5722; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+
+        /* Grid de Pronóstico 7 Días */
+        .forecast-day-card { background: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 15px 10px; text-align: center; transition: border-color 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .forecast-day-card:hover { border-color: #ff5722; }
+        .fc-date { color: #aaa; font-family: monospace; font-size: 12px; margin-bottom: 10px; display: block; text-transform: uppercase; }
+        .fc-icon { width: 65px; height: 65px; margin-bottom: 10px; filter: grayscale(1) invert(0.8); }
+        .fc-temps { font-family: monospace; font-size: 16px; margin-bottom: 8px; }
+        .fc-tmax { color: #ff5722; font-weight: bold; }
+        .fc-tmin { color: #2962ff; font-weight: bold; }
+        .fc-amp { font-family: monospace; font-size: 10px; color: #777; margin-bottom: 8px;}
+        .fc-stats { font-family: monospace; font-size: 11px; color: #fff; width: 90%; text-align: left;}
+        .fc-stats span { color: #aaa; display: block; margin-top: 3px; }
+
+        #moduloPronostico .tab-btn { color: #777; border-bottom-color: #222; background: none; border: none; padding: 10px 20px; font-size: 14px; font-family: monospace; text-transform: uppercase; cursor: pointer; transition: 0.3s; border-bottom: 2px solid transparent;}
+        #moduloPronostico .tab-btn:hover { color: #fff; }
+        #moduloPronostico .tab-btn.active { color: #fff; border-bottom-color: #fff; }
+        #moduloPronostico .chart-container { background: #0a0a0a; border: 1px solid #222; border-radius: 4px; }
+
+        /* ==========================================
+           WIDGET WHATSAPP Y CRONÓMETRO
+           ========================================== */
+        #wa-widget {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: #25D366;
+            color: white;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 8px 20px 8px 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 10000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: transform 0.3s ease;
+        }
+        #wa-widget:hover {
+            transform: scale(1.05);
+        }
+        .wa-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+        }
+        .wa-content p {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        #wa-timer {
+            font-size: 16px;
+            font-family: monospace;
+            font-weight: bold;
+            margin-top: 3px;
+            letter-spacing: 1px;
+            color: #d1fae5;
+        }
 
         /* ==========================================
            DISEÑO RESPONSIVO (COMPUTADORA Y CELULAR)
@@ -218,7 +298,7 @@
             .sidebar { width: 100%; box-sizing: border-box; }
             .main-content { width: 100%; box-sizing: border-box; }
             .tabs { flex-wrap: wrap; }
-            .tab-btn { flex-grow: 1; text-align: center; font-size: 13px; padding: 10px 5px; border-bottom: 2px solid transparent;}
+            .tab-btn { flex-grow: 1; text-align: center; font-size: 12px; padding: 10px 2px; border-bottom: 2px solid transparent;}
             
             .split-layout { flex-direction: column; height: auto; }
             .split-layout-left { height: 450px; width: 100%; }
@@ -233,6 +313,17 @@
             
             #map, #mapPronostico { height: 400px; }
             .chart-container { padding: 10px; }
+            
+            #scifiGridContainer { grid-template-columns: 1fr !important; }
+            
+            #wa-widget {
+                bottom: 15px;
+                left: 15px;
+                padding: 6px 15px 6px 6px;
+            }
+            .wa-icon { width: 32px; height: 32px; }
+            .wa-content p { font-size: 10px; }
+            #wa-timer { font-size: 14px; }
         }
     </style>
 </head>
@@ -385,15 +476,36 @@
             </div>
         </div>
 
-        <!-- FOOTER / REDES SOCIALES -->
-        <footer style="background-color: #0f172a; padding: 20px; text-align: center; border-top: 1px solid #1e293b;">
-            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 10px;">Síguenos en nuestras redes sociales:</p>
-            <div style="display: flex; justify-content: center; gap: 20px;">
+        <!-- FOOTER / REDES SOCIALES Y DIRECCIÓN -->
+        <footer style="background-color: #0f172a; padding: 30px 20px 20px 20px; text-align: center; border-top: 1px solid #1e293b;">
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;" data-i18n="footer_follow">Síguenos en nuestras redes sociales:</p>
+            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 25px;">
                 <a href="https://x.com/metric_point" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: bold; font-size: 16px;">𝕏 (Twitter)</a>
                 <a href="https://www.instagram.com/metricpoint.service/" target="_blank" style="color: #e1306c; text-decoration: none; font-weight: bold; font-size: 16px;">📸 Instagram</a>
             </div>
+            
+            <div style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 20px; font-family: monospace;">
+                <strong style="color: white; font-size: 15px;">MetricPoint HQ</strong><br>
+                120 Innovation Drive, Suite 300<br>
+                Knoxville, TN 37932, United States<br>
+                <span style="color: #10b981; font-weight: bold; margin-top: 5px; display: inline-block;">📞 +1 931 404 2678</span>
+            </div>
+            
             <p style="color: #64748b; font-size: 12px; margin-top: 15px;">© 2026 Suite MetricPoint. Todos los derechos reservados.</p>
         </footer>
+    </div>
+
+    <!-- WIDGET WHATSAPP FLOTANTE -->
+    <div id="wa-widget">
+        <div class="wa-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.99 0C5.366 0 0 5.366 0 11.99C0 14.636 1.05 17.066 2.805 18.995L.897 23.364L5.5 21.61C7.387 23.167 9.58 24 11.99 24C18.614 24 24 18.614 24 11.99C24 5.366 18.614 0 11.99 0ZM18.064 16.536C17.8 17.26 16.52 17.848 15.827 17.962C15.26 18.055 14.444 18.136 11.83 17.065C8.483 15.694 6.332 12.274 6.166 12.052C6.002 11.83 4.82 10.25 4.82 8.615C4.82 6.98 5.644 6.177 5.973 5.83C6.236 5.553 6.666 5.42 7.06 5.42C7.19 5.42 7.307 5.427 7.405 5.433C7.734 5.453 7.898 5.473 8.113 5.992C8.375 6.618 9.015 8.18 9.098 8.344C9.18 8.508 9.278 8.72 9.162 8.95C9.05 9.167 8.95 9.284 8.786 9.48C8.622 9.678 8.468 9.81 8.303 10.024C8.156 10.203 7.975 10.398 8.172 10.742C8.368 11.086 9.01 12.134 9.962 12.98C11.188 14.07 12.186 14.42 12.564 14.582C12.86 14.713 13.204 14.68 13.435 14.434C13.73 14.12 14.108 13.578 14.485 13.036C14.764 12.64 15.14 12.59 15.5 12.722C15.86 12.853 17.776 13.805 18.153 14.002C18.53 14.2 18.776 14.298 18.86 14.445C18.94 14.593 18.94 15.3 18.064 16.536Z"/>
+            </svg>
+        </div>
+        <div class="wa-content">
+            <p data-i18n="wa_legend">Pronto canal habilitado para<br>clientes de Argentina</p>
+            <div id="wa-timer">36:00:00</div>
+        </div>
     </div>
 
     <!-- Muro de Pago -->
@@ -444,7 +556,9 @@
             </div>
         </div>
 
-        <!-- MÓDULO METRICMOISTURE (INTACTO) -->
+        <!-- ==========================================
+             MÓDULO METRICMOISTURE (INTACTO/BLINDADO)
+             ========================================== -->
         <div id="moduloAgrometeo" style="display: none;">
             <div class="header">
                 <div class="header-left">
@@ -582,78 +696,98 @@
              MÓDULO WEATHER FORECAST 2.0 (TECH)
              ========================================== -->
         <div id="moduloPronostico" style="display: none;">
-            <div class="header" style="background: linear-gradient(90deg, #0f172a, #1e293b); border: 1px solid #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.2);">
+            <div class="header" style="background: linear-gradient(90deg, #0a0a0a, #111); border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.8);">
                 <div class="header-left">
-                    <h1 style="color: #38bdf8; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">Weather Forecast (Agro)</h1>
-                    <span style="color: #94a3b8; font-style: normal;">Condiciones en Tiempo Real, Perfiles de Suelo y Tendencias</span>
+                    <h1 style="color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; font-family: monospace;">WEATHER FORECAST</h1>
+                    <span style="color: #777; font-style: normal; font-family: monospace; text-transform: uppercase; font-size: 11px;">Módulo de Asimilación Agrometeorológica</span>
                 </div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #38bdf8; color: #0f172a; font-weight: bold;" onclick="volverAlHub()">Back to Menu</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #fff; color: #000; font-weight: bold; font-family: monospace; text-transform: uppercase; border-radius: 0;" onclick="volverAlHub()">VOLVER</button></div>
             </div>
             
-            <div class="container" style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 20px;">
-                <div class="sidebar" style="background: #1e293b; border: 1px solid #334155; color: white;">
-                    <h3 style="color: #38bdf8; margin-top: 0;">Centro de Comando</h3>
-                    <label style="color: #94a3b8;">Ubicación (Latitud, Longitud):</label>
-                    <input type="text" id="coordPronostico" value="-26.82, -65.22" style="background: #0f172a; border: 1px solid #38bdf8; color: white; font-weight: bold;">
-                    <button class="btn-primary" style="background-color: #38bdf8; color: #0f172a; margin-top: 10px;" onclick="actualizarPronosticoGlobal()">Escanear Atmósfera</button>
+            <div class="container" style="background-color: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 20px;">
+                <div class="sidebar" style="background: #0d0d0d; border: 1px solid #222; color: white; border-radius: 4px;">
+                    <h3 style="color: #fff; margin-top: 0; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; font-size: 14px;">[ CENTRO DE COMANDO ]</h3>
+                    <p style="font-size: 11px; color: #777; line-height: 1.5; margin-bottom: 15px; font-family: monospace;">Alinee coordenadas para sincronizar biometría del terreno.</p>
                     
-                    <hr style="border: 0; border-top: 1px solid #334155; margin: 20px 0;">
+                    <label style="color: #888; font-family: monospace; font-size: 11px; text-transform: uppercase;">Latitud, Longitud:</label>
+                    <input type="text" id="coordPronostico" value="-26.82, -65.22" style="background: #000; border: 1px solid #444; color: white; font-weight: bold; margin-bottom: 10px; font-family: monospace; border-radius: 0; padding: 10px;">
                     
-                    <div class="agro-tech-card" style="margin-bottom: 20px;">
-                        <h4>Atmosférico Superficial (2m)</h4>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">🌡️ Temp. Aire:</span>
-                            <span class="geo-temp" id="resTemp" style="color: #f87171;">-- °C</span>
-                        </div>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">💧 Humedad Rel:</span>
-                            <span class="geo-temp" id="resHum" style="color: #60a5fa;">-- %</span>
-                        </div>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">🌬️ Ráfagas:</span>
-                            <span class="geo-temp" id="resViento" style="color: #cbd5e1;">-- km/h</span>
-                        </div>
-                        <div class="geo-layer" style="border: none;">
-                            <span class="geo-depth">☀️ ET0 (Hoy):</span>
-                            <span class="geo-temp" id="resEt0" style="color: #f59e0b;">-- mm</span>
-                        </div>
-                    </div>
-
-                    <div class="agro-tech-card">
-                        <h4>Geotermómetros Activos</h4>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Superficie (0cm)</span>
-                            <span class="geo-temp" id="resGeo0">-- °C</span>
-                        </div>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Siembra (6cm)</span>
-                            <span class="geo-temp" id="resGeo6">-- °C</span>
-                        </div>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Raíz Activa (18cm)</span>
-                            <span class="geo-temp" id="resGeo18">-- °C</span>
-                        </div>
-                        <div class="geo-layer">
-                            <span class="geo-depth">Profundo (54cm)</span>
-                            <span class="geo-temp" id="resGeo54">-- °C</span>
-                        </div>
+                    <button class="btn-primary" style="background-color: #fff; color: #000; margin-top: 5px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 12px;" onclick="actualizarPronosticoGlobal()">Iniciar Escaneo</button>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #0a0a0a; border: 1px solid #222; text-align: center;">
+                        <span style="font-size: 20px;">🛰️</span>
+                        <p style="margin: 10px 0 0 0; font-size: 11px; color: #777; font-weight: bold; letter-spacing: 2px; font-family: monospace;">ESTADO DEL ENLACE</p>
+                        <p style="margin: 5px 0 0 0; font-size: 10px; color: #444; font-family: monospace;">Esperando inicialización...</p>
                     </div>
                 </div>
                 
                 <div class="main-content">
                     <div class="tabs" style="display: flex; margin-bottom: 15px;">
-                        <button class="tab-btn active" onclick="abrirPestanaPronostico('tabRadar', this)">Radar en Vivo (SMN)</button>
-                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)">Modelado 7 Días</button>
-                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología Histórica</button>
+                        <button class="tab-btn active" onclick="abrirPestanaPronostico('tabTiempoReal', this)">Tiempo Real</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)">Pronóstico Res</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología</button>
                     </div>
 
-                    <div id="tabRadar" class="tab-content active" style="height: 600px; position: relative;">
-                        <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 8px; border: 1px solid #38bdf8; z-index: 1;"></div>
+                    <!-- PESTAÑA 1: TIEMPO REAL (SCI-FI HUD MINIMALISTA) -->
+                    <div id="tabTiempoReal" class="tab-content active scifi-panel">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div class="scifi-header" style="color: #f8fafc; margin: 0;">[ TELEMETRÍA EN VIVO ]</div>
+                            <div style="font-family: monospace; font-size: 12px; color: #777;">COORD: <span id="lblCoordScifi">--</span> <span class="live-pulse" style="margin-left: 10px; vertical-align: middle;"></span></div>
+                        </div>
+                        <div class="scifi-line"></div>
+
+                        <div id="scifiGridContainer" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 20px;">
+                            <!-- LEFT: MAPA RADAR -->
+                            <div style="display: flex; flex-direction: column;">
+                                <div class="scifi-header">[ TARGET LOCATION / SATELLITE SCAN ]</div>
+                                <div class="scifi-map-box" style="flex-grow: 1; min-height: 450px;">
+                                    <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 0; background: #000;"></div>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT: DATOS EN FORMATO LISTA SCIFI -->
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <!-- ATMÓSFERA -->
+                                <div>
+                                    <div class="scifi-header">[ ATMÓSFERA SUPERFICIAL ]</div>
+                                    <div class="scifi-row"><span class="scifi-label">Temp. Aire</span><span class="scifi-val val-orange" id="rtTemp">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label">Humedad</span><span class="scifi-val val-blue" id="rtHum">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label">Pto. Rocío</span><span class="scifi-val val-white" id="rtDew">--</span></div>
+                                    <div class="scifi-line"></div>
+                                </div>
+
+                                <!-- FLUIDOS -->
+                                <div>
+                                    <div class="scifi-header">[ DINÁMICA DE FLUIDOS ]</div>
+                                    <div class="scifi-row"><span class="scifi-label">Rad. Solar</span><span class="scifi-val val-orange" id="rtRad">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label">Viento</span><span class="scifi-val val-white" id="rtWind">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label">Presión</span><span class="scifi-val val-white" id="rtPres">--</span></div>
+                                    <div class="scifi-line"></div>
+                                </div>
+
+                                <!-- GEOTERMÓMETROS VOLUMÉTRICOS 3D -->
+                                <div>
+                                    <div class="scifi-header">[ PERFIL TÉRMICO VOLUMÉTRICO ]</div>
+                                    <div id="thermalCube3D" style="width: 100%; height: 180px; margin-bottom: 10px;"></div>
+                                    <div class="scifi-line"></div>
+                                </div>
+
+                                <!-- HUMEDAD -->
+                                <div>
+                                    <div class="scifi-header">[ HUMEDAD SUPERFICIAL ]</div>
+                                    <div class="scifi-row"><span class="scifi-label">Capa 0-1 cm</span><span class="scifi-val val-blue" id="rtMoist0">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label">Capa 1-3 cm</span><span class="scifi-val val-blue" id="rtMoist1">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label">Capa 3-9 cm</span><span class="scifi-val val-blue" id="rtMoist3">--</span></div>
+                                    <div class="scifi-line"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
+                    <!-- PESTAÑA 2: PRONÓSTICO -->
                     <div id="tabForecast" class="tab-content">
-                        <div class="chart-container" style="min-height: 600px; background: #1e293b; border: 1px solid #334155;">
-                            <h4 style="color: #38bdf8; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Proyección Sinóptica</h4>
+                        <div class="chart-container" style="min-height: 600px; background: #0a0a0a; border: 1px solid #222; border-radius: 4px;">
+                            <h4 style="color: #fff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-family: monospace; letter-spacing: 1px;">[ PROYECCIÓN SINÓPTICA : 7 DÍAS ]</h4>
                             <div id="forecastGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 25px;">
                                 <!-- Inyectado vía JS -->
                             </div>
@@ -661,10 +795,11 @@
                         </div>
                     </div>
 
+                    <!-- PESTAÑA 3: CLIMATOLOGÍA -->
                     <div id="tabClimatologia" class="tab-content">
-                        <div class="chart-container" style="min-height: 600px; background: #1e293b; border: 1px solid #334155;">
-                            <h4 style="color: #38bdf8; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Análisis Climático Espacial</h4>
-                            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Promedio de precipitación acumulada interpolada desde la API Archive (Periodo 2020-2025).</p>
+                        <div class="chart-container" style="min-height: 600px; background: #0a0a0a; border: 1px solid #222; border-radius: 4px;">
+                            <h4 style="color: #fff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-family: monospace; letter-spacing: 1px;">[ ANÁLISIS CLIMÁTICO HISTÓRICO ]</h4>
+                            <p style="font-size: 11px; color: #777; margin-bottom: 20px; font-family: monospace;">Promedio de precipitación acumulada (Archive API 2020-2025).</p>
                             <canvas id="chartClimaHist" height="120"></canvas>
                         </div>
                     </div>
@@ -729,7 +864,9 @@
                 "diag_fav": "The global balance shows a <strong>favorable</strong> atmospheric behavior. ",
                 "diag_opt": "Currently, the deep reserve of the lot (100 cm) is at <strong>optimal</strong> levels (above 65% of useful water), guaranteeing root stability against upcoming heat waves.",
                 "diag_reg": "Currently, the deep reserve (100 cm) is in a state of <strong>regular transition</strong>. It is suggested to monitor surface drying to avoid phenological stress.",
-                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>"
+                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>",
+                "footer_follow": "Follow us on our social networks:",
+                "wa_legend": "WhatsApp channel for Argentina<br>opening soon"
             },
             es: {
                 "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
@@ -769,7 +906,9 @@
                 "diag_fav": "El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. ",
                 "diag_opt": "Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.",
                 "diag_reg": "Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.",
-                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>"
+                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>",
+                "footer_follow": "Síguenos en nuestras redes sociales:",
+                "wa_legend": "Pronto canal habilitado para<br>clientes de Argentina"
             },
             pt: {
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
@@ -792,7 +931,9 @@
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
                 "contact_msg": "Sua Mensagem",
-                "btn_send": "Enviar Mensagem"
+                "btn_send": "Enviar Mensagem",
+                "footer_follow": "Siga-nos em nossas redes sociais:",
+                "wa_legend": "Em breve canal habilitado para<br>clientes da Argentina"
             }
         };
 
@@ -821,6 +962,8 @@
                 document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block";
             }
             cambiarIdioma(document.getElementById('langSwitch').value);
+            
+            iniciarCronometroWA(); // Iniciar cronómetro de WhatsApp
         });
 
         function abrirIntroTab(tabId, elementoBtn) {
@@ -882,9 +1025,7 @@
         var poligonoActual = null; map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
 
         var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' }).addTo(mapPronostico);
-        L.imageOverlay('lajitas_limpia.png', [[-26.8393, -66.6200], [-22.5273, -61.8800]], { opacity: 0.85 }).addTo(mapPronostico);
-        L.imageOverlay('termas_limpia.png', [[-29.6393, -67.2967], [-25.3273, -62.4367]], { opacity: 0.85 }).addTo(mapPronostico);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(mapPronostico);
 
         var chartObjAgro = null, chartObjClima = null;
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
@@ -1265,25 +1406,25 @@
         }
 
         // =====================================================================
-        // MÓDULO WEATHER FORECAST 2.0 (AGROMETEOROLÓGICO TECH)
+        // MÓDULO WEATHER FORECAST 2.0 (TECH SCI-FI HUD)
         // =====================================================================
         let chartObjForecast = null;
         let chartObjClimaHist = null;
+        let markerPronostico = null;
 
-        // Mapeo de Códigos WMO a iconos animados SVG de Meteocons
         const wmoToIcon = {
-            0: 'clear-day', 1: 'partly-cloudy-day', 2: 'partly-cloudy-day', 3: 'overcast-day',
-            45: 'fog-day', 48: 'fog-day',
-            51: 'drizzle', 53: 'drizzle', 55: 'drizzle',
-            61: 'rain', 63: 'rain', 65: 'rain',
-            71: 'snow', 73: 'snow', 75: 'snow',
-            80: 'rain', 81: 'rain', 82: 'rain',
-            95: 'thunderstorms-rain', 96: 'thunderstorms-rain', 99: 'thunderstorms-rain'
+            0: 'day', 1: 'cloudy-day-1', 2: 'cloudy-day-2', 3: 'cloudy',
+            45: 'cloudy', 48: 'cloudy',
+            51: 'rainy-4', 53: 'rainy-5', 55: 'rainy-6',
+            61: 'rainy-4', 63: 'rainy-5', 65: 'rainy-6',
+            71: 'snowy-4', 73: 'snowy-5', 75: 'snowy-6',
+            80: 'rainy-4', 81: 'rainy-5', 82: 'rainy-6',
+            95: 'thunder', 96: 'thunder', 99: 'thunder'
         };
 
         function getMeteoconUrl(code) {
-            let name = wmoToIcon[code] || 'clear-day';
-            return `https://bmcdn.nl/assets/weather-icons/v3.0/fill/svg/${name}.svg`;
+            let name = wmoToIcon[code] || 'day';
+            return `https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/${name}.svg`;
         }
 
         function abrirPestanaPronostico(tabId, elementoBtn) {
@@ -1292,7 +1433,7 @@
             document.getElementById(tabId).classList.add('active');
             elementoBtn.classList.add('active');
             
-            if(tabId === 'tabRadar') { setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
+            if(tabId === 'tabTiempoReal') { setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
         }
 
         async function actualizarPronosticoGlobal() {
@@ -1302,25 +1443,34 @@
             const lon = parseFloat(coords[1].trim());
 
             try {
-                // 1. Llamada Tiempo Actual (incluyendo Perfiles de Suelo) y Pronóstico 7 días
-                const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_gusts_10m,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`;
+                const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m,direct_radiation,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`;
                 
                 const res = await fetch(endpoint);
                 const data = await res.json();
 
-                // Actualizar Panel Lateral (Atmosférico)
-                document.getElementById('resTemp').innerText = data.current.temperature_2m.toFixed(1);
-                document.getElementById('resHum').innerText = data.current.relative_humidity_2m;
-                document.getElementById('resViento').innerText = data.current.wind_gusts_10m.toFixed(1);
-                document.getElementById('resEt0').innerText = data.daily.et0_fao_evapotranspiration[0].toFixed(1);
+                // Atmosfera
+                document.getElementById('rtTemp').innerText = data.current.temperature_2m.toFixed(1) + " °C";
+                document.getElementById('rtHum').innerText = data.current.relative_humidity_2m + " %";
+                document.getElementById('rtDew').innerText = data.current.dew_point_2m.toFixed(1) + " °C";
+                document.getElementById('rtRad').innerText = data.current.direct_radiation + " W/m²";
+                document.getElementById('rtWind').innerText = data.current.wind_speed_10m.toFixed(1) + " km/h (" + data.current.wind_direction_10m + "°)";
+                document.getElementById('rtPres').innerText = data.current.surface_pressure.toFixed(1) + " hPa";
 
-                // Actualizar Geotermómetros
-                document.getElementById('resGeo0').innerText = data.current.soil_temperature_0cm.toFixed(1) + " °C";
-                document.getElementById('resGeo6').innerText = data.current.soil_temperature_6cm.toFixed(1) + " °C";
-                document.getElementById('resGeo18').innerText = data.current.soil_temperature_18cm.toFixed(1) + " °C";
-                document.getElementById('resGeo54').innerText = data.current.soil_temperature_54cm.toFixed(1) + " °C";
+                // Renderizar Cubo Térmico Volumétrico Continuo
+                const t0 = data.current.soil_temperature_0cm;
+                const t6 = data.current.soil_temperature_6cm;
+                const t18 = data.current.soil_temperature_18cm;
+                const t54 = data.current.soil_temperature_54cm;
+                renderizarCuboTermico(t0, t6, t18, t54);
+                
+                // Humedad
+                document.getElementById('rtMoist0').innerText = data.current.soil_moisture_0_to_1cm.toFixed(3) + " m³/m³";
+                document.getElementById('rtMoist1').innerText = data.current.soil_moisture_1_to_3cm.toFixed(3) + " m³/m³";
+                document.getElementById('rtMoist3').innerText = data.current.soil_moisture_3_to_9cm.toFixed(3) + " m³/m³";
 
-                // Generar Tarjetas de Pronóstico (Grid)
+                document.getElementById('lblCoordScifi').innerText = `${lat}, ${lon}`;
+
+                // Forecast
                 const fg = document.getElementById('forecastGrid');
                 fg.innerHTML = '';
                 for(let i=0; i<7; i++) {
@@ -1349,10 +1499,7 @@
                     `;
                 }
 
-                // Generar Gráfico Pronóstico (Fondo Oscuro Tech)
                 if(chartObjForecast) chartObjForecast.destroy();
-                
-                // Color configuration for Dark Mode Chart
                 Chart.defaults.color = '#94a3b8';
                 Chart.defaults.borderColor = '#334155';
 
@@ -1365,54 +1512,118 @@
                             { type: 'line', label: 'Evapotranspiración ET0 (mm)', data: data.daily.et0_fao_evapotranspiration, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.2)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#0f172a', yAxisID: 'yLluvia' }
                         ]
                     },
-                    options: { 
-                        responsive: true, 
-                        plugins: { legend: { position: 'top' } },
-                        scales: { 
-                            x: { grid: { display: false } },
-                            yLluvia: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#334155' } } 
-                        } 
-                    }
+                    options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { grid: { display: false } }, yLluvia: { type: 'linear', position: 'left', beginAtZero: true, grid: { color: '#334155' } } } }
                 });
 
-                // 2. Llamada Histórica Real (API Archive 2020-2025)
                 renderizarClimatologia(lat, lon);
 
-                // Centrar Radar
-                mapPronostico.setView([lat, lon], 7);
+                // Centrar Radar y Agregar Marcador Sci-Fi
+                mapPronostico.setView([lat, lon], 9);
+                if(markerPronostico) mapPronostico.removeLayer(markerPronostico);
+                const sciFiIcon = L.divIcon({
+                    className: 'scifi-marker',
+                    html: '<div style="width:12px; height:12px; background:#ff5722; border-radius:50%; box-shadow:0 0 10px #ff5722, 0 0 20px #ff5722;"></div>',
+                    iconSize: [12, 12],
+                    iconAnchor: [6, 6]
+                });
+                markerPronostico = L.marker([lat, lon], {icon: sciFiIcon}).addTo(mapPronostico);
 
             } catch(e) {
                 alert("Error al conectar con el servidor meteorológico espacial.");
             }
         }
 
+        // MOTOR VOLUMÉTRICO: Interpola las sondas térmicas en una grilla 3D continua
+        function renderizarCuboTermico(t0, t6, t18, t54) {
+            const xArr = [], yArr = [], zArr = [], valArr = [];
+            const gridSizeXY = 12; // Resolución horizontal
+            const gridSizeZ = 12;  // Resolución vertical
+            
+            const minZ = -54;
+            const maxZ = 0;
+            
+            // Interpolación lineal del perfil físico del suelo
+            function getBaseTemp(z) {
+                if (z >= -6) return t6 + ((z - (-6)) / 6) * (t0 - t6);
+                if (z >= -18) return t18 + ((z - (-18)) / 12) * (t6 - t18);
+                return t54 + ((z - (-54)) / 36) * (t18 - t54);
+            }
+
+            for (let ix = 0; ix < gridSizeXY; ix++) {
+                let x = ix / (gridSizeXY - 1);
+                for (let iy = 0; iy < gridSizeXY; iy++) {
+                    let y = iy / (gridSizeXY - 1);
+                    for (let iz = 0; iz < gridSizeZ; iz++) {
+                        let z = minZ + (maxZ - minZ) * (iz / (gridSizeZ - 1));
+                        
+                        let temp = getBaseTemp(z);
+                        
+                        // Simulación de variabilidad térmica espacial (microrelieve / humedad)
+                        // Se amortigua a medida que profundiza (ley de conducción de Fourier)
+                        let atenuacion = Math.max(0, (z - minZ) / (maxZ - minZ)); 
+                        let variacion = (Math.sin(x * 8) * Math.cos(y * 8)) * (0.8 * atenuacion); 
+                        
+                        xArr.push(x);
+                        yArr.push(y);
+                        zArr.push(z);
+                        valArr.push(temp + variacion);
+                    }
+                }
+            }
+
+            let minT = Math.min(t0, t6, t18, t54) - 0.5;
+            let maxT = Math.max(t0, t6, t18, t54) + 0.5;
+
+            let trace = {
+                type: 'volume',
+                x: xArr, y: yArr, z: zArr,
+                value: valArr,
+                isomin: minT,
+                isomax: maxT,
+                opacity: 0.3, 
+                surface: { count: 15 },
+                colorscale: 'Turbo', 
+                colorbar: { title: 'Temp °C', thickness: 10, len: 0.9, tickfont: {color: '#777', size: 10}, titlefont: {color: '#aaa', size: 11} },
+                hovertemplate: 'Prof: %{z:.1f}cm<br>Temp: %{value:.2f}°C<extra></extra>'
+            };
+
+            let layout = {
+                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+                margin: {l: 0, r: 0, b: 0, t: 0},
+                scene: {
+                    xaxis: {visible: false},
+                    yaxis: {visible: false},
+                    zaxis: {
+                        title: '', gridcolor: '#222', color: '#fff',
+                        tickvals: [0, -27, -54], ticktext: ['Sup', 'Mtd', 'Inf'], range: [-55, 2]
+                    },
+                    camera: { eye: {x: 1.5, y: -1.5, z: 0.4} },
+                    aspectratio: {x: 1, y: 1, z: 0.7} 
+                }
+            };
+
+            Plotly.react('thermalCube3D', [trace], layout, {displayModeBar: false});
+        }
+
         async function renderizarClimatologia(lat, lon) {
             try {
-                // Obtener los últimos 5 años para hacer un promedio mensual robusto (2020 a 2025)
-                const start_date = '2020-01-01';
-                const end_date = '2025-12-31';
-                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${start_date}&end_date=${end_date}&daily=precipitation_sum&timezone=auto`;
-                
+                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=2020-01-01&end_date=2025-12-31&daily=precipitation_sum&timezone=auto`;
                 const res = await fetch(url);
                 const data = await res.json();
                 
                 if (!data || !data.daily || !data.daily.time) return;
 
-                // Diccionario para sumar por año-mes
                 const sumasPorAnoMes = {};
-
                 data.daily.time.forEach((fecha, index) => {
                     const parts = fecha.split('-'); 
                     const ano = parts[0];
                     const mes = parseInt(parts[1], 10) - 1; 
                     const lluvia = data.daily.precipitation_sum[index] || 0;
-                    
                     const key = `${ano}-${mes}`;
                     if (!sumasPorAnoMes[key]) sumasPorAnoMes[key] = 0;
                     sumasPorAnoMes[key] += lluvia;
                 });
 
-                // Promediar por mes
                 const sumaTotalMensual = new Array(12).fill(0);
                 const cantidadAnosMes = new Array(12).fill(0);
 
@@ -1433,33 +1644,37 @@
                     type: 'bar',
                     data: {
                         labels: meses,
-                        datasets: [{ 
-                            label: 'Lluvia Acumulada Media Mensual (mm)', 
-                            data: lluviaHist, 
-                            backgroundColor: '#10b981',
-                            borderRadius: 6,
-                            barPercentage: 0.6
-                        }]
+                        datasets: [{ label: 'Lluvia Acumulada Media Mensual (mm)', data: lluviaHist, backgroundColor: '#10b981', borderRadius: 6, barPercentage: 0.6 }]
                     },
-                    options: { 
-                        responsive: true, 
-                        scales: { 
-                            x: { grid: { display: false } },
-                            y: { beginAtZero: true, title: { display: true, text: 'Milímetros (mm)', color: '#94a3b8' }, grid: { color: '#334155' } } 
-                        } 
-                    }
+                    options: { responsive: true, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: 'Milímetros (mm)', color: '#94a3b8' }, grid: { color: '#334155' } } } }
                 });
-            } catch(e) {
-                console.error("Error cargando climatología: ", e);
-            }
+            } catch(e) { console.error("Error cargando climatología", e); }
         }
         
-        // Listener para actualizar al presionar Enter en el input
         document.getElementById('coordPronostico').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                actualizarPronosticoGlobal();
-            }
+            if (e.key === 'Enter') actualizarPronosticoGlobal();
         });
+
+        // =====================================================================
+        // CRONÓMETRO WIDGET WHATSAPP (36 HORAS)
+        // =====================================================================
+        function iniciarCronometroWA() {
+            const timerEl = document.getElementById("wa-timer");
+            let totalSeconds = 36 * 3600; // 36 horas en segundos
+            
+            const interval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(interval);
+                    timerEl.innerText = "00:00:00";
+                    return;
+                }
+                totalSeconds--;
+                const h = Math.floor(totalSeconds / 3600);
+                const m = Math.floor((totalSeconds % 3600) / 60);
+                const s = totalSeconds % 60;
+                timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }, 1000);
+        }
     </script>
 </body>
 </html>
