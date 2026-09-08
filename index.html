@@ -1947,20 +1947,34 @@
             }
         }
 
-        // Codifica el texto y abre la app de WhatsApp en el celular o PC
-        function dispararWhatsAppPersonal() {
-            const mensaje = document.getElementById("txtAlertaWA").value;
-            if (!mensaje) {
-                return alert("Por favor, escriba el mensaje para el Canal de WhatsApp.");
-            }
-            
-            // encodeURIComponent convierte espacios y saltos de línea a un formato web seguro
-            const textoCodificado = encodeURIComponent(mensaje);
-            const urlWhatsApp = `https://wa.me/?text=${textoCodificado}`;
-            
-            // Abre la aplicación en una pestaña nueva
-            window.open(urlWhatsApp, '_blank');
+       // Codifica el texto, lo copia al portapapeles y abre WhatsApp
+async function dispararWhatsAppPersonal() {
+    const mensaje = document.getElementById("txtAlertaWA").value;
+    
+    if (!mensaje) {
+        return alert("Por favor, escriba el mensaje para el Canal de WhatsApp.");
+    }
+    
+    try {
+        // 1. Copia el texto automáticamente a la memoria del dispositivo
+        await navigator.clipboard.writeText(mensaje);
+        
+        alert("✅ Mensaje copiado al portapapeles.\n\nSe abrirá WhatsApp: entrá a tu Canal y seleccioná 'Pegar'.");
+        
+        // 2. Detecta si es celular o PC para abrir la versión correcta de WhatsApp
+        const esCelular = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (esCelular) {
+            window.location.href = "whatsapp://app"; // Abre la app nativa en móviles
+        } else {
+            window.open("https://web.whatsapp.com", "_blank"); // Abre WhatsApp Web en PC
         }
+        
+    } catch (err) {
+        // Fallback por si el navegador bloquea el portapapeles
+        alert("❌ El navegador bloqueó el copiado automático. Por favor, copiá el texto manualmente y abrí WhatsApp.");
+    }
+}
     </script>
 
     <!-- WIDGET DE SOPORTE METRICPOINT -->
