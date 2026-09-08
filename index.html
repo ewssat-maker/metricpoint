@@ -97,9 +97,10 @@
            ========================================== */
         #workspace { padding: 30px 20px; display: none; margin-top: 40px; flex-grow: 1; background-color: #f4f7f9; } 
         
-        .header { background: #ffffff; color: #0f172a; padding: 20px 30px; border-radius: 12px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #10b981; }
-        .header-left h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; color: #0f172a; }
-        .header-left span { font-size: 13px; color: #64748b; font-weight: 500; font-style: normal; text-transform: uppercase; letter-spacing: 1px;}
+        /* RESTAURACIÓN DEL AZUL CORPORATIVO UNIFICADO PARA TODOS LOS ENCABEZADOS */
+        .header { background-color: #08306b; color: white; padding: 20px 30px; border-radius: 12px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border-left: 5px solid #38bdf8; }
+        .header-left h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; color: #ffffff; }
+        .header-left span { font-size: 13px; color: #6baed6; font-weight: 500; font-style: normal; text-transform: uppercase; letter-spacing: 1px;}
         
         #dashboardHub { max-width: 1100px; margin: 0 auto 40px auto; text-align: left; }
         
@@ -544,7 +545,7 @@
                     <h1>MetricMoisture (SaaS Premium)</h1>
                     <span data-i18n="mod1_subtitle">Satellite Edaphic Moisture</span>
                 </div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #cbd5e1; color: #0f172a;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             
             <div class="container">
@@ -554,6 +555,8 @@
                     <label data-i18n="lbl_end_date">End Date (YYYY-MM-DD):</label><input type="text" id="endDate" value="2026-08-01">
                     <label data-i18n="lbl_sow_date">Sowing Date (YYYY-MM-DD):</label><input type="text" id="siembraDate" value="2025-12-15">
                     
+                    <button class="btn-secondary" style="width: 100%; margin-top: 10px; background-color: #38bdf8; border: none; color: #020617;" onclick="obtenerUbicacionGPS()" data-i18n="btn_gps">📍 Usar Mi Ubicación GPS (4 ha)</button>
+
                     <div class="ingesta-card">
                         <h4 data-i18n="lbl_manual_input">Manual Input / Field Station</h4>
                         <label data-i18n="lbl_reg_date">Record Date:</label><input type="date" id="m_fecha">
@@ -681,12 +684,12 @@
              MÓDULO WEATHER FORECAST 2.0 (TECH)
              ========================================== -->
         <div id="moduloPronostico" style="display: none;">
-            <div class="header" style="background: linear-gradient(90deg, #0a0a0a, #111); border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.8);">
+            <div class="header">
                 <div class="header-left">
-                    <h1 style="color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; font-family: monospace;">WEATHER FORECAST</h1>
-                    <span style="color: #777; font-style: normal; font-family: monospace; text-transform: uppercase; font-size: 11px;">Módulo de Asimilación Agrometeorológica</span>
+                    <h1 style="font-family: monospace;">WEATHER FORECAST</h1>
+                    <span style="font-family: monospace;">Módulo de Asimilación Agrometeorológica</span>
                 </div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #fff; color: #000; font-weight: bold; font-family: monospace; text-transform: uppercase; border-radius: 0;" onclick="volverAlHub()">VOLVER</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()">VOLVER</button></div>
             </div>
             
             <div class="container" style="background-color: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 20px;">
@@ -798,7 +801,7 @@
         <div id="moduloMetricPoli" style="display: none;">
             <div class="header">
                 <div class="header-left"><h1>MetricPoli (SaaS Premium)</h1><span>by metricpoint</span></div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #cbd5e1; color: #0f172a;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             <div class="container" style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box;">
                 <iframe src="https://va2ek5-fernando-suarez.shinyapps.io/polinizacion/" width="100%" height="1200px" style="border: none; border-radius: 8px;" title="Módulo MetricPoli"></iframe>
@@ -814,7 +817,7 @@
                     <h1>Metric Hydro (SaaS Premium)</h1>
                     <span data-i18n="hydro_header_subtitle">Hydrological Early Warning & Basin Telemetry</span>
                 </div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #cbd5e1; color: #0f172a;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             
             <div class="container" style="display: block; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -863,7 +866,7 @@
                         <div class="chart-container" style="min-height: 650px; background: #0a0a0a; border: 1px solid #222; color: white; padding: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
                                 <div>
-                                    <h3 style="margin: 0; color: #fff; font-family: monospace; letter-spacing: 1px; font-size: 15px;" data-i18n="hydro_rfs_title">[ RFS : RIVER FORECAST SYSTEM - TUCUMAN BASIN ]</h3>
+                                    <h3 style="margin: 0; color: #fff; font-family: monospace; letter-spacing: 1px; font-size: 15px;" data-i18n="hydro_rfs_title">[ RFS : RIVER Forecast SYSTEM - TUCUMAN BASIN ]</h3>
                                     <span style="font-size: 11px; color: #777; font-family: monospace;" data-i18n="hydro_rfs_sub">Global hydrological flow and flood risk model (GEOGLOWS)</span>
                                 </div>
                                 <span class="live-pulse" title="Sistema Conectado"></span>
@@ -989,6 +992,7 @@
                 "hydro_rfs_sub": "Global hydrological flow and flood risk model (GEOGLOWS)",
                 "hydro_summary_title": "[ TELEMETRY & BASIN STATUS - REAL TIME ]",
                 "hydro_btn_refresh": "🔄 Refresh Data",
+                "btn_gps": "📍 Use My GPS Location (4 ha)",
                 "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
                 "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "EXECUTE ANALYSIS",
                 "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):",
@@ -1047,6 +1051,7 @@
                 "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.",
                 "hydro_lbl_msg": "Redactar Mensaje de Alerta:",
                 "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
+                "btn_gps": "📍 Usar Mi Ubicación GPS (4 ha)",
                 "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
                 "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
                 "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):",
@@ -1082,6 +1087,7 @@
                 "hydro_rfs_sub": "Modelo hidrológico global de vazão e risco de inundações (GEOGLOWS)",
                 "hydro_summary_title": "[ TELEMETRIA E STATUS DA BACIA - TEMPO REAL ]",
                 "hydro_btn_refresh": "🔄 Atualizar Dados",
+                "btn_gps": "📍 Usar Minha Localização GPS (4 ha)",
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
@@ -1220,6 +1226,57 @@
         var chartObjAgro = null, chartObjClima = null;
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
         const customCanvasBg = { id: 'customCanvasBackgroundColor', beforeDraw: (chart, args, options) => { const {ctx} = chart; ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = options.color || '#ffffff'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } };
+
+        // =====================================================================
+        // INTEGRACIÓN GPS PARA CUADRÍCULA 4 HA
+        // =====================================================================
+        function obtenerUbicacionGPS() {
+            if (navigator.geolocation) {
+                document.getElementById('status').innerText = 'Obteniendo coordenadas satelitales...';
+                document.getElementById('status').style.color = '#08306b';
+                navigator.geolocation.getCurrentPosition(crearCuadriculaDesdeGPS, function(error) {
+                    document.getElementById('status').innerText = 'Error obteniendo GPS: ' + error.message;
+                    document.getElementById('status').style.color = '#ef4444';
+                });
+            } else {
+                alert("Geolocalización no soportada por este dispositivo/navegador.");
+            }
+        }
+
+        function crearCuadriculaDesdeGPS(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            // 4 ha = 40,000 m2 (Cuadrado de 200m x 200m -> 100m desde el centro)
+            const dLat = 100 / 111320;
+            const dLon = 100 / (111320 * Math.cos(lat * Math.PI / 180));
+            
+            // Polígono GeoJSON estándar: NW, NE, SE, SW, NW (cerrando el anillo) [Longitud, Latitud]
+            const coordsGeoJSON = [
+                [lon - dLon, lat + dLat],
+                [lon + dLon, lat + dLat],
+                [lon + dLon, lat - dLat],
+                [lon - dLon, lat - dLat],
+                [lon - dLon, lat + dLat]
+            ];
+            
+            poligonoActual = [coordsGeoJSON];
+            
+            // Limpiar polígonos dibujados a mano y renderizar el nuevo en el mapa interactivo
+            drawnItems.clearLayers();
+            const latlngs = [
+                [lat + dLat, lon - dLon],
+                [lat + dLat, lon + dLon],
+                [lat - dLat, lon + dLon],
+                [lat - dLat, lon - dLon]
+            ];
+            const rect = L.polygon(latlngs, {color: '#38bdf8', weight: 3}).addTo(drawnItems);
+            
+            map.fitBounds(rect.getBounds(), {padding: [20, 20]});
+            
+            document.getElementById('status').innerText = '✅ Polígono de 4 ha generado mediante GPS.';
+            document.getElementById('status').style.color = '#10b981';
+        }
 
         function agregarDatoManual() {
             const f = document.getElementById('m_fecha').value, ll = document.getElementById('m_lluvia').value, et = document.getElementById('m_et0').value;
@@ -2017,6 +2074,22 @@
             }
         }
     </script>
+
+    <!-- WIDGET DE SOPORTE METRICPOINT (DARK MODE + CLOSE BUTTON) -->
+    <div id="widgetSoporte" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #1e293b; border-top: 3px solid #38bdf8; width: 260px; font-family: 'Segoe UI', sans-serif; transition: opacity 0.3s ease;">
+        
+        <!-- Cabecera con botón de cierre -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h4 style="margin: 0; color: #f8fafc; font-size: 13px; font-family: monospace; letter-spacing: 1px;">[ SISTEMA DE SOPORTE ]</h4>
+            <span onclick="document.getElementById('widgetSoporte').style.display='none'" style="color: #64748b; font-size: 20px; cursor: pointer; line-height: 1; font-weight: bold;" title="Cerrar widget">&times;</span>
+        </div>
+        
+        <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.4;">Canal encriptado habilitado para incidencias de telemetría.</p>
+        
+        <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 15px; background: #38bdf8; color: #020617; text-align: center; padding: 10px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold; font-family: monospace; letter-spacing: 0.5px; cursor: pointer; transition: background 0.3s;">
+            INICIAR TRANSMISIÓN
+        </a>
+    </div>
 
 </body>
 </html>
