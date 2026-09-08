@@ -93,7 +93,7 @@
         .contact-form button:hover { background: #0ea5e9; }
 
         /* ==========================================
-           3. ESTILOS DEL WORKSPACE (ESTRUCTURA ORIGINAL)
+           3. ESTILOS DEL WORKSPACE
            ========================================== */
         #workspace { padding: 20px; display: none; margin-top: 40px; flex-grow: 1; }
         .header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -343,7 +343,7 @@
                 <h4 data-i18n="priv_h2">2. Sharing with Third Parties</h4>
                 <p data-i18n="priv_p2">MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.</p>
                 <h4 data-i18n="priv_h3">3. User Rights</h4>
-                <p data-i18n="priv_p3">In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the system administrator.</p>
+                <p data-i18n="priv_p3">In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the administrator.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn-close-modal" onclick="cerrarPrivacidad()" data-i18n="btn_close">Close</button>
@@ -458,7 +458,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO ORIGINAL -->
+    <!-- ESPACIO DE TRABAJO -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -517,8 +517,7 @@
                     <label data-i18n="lbl_end_date">End Date (YYYY-MM-DD):</label><input type="text" id="endDate" value="2026-08-01">
                     <label data-i18n="lbl_sow_date">Sowing Date (YYYY-MM-DD):</label><input type="text" id="siembraDate" value="2025-12-15">
                     
-                    <!-- NUEVO BOTON GPS AQUI -->
-                    <button class="btn-secondary" style="width: 100%; margin-top: 10px; background-color: #6baed6; color: #08306b; border: none;" onclick="obtenerUbicacionGPS()" data-i18n="btn_gps">📍 Usar Mi Ubicación GPS (4 ha)</button>
+                    <button class="btn-secondary" style="width: 100%; margin-top: 10px; background-color: #6baed6; color: #08306b; border: none;" onclick="obtenerUbicacionGPS()">📍 Usar Mi Ubicación GPS (4 ha)</button>
 
                     <div class="ingesta-card">
                         <h4 data-i18n="lbl_manual_input">Manual Input / Field Station</h4>
@@ -647,7 +646,7 @@
              MÓDULO WEATHER FORECAST 2.0 (TECH)
              ========================================== -->
         <div id="moduloPronostico" style="display: none;">
-            <div class="header" style="background: linear-gradient(90deg, #0a0a0a, #111); border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.8);">
+            <div class="header">
                 <div class="header-left">
                     <h1 style="color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; font-family: monospace;">WEATHER FORECAST</h1>
                     <span style="color: #777; font-style: normal; font-family: monospace; text-transform: uppercase; font-size: 11px;">Módulo de Asimilación Agrometeorológica</span>
@@ -953,7 +952,7 @@
                 "hydro_no_history": "No events registered in the current session.",
                 "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - TUCUMAN BASIN ]",
                 "hydro_rfs_sub": "Global hydrological flow and flood risk model (GEOGLOWS)",
-                "hydro_summary_title": "[ TELEMETRY & BASIN STATUS - REAL TIME ]",
+                "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]",
                 "hydro_btn_refresh": "🔄 Refresh Data",
                 "btn_gps": "📍 Use My GPS Location (4 ha)",
                 "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
@@ -976,7 +975,7 @@
                 "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (48 Horas Gratis)",
                 "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "lbl_and": " y la ", "lbl_priv": "Política de Privacidad", "msg_tyc_req": "Debes aceptar los términos legales para registrarte.",
                 "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
-                "priv_title": "Aviso de Privacidad", "priv_h1": "1. Información que recopilamos", "priv_p1": "Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.", "priv_h2": "2. Compartición con Terceros", "priv_p2": "MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para processing SAR images and 3D Models.", "priv_h3": "3. Derechos del Usuario", "priv_p3": "En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.",
+                "priv_title": "Aviso de Privacidad", "priv_h1": "1. Información que recopilamos", "priv_p1": "Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.", "priv_h2": "2. Compartición con Terceros", "priv_p2": "MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.", "priv_h3": "3. Derechos del Usuario", "priv_p3": "En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.",
                 "tab_intro_who": "Quiénes Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contacto",
                 "who_title": "MetricPoint: Inteligencia Geoespacial",
                 "who_p1": "MetricPoint es una plataforma AgTech de vanguardia especializada en inteligencia geoespacial y modelado agronómico mediante tecnología satelital SAR.",
@@ -1190,9 +1189,7 @@
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
         const customCanvasBg = { id: 'customCanvasBackgroundColor', beforeDraw: (chart, args, options) => { const {ctx} = chart; ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = options.color || '#ffffff'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } };
 
-        // =====================================================================
-        // INTEGRACIÓN GPS PARA CUADRÍCULA 4 HA
-        // =====================================================================
+        // --- NEW FUNCTIONS ---
         function obtenerUbicacionGPS() {
             if (navigator.geolocation) {
                 document.getElementById('status').innerText = 'Obteniendo coordenadas satelitales...';
@@ -1210,11 +1207,9 @@
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
             
-            // 4 ha = 40,000 m2 (Cuadrado de 200m x 200m -> 100m desde el centro)
             const dLat = 100 / 111320;
             const dLon = 100 / (111320 * Math.cos(lat * Math.PI / 180));
             
-            // Polígono GeoJSON estándar: NW, NE, SE, SW, NW (cerrando el anillo) [Longitud, Latitud]
             const coordsGeoJSON = [
                 [lon - dLon, lat + dLat],
                 [lon + dLon, lat + dLat],
@@ -1225,7 +1220,6 @@
             
             poligonoActual = [coordsGeoJSON];
             
-            // Limpiar polígonos dibujados a mano y renderizar el nuevo en el mapa interactivo
             drawnItems.clearLayers();
             const latlngs = [
                 [lat + dLat, lon - dLon],
@@ -1234,7 +1228,6 @@
                 [lat - dLat, lon - dLon]
             ];
             const rect = L.polygon(latlngs, {color: '#31a354', weight: 3}).addTo(drawnItems);
-            
             map.fitBounds(rect.getBounds(), {padding: [20, 20]});
             
             document.getElementById('status').innerText = '✅ Polígono de 4 ha generado mediante GPS.';
@@ -1311,9 +1304,6 @@
 
         window.ultimoDatoCalculado = null; 
 
-        // =====================================================================
-        // GEMELO DIGITAL: EFECTO PERCOLACIÓN SCATTER3D + ESCALA UNIFICADA X-RAY
-        // =====================================================================
         function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
             if (!dato || !poligonoActual) return;
 
@@ -1998,13 +1988,14 @@
         function actualizarContadorSMS() {
             const texto = document.getElementById("txtAlertaHydro").value;
             const contador = document.getElementById("contadorSMS");
-            contador.innerText = `${texto.length} / 160 caracteres`;
-            
-            // Alerta visual si se acerca al límite
-            if (texto.length >= 150) {
-                contador.style.color = "#991b1b"; // Rojo oscuro
-            } else {
-                contador.style.color = "#e11d48"; // Rojo normal
+            if (contador) {
+                contador.innerText = `${texto.length} / 160 caracteres`;
+                // Alerta visual si se acerca al límite
+                if (texto.length >= 150) {
+                    contador.style.color = "#991b1b"; // Rojo oscuro
+                } else {
+                    contador.style.color = "#e11d48"; // Rojo normal
+                }
             }
         }
 
