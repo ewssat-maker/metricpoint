@@ -93,62 +93,23 @@
         .contact-form button:hover { background: #0ea5e9; }
 
         /* ==========================================
-           3. ESTILOS DEL WORKSPACE (AGTECH PREMIUM)
+           3. ESTILOS DEL WORKSPACE
            ========================================== */
-        #workspace { padding: 30px 20px; display: none; margin-top: 40px; flex-grow: 1; background-color: #f4f7f9; } 
+        #workspace { padding: 20px; display: none; margin-top: 40px; flex-grow: 1; }
+        .header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header-left h1 { margin: 0; font-size: 24px; }
+        .header-left span { font-size: 14px; font-style: italic; color: #6baed6; }
         
-        .header { background: #ffffff; color: #0f172a; padding: 20px 30px; border-radius: 12px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #10b981; }
-        .header-left h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; color: #0f172a; }
-        .header-left span { font-size: 13px; color: #64748b; font-weight: 500; font-style: normal; text-transform: uppercase; letter-spacing: 1px;}
-        
-        #dashboardHub { max-width: 1100px; margin: 0 auto 40px auto; text-align: left; }
-        
-        .hub-video-container { position: relative; width: 100%; height: 380px; border-radius: 16px; margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; background-color: #000; }
-        .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 1; }
-        
-        .hub-video-container .auth-slide-overlay { padding: 40px; background: linear-gradient(to top, rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 0.2), transparent); }
-        .hub-video-container .auth-slide-overlay h2 { font-size: 42px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); margin-bottom: 5px;}
-        .hub-video-container .auth-slide-overlay p { font-size: 18px; color: #e2e8f0; }
+        #dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: center; }
+        .hub-video-container { position: relative; width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; background-color: #041d42; }
+        .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
 
-        /* Grilla perfecta 2x2 */
-        .hub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
-        
-        /* Tarjetas AgTech Minimalistas */
-        .hub-card { 
-            background: #ffffff; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 16px; 
-            padding: 45px 30px; 
-            cursor: pointer; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
-        
-        /* Línea de color indicadora por módulo */
-        .hub-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #cbd5e1; transition: all 0.4s ease;
-        }
-        .hub-card:nth-child(1):hover::before { background: #10b981; } /* Agro: Verde Esmeralda */
-        .hub-card:nth-child(2):hover::before { background: #38bdf8; } /* Clima: Celeste */
-        .hub-card:nth-child(3):hover::before { background: #f59e0b; } /* Abejas: Ámbar */
-        .hub-card:nth-child(4):hover::before { background: #3b82f6; } /* Hydro: Azul Profundo */
-        
-        /* Resplandor y elevación al pasar el mouse */
-        .hub-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08); 
-            border-color: #cbd5e1;
-        }
-        
-        .hub-card h3 { color: #0f172a; margin: 0 0 12px 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
-        .hub-card p { color: #64748b; font-size: 14px; line-height: 1.6; margin: 0; max-width: 90%; }
+        .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: all 0.3s ease; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; }
+        .hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); background: linear-gradient(135deg, #0a3d8a 0%, #1b5bba 100%); border-bottom-color: #6baed6; }
+        .hub-card h3 { color: #ffffff; margin: 15px 0 10px 0; font-size: 18px; text-align: center; }
+        .hub-card p { color: #e0f3db; font-size: 13px; line-height: 1.5; margin: 0; text-align: center; }
+        .hub-icon { font-size: 40px; }
 
         .container { display: flex; gap: 20px; }
         .sidebar { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -160,29 +121,29 @@
         label { font-weight: bold; font-size: 13px; color: #333; display: block; margin-top: 12px; margin-bottom: 4px; }
         input[type="text"], input[type="date"], input[type="number"], input[type="email"], input[type="password"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        .btn-primary { width: 100%; padding: 10px; background-color: #10b981; color: white; border: none; border-radius: 4px; font-weight: bold; margin-top: 15px; cursor: pointer; transition: background 0.3s;}
-        .btn-primary:hover { background-color: #059669; }
-        .btn-secondary { padding: 8px 15px; background-color: #0f172a; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 10px;}
-        .btn-secondary:hover { background-color: #1e293b; }
-        .btn-danger { background-color: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-primary { width: 100%; padding: 10px; background-color: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; margin-top: 15px; cursor: pointer; transition: background 0.3s;}
+        .btn-primary:hover { background-color: #238b45; }
+        .btn-secondary { padding: 8px 15px; background-color: #08306b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 10px;}
+        .btn-secondary:hover { background-color: #041d42; }
+        .btn-danger { background-color: #d73027; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        #status { margin-top: 15px; font-size: 13px; font-weight: bold; color: #ef4444; }
+        #status { margin-top: 15px; font-size: 13px; font-weight: bold; color: #d73027; }
         
         .soil-card, .climate-card, .ingesta-card { margin-top: 15px; padding: 15px; border-radius: 6px; display: none; }
-        .soil-card { background: #f0fdf4; border: 1px solid #bbf7d0; }
-        .climate-card { background: #f0f9ff; border: 1px solid #bae6fd; }
-        .ingesta-card { display: block; padding: 12px; background: #f8fafc; border: 1px dashed #94a3b8; }
+        .soil-card { background: #f0f9e8; border: 1px solid #ccece6; }
+        .climate-card { background: #e0f3db; border: 1px solid #a8ddb5; }
+        .ingesta-card { display: block; padding: 12px; background: #f7f7f7; border: 1px dashed #08306b; }
         
         .soil-card h4, .climate-card h4, .ingesta-card h4 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid; padding-bottom: 5px; font-size: 15px;}
-        .soil-card h4 { color: #047857; border-color: #bbf7d0; }
-        .climate-card h4 { color: #0369a1; border-color: #bae6fd;}
-        .ingesta-card h4 { color: #334155; border: none;}
-        .soil-card p, .climate-card p, .ingesta-card p { margin: 6px 0; font-size: 13px; color: #334155;}
+        .soil-card h4 { color: #0868ac; border-color: #ccece6; }
+        .climate-card h4 { color: #2b8cbe; border-color: #a8ddb5;}
+        .ingesta-card h4 { color: #08306b; border: none;}
+        .soil-card p, .climate-card p, .ingesta-card p { margin: 6px 0; font-size: 13px; color: #333;}
 
-        .tabs { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 15px; display: none; }
-        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; color: #64748b; cursor: pointer; transition: 0.3s; }
-        .tab-btn:hover { color: #0f172a; }
-        .tab-btn.active { color: #0f172a; border-bottom: 3px solid #10b981; margin-bottom: -2px; }
+        .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; display: none; }
+        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; }
+        .tab-btn:hover { color: #08306b; }
+        .tab-btn.active { color: #08306b; border-bottom: 3px solid #08306b; margin-bottom: -2px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -311,8 +272,6 @@
             .intro-tabs-header { flex-direction: column; }
             .product-showcase { flex-direction: column !important; }
             .product-showcase video, .product-info { width: 100%; }
-
-            .hub-grid { grid-template-columns: 1fr; } /* Celular: 1 columna */
 
             .container { flex-direction: column; }
             .sidebar { width: 100%; box-sizing: border-box; }
@@ -499,12 +458,12 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO (AGTECH PREMIUM HUB) -->
+    <!-- ESPACIO DE TRABAJO -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
-                <div class="header-left">
-                    <h1>SUITE METRICPOINT</h1>
+                <div class="header-left" style="text-align: left;">
+                    <h1>Suite MetricPoint</h1>
                     <span data-i18n="hub_subtitle">Select the analysis module you want to use</span>
                 </div>
                 <button class="btn-danger" style="margin-top: 0;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
@@ -520,18 +479,22 @@
 
             <div class="hub-grid">
                 <div class="hub-card" onclick="abrirModulo('agrometeo')">
+                    <div class="hub-icon">🌱</div>
                     <h3>MetricMoisture</h3>
                     <p data-i18n="mod_moisture_desc">Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.</p>
                 </div>
                 <div class="hub-card" onclick="abrirModulo('pronostico')">
+                    <div class="hub-icon">🌦️</div>
                     <h3 data-i18n="mod_weather_title">Weather Forecast</h3>
                     <p data-i18n="mod_weather_desc">Atmospheric modeling, live SMN radars and predictive meteorological variables.</p>
                 </div>
                 <div class="hub-card" onclick="abrirModulo('metricpoli')">
+                    <div class="hub-icon">🐝</div>
                     <h3>MetricPoli</h3>
                     <p data-i18n="mod_poli_desc">Comprehensive pollination suite, hive monitoring and advanced phenological analysis.</p>
                 </div>
                 <div class="hub-card" onclick="abrirModulo('hydro')">
+                    <div class="hub-icon">🌊</div>
                     <h3>Metric Hydro</h3>
                     <p id="hubHydroDesc" data-i18n="mod_hydro_desc">Hydrological monitoring, early flood warnings and basin status.</p>
                 </div>
@@ -544,7 +507,7 @@
                     <h1>MetricMoisture (SaaS Premium)</h1>
                     <span data-i18n="mod1_subtitle">Satellite Edaphic Moisture</span>
                 </div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #cbd5e1; color: #0f172a;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             
             <div class="container">
@@ -567,7 +530,7 @@
 
                     <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">EXECUTE ANALYSIS</button>
                     <!-- BOTÓN DE DESCARGA CSV -->
-                    <button class="btn-secondary" id="btnDownloadCSV" onclick="descargarCSV()" style="display:none; width: 100%; margin-top: 10px; background-color: #f59e0b; border: none; color: white;">⬇️ Descargar Datos (CSV)</button>
+                    <button class="btn-secondary" id="btnDownloadCSV" onclick="descargarCSV()" style="display:none; width: 100%; margin-top: 10px; background-color: #f59e0b; border: none;">⬇️ Descargar Datos (CSV)</button>
                     <div id="status"></div>
                     
                     <div class="soil-card" id="infoSuelo">
@@ -587,8 +550,8 @@
 
                 <div class="main-content">
                     <div id="map"></div>
-                    <div id="contenedorInforme" style="display: none; background: #eef7f9; border-left: 5px solid #10b981; padding: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #0f172a; font-size: 16px;" data-i18n="lbl_diag">Agrometeorological Diagnostics</h4>
+                    <div id="contenedorInforme" style="display: none; background: #eef7f9; border-left: 5px solid #08306b; padding: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #08306b; font-size: 16px;" data-i18n="lbl_diag">Agrometeorological Diagnostics</h4>
                         <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
                     </div>
 
@@ -611,11 +574,11 @@
                     <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
                     
                     <div id="tabGeo3D" class="tab-content">
-                        <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #10b981;">
+                        <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
                             <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
-                                <label style="color: #10b981;">FECHA DE ANÁLISIS (YYYY-MM-DD):</label>
-                                <input type="date" id="fechaConsultaGeo3D" style="border-color:#10b981;">
-                                <button class="btn-secondary" style="margin:0; background:#10b981; color:#ffffff; border:none;" onclick="consultarFechaGlobal('fechaConsultaGeo3D')">Cargar Radiografía</button>
+                                <label style="color: #38bdf8;">FECHA DE ANÁLISIS (YYYY-MM-DD):</label>
+                                <input type="date" id="fechaConsultaGeo3D" style="border-color:#38bdf8;">
+                                <button class="btn-secondary" style="margin:0; background:#38bdf8; color:#020617; border:none;" onclick="consultarFechaGlobal('fechaConsultaGeo3D')">Cargar Radiografía</button>
                             </div>
                             <div id="resGeo3D" style="color: white; font-size: 13px; display: none; width: 100%; border-top: 1px solid #1e293b; padding-top: 10px;">
                                 <strong>Sup:</strong> <span id="rG_10"></span> m³/m³ | 
@@ -627,7 +590,7 @@
                         </div>
 
                         <div class="chart-container" id="contenedorGeo3D" style="display: none; height: 600px;">
-                            <h4 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
+                            <h4 style="margin-top: 0; color: #08306b; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
                                 <span data-i18n="tab_xray">Spatial X-Ray</span> <span id="lblFechaGeo3D" style="color: #d73027;"></span>
                             </h4>
                             <div id="soilGeo3D" style="width: 100%; height: 100%;"></div>
@@ -648,7 +611,7 @@
                                 <div>
                                     <label style="color:#10b981; margin: 0 0 8px 0; font-size: 13px; font-weight: bold; display: block;">FECHA A CONSULTAR:</label>
                                     <input type="date" id="fechaConsultaGemelo" style="width: 100%; padding: 10px; border-radius: 4px; background: #1e293b; color: white; border: 1px solid #10b981; font-weight: bold; box-sizing: border-box;">
-                                    <button class="btn-secondary" style="width: 100%; margin: 10px 0 0 0; background:#10b981; color:#ffffff; border:none; padding: 12px; font-weight: bold; font-size: 14px; border-radius: 4px; cursor: pointer;" onclick="consultarFechaGlobal('fechaConsultaGemelo')">Cargar Gemelo</button>
+                                    <button class="btn-secondary" style="width: 100%; margin: 10px 0 0 0; background:#10b981; color:#020617; border:none; padding: 12px; font-weight: bold; font-size: 14px; border-radius: 4px; cursor: pointer;" onclick="consultarFechaGlobal('fechaConsultaGemelo')">Cargar Gemelo</button>
                                 </div>
                                 
                                 <div>
@@ -661,12 +624,12 @@
                                     </select>
                                 </div>
 
-                                <div id="resGemelo" style="color: white; font-size: 14px; display: none; background: rgba(30, 41, 59, 0.5); border: 1px solid #10b981; border-radius: 6px; padding: 15px;">
-                                    <h4 style="margin-top:0; margin-bottom:15px; color:#10b981; font-size: 15px; border-bottom: 1px solid #10b981; padding-bottom: 5px;">Resultados de la Fecha</h4>
-                                    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;"><strong style="color:#cbd5e1;">Sup:</strong> <span><span id="rB_10">--</span> m³/m³</span></div>
-                                    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;"><strong style="color:#cbd5e1;">Sub:</strong> <span><span id="rB_30">--</span> m³/m³</span></div>
-                                    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;"><strong style="color:#cbd5e1;">Raíz:</strong> <span><span id="rB_60">--</span> m³/m³</span></div>
-                                    <div style="display: flex; justify-content: space-between;"><strong style="color:#cbd5e1;">Res:</strong> <span><span id="rB_100">--</span> m³/m³</span></div>
+                                <div id="resGemelo" style="color: white; font-size: 14px; display: none; background: rgba(30, 41, 59, 0.5); border: 1px solid #38bdf8; border-radius: 6px; padding: 15px;">
+                                    <h4 style="margin-top:0; margin-bottom:15px; color:#38bdf8; font-size: 15px; border-bottom: 1px solid #38bdf8; padding-bottom: 5px;">Resultados de la Fecha</h4>
+                                    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;"><strong style="color:#10b981;">Sup:</strong> <span><span id="rB_10">--</span> m³/m³</span></div>
+                                    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;"><strong style="color:#10b981;">Sub:</strong> <span><span id="rB_30">--</span> m³/m³</span></div>
+                                    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;"><strong style="color:#10b981;">Raíz:</strong> <span><span id="rB_60">--</span> m³/m³</span></div>
+                                    <div style="display: flex; justify-content: space-between;"><strong style="color:#10b981;">Res:</strong> <span><span id="rB_100">--</span> m³/m³</span></div>
                                 </div>
                             </div>
 
@@ -798,7 +761,7 @@
         <div id="moduloMetricPoli" style="display: none;">
             <div class="header">
                 <div class="header-left"><h1>MetricPoli (SaaS Premium)</h1><span>by metricpoint</span></div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #cbd5e1; color: #0f172a;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             <div class="container" style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box;">
                 <iframe src="https://va2ek5-fernando-suarez.shinyapps.io/polinizacion/" width="100%" height="1200px" style="border: none; border-radius: 8px;" title="Módulo MetricPoli"></iframe>
@@ -814,7 +777,7 @@
                     <h1>Metric Hydro (SaaS Premium)</h1>
                     <span data-i18n="hydro_header_subtitle">Hydrological Early Warning & Basin Telemetry</span>
                 </div>
-                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #cbd5e1; color: #0f172a;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
+                <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #6baed6; color: #08306b;" onclick="volverAlHub()" data-i18n="btn_back">Back to Menu</button></div>
             </div>
             
             <div class="container" style="display: block; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
@@ -1043,10 +1006,6 @@
                 "hydro_rfs_sub": "Modelo hidrológico global de caudal y riesgo de crecidas (GEOGLOWS)",
                 "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]",
                 "hydro_btn_refresh": "🔄 Actualizar Datos",
-                "hydro_admin_title": "⚠️ Consola de Disparo de Emergencias (MODO DIOS)",
-                "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.",
-                "hydro_lbl_msg": "Redactar Mensaje de Alerta:",
-                "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
                 "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
                 "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
                 "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):",
@@ -1988,35 +1947,31 @@
             }
         }
 
-        // Codifica el texto, lo copia al portapapeles y abre WhatsApp
-        async function dispararWhatsAppPersonal() {
+        // Codifica el texto y abre la app de WhatsApp en el celular o PC
+        function dispararWhatsAppPersonal() {
             const mensaje = document.getElementById("txtAlertaWA").value;
-            
             if (!mensaje) {
                 return alert("Por favor, escriba el mensaje para el Canal de WhatsApp.");
             }
             
-            try {
-                // 1. Copia el texto automáticamente a la memoria del dispositivo
-                await navigator.clipboard.writeText(mensaje);
-                
-                alert("✅ Mensaje copiado al portapapeles.\n\nSe abrirá WhatsApp: entrá a tu Canal y seleccioná 'Pegar'.");
-                
-                // 2. Detecta si es celular o PC para abrir la versión correcta de WhatsApp
-                const esCelular = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
-                if (esCelular) {
-                    window.location.href = "whatsapp://app"; // Abre la app nativa en móviles
-                } else {
-                    window.open("https://web.whatsapp.com", "_blank"); // Abre WhatsApp Web en PC
-                }
-                
-            } catch (err) {
-                // Fallback por si el navegador bloquea el portapapeles
-                alert("❌ El navegador bloqueó el copiado automático. Por favor, copiá el texto manualmente y abrí WhatsApp.");
-            }
+            // encodeURIComponent convierte espacios y saltos de línea a un formato web seguro
+            const textoCodificado = encodeURIComponent(mensaje);
+            const urlWhatsApp = `https://wa.me/?text=${textoCodificado}`;
+            
+            // Abre la aplicación en una pestaña nueva
+            window.open(urlWhatsApp, '_blank');
         }
     </script>
+
+    <!-- WIDGET DE SOPORTE METRICPOINT -->
+    <div id="widgetSoporte" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-left: 5px solid #08306b; width: 260px; font-family: 'Segoe UI', sans-serif;">
+        <h4 style="margin: 0 0 5px 0; color: #08306b; font-size: 15px;">Soporte MetricPoint</h4>
+        <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4;">Canal habilitado para contacto, envíanos tu pregunta.</p>
+        
+        <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 10px; background: #38bdf8; color: #020617; text-align: center; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.3s;">
+            Canal de Contacto
+        </a>
+    </div>
 
 </body>
 </html>
