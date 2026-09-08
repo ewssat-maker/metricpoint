@@ -93,23 +93,50 @@
         .contact-form button:hover { background: #0ea5e9; }
 
         /* ==========================================
-           3. ESTILOS DEL WORKSPACE
+           3. ESTILOS DEL WORKSPACE (ESTILO COMMAND CENTER)
            ========================================== */
-        #workspace { padding: 20px; display: none; margin-top: 40px; flex-grow: 1; }
-        .header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header-left h1 { margin: 0; font-size: 24px; }
-        .header-left span { font-size: 14px; font-style: italic; color: #6baed6; }
+        #workspace { padding: 20px; display: none; margin-top: 40px; flex-grow: 1; background-color: #020617; } /* Fondo oscuro tecnológico */
         
-        #dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: center; }
-        .hub-video-container { position: relative; width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; background-color: #041d42; }
-        .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+        .header { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); color: white; padding: 15px 25px; border-radius: 8px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1e293b; border-bottom: 2px solid #38bdf8; }
+        .header-left h1 { margin: 0; font-size: 22px; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; }
+        .header-left span { font-size: 12px; color: #94a3b8; font-family: monospace; }
+        
+        #dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: left; }
+        
+        .hub-video-container { position: relative; width: 100%; height: 300px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; background-color: #000; border: 1px solid #1e293b; }
+        .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; mix-blend-mode: luminosity; } /* Efecto cinemático */
 
-        .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-        .hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: all 0.3s ease; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; }
-        .hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); background: linear-gradient(135deg, #0a3d8a 0%, #1b5bba 100%); border-bottom-color: #6baed6; }
-        .hub-card h3 { color: #ffffff; margin: 15px 0 10px 0; font-size: 18px; text-align: center; }
-        .hub-card p { color: #e0f3db; font-size: 13px; line-height: 1.5; margin: 0; text-align: center; }
-        .hub-icon { font-size: 40px; }
+        /* Grilla perfecta 2x2 */
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        
+        /* Tarjetas Glassmorphism */
+        .hub-card { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid #1e293b; 
+            border-left: 4px solid #38bdf8; /* Línea de acento Cyan */
+            border-radius: 8px; 
+            padding: 25px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; /* Alineado a la izquierda, más científico */
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Resplandor al pasar el mouse */
+        .hub-card:hover { 
+            transform: translateY(-4px); 
+            background: rgba(30, 41, 59, 0.8); 
+            border-left-color: #10b981; /* Cambia a Esmeralda */
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1); 
+        }
+        
+        .hub-icon { font-size: 30px; margin-bottom: 12px; background: rgba(56,189,248,0.1); padding: 10px; border-radius: 8px; }
+        .hub-card h3 { color: #f8fafc; margin: 0 0 8px 0; font-size: 16px; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; }
+        .hub-card p { color: #94a3b8; font-size: 13px; line-height: 1.5; margin: 0; text-align: left; }
 
         .container { display: flex; gap: 20px; }
         .sidebar { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -644,7 +671,7 @@
              MÓDULO WEATHER FORECAST 2.0 (TECH)
              ========================================== -->
         <div id="moduloPronostico" style="display: none;">
-            <div class="header" style="background: linear-gradient(90deg, #0a0a0a, #111); border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.8);">
+            <div class="header">
                 <div class="header-left">
                     <h1 style="color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; font-family: monospace;">WEATHER FORECAST</h1>
                     <span style="color: #777; font-style: normal; font-family: monospace; text-transform: uppercase; font-size: 11px;">Módulo de Asimilación Agrometeorológica</span>
@@ -1006,6 +1033,10 @@
                 "hydro_rfs_sub": "Modelo hidrológico global de caudal y riesgo de crecidas (GEOGLOWS)",
                 "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]",
                 "hydro_btn_refresh": "🔄 Actualizar Datos",
+                "hydro_admin_title": "⚠️ Consola de Disparo de Emergencias (MODO DIOS)",
+                "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.",
+                "hydro_lbl_msg": "Redactar Mensaje de Alerta:",
+                "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
                 "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
                 "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
                 "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):",
@@ -1947,43 +1978,49 @@
             }
         }
 
-       // Codifica el texto, lo copia al portapapeles y abre WhatsApp
-async function dispararWhatsAppPersonal() {
-    const mensaje = document.getElementById("txtAlertaWA").value;
-    
-    if (!mensaje) {
-        return alert("Por favor, escriba el mensaje para el Canal de WhatsApp.");
-    }
-    
-    try {
-        // 1. Copia el texto automáticamente a la memoria del dispositivo
-        await navigator.clipboard.writeText(mensaje);
-        
-        alert("✅ Mensaje copiado al portapapeles.\n\nSe abrirá WhatsApp: entrá a tu Canal y seleccioná 'Pegar'.");
-        
-        // 2. Detecta si es celular o PC para abrir la versión correcta de WhatsApp
-        const esCelular = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (esCelular) {
-            window.location.href = "whatsapp://app"; // Abre la app nativa en móviles
-        } else {
-            window.open("https://web.whatsapp.com", "_blank"); // Abre WhatsApp Web en PC
+        // Codifica el texto, lo copia al portapapeles y abre WhatsApp
+        async function dispararWhatsAppPersonal() {
+            const mensaje = document.getElementById("txtAlertaWA").value;
+            
+            if (!mensaje) {
+                return alert("Por favor, escriba el mensaje para el Canal de WhatsApp.");
+            }
+            
+            try {
+                // 1. Copia el texto automáticamente a la memoria del dispositivo
+                await navigator.clipboard.writeText(mensaje);
+                
+                alert("✅ Mensaje copiado al portapapeles.\n\nSe abrirá WhatsApp: entrá a tu Canal y seleccioná 'Pegar'.");
+                
+                // 2. Detecta si es celular o PC para abrir la versión correcta de WhatsApp
+                const esCelular = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (esCelular) {
+                    window.location.href = "whatsapp://app"; // Abre la app nativa en móviles
+                } else {
+                    window.open("https://web.whatsapp.com", "_blank"); // Abre WhatsApp Web en PC
+                }
+                
+            } catch (err) {
+                // Fallback por si el navegador bloquea el portapapeles
+                alert("❌ El navegador bloqueó el copiado automático. Por favor, copiá el texto manualmente y abrí WhatsApp.");
+            }
         }
-        
-    } catch (err) {
-        // Fallback por si el navegador bloquea el portapapeles
-        alert("❌ El navegador bloqueó el copiado automático. Por favor, copiá el texto manualmente y abrí WhatsApp.");
-    }
-}
     </script>
 
-    <!-- WIDGET DE SOPORTE METRICPOINT -->
-    <div id="widgetSoporte" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-left: 5px solid #08306b; width: 260px; font-family: 'Segoe UI', sans-serif;">
-        <h4 style="margin: 0 0 5px 0; color: #08306b; font-size: 15px;">Soporte MetricPoint</h4>
-        <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4;">Canal habilitado para contacto, envíanos tu pregunta.</p>
+    <!-- WIDGET DE SOPORTE METRICPOINT (DARK MODE + CLOSE BUTTON) -->
+    <div id="widgetSoporte" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #1e293b; border-top: 3px solid #38bdf8; width: 260px; font-family: 'Segoe UI', sans-serif; transition: opacity 0.3s ease;">
         
-        <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 10px; background: #38bdf8; color: #020617; text-align: center; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.3s;">
-            Canal de Contacto
+        <!-- Cabecera con botón de cierre -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h4 style="margin: 0; color: #f8fafc; font-size: 13px; font-family: monospace; letter-spacing: 1px;">[ SISTEMA DE SOPORTE ]</h4>
+            <span onclick="document.getElementById('widgetSoporte').style.display='none'" style="color: #64748b; font-size: 20px; cursor: pointer; line-height: 1; font-weight: bold;" title="Cerrar widget">&times;</span>
+        </div>
+        
+        <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.4;">Canal encriptado habilitado para incidencias de telemetría.</p>
+        
+        <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 15px; background: #38bdf8; color: #020617; text-align: center; padding: 10px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold; font-family: monospace; letter-spacing: 0.5px; cursor: pointer; transition: background 0.3s;">
+            INICIAR TRANSMISIÓN
         </a>
     </div>
 
