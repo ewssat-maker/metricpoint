@@ -643,50 +643,51 @@
         <div id="moduloPronostico" style="display: none;">
             <div class="header" style="background: linear-gradient(90deg, #0a0a0a, #111); border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.8);">
                 <div class="header-left">
-                    <h1 style="color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; font-family: monospace;">WEATHER FORECAST</h1>
-                    <span style="color: #777; font-style: normal; font-family: monospace; text-transform: uppercase; font-size: 11px;">Módulo de Asimilación Agrometeorológica</span>
+                    <h1 style="color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; font-family: monospace;" data-i18n="wf_title">WEATHER FORECAST</h1>
+                    <span style="color: #777; font-style: normal; font-family: monospace; text-transform: uppercase; font-size: 11px;" data-i18n="wf_subtitle">Módulo de Asimilación Agrometeorológica</span>
                 </div>
                 <div><button class="btn-secondary" style="margin-top: 0; margin-right: 10px; background-color: #fff; color: #000; font-weight: bold; font-family: monospace; text-transform: uppercase; border-radius: 0;" onclick="volverAlHub()">VOLVER</button></div>
             </div>
             
             <div class="container" style="background-color: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 20px;">
                 <div class="sidebar" style="background: #0d0d0d; border: 1px solid #222; color: white; border-radius: 4px;">
-                    <h2 style="color: #38bdf8; margin-top: 0; font-family: monospace; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; text-shadow: 0 0 8px rgba(56,189,248,0.4);">[ CENTRO DE MONITOREO ]</h2>
-                    <p style="font-size: 11px; color: #aaa; line-height: 1.5; margin-bottom: 15px; font-family: monospace;">Haga clic en el mapa, use su GPS o ingrese coordenadas para escanear el terreno.</p>
+                    <h2 style="color: #38bdf8; margin-top: 0; font-family: monospace; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; text-shadow: 0 0 8px rgba(56,189,248,0.4);" data-i18n="wf_cmd_title">[ CENTRO DE MONITOREO ]</h2>
+                    <p style="font-size: 11px; color: #aaa; line-height: 1.5; margin-bottom: 15px; font-family: monospace;" data-i18n="wf_cmd_desc">Haga clic en el mapa, use su GPS o ingrese coordenadas para escanear el terreno.</p>
                     
-                    <label style="color: #888; font-family: monospace; font-size: 11px; text-transform: uppercase;">Coordenadas Objetivo (Lat, Lon):</label>
+                    <label style="color: #888; font-family: monospace; font-size: 11px; text-transform: uppercase;" data-i18n="wf_lbl_coord">Coordenadas Objetivo (Lat, Lon):</label>
                     <input type="text" id="coordPronostico" value="-26.82, -65.22" style="background: #000; border: 1px solid #444; color: #38bdf8; font-weight: bold; margin-bottom: 10px; font-family: monospace; border-radius: 0; padding: 10px; text-align: center; font-size: 14px;">
                     
-                    <button class="btn-secondary" style="background-color: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; width: 100%; margin-top: 5px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 10px; cursor: pointer;" onclick="obtenerUbicacionGPSPronostico()">📍 Fijar Posición GPS</button>
+                    <button class="btn-secondary" style="background-color: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; width: 100%; margin-top: 5px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 10px; cursor: pointer;" onclick="obtenerUbicacionGPSPronostico()" data-i18n="wf_btn_gps">📍 Fijar Posición GPS</button>
                     
-                    <button class="btn-primary" style="background-color: #fff; color: #000; width: 100%; margin-top: 10px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 12px; font-weight: bold; cursor: pointer;" onclick="actualizarPronosticoGlobal()">Iniciar Escaneo Satelital</button>
+                    <button class="btn-primary" style="background-color: #fff; color: #000; width: 100%; margin-top: 10px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 12px; font-weight: bold; cursor: pointer;" onclick="actualizarPronosticoGlobal()" data-i18n="wf_btn_scan">Iniciar Escaneo Satelital</button>
                     
                     <div style="margin-top: 20px; padding: 15px; background: #0a0a0a; border: 1px solid #222; text-align: center;">
                         <span style="font-size: 20px;">🛰️</span>
-                        <p style="margin: 10px 0 0 0; font-size: 11px; color: #777; font-weight: bold; letter-spacing: 2px; font-family: monospace;">ESTADO DEL ENLACE</p>
-                        <p id="rtEstadoPronostico" style="margin: 5px 0 0 0; font-size: 10px; color: #444; font-family: monospace;">Esperando inicialización...</p>
+                        <p style="margin: 10px 0 0 0; font-size: 11px; color: #777; font-weight: bold; letter-spacing: 2px; font-family: monospace;" data-i18n="wf_lbl_status">ESTADO DEL ENLACE</p>
+                        <p id="rtEstadoPronostico" style="margin: 5px 0 0 0; font-size: 10px; color: #444; font-family: monospace;" data-i18n="wf_status_wait">Esperando inicialización...</p>
                     </div>
                 </div>
                 
                 <div class="main-content">
                     <div class="tabs" style="display: flex; margin-bottom: 15px;">
-                        <button class="tab-btn active" onclick="abrirPestanaPronostico('tabTiempoReal', this)">Tiempo Real</button>
-                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)">Pronóstico Res</button>
-                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología</button>
+                        <button class="tab-btn active" onclick="abrirPestanaPronostico('tabTiempoReal', this)" data-i18n="wf_tab_rt">Tiempo Real</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)" data-i18n="wf_tab_fc">Pronóstico Res</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)" data-i18n="wf_tab_clim">Climatología</button>
+                        <button class="tab-btn" onclick="abrirPestanaPronostico('tabGOES', this)" data-i18n="wf_tab_goes">Satélite GOES</button>
                     </div>
 
                     <!-- PESTAÑA 1: TIEMPO REAL (SCI-FI HUD MINIMALISTA) -->
                     <div id="tabTiempoReal" class="tab-content active scifi-panel">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div class="scifi-header" style="color: #f8fafc; margin: 0;">[ TELEMETRÍA EN VIVO ]</div>
-                            <div style="font-family: monospace; font-size: 12px; color: #777;">COORD: <span id="lblCoordScifi">--</span> <span class="live-pulse" style="margin-left: 10px; vertical-align: middle;"></span></div>
+                            <div class="scifi-header" style="color: #f8fafc; margin: 0;" data-i18n="wf_rt_title">[ TELEMETRÍA EN VIVO ]</div>
+                            <div style="font-family: monospace; font-size: 12px; color: #777;"><span data-i18n="wf_lbl_coord_short">COORD:</span> <span id="lblCoordScifi">--</span> <span class="live-pulse" style="margin-left: 10px; vertical-align: middle;"></span></div>
                         </div>
                         <div class="scifi-line"></div>
 
                         <div id="scifiGridContainer" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 20px;">
                             <!-- LEFT: MAPA RADAR -->
                             <div style="display: flex; flex-direction: column;">
-                                <div class="scifi-header">[ TARGET LOCATION / SATELLITE SCAN ]</div>
+                                <div class="scifi-header" data-i18n="wf_rt_target">[ TARGET LOCATION / SATELLITE SCAN ]</div>
                                 <div class="scifi-map-box" style="flex-grow: 1; min-height: 450px;">
                                     <div id="mapPronostico" style="width: 100%; height: 100%; border-radius: 0; background: #000;"></div>
                                 </div>
@@ -696,35 +697,35 @@
                             <div style="display: flex; flex-direction: column; gap: 15px;">
                                 <!-- ATMÓSFERA -->
                                 <div>
-                                    <div class="scifi-header">[ ATMÓSFERA SUPERFICIAL ]</div>
-                                    <div class="scifi-row"><span class="scifi-label">Temp. Aire</span><span class="scifi-val val-orange" id="rtTemp">--</span></div>
-                                    <div class="scifi-row"><span class="scifi-label">Humedad</span><span class="scifi-val val-blue" id="rtHum">--</span></div>
-                                    <div class="scifi-row"><span class="scifi-label">Pto. Rocío</span><span class="scifi-val val-white" id="rtDew">--</span></div>
+                                    <div class="scifi-header" data-i18n="wf_rt_atmos">[ ATMÓSFERA SUPERFICIAL ]</div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_temp">Temp. Aire</span><span class="scifi-val val-orange" id="rtTemp">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_hum">Humedad</span><span class="scifi-val val-blue" id="rtHum">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_dew">Pto. Rocío</span><span class="scifi-val val-white" id="rtDew">--</span></div>
                                     <div class="scifi-line"></div>
                                 </div>
 
                                 <!-- FLUIDOS -->
                                 <div>
-                                    <div class="scifi-header">[ DINÁMICA DE FLUIDOS ]</div>
-                                    <div class="scifi-row"><span class="scifi-label">Rad. Solar</span><span class="scifi-val val-orange" id="rtRad">--</span></div>
-                                    <div class="scifi-row"><span class="scifi-label">Viento</span><span class="scifi-val val-white" id="rtWind">--</span></div>
-                                    <div class="scifi-row"><span class="scifi-label">Presión</span><span class="scifi-val val-white" id="rtPres">--</span></div>
+                                    <div class="scifi-header" data-i18n="wf_rt_fluid">[ DINÁMICA DE FLUIDOS ]</div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_rad">Rad. Solar</span><span class="scifi-val val-orange" id="rtRad">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_wind">Viento</span><span class="scifi-val val-white" id="rtWind">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_pres">Presión</span><span class="scifi-val val-white" id="rtPres">--</span></div>
                                     <div class="scifi-line"></div>
                                 </div>
 
                                 <!-- GEOTERMÓMETROS VOLUMÉTRICOS 3D -->
                                 <div>
-                                    <div class="scifi-header">[ PERFIL TÉRMICO VOLUMÉTRICO ]</div>
+                                    <div class="scifi-header" data-i18n="wf_rt_therm">[ PERFIL TÉRMICO VOLUMÉTRICO ]</div>
                                     <div id="thermalCube3D" style="width: 100%; height: 180px; margin-bottom: 10px;"></div>
                                     <div class="scifi-line"></div>
                                 </div>
 
                                 <!-- HUMEDAD -->
                                 <div>
-                                    <div class="scifi-header">[ HUMEDAD SUPERFICIAL ]</div>
-                                    <div class="scifi-row"><span class="scifi-label">Capa 0-1 cm</span><span class="scifi-val val-blue" id="rtMoist0">--</span></div>
-                                    <div class="scifi-row"><span class="scifi-label">Capa 1-3 cm</span><span class="scifi-val val-blue" id="rtMoist1">--</span></div>
-                                    <div class="scifi-row"><span class="scifi-label">Capa 3-9 cm</span><span class="scifi-val val-blue" id="rtMoist3">--</span></div>
+                                    <div class="scifi-header" data-i18n="wf_rt_moist">[ HUMEDAD SUPERFICIAL ]</div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_layer0">Capa 0-1 cm</span><span class="scifi-val val-blue" id="rtMoist0">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_layer1">Capa 1-3 cm</span><span class="scifi-val val-blue" id="rtMoist1">--</span></div>
+                                    <div class="scifi-row"><span class="scifi-label" data-i18n="wf_lbl_layer3">Capa 3-9 cm</span><span class="scifi-val val-blue" id="rtMoist3">--</span></div>
                                     <div class="scifi-line"></div>
                                 </div>
                             </div>
@@ -734,7 +735,7 @@
                     <!-- PESTAÑA 2: PRONÓSTICO -->
                     <div id="tabForecast" class="tab-content">
                         <div class="chart-container" style="min-height: 600px; background: #0a0a0a; border: 1px solid #222; border-radius: 4px;">
-                            <h4 style="color: #fff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-family: monospace; letter-spacing: 1px;">[ PROYECCIÓN SINÓPTICA : 7 DÍAS ]</h4>
+                            <h4 style="color: #fff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-family: monospace; letter-spacing: 1px;" data-i18n="wf_fc_title">[ PROYECCIÓN SINÓPTICA : 7 DÍAS ]</h4>
                             <div id="forecastGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 25px;">
                                 <!-- Inyectado vía JS -->
                             </div>
@@ -745,9 +746,16 @@
                     <!-- PESTAÑA 3: CLIMATOLOGÍA -->
                     <div id="tabClimatologia" class="tab-content">
                         <div class="chart-container" style="min-height: 600px; background: #0a0a0a; border: 1px solid #222; border-radius: 4px;">
-                            <h4 style="color: #fff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-family: monospace; letter-spacing: 1px;">[ ANÁLISIS CLIMÁTICO HISTÓRICO ]</h4>
-                            <p style="font-size: 11px; color: #777; margin-bottom: 20px; font-family: monospace;">Promedio de precipitación acumulada (Archive API 2020-2025).</p>
+                            <h4 style="color: #fff; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-family: monospace; letter-spacing: 1px;" data-i18n="wf_clim_title">[ ANÁLISIS CLIMÁTICO HISTÓRICO ]</h4>
+                            <p style="font-size: 11px; color: #777; margin-bottom: 20px; font-family: monospace;" data-i18n="wf_clim_desc">Promedio de precipitación acumulada (Archive API 2020-2025).</p>
                             <canvas id="chartClimaHist" height="120"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- PESTAÑA 4: SATELITE GOES -->
+                    <div id="tabGOES" class="tab-content">
+                        <div class="chart-container" style="min-height: 600px; background: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 0; overflow: hidden;">
+                            <iframe id="iframeGOES" src="https://weather.ndc.nasa.gov/cgi-bin/get-abi?satellite=GOESEastfullDiskband14&lat=-27&lon=-65&zoom=2&type=Animation&numframes=10&width=1000&height=650&mapcolor=white&quality=75&palette=ir2.pal" width="100%" height="650px" style="border: none;"></iframe>
                         </div>
                     </div>
                 </div>
@@ -768,7 +776,7 @@
         </div>
 
         <!-- ==========================================
-             MÓDULO METRIC HYDRO (GEOGLOWS RFS EMBEBIDO + RESUMEN DE CUENCAS)
+             MÓDULO METRIC HYDRO
              ========================================== -->
         <div id="moduloHydro" style="display: none;">
             <div class="header">
@@ -991,10 +999,11 @@
                 "diag_fav": "The global balance shows a <strong>favorable</strong> atmospheric behavior. ",
                 "diag_opt": "Currently, the deep reserve of the lot (100 cm) is at <strong>optimal</strong> levels (above 65% of useful water), guaranteeing root stability against upcoming heat waves.",
                 "diag_reg": "Currently, the deep reserve (100 cm) is in a state of <strong>regular transition</strong>. It is suggested to monitor surface drying to avoid phenological stress.",
-                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>"
+                "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>",
+                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Agrometeorological Assimilation Module", "wf_cmd_title": "[ MONITORING CENTER ]", "wf_cmd_desc": "Click on the map, use your GPS or enter coordinates to scan the terrain.", "wf_lbl_coord": "Target Coordinates (Lat, Lon):", "wf_btn_gps": "📍 Fix GPS Position", "wf_btn_scan": "Start Satellite Scan", "wf_lbl_status": "LINK STATUS", "wf_status_wait": "Waiting for initialization...", "wf_tab_rt": "Real Time", "wf_tab_fc": "Forecast Res", "wf_tab_clim": "Climatology", "wf_tab_goes": "GOES-19 Live", "wf_rt_title": "[ LIVE TELEMETRY ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ TARGET LOCATION / SATELLITE SCAN ]", "wf_rt_atmos": "[ SURFACE ATMOSPHERE ]", "wf_lbl_temp": "Air Temp.", "wf_lbl_hum": "Humidity", "wf_lbl_dew": "Dew Point", "wf_rt_fluid": "[ FLUID DYNAMICS ]", "wf_lbl_rad": "Solar Rad.", "wf_lbl_wind": "Wind", "wf_lbl_pres": "Pressure", "wf_rt_therm": "[ VOLUMETRIC THERMAL PROFILE ]", "wf_rt_moist": "[ SURFACE MOISTURE ]", "wf_lbl_layer0": "Layer 0-1 cm", "wf_lbl_layer1": "Layer 1-3 cm", "wf_lbl_layer3": "Layer 3-9 cm", "wf_fc_title": "[ SYNOPTIC PROJECTION : 7 DAYS ]", "wf_clim_title": "[ HISTORICAL CLIMATIC ANALYSIS ]", "wf_clim_desc": "Average accumulated precipitation (Archive API 2020-2025)."
             },
             es: {
-                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronômico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
+                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
                 "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (48 Horas Gratis)",
                 "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "lbl_and": " y la ", "lbl_priv": "Política de Privacidad", "msg_tyc_req": "Debes aceptar los términos legales para registrarte.",
                 "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
@@ -1036,6 +1045,7 @@
                 "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.",
                 "hydro_lbl_msg": "Redactar Mensaje de Alerta:",
                 "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
+                "btn_gps": "📍 Usar Mi Ubicación GPS (4 ha)",
                 "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
                 "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
                 "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):",
@@ -1050,7 +1060,8 @@
                 "diag_fav": "El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. ",
                 "diag_opt": "Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.",
                 "diag_reg": "Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.",
-                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>"
+                "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>",
+                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Módulo de Asimilación Agrometeorológica", "wf_cmd_title": "[ CENTRO DE MONITOREO ]", "wf_cmd_desc": "Haga clic en el mapa, use su GPS o ingrese coordenadas para escanear el terreno.", "wf_lbl_coord": "Coordenadas Objetivo (Lat, Lon):", "wf_btn_gps": "📍 Fijar Posición GPS", "wf_btn_scan": "Iniciar Escaneo Satelital", "wf_lbl_status": "ESTADO DEL ENLACE", "wf_status_wait": "Esperando inicialización...", "wf_tab_rt": "Tiempo Real", "wf_tab_fc": "Pronóstico Res", "wf_tab_clim": "Climatología", "wf_tab_goes": "Satélite GOES", "wf_rt_title": "[ TELEMETRÍA EN VIVO ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ SENSOR SATELITAL / OBJETIVO ]", "wf_rt_atmos": "[ ATMÓSFERA SUPERFICIAL ]", "wf_lbl_temp": "Temp. Aire", "wf_lbl_hum": "Humedad", "wf_lbl_dew": "Pto. Rocío", "wf_rt_fluid": "[ DINÁMICA DE FLUIDOS ]", "wf_lbl_rad": "Rad. Solar", "wf_lbl_wind": "Viento", "wf_lbl_pres": "Presión", "wf_rt_therm": "[ PERFIL TÉRMICO VOLUMÉTRICO ]", "wf_rt_moist": "[ HUMEDAD SUPERFICIAL ]", "wf_lbl_layer0": "Capa 0-1 cm", "wf_lbl_layer1": "Capa 1-3 cm", "wf_lbl_layer3": "Capa 3-9 cm", "wf_fc_title": "[ PROYECCIÓN SINÓPTICA : 7 DÍAS ]", "wf_clim_title": "[ ANÁLISIS CLIMÁTICO HISTÓRICO ]", "wf_clim_desc": "Promedio de precipitación acumulada (Archive API 2020-2025)."
             },
             pt: {
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
@@ -1088,7 +1099,8 @@
                 "contact_desc": "Interessado em levar a tecnologia da MetricPoint para seus campos? Envie-nos uma mensagem.",
                 "contact_name": "Nome Completo",
                 "contact_msg": "Sua Mensagem",
-                "btn_send": "Enviar Mensagem"
+                "btn_send": "Enviar Mensagem",
+                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Módulo de Assimilação Agrometeorológica", "wf_cmd_title": "[ CENTRO DE MONITORAMENTO ]", "wf_cmd_desc": "Clique no mapa, use seu GPS ou insira coordenadas para escanear o terreno.", "wf_lbl_coord": "Coordenadas Alvo (Lat, Lon):", "wf_btn_gps": "📍 Fixar Posição GPS", "wf_btn_scan": "Iniciar Varredura por Satélite", "wf_lbl_status": "STATUS DO LINK", "wf_status_wait": "Aguardando inicialização...", "wf_tab_rt": "Tempo Real", "wf_tab_fc": "Previsão Res", "wf_tab_clim": "Climatologia", "wf_tab_goes": "Satélite GOES", "wf_rt_title": "[ TELEMETRIA AO VIVO ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ SENSOR DE SATÉLITE / ALVO ]", "wf_rt_atmos": "[ ATMOSFERA DE SUPERFÍCIE ]", "wf_lbl_temp": "Temp. Ar", "wf_lbl_hum": "Umidade", "wf_lbl_dew": "Pto. Orvalho", "wf_rt_fluid": "[ DINÂMICA DE FLUIDOS ]", "wf_lbl_rad": "Rad. Solar", "wf_lbl_wind": "Vento", "wf_lbl_pres": "Pressão", "wf_rt_therm": "[ PERFIL TÉRMICO VOLUMÉTRICO ]", "wf_rt_moist": "[ UMIDADE DE SUPERFÍCIE ]", "wf_lbl_layer0": "Camada 0-1 cm", "wf_lbl_layer1": "Camada 1-3 cm", "wf_lbl_layer3": "Camada 3-9 cm", "wf_fc_title": "[ PROJEÇÃO SINÓTICA : 7 DIAS ]", "wf_clim_title": "[ ANÁLISE CLIMÁTICA HISTÓRICA ]", "wf_clim_desc": "Precipitação média acumulada (Archive API 2020-2025)."
             }
         };
 
@@ -1772,6 +1784,12 @@
                 });
                 markerPronostico = L.marker([lat, lon], {icon: sciFiIcon}).addTo(mapPronostico);
 
+                // ACTUALIZAR IFRAME NASA GOES
+                const iframeGoes = document.getElementById('iframeGOES');
+                if(iframeGoes) {
+                    iframeGoes.src = `https://weather.ndc.nasa.gov/cgi-bin/get-abi?satellite=GOESEastfullDiskband14&lat=${lat}&lon=${lon}&zoom=2&type=Animation&numframes=10&width=1000&height=650&mapcolor=white&quality=75&palette=ir2.pal`;
+                }
+
             } catch(e) {
                 alert("Error al conectar con el servidor meteorológico espacial.");
             }
@@ -1911,9 +1929,6 @@
             if (tabId === 'tabHydroAdv' && window.hydroMap) {
                 setTimeout(() => window.hydroMap.invalidateSize(), 100);
             }
-            if (tabId === 'tabHydroSit') {
-                cargarEstadoCuencasReal();
-            }
         }
 
         function verificarUsoInterno(elementoBtn) {
@@ -1922,37 +1937,6 @@
                 abrirPestanaHydro('tabHydroInt', elementoBtn);
             } else {
                 alert("Access Denied: This emergency console is exclusive to the General Administration account.");
-            }
-        }
-
-        async function cargarEstadoCuencasReal() {
-            const contenedor = document.getElementById("contenedorResumenCuencas");
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/hidro/estado`);
-                const data = await res.json();
-                
-                if(res.ok && data.estaciones) {
-                    contenedor.innerHTML = data.estaciones.map(est => {
-                        let colorEstado = "#22c55e"; // NORMAL
-                        if(est.estado === "PRECAUCIÓN") colorEstado = "#f59e0b";
-                        if(est.estado === "PELIGRO") colorEstado = "#ef4444";
-
-                        return `
-                            <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid ${colorEstado};">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <strong style="color: #f8fafc; font-size: 14px;">${est.rio}</strong>
-                                    <span style="background: ${colorEstado}; color: #020617; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">${est.estado}</span>
-                                </div>
-                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Ubicación: <span style="color:#fff;">${est.ubicacion}</span></p>
-                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">${est.altura_m} m</strong></p>
-                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">${est.caudal_m3s} m³/s</strong></p>
-                                <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: ${est.tendencia}</p>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            } catch(e) {
-                contenedor.innerHTML = `<div style="color: #ef4444; font-size: 13px;">Error de conexión con el servidor hidrológico.</div>`;
             }
         }
 
@@ -2017,7 +2001,7 @@
                     document.getElementById("txtAlertaHydro").value = "";
                     if (typeof actualizarContadorSMS === 'function') actualizarContadorSMS();
                 } else {
-                    status.innerText = "❌ El servidor rechazó la orden.";
+                    status.innerText = "❌ El servidor rechazó la orden. ¿Actualizaste app_moisture.py?";
                     btn.innerText = "🚀 REINTENTAR DISPARO";
                 }
             } catch(e) {
@@ -2065,9 +2049,9 @@
     <!-- WIDGET DE SOPORTE METRICPOINT (CLASSIC MODE + CLOSE BUTTON) -->
     <div id="widgetSoporte" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-left: 5px solid #08306b; width: 260px; font-family: 'Segoe UI', sans-serif;">
         <span onclick="document.getElementById('widgetSoporte').style.display='none'" style="cursor:pointer; float:right; font-weight:bold; color:#08306b; font-size:18px; margin-top:-5px;" title="Cerrar widget">&times;</span>
-        <h4 style="margin: 0 0 5px 0; color: #08306b; font-size: 15px;">Soporte MetricPoint</h4>
-        <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4;">Canal habilitado para contacto, envíanos tu pregunta.</p>
-        <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 10px; background: #38bdf8; color: #020617; text-align: center; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.3s;">
+        <h4 style="margin: 0 0 5px 0; color: #08306b; font-size: 15px;" data-i18n="support_title">Soporte MetricPoint</h4>
+        <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4;" data-i18n="support_desc">Canal habilitado para contacto, envíanos tu pregunta.</p>
+        <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 10px; background: #38bdf8; color: #020617; text-align: center; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.3s;" data-i18n="support_btn">
             Canal de Contacto
         </a>
     </div>
