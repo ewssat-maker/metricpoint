@@ -105,11 +105,10 @@
         .hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
 
         .hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-        .hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: all 0.3s ease; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; }
+        .hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: all 0.3s ease; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); background: linear-gradient(135deg, #0a3d8a 0%, #1b5bba 100%); border-bottom-color: #6baed6; }
-        .hub-card h3 { color: #ffffff; margin: 15px 0 10px 0; font-size: 18px; text-align: center; }
+        .hub-card h3 { color: #ffffff; margin-top: 0; margin-bottom: 10px; font-size: 18px; text-align: center; }
         .hub-card p { color: #e0f3db; font-size: 13px; line-height: 1.5; margin: 0; text-align: center; }
-        .hub-icon { font-size: 40px; }
 
         .container { display: flex; gap: 20px; }
         .sidebar { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -312,20 +311,20 @@
     <div id="modalTyC" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 data-i18n="legal_title">Terms and Conditions of Use</h3>
+                <h3 data-i18n="legal_title">Términos y Condiciones de Uso</h3>
                 <span style="cursor: pointer; font-size: 20px;" onclick="cerrarTyC()">&times;</span>
             </div>
             <div class="modal-body">
-                <p data-i18n="legal_p1">By registering, accessing or using the MetricPoint platform, you agree to be bound by these terms.</p>
-                <h4 data-i18n="legal_h1">1. Agronomic Disclaimer</h4>
-                <p data-i18n="legal_p2">The Platform provides satellite and radar telemetry tools. You understand that it is strictly a decision assistance tool and does not replace agronomic judgment in the field. MetricPoint assumes no liability for yield losses or crop damage resulting from decisions made based on the platform.</p>
-                <h4 data-i18n="legal_h2">2. Third Party Data Sources</h4>
-                <p data-i18n="legal_p3">The architecture is fed by the European Space Agency (Copernicus) and the National Meteorological Service (SMN). We do not guarantee 100% uptime in case of government server crashes.</p>
+                <p data-i18n="legal_p1">Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.</p>
+                <h4 data-i18n="legal_h1">1. Descargo de Responsabilidad Agronómica</h4>
+                <p data-i18n="legal_p2">La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de <strong>asistencia para la toma de decisiones</strong> y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.</p>
+                <h4 data-i18n="legal_h2">2. Fuentes de Datos de Terceros</h4>
+                <p data-i18n="legal_p3">La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.</p>
                 <h4 data-i18n="legal_h3">3. Uso y Licencias</h4>
-                <p data-i18n="legal_p4">Trial access lasts 48 hours. Web scraping, resale of information or sharing credentials without a commercial license is explicitly prohibited.</p>
+                <p data-i18n="legal_p4">El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.</p>
             </div>
             <div class="modal-footer">
-                <button class="btn-close-modal" onclick="cerrarTyC()" data-i18n="btn_close">Close</button>
+                <button class="btn-close-modal" onclick="cerrarTyC()" data-i18n="btn_close">Cerrar</button>
             </div>
         </div>
     </div>
@@ -334,19 +333,19 @@
     <div id="modalPrivacidad" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 data-i18n="priv_title">Privacy Policy</h3>
+                <h3 data-i18n="priv_title">Aviso de Privacidad</h3>
                 <span style="cursor: pointer; font-size: 20px;" onclick="cerrarPrivacidad()">&times;</span>
             </div>
             <div class="modal-body">
-                <h4 data-i18n="priv_h1">1. Information we collect</h4>
-                <p data-i18n="priv_p1">We collect your email (with encrypted password) and the geospatial coordinates (polygons) of the analyzed lots for calculating water balances.</p>
-                <h4 data-i18n="priv_h2">2. Sharing with Third Parties</h4>
-                <p data-i18n="priv_p2">MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.</p>
-                <h4 data-i18n="priv_h3">3. User Rights</h4>
-                <p data-i18n="priv_p3">In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the system administrator.</p>
+                <h4 data-i18n="priv_h1">1. Información que recopilamos</h4>
+                <p data-i18n="priv_p1">Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para calcular los balances hídricos.</p>
+                <h4 data-i18n="priv_h2">2. Compartición con Terceros</h4>
+                <p data-i18n="priv_p2">MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.</p>
+                <h4 data-i18n="priv_h3">3. Derechos del Usuario</h4>
+                <p data-i18n="priv_p3">En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.</p>
             </div>
             <div class="modal-footer">
-                <button class="btn-close-modal" onclick="cerrarPrivacidad()" data-i18n="btn_close">Close</button>
+                <button class="btn-close-modal" onclick="cerrarPrivacidad()" data-i18n="btn_close">Cerrar</button>
             </div>
         </div>
     </div>
@@ -398,50 +397,50 @@
         <div id="techSection">
             <div class="intro-tabs-container">
                 <div class="intro-tabs-header">
-                    <button class="intro-tab-btn active" onclick="abrirIntroTab('introWho', this)" data-i18n="tab_intro_who">Who We Are</button>
-                    <button class="intro-tab-btn" onclick="abrirIntroTab('introProd', this)" data-i18n="tab_intro_prod">Our Products</button>
-                    <button class="intro-tab-btn" onclick="abrirIntroTab('introContact', this)" data-i18n="tab_intro_contact">Contact Us</button>
+                    <button class="intro-tab-btn active" onclick="abrirIntroTab('introWho', this)" data-i18n="tab_intro_who">Quiénes Somos</button>
+                    <button class="intro-tab-btn" onclick="abrirIntroTab('introProd', this)" data-i18n="tab_intro_prod">Nuestros Productos</button>
+                    <button class="intro-tab-btn" onclick="abrirIntroTab('introContact', this)" data-i18n="tab_intro_contact">Contacto</button>
                 </div>
                 
                 <div id="introWho" class="intro-tab-content active">
-                    <h2 style="color: #38bdf8; font-size: 32px; margin-top: 0;" data-i18n="who_title">MetricPoint: Geospatial Intelligence</h2>
-                    <p class="about-text" data-i18n="who_p1">MetricPoint is a cutting-edge AgTech platform specializing in geospatial intelligence and agronomic modeling using SAR satellite technology.</p>
-                    <p class="about-text" data-i18n="who_p2">With a solid base of operations and research in the United States, we develop solutions that push the boundaries of crop monitoring.</p>
-                    <p class="about-text" data-i18n="who_p3">We are preparing for a major launch in Argentina, bringing our suite to revolutionize precision agriculture in South America, anticipating water stress with millimeter accuracy.</p>
+                    <h2 style="color: #38bdf8; font-size: 32px; margin-top: 0;" data-i18n="who_title">MetricPoint: Inteligencia Geoespacial</h2>
+                    <p class="about-text" data-i18n="who_p1">MetricPoint es una plataforma AgTech de vanguardia especializada en inteligencia geoespacial y modelado agronómico mediante tecnología satelital SAR.</p>
+                    <p class="about-text" data-i18n="who_p2">Con una base sólida de operaciones e investigación en Estados Unidos, desarrollamos soluciones que cruzan la barrera de lo posible en el monitoreo de cultivos.</p>
+                    <p class="about-text" data-i18n="who_p3">Nos preparamos para un gran desembarco en Argentina, trayendo nuestra suite para revolucionar la agricultura de precisión en Sudamérica, anticipándonos al estrés hídrico con precisión milimétrica.</p>
                 </div>
 
                 <div id="introProd" class="intro-tab-content">
                     <div class="product-showcase">
                         <video autoplay loop muted playsinline><source src="gemelos_digitales.mp4" type="video/mp4"></video>
                         <div class="product-info">
-                            <h3 style="color: #10b981;" data-i18n="prod_gem_title">Volumetric Digital Twins</h3>
-                            <p data-i18n="prod_gem_desc">Visualize your field's subsoil like never before. Our 3D technology allows real-time terrain tomography, identifying the exact distribution of edaphic moisture to optimize irrigation and prevent water stress before it becomes irreversible.</p>
+                            <h3 style="color: #10b981;" data-i18n="prod_gem_title">Gemelos Digitales Volumétricos</h3>
+                            <p data-i18n="prod_gem_desc">Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real, identificando la distribución exacta de la humedad edáfica para optimizar el riego y prevenir el estrés hídrico antes de que sea irreversible.</p>
                         </div>
                     </div>
                     <div class="product-showcase" style="border-left-color: #f59e0b; flex-direction: row-reverse;">
                         <video autoplay loop muted playsinline><source src="RVI_vigor.mp4" type="video/mp4"></video>
                         <div class="product-info">
-                            <h3 style="color: #f59e0b;" data-i18n="prod_rvi_title">Vigor RVI & Phenological Monitoring</h3>
-                            <p data-i18n="prod_rvi_desc">We overcome the limitations of traditional optical indices (NDVI). Using Synthetic Aperture Radar (SAR), we measure real vigor and biomass structure regardless of cloud cover, ensuring uninterrupted tracking of your crop's development.</p>
+                            <h3 style="color: #f59e0b;" data-i18n="prod_rvi_title">Vigor RVI y Monitoreo Fenológico</h3>
+                            <p data-i18n="prod_rvi_desc">Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real y la estructura de la biomasa sin importar la nubosidad, asegurando un seguimiento ininterrumpido del desarrollo de su cultivo.</p>
                         </div>
                     </div>
                     <div class="product-showcase" style="border-left-color: #38bdf8;">
                         <video autoplay loop muted playsinline><source src="polinizacion.mp4" type="video/mp4"></video>
                         <div class="product-info">
-                            <h3 style="color: #38bdf8;" data-i18n="prod_pol_title">MetricPoli: Smart Pollination</h3>
-                            <p data-i18n="prod_pol_desc">Maximize your yield by understanding the interaction between climate and pollinators. Analyze real-time meteorological variables to predict optimal flight windows, guaranteeing exceptional fruit set and sustainable harvests.</p>
+                            <h3 style="color: #38bdf8;" data-i18n="prod_pol_title">MetricPoli: Polinización Inteligente</h3>
+                            <p data-i18n="prod_pol_desc">Maximice su rendimiento comprendiendo la interacción entre el clima y los polinizadores. Analice variables meteorológicas en tiempo real para predecir ventanas óptimas de vuelo, garantizando un cuajado de frutos excepcional y cosechas sostenibles.</p>
                         </div>
                     </div>
                 </div>
 
                 <div id="introContact" class="intro-tab-content">
-                    <h2 style="color: #38bdf8; text-align: center; margin-top: 0; font-size: 32px;" data-i18n="contact_title">Get in Touch</h2>
-                    <p style="text-align: center; margin-bottom: 30px; font-size: 16px;" data-i18n="contact_desc">Interested in bringing MetricPoint's technology to your fields? Drop us a message.</p>
+                    <h2 style="color: #38bdf8; text-align: center; margin-top: 0; font-size: 32px;" data-i18n="contact_title">Póngase en Contacto</h2>
+                    <p style="text-align: center; margin-bottom: 30px; font-size: 16px;" data-i18n="contact_desc">¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.</p>
                     <div class="contact-form">
-                        <input type="text" data-i18n="contact_name" placeholder="Full Name">
-                        <input type="email" data-i18n="lbl_email" placeholder="Email Address">
-                        <textarea rows="5" data-i18n="contact_msg" placeholder="Your Message"></textarea>
-                        <button type="button" data-i18n="btn_send" onclick="alert('Message sent (Simulated)')">Send Message</button>
+                        <input type="text" data-i18n="contact_name" placeholder="Nombre Completo">
+                        <input type="email" data-i18n="lbl_email" placeholder="Correo Electrónico">
+                        <textarea rows="5" data-i18n="contact_msg" placeholder="Su Mensaje"></textarea>
+                        <button type="button" data-i18n="btn_send" onclick="alert('Mensaje enviado (Simulado)')">Enviar Mensaje</button>
                     </div>
                 </div>
             </div>
@@ -458,7 +457,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO ORIGINAL -->
+    <!-- ESPACIO DE TRABAJO -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -513,7 +512,6 @@
                     <label data-i18n="lbl_end_date">End Date (YYYY-MM-DD):</label><input type="text" id="endDate" value="2026-08-01">
                     <label data-i18n="lbl_sow_date">Sowing Date (YYYY-MM-DD):</label><input type="text" id="siembraDate" value="2025-12-15">
                     
-                    <!-- BOTÓN GPS -->
                     <button class="btn-secondary" style="width: 100%; margin-top: 10px; background-color: #6baed6; color: #08306b; border: none;" onclick="obtenerUbicacionGPS()" data-i18n="btn_gps">📍 Usar Mi Ubicación GPS (4 ha)</button>
 
                     <div class="ingesta-card">
@@ -643,7 +641,7 @@
              MÓDULO WEATHER FORECAST 2.0 (TECH)
              ========================================== -->
         <div id="moduloPronostico" style="display: none;">
-            <div class="header">
+            <div class="header" style="background: linear-gradient(90deg, #0a0a0a, #111); border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.8);">
                 <div class="header-left">
                     <h1 style="color: #fff; font-weight: bold; letter-spacing: 2px; margin-bottom: 5px; font-family: monospace;">WEATHER FORECAST</h1>
                     <span style="color: #777; font-style: normal; font-family: monospace; text-transform: uppercase; font-size: 11px;">Módulo de Asimilación Agrometeorológica</span>
@@ -653,18 +651,20 @@
             
             <div class="container" style="background-color: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 20px;">
                 <div class="sidebar" style="background: #0d0d0d; border: 1px solid #222; color: white; border-radius: 4px;">
-                    <h3 style="color: #fff; margin-top: 0; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; font-size: 14px;">[ CENTRO DE COMANDO ]</h3>
-                    <p style="font-size: 11px; color: #777; line-height: 1.5; margin-bottom: 15px; font-family: monospace;">Alinee coordenadas para sincronizar biometría del terreno.</p>
+                    <h2 style="color: #38bdf8; margin-top: 0; font-family: monospace; text-transform: uppercase; letter-spacing: 2px; font-size: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; text-shadow: 0 0 8px rgba(56,189,248,0.4);">[ CENTRO DE MONITOREO ]</h2>
+                    <p style="font-size: 11px; color: #aaa; line-height: 1.5; margin-bottom: 15px; font-family: monospace;">Haga clic en el mapa, use su GPS o ingrese coordenadas para escanear el terreno.</p>
                     
-                    <label style="color: #888; font-family: monospace; font-size: 11px; text-transform: uppercase;">Latitud, Longitud:</label>
-                    <input type="text" id="coordPronostico" value="-26.82, -65.22" style="background: #000; border: 1px solid #444; color: white; font-weight: bold; margin-bottom: 10px; font-family: monospace; border-radius: 0; padding: 10px;">
+                    <label style="color: #888; font-family: monospace; font-size: 11px; text-transform: uppercase;">Coordenadas Objetivo (Lat, Lon):</label>
+                    <input type="text" id="coordPronostico" value="-26.82, -65.22" style="background: #000; border: 1px solid #444; color: #38bdf8; font-weight: bold; margin-bottom: 10px; font-family: monospace; border-radius: 0; padding: 10px; text-align: center; font-size: 14px;">
                     
-                    <button class="btn-primary" style="background-color: #fff; color: #000; margin-top: 5px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 12px;" onclick="actualizarPronosticoGlobal()">Iniciar Escaneo</button>
+                    <button class="btn-secondary" style="background-color: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; width: 100%; margin-top: 5px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 10px; cursor: pointer;" onclick="obtenerUbicacionGPSPronostico()">📍 Fijar Posición GPS</button>
+                    
+                    <button class="btn-primary" style="background-color: #fff; color: #000; width: 100%; margin-top: 10px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; border-radius: 0; padding: 12px; font-weight: bold; cursor: pointer;" onclick="actualizarPronosticoGlobal()">Iniciar Escaneo Satelital</button>
                     
                     <div style="margin-top: 20px; padding: 15px; background: #0a0a0a; border: 1px solid #222; text-align: center;">
                         <span style="font-size: 20px;">🛰️</span>
                         <p style="margin: 10px 0 0 0; font-size: 11px; color: #777; font-weight: bold; letter-spacing: 2px; font-family: monospace;">ESTADO DEL ENLACE</p>
-                        <p style="margin: 5px 0 0 0; font-size: 10px; color: #444; font-family: monospace;">Esperando inicialización...</p>
+                        <p id="rtEstadoPronostico" style="margin: 5px 0 0 0; font-size: 10px; color: #444; font-family: monospace;">Esperando inicialización...</p>
                     </div>
                 </div>
                 
@@ -768,7 +768,7 @@
         </div>
 
         <!-- ==========================================
-             MÓDULO METRIC HYDRO
+             MÓDULO METRIC HYDRO (GEOGLOWS RFS EMBEBIDO + RESUMEN DE CUENCAS)
              ========================================== -->
         <div id="moduloHydro" style="display: none;">
             <div class="header">
@@ -820,7 +820,7 @@
                         </div>
                     </div>
                     
-                    <!-- PESTAÑA: SITUACIÓN ACTUAL -->
+                    <!-- PESTAÑA: SITUACIÓN ACTUAL (GEOGLOWS RFS EMBEBIDO + RESUMEN EJECUTIVO DE CUENCAS) -->
                     <div id="tabHydroSit" class="tab-content">
                         <div class="chart-container" style="min-height: 650px; background: #0a0a0a; border: 1px solid #222; color: white; padding: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
@@ -836,48 +836,73 @@
                                 <iframe src="https://apps.geoglows.org/rfs#lon=-65.25&lat=-27.66&zoom=11.00&definition=" width="100%" height="100%" style="border: none;" title="GEOGLOWS River Forecast System"></iframe>
                             </div>
 
-                            <!-- RESUMEN EJECUTIVO DE CUENCAS EN TIEMPO REAL -->
+                            <!-- RESUMEN EJECUTIVO DE CUENCAS EN TUCUMÁN -->
                             <div style="background: #111827; border: 1px solid #334155; border-radius: 6px; padding: 20px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 15px;">
-                                    <h4 style="margin: 0; color: #38bdf8; font-family: monospace; font-size: 14px; letter-spacing: 1px;" data-i18n="hydro_summary_title">[ TELEMETRY & BASIN STATUS - REAL TIME ]</h4>
-                                    <button onclick="cargarEstadoCuencasReal()" style="background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-family: monospace;" data-i18n="hydro_btn_refresh">🔄 Refresh Data</button>
-                                </div>
+                                <h4 style="margin-top: 0; color: #38bdf8; font-family: monospace; border-bottom: 1px solid #334155; padding-bottom: 8px; font-size: 14px; letter-spacing: 1px;">[ RESUMEN DE CUENCAS PRINCIPALES - TUCUMÁN ]</h4>
                                 
-                                <div id="contenedorResumenCuencas" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">
-                                    <div style="color: #64748b; font-size: 13px; font-style: italic;">Connecting to Tucumán hydrometric network...</div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 15px;">
+                                    
+                                    <!-- Río Marapa -->
+                                    <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid #22c55e;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                            <strong style="color: #f8fafc; font-size: 14px;">Río Marapa (La Madrid)</strong>
+                                            <span style="background: #22c55e; color: #020617; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">NORMAL</span>
+                                        </div>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">2.45 m</strong></p>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">42.5 m³/s</strong></p>
+                                        <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: Estable / Sin riesgo inminente.</p>
+                                    </div>
+
+                                    <!-- Río Gastona -->
+                                    <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid #22c55e;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                            <strong style="color: #f8fafc; font-size: 14px;">Río Gastona (Concepción)</strong>
+                                            <span style="background: #22c55e; color: #020617; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">NORMAL</span>
+                                        </div>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">1.80 m</strong></p>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">28.1 m³/s</strong></p>
+                                        <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: Estable en cuenca alta.</p>
+                                    </div>
+
+                                    <!-- Río Salí -->
+                                    <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                            <strong style="color: #f8fafc; font-size: 14px;">Río Salí (Banda del Salí)</strong>
+                                            <span style="background: #f59e0b; color: #020617; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">PRECAUCIÓN</span>
+                                        </div>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">3.10 m</strong></p>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">115.0 m³/s</strong></p>
+                                        <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: Incremento por aportes zonales.</p>
+                                    </div>
+
+                                    <!-- Río Chico -->
+                                    <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid #22c55e;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                            <strong style="color: #f8fafc; font-size: 14px;">Río Chico (Piedrabuena)</strong>
+                                            <span style="background: #22c55e; color: #020617; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">NORMAL</span>
+                                        </div>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">1.40 m</strong></p>
+                                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">19.4 m³/s</strong></p>
+                                        <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: Escurrimiento normal.</p>
+                                    </div>
+
                                 </div>
                             </div>
 
                         </div>
                     </div>
                     
-                    <!-- PESTAÑA: USO INTERNO (MODO DIOS CON MONITORES SEPARADOS) -->
+                    <!-- PESTAÑA: USO INTERNO (MODO DIOS) -->
                     <div id="tabHydroInt" class="tab-content">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="chart-container" style="min-height: 400px; background: #fff1f2; border: 1px solid #e11d48;">
+                            <h3 style="margin-top:0; color:#e11d48; border-bottom: 2px solid #fecdd3; padding-bottom: 10px;" data-i18n="hydro_admin_title">⚠️ Emergency Dispatch Console (GOD MODE)</h3>
+                            <p style="font-size: 13px; color: #666; margin-bottom: 20px;" data-i18n="hydro_admin_desc">The message drafted here will be sent via SMS to registered contacts and will immediately update the public Warnings panel and the risk map.</p>
                             
-                            <!-- MONITOR 1: TWILIO SMS -->
-                            <div class="chart-container" style="background: #fff1f2; border: 1px solid #e11d48;">
-                                <h3 style="margin-top:0; color:#e11d48; border-bottom: 2px solid #fecdd3; padding-bottom: 10px;">🚨 Monitor SMS (Twilio)</h3>
-                                <p style="font-size: 13px; color: #9f1239; margin-bottom: 15px;">Disparo automático a la lista de contactos. El límite estricto es de 160 caracteres por mensaje.</p>
-                                
-                                <textarea id="txtAlertaHydro" rows="4" maxlength="160" oninput="actualizarContadorSMS()" style="width: 100%; padding: 15px; border: 2px solid #f43f5e; border-radius: 6px; font-family: monospace; font-size: 16px; margin-bottom: 5px; box-sizing: border-box;" placeholder="Ej: Atención: Crecida en río Marapa (La Madrid)..."></textarea>
-                                
-                                <div id="contadorSMS" style="text-align: right; font-size: 13px; font-weight: bold; color: #e11d48; margin-bottom: 15px;">0 / 160 caracteres</div>
-                                
-                                <button class="btn-primary" style="background-color: #e11d48; font-size: 15px; padding: 12px; width: 100%;" onclick="dispararAlertaHydro(event)">🚀 DISPARAR ALERTA SMS Y WEB</button>
-                                <p id="lblStatusHydro" style="font-size: 13px; font-weight: bold; color: #e11d48; margin-top: 15px; text-align: center;"></p>
-                            </div>
-                    
-                            <!-- MONITOR 2: WHATSAPP PERSONAL (CANAL) -->
-                            <div class="chart-container" style="background: #f0fdf4; border: 1px solid #16a34a;">
-                                <h3 style="margin-top:0; color:#16a34a; border-bottom: 2px solid #bbf7d0; padding-bottom: 10px;">🟢 Monitor WhatsApp (Personal)</h3>
-                                <p style="font-size: 13px; color: #166534; margin-bottom: 15px;">Este botón formatea la alerta y abre tu WhatsApp personal para publicarla directamente en tu Canal (Sin límite de texto).</p>
-                                
-                                <textarea id="txtAlertaWA" rows="4" style="width: 100%; padding: 15px; border: 2px solid #22c55e; border-radius: 6px; font-family: monospace; font-size: 16px; margin-bottom: 15px; box-sizing: border-box;" placeholder="Ej: 🚨 RIESGO DE INUNDACIÓN. El río superó la cota..."></textarea>
-                                
-                                <button class="btn-primary" style="background-color: #16a34a; font-size: 15px; padding: 12px; width: 100%;" onclick="dispararWhatsAppPersonal()">📲 ABRIR WHATSAPP</button>
-                            </div>
-                    
+                            <label style="color: #e11d48; font-size: 14px; font-weight: bold;" data-i18n="hydro_lbl_msg">Draft Alert Message:</label>
+                            <textarea id="txtAlertaHydro" rows="4" style="width: 100%; padding: 15px; border: 2px solid #f43f5e; border-radius: 6px; font-family: monospace; font-size: 16px; margin-bottom: 15px; box-sizing: border-box;" placeholder="Ej: Atención: Crecida en río Marapa (La Madrid) prevista para las 18:00hs"></textarea>
+                            
+                            <button class="btn-primary" style="background-color: #e11d48; font-size: 16px; padding: 15px; letter-spacing: 1px;" onclick="dispararAlertaHydro(event)" data-i18n="hydro_btn_dispatch">🚀 DISPATCH SMS AND WEB ALERT</button>
+                            <p id="lblStatusHydro" style="font-size: 14px; font-weight: bold; color: #e11d48; margin-top: 15px; text-align: center;"></p>
                         </div>
                     </div>
                 </div>
@@ -949,9 +974,10 @@
                 "hydro_no_history": "No events registered in the current session.",
                 "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - TUCUMAN BASIN ]",
                 "hydro_rfs_sub": "Global hydrological flow and flood risk model (GEOGLOWS)",
-                "hydro_summary_title": "[ TELEMETRY & BASIN STATUS - REAL TIME ]",
-                "hydro_btn_refresh": "🔄 Refresh Data",
-                "btn_gps": "📍 Use My GPS Location (4 ha)",
+                "hydro_admin_title": "⚠️ Emergency Dispatch Console (GOD MODE)",
+                "hydro_admin_desc": "The message drafted here will be sent via SMS to registered contacts and will immediately update the public Warnings panel and the risk map.",
+                "hydro_lbl_msg": "Draft Alert Message:",
+                "hydro_btn_dispatch": "🚀 DISPATCH SMS AND WEB ALERT",
                 "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
                 "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "EXECUTE ANALYSIS",
                 "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):",
@@ -968,7 +994,7 @@
                 "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>"
             },
             es: {
-                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
+                "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronômico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
                 "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (48 Horas Gratis)",
                 "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "lbl_and": " y la ", "lbl_priv": "Política de Privacidad", "msg_tyc_req": "Debes aceptar los términos legales para registrarte.",
                 "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
@@ -1006,7 +1032,10 @@
                 "hydro_rfs_sub": "Modelo hidrológico global de caudal y riesgo de crecidas (GEOGLOWS)",
                 "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]",
                 "hydro_btn_refresh": "🔄 Actualizar Datos",
-                "btn_gps": "📍 Usar Mi Ubicación GPS (4 ha)",
+                "hydro_admin_title": "⚠️ Consola de Disparo de Emergencias (MODO DIOS)",
+                "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.",
+                "hydro_lbl_msg": "Redactar Mensaje de Alerta:",
+                "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
                 "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
                 "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
                 "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):",
@@ -1040,9 +1069,10 @@
                 "hydro_no_history": "Nenhum evento registrado na sessão atual.",
                 "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - BACIA TUCUMÁN ]",
                 "hydro_rfs_sub": "Modelo hidrológico global de vazão e risco de inundações (GEOGLOWS)",
-                "hydro_summary_title": "[ TELEMETRIA E STATUS DA BACIA - TEMPO REAL ]",
-                "hydro_btn_refresh": "🔄 Atualizar Dados",
-                "btn_gps": "📍 Usar Minha Localização GPS (4 ha)",
+                "hydro_admin_title": "⚠️ Console de Disparo de Emergências (MODO DEUS)",
+                "hydro_admin_desc": "A mensagem redigida aqui será enviada via SMS para os contatos cadastrados e atualizará imediatamente o painel público de Alertas e o mapa de risco.",
+                "hydro_lbl_msg": "Redigir Mensagem de Alerta:",
+                "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS E WEB",
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
@@ -1178,6 +1208,14 @@
         var mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(mapPronostico);
 
+        // AGREGADO PARA CLIC EN EL MAPA PRONOSTICO
+        mapPronostico.on('click', function(e) {
+            const lat = e.latlng.lat.toFixed(4);
+            const lon = e.latlng.lng.toFixed(4);
+            document.getElementById('coordPronostico').value = lat + ", " + lon;
+            actualizarPronosticoGlobal(); 
+        });
+
         var chartObjAgro = null, chartObjClima = null;
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
         const customCanvasBg = { id: 'customCanvasBackgroundColor', beforeDraw: (chart, args, options) => { const {ctx} = chart; ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = options.color || '#ffffff'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } };
@@ -1220,11 +1258,26 @@
                 [lat - dLat, lon - dLon]
             ];
             const rect = L.polygon(latlngs, {color: '#31a354', weight: 3}).addTo(drawnItems);
-            
             map.fitBounds(rect.getBounds(), {padding: [20, 20]});
             
             document.getElementById('status').innerText = '✅ Polígono de 4 ha generado mediante GPS.';
             document.getElementById('status').style.color = '#31a354';
+        }
+
+        function obtenerUbicacionGPSPronostico() {
+            if (navigator.geolocation) {
+                document.getElementById('rtEstadoPronostico').innerText = 'Fijando posición por GPS...';
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude.toFixed(4);
+                    const lon = position.coords.longitude.toFixed(4);
+                    document.getElementById('coordPronostico').value = lat + ", " + lon;
+                    actualizarPronosticoGlobal();
+                }, function(error) {
+                    alert("Error obteniendo GPS: " + error.message);
+                });
+            } else {
+                alert("Geolocalización no soportada.");
+            }
         }
 
         function agregarDatoManual() {
