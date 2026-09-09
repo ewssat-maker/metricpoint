@@ -343,7 +343,7 @@
                 <h4 data-i18n="priv_h2">2. Sharing with Third Parties</h4>
                 <p data-i18n="priv_p2">MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.</p>
                 <h4 data-i18n="priv_h3">3. User Rights</h4>
-                <p data-i18n="priv_p3">In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the administrator.</p>
+                <p data-i18n="priv_p3">In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the system administrator.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn-close-modal" onclick="cerrarPrivacidad()" data-i18n="btn_close">Close</button>
@@ -458,7 +458,7 @@
         </div>
     </div>
 
-    <!-- ESPACIO DE TRABAJO -->
+    <!-- ESPACIO DE TRABAJO ORIGINAL -->
     <div id="workspace">
         <div id="dashboardHub">
             <div class="header">
@@ -517,7 +517,8 @@
                     <label data-i18n="lbl_end_date">End Date (YYYY-MM-DD):</label><input type="text" id="endDate" value="2026-08-01">
                     <label data-i18n="lbl_sow_date">Sowing Date (YYYY-MM-DD):</label><input type="text" id="siembraDate" value="2025-12-15">
                     
-                    <button class="btn-secondary" style="width: 100%; margin-top: 10px; background-color: #6baed6; color: #08306b; border: none;" onclick="obtenerUbicacionGPS()">📍 Usar Mi Ubicación GPS (4 ha)</button>
+                    <!-- BOTÓN GPS -->
+                    <button class="btn-secondary" style="width: 100%; margin-top: 10px; background-color: #6baed6; color: #08306b; border: none;" onclick="obtenerUbicacionGPS()" data-i18n="btn_gps">📍 Usar Mi Ubicación GPS (4 ha)</button>
 
                     <div class="ingesta-card">
                         <h4 data-i18n="lbl_manual_input">Manual Input / Field Station</h4>
@@ -771,7 +772,7 @@
         </div>
 
         <!-- ==========================================
-             MÓDULO METRIC HYDRO (GEOGLOWS RFS EMBEBIDO + RESUMEN DINÁMICO)
+             MÓDULO METRIC HYDRO
              ========================================== -->
         <div id="moduloHydro" style="display: none;">
             <div class="header">
@@ -823,7 +824,7 @@
                         </div>
                     </div>
                     
-                    <!-- PESTAÑA: SITUACIÓN ACTUAL (GEOGLOWS RFS EMBEBIDO + RESUMEN DINÁMICO) -->
+                    <!-- PESTAÑA: SITUACIÓN ACTUAL -->
                     <div id="tabHydroSit" class="tab-content">
                         <div class="chart-container" style="min-height: 650px; background: #0a0a0a; border: 1px solid #222; color: white; padding: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
@@ -854,7 +855,7 @@
                         </div>
                     </div>
                     
-                    <!-- PESTAÑA: USO INTERNO (MODO DIOS) -->
+                    <!-- PESTAÑA: USO INTERNO (MODO DIOS CON MONITORES SEPARADOS) -->
                     <div id="tabHydroInt" class="tab-content">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                             
@@ -952,7 +953,7 @@
                 "hydro_no_history": "No events registered in the current session.",
                 "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - TUCUMAN BASIN ]",
                 "hydro_rfs_sub": "Global hydrological flow and flood risk model (GEOGLOWS)",
-                "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]",
+                "hydro_summary_title": "[ TELEMETRY & BASIN STATUS - REAL TIME ]",
                 "hydro_btn_refresh": "🔄 Refresh Data",
                 "btn_gps": "📍 Use My GPS Location (4 ha)",
                 "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):",
@@ -1009,10 +1010,6 @@
                 "hydro_rfs_sub": "Modelo hidrológico global de caudal y riesgo de crecidas (GEOGLOWS)",
                 "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]",
                 "hydro_btn_refresh": "🔄 Actualizar Datos",
-                "hydro_admin_title": "⚠️ Consola de Disparo de Emergencias (MODO DIOS)",
-                "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.",
-                "hydro_lbl_msg": "Redactar Mensaje de Alerta:",
-                "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
                 "btn_gps": "📍 Usar Mi Ubicación GPS (4 ha)",
                 "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio (YYYY-MM-DD):", "lbl_end_date": "Fecha Fin (YYYY-MM-DD):", "lbl_sow_date": "Fecha Siembra (YYYY-MM-DD):",
                 "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS",
@@ -1189,7 +1186,6 @@
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = [];
         const customCanvasBg = { id: 'customCanvasBackgroundColor', beforeDraw: (chart, args, options) => { const {ctx} = chart; ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = options.color || '#ffffff'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } };
 
-        // --- NEW FUNCTIONS ---
         function obtenerUbicacionGPS() {
             if (navigator.geolocation) {
                 document.getElementById('status').innerText = 'Obteniendo coordenadas satelitales...';
@@ -1228,6 +1224,7 @@
                 [lat - dLat, lon - dLon]
             ];
             const rect = L.polygon(latlngs, {color: '#31a354', weight: 3}).addTo(drawnItems);
+            
             map.fitBounds(rect.getBounds(), {padding: [20, 20]});
             
             document.getElementById('status').innerText = '✅ Polígono de 4 ha generado mediante GPS.';
@@ -1851,7 +1848,7 @@
         });
 
         // =====================================================================
-        // FUNCIONES MÓDULO METRIC HYDRO (INCLUYENDO TELEMETRÍA EN TIEMPO REAL)
+        // FUNCIONES MÓDULO METRIC HYDRO
         // =====================================================================
         let hydroAlertHistory = [];
         let hydroMapPolygon = null;
@@ -1969,7 +1966,7 @@
                     status.innerText = "✅ Orden enviada al backend Twilio.";
                     btn.innerText = "🚀 DISPARAR NUEVA ALERTA";
                     document.getElementById("txtAlertaHydro").value = "";
-                    actualizarContadorSMS();
+                    if (typeof actualizarContadorSMS === 'function') actualizarContadorSMS();
                 } else {
                     status.innerText = "❌ El servidor rechazó la orden.";
                     btn.innerText = "🚀 REINTENTAR DISPARO";
@@ -1983,47 +1980,34 @@
         // =====================================================================
         // FUNCIONES DE CONTROL DE ALERTAS
         // =====================================================================
-        
-        // Actualiza el contador de caracteres del textarea de SMS en tiempo real
         function actualizarContadorSMS() {
             const texto = document.getElementById("txtAlertaHydro").value;
             const contador = document.getElementById("contadorSMS");
             if (contador) {
                 contador.innerText = `${texto.length} / 160 caracteres`;
-                // Alerta visual si se acerca al límite
                 if (texto.length >= 150) {
-                    contador.style.color = "#991b1b"; // Rojo oscuro
+                    contador.style.color = "#991b1b";
                 } else {
-                    contador.style.color = "#e11d48"; // Rojo normal
+                    contador.style.color = "#e11d48";
                 }
             }
         }
 
-        // Codifica el texto, lo copia al portapapeles y abre WhatsApp
         async function dispararWhatsAppPersonal() {
             const mensaje = document.getElementById("txtAlertaWA").value;
-            
             if (!mensaje) {
                 return alert("Por favor, escriba el mensaje para el Canal de WhatsApp.");
             }
-            
             try {
-                // 1. Copia el texto automáticamente a la memoria del dispositivo
                 await navigator.clipboard.writeText(mensaje);
-                
                 alert("✅ Mensaje copiado al portapapeles.\n\nSe abrirá WhatsApp: entrá a tu Canal y seleccioná 'Pegar'.");
-                
-                // 2. Detecta si es celular o PC para abrir la versión correcta de WhatsApp
                 const esCelular = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
                 if (esCelular) {
-                    window.location.href = "whatsapp://app"; // Abre la app nativa en móviles
+                    window.location.href = "whatsapp://app";
                 } else {
-                    window.open("https://web.whatsapp.com", "_blank"); // Abre WhatsApp Web en PC
+                    window.open("https://web.whatsapp.com", "_blank");
                 }
-                
             } catch (err) {
-                // Fallback por si el navegador bloquea el portapapeles
                 alert("❌ El navegador bloqueó el copiado automático. Por favor, copiá el texto manualmente y abrí WhatsApp.");
             }
         }
@@ -2034,7 +2018,6 @@
         <span onclick="document.getElementById('widgetSoporte').style.display='none'" style="cursor:pointer; float:right; font-weight:bold; color:#08306b; font-size:18px; margin-top:-5px;" title="Cerrar widget">&times;</span>
         <h4 style="margin: 0 0 5px 0; color: #08306b; font-size: 15px;">Soporte MetricPoint</h4>
         <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4;">Canal habilitado para contacto, envíanos tu pregunta.</p>
-        
         <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 10px; background: #38bdf8; color: #020617; text-align: center; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.3s;">
             Canal de Contacto
         </a>
