@@ -755,7 +755,7 @@
                     <!-- PESTAÑA 4: SATELITE GOES -->
                     <div id="tabGOES" class="tab-content">
                         <div class="chart-container" style="min-height: 600px; background: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 0; overflow: hidden;">
-                            <iframe id="iframeGOES" src="https://weather.ndc.nasa.gov/cgi-bin/get-abi?satellite=GOESEastfullDiskband14&lat=-27&lon=-65&zoom=2&type=Animation&numframes=10&width=1000&height=650&mapcolor=white&quality=75&palette=ir2.pal" width="100%" height="650px" style="border: none;"></iframe>
+                            <iframe id="iframeGOES" src="https://embed.windy.com/embed2.html?lat=-27.00&lon=-65.00&zoom=5&level=surface&overlay=satellite&product=satellite&menu=&message=&marker=true&calendar=now&forecast=4&type=map&location=coordinates&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" width="100%" height="650px" style="border: none;"></iframe>
                         </div>
                     </div>
                 </div>
@@ -828,7 +828,7 @@
                         </div>
                     </div>
                     
-                    <!-- PESTAÑA: SITUACIÓN ACTUAL (GEOGLOWS RFS EMBEBIDO + RESUMEN EJECUTIVO DE CUENCAS) -->
+                    <!-- PESTAÑA: SITUACIÓN ACTUAL -->
                     <div id="tabHydroSit" class="tab-content">
                         <div class="chart-container" style="min-height: 650px; background: #0a0a0a; border: 1px solid #222; color: white; padding: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
@@ -900,17 +900,33 @@
                         </div>
                     </div>
                     
-                    <!-- PESTAÑA: USO INTERNO (MODO DIOS) -->
+                    <!-- PESTAÑA: USO INTERNO (MODO DIOS CON MONITORES SEPARADOS) -->
                     <div id="tabHydroInt" class="tab-content">
-                        <div class="chart-container" style="min-height: 400px; background: #fff1f2; border: 1px solid #e11d48;">
-                            <h3 style="margin-top:0; color:#e11d48; border-bottom: 2px solid #fecdd3; padding-bottom: 10px;" data-i18n="hydro_admin_title">⚠️ Emergency Dispatch Console (GOD MODE)</h3>
-                            <p style="font-size: 13px; color: #666; margin-bottom: 20px;" data-i18n="hydro_admin_desc">The message drafted here will be sent via SMS to registered contacts and will immediately update the public Warnings panel and the risk map.</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                             
-                            <label style="color: #e11d48; font-size: 14px; font-weight: bold;" data-i18n="hydro_lbl_msg">Draft Alert Message:</label>
-                            <textarea id="txtAlertaHydro" rows="4" style="width: 100%; padding: 15px; border: 2px solid #f43f5e; border-radius: 6px; font-family: monospace; font-size: 16px; margin-bottom: 15px; box-sizing: border-box;" placeholder="Ej: Atención: Crecida en río Marapa (La Madrid) prevista para las 18:00hs"></textarea>
-                            
-                            <button class="btn-primary" style="background-color: #e11d48; font-size: 16px; padding: 15px; letter-spacing: 1px;" onclick="dispararAlertaHydro(event)" data-i18n="hydro_btn_dispatch">🚀 DISPATCH SMS AND WEB ALERT</button>
-                            <p id="lblStatusHydro" style="font-size: 14px; font-weight: bold; color: #e11d48; margin-top: 15px; text-align: center;"></p>
+                            <!-- MONITOR 1: TWILIO SMS -->
+                            <div class="chart-container" style="background: #fff1f2; border: 1px solid #e11d48;">
+                                <h3 style="margin-top:0; color:#e11d48; border-bottom: 2px solid #fecdd3; padding-bottom: 10px;">🚨 Monitor SMS (Twilio)</h3>
+                                <p style="font-size: 13px; color: #9f1239; margin-bottom: 15px;">Disparo automático a la lista de contactos. El límite estricto es de 160 caracteres por mensaje.</p>
+                                
+                                <textarea id="txtAlertaHydro" rows="4" maxlength="160" oninput="actualizarContadorSMS()" style="width: 100%; padding: 15px; border: 2px solid #f43f5e; border-radius: 6px; font-family: monospace; font-size: 16px; margin-bottom: 5px; box-sizing: border-box;" placeholder="Ej: Atención: Crecida en río Marapa (La Madrid)..."></textarea>
+                                
+                                <div id="contadorSMS" style="text-align: right; font-size: 13px; font-weight: bold; color: #e11d48; margin-bottom: 15px;">0 / 160 caracteres</div>
+                                
+                                <button class="btn-primary" style="background-color: #e11d48; font-size: 15px; padding: 12px; width: 100%;" onclick="dispararAlertaHydro(event)">🚀 DISPARAR ALERTA SMS Y WEB</button>
+                                <p id="lblStatusHydro" style="font-size: 13px; font-weight: bold; color: #e11d48; margin-top: 15px; text-align: center;"></p>
+                            </div>
+                    
+                            <!-- MONITOR 2: WHATSAPP PERSONAL (CANAL) -->
+                            <div class="chart-container" style="background: #f0fdf4; border: 1px solid #16a34a;">
+                                <h3 style="margin-top:0; color:#16a34a; border-bottom: 2px solid #bbf7d0; padding-bottom: 10px;">🟢 Monitor WhatsApp (Personal)</h3>
+                                <p style="font-size: 13px; color: #166534; margin-bottom: 15px;">Este botón formatea la alerta y abre tu WhatsApp personal para publicarla directamente en tu Canal (Sin límite de texto).</p>
+                                
+                                <textarea id="txtAlertaWA" rows="4" style="width: 100%; padding: 15px; border: 2px solid #22c55e; border-radius: 6px; font-family: monospace; font-size: 16px; margin-bottom: 15px; box-sizing: border-box;" placeholder="Ej: 🚨 RIESGO DE INUNDACIÓN. El río superó la cota..."></textarea>
+                                
+                                <button class="btn-primary" style="background-color: #16a34a; font-size: 15px; padding: 12px; width: 100%;" onclick="dispararWhatsAppPersonal()">📲 ABRIR WHATSAPP</button>
+                            </div>
+                    
                         </div>
                     </div>
                 </div>
@@ -1000,7 +1016,8 @@
                 "diag_opt": "Currently, the deep reserve of the lot (100 cm) is at <strong>optimal</strong> levels (above 65% of useful water), guaranteeing root stability against upcoming heat waves.",
                 "diag_reg": "Currently, the deep reserve (100 cm) is in a state of <strong>regular transition</strong>. It is suggested to monitor surface drying to avoid phenological stress.",
                 "diag_crit": "<span style='color:#d73027;'><strong>Alert:</strong> The deep reserve of the lot has entered <strong>critical</strong> levels near the Permanent Wilting Point, representing a high risk of penalization on the potential yield of the crop.</span>",
-                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Agrometeorological Assimilation Module", "wf_cmd_title": "[ MONITORING CENTER ]", "wf_cmd_desc": "Click on the map, use your GPS or enter coordinates to scan the terrain.", "wf_lbl_coord": "Target Coordinates (Lat, Lon):", "wf_btn_gps": "📍 Fix GPS Position", "wf_btn_scan": "Start Satellite Scan", "wf_lbl_status": "LINK STATUS", "wf_status_wait": "Waiting for initialization...", "wf_tab_rt": "Real Time", "wf_tab_fc": "Forecast Res", "wf_tab_clim": "Climatology", "wf_tab_goes": "GOES-19 Live", "wf_rt_title": "[ LIVE TELEMETRY ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ TARGET LOCATION / SATELLITE SCAN ]", "wf_rt_atmos": "[ SURFACE ATMOSPHERE ]", "wf_lbl_temp": "Air Temp.", "wf_lbl_hum": "Humidity", "wf_lbl_dew": "Dew Point", "wf_rt_fluid": "[ FLUID DYNAMICS ]", "wf_lbl_rad": "Solar Rad.", "wf_lbl_wind": "Wind", "wf_lbl_pres": "Pressure", "wf_rt_therm": "[ VOLUMETRIC THERMAL PROFILE ]", "wf_rt_moist": "[ SURFACE MOISTURE ]", "wf_lbl_layer0": "Layer 0-1 cm", "wf_lbl_layer1": "Layer 1-3 cm", "wf_lbl_layer3": "Layer 3-9 cm", "wf_fc_title": "[ SYNOPTIC PROJECTION : 7 DAYS ]", "wf_clim_title": "[ HISTORICAL CLIMATIC ANALYSIS ]", "wf_clim_desc": "Average accumulated precipitation (Archive API 2020-2025)."
+                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Agrometeorological Assimilation Module", "wf_cmd_title": "[ MONITORING CENTER ]", "wf_cmd_desc": "Click on the map, use your GPS or enter coordinates to scan the terrain.", "wf_lbl_coord": "Target Coordinates (Lat, Lon):", "wf_btn_gps": "📍 Fix GPS Position", "wf_btn_scan": "Start Satellite Scan", "wf_lbl_status": "LINK STATUS", "wf_status_wait": "Waiting for initialization...", "wf_tab_rt": "Real Time", "wf_tab_fc": "Forecast Res", "wf_tab_clim": "Climatology", "wf_tab_goes": "GOES-19 Live", "wf_rt_title": "[ LIVE TELEMETRY ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ TARGET LOCATION / SATELLITE SCAN ]", "wf_rt_atmos": "[ SURFACE ATMOSPHERE ]", "wf_lbl_temp": "Air Temp.", "wf_lbl_hum": "Humidity", "wf_lbl_dew": "Dew Point", "wf_rt_fluid": "[ FLUID DYNAMICS ]", "wf_lbl_rad": "Solar Rad.", "wf_lbl_wind": "Wind", "wf_lbl_pres": "Pressure", "wf_rt_therm": "[ VOLUMETRIC THERMAL PROFILE ]", "wf_rt_moist": "[ SURFACE MOISTURE ]", "wf_lbl_layer0": "Layer 0-1 cm", "wf_lbl_layer1": "Layer 1-3 cm", "wf_lbl_layer3": "Layer 3-9 cm", "wf_fc_title": "[ SYNOPTIC PROJECTION : 7 DAYS ]", "wf_clim_title": "[ HISTORICAL CLIMATIC ANALYSIS ]", "wf_clim_desc": "Average accumulated precipitation (Archive API 2020-2025).",
+                "support_title": "MetricPoint Support", "support_desc": "Contact channel enabled, send us your question.", "support_btn": "Contact Channel"
             },
             es: {
                 "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
@@ -1061,7 +1078,8 @@
                 "diag_opt": "Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.",
                 "diag_reg": "Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.",
                 "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>",
-                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Módulo de Asimilación Agrometeorológica", "wf_cmd_title": "[ CENTRO DE MONITOREO ]", "wf_cmd_desc": "Haga clic en el mapa, use su GPS o ingrese coordenadas para escanear el terreno.", "wf_lbl_coord": "Coordenadas Objetivo (Lat, Lon):", "wf_btn_gps": "📍 Fijar Posición GPS", "wf_btn_scan": "Iniciar Escaneo Satelital", "wf_lbl_status": "ESTADO DEL ENLACE", "wf_status_wait": "Esperando inicialización...", "wf_tab_rt": "Tiempo Real", "wf_tab_fc": "Pronóstico Res", "wf_tab_clim": "Climatología", "wf_tab_goes": "Satélite GOES", "wf_rt_title": "[ TELEMETRÍA EN VIVO ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ SENSOR SATELITAL / OBJETIVO ]", "wf_rt_atmos": "[ ATMÓSFERA SUPERFICIAL ]", "wf_lbl_temp": "Temp. Aire", "wf_lbl_hum": "Humedad", "wf_lbl_dew": "Pto. Rocío", "wf_rt_fluid": "[ DINÁMICA DE FLUIDOS ]", "wf_lbl_rad": "Rad. Solar", "wf_lbl_wind": "Viento", "wf_lbl_pres": "Presión", "wf_rt_therm": "[ PERFIL TÉRMICO VOLUMÉTRICO ]", "wf_rt_moist": "[ HUMEDAD SUPERFICIAL ]", "wf_lbl_layer0": "Capa 0-1 cm", "wf_lbl_layer1": "Capa 1-3 cm", "wf_lbl_layer3": "Capa 3-9 cm", "wf_fc_title": "[ PROYECCIÓN SINÓPTICA : 7 DÍAS ]", "wf_clim_title": "[ ANÁLISIS CLIMÁTICO HISTÓRICO ]", "wf_clim_desc": "Promedio de precipitación acumulada (Archive API 2020-2025)."
+                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Módulo de Asimilación Agrometeorológica", "wf_cmd_title": "[ CENTRO DE MONITOREO ]", "wf_cmd_desc": "Haga clic en el mapa, use su GPS o ingrese coordenadas para escanear el terreno.", "wf_lbl_coord": "Coordenadas Objetivo (Lat, Lon):", "wf_btn_gps": "📍 Fijar Posición GPS", "wf_btn_scan": "Iniciar Escaneo Satelital", "wf_lbl_status": "ESTADO DEL ENLACE", "wf_status_wait": "Esperando inicialización...", "wf_tab_rt": "Tiempo Real", "wf_tab_fc": "Pronóstico Res", "wf_tab_clim": "Climatología", "wf_tab_goes": "Satélite GOES", "wf_rt_title": "[ TELEMETRÍA EN VIVO ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ SENSOR SATELITAL / OBJETIVO ]", "wf_rt_atmos": "[ ATMÓSFERA SUPERFICIAL ]", "wf_lbl_temp": "Temp. Aire", "wf_lbl_hum": "Humedad", "wf_lbl_dew": "Pto. Rocío", "wf_rt_fluid": "[ DINÁMICA DE FLUIDOS ]", "wf_lbl_rad": "Rad. Solar", "wf_lbl_wind": "Viento", "wf_lbl_pres": "Presión", "wf_rt_therm": "[ PERFIL TÉRMICO VOLUMÉTRICO ]", "wf_rt_moist": "[ HUMEDAD SUPERFICIAL ]", "wf_lbl_layer0": "Capa 0-1 cm", "wf_lbl_layer1": "Capa 1-3 cm", "wf_lbl_layer3": "Capa 3-9 cm", "wf_fc_title": "[ PROYECCIÓN SINÓPTICA : 7 DÍAS ]", "wf_clim_title": "[ ANÁLISIS CLIMÁTICO HISTÓRICO ]", "wf_clim_desc": "Promedio de precipitación acumulada (Archive API 2020-2025).",
+                "support_title": "Soporte MetricPoint", "support_desc": "Canal habilitado para contacto, envíanos tu pregunta.", "support_btn": "Canal de Contacto"
             },
             pt: {
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
@@ -1080,10 +1098,9 @@
                 "hydro_no_history": "Nenhum evento registrado na sessão atual.",
                 "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - BACIA TUCUMÁN ]",
                 "hydro_rfs_sub": "Modelo hidrológico global de vazão e risco de inundações (GEOGLOWS)",
-                "hydro_admin_title": "⚠️ Console de Disparo de Emergências (MODO DEUS)",
-                "hydro_admin_desc": "A mensagem redigida aqui será enviada via SMS para os contatos cadastrados e atualizará imediatamente o painel público de Alertas e o mapa de risco.",
-                "hydro_lbl_msg": "Redigir Mensagem de Alerta:",
-                "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS E WEB",
+                "hydro_summary_title": "[ TELEMETRIA E STATUS DA BACIA - TEMPO REAL ]",
+                "hydro_btn_refresh": "🔄 Atualizar Dados",
+                "btn_gps": "📍 Usar Minha Localização GPS (4 ha)",
                 "tab_intro_who": "Quem Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contato",
                 "who_title": "MetricPoint: Inteligência Geoespacial",
                 "who_p1": "A MetricPoint é uma plataforma AgTech de ponta especializada em inteligência geoespacial e modelagem agronômica usando tecnologia de satélite SAR.",
@@ -1100,7 +1117,8 @@
                 "contact_name": "Nome Completo",
                 "contact_msg": "Sua Mensagem",
                 "btn_send": "Enviar Mensagem",
-                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Módulo de Assimilação Agrometeorológica", "wf_cmd_title": "[ CENTRO DE MONITORAMENTO ]", "wf_cmd_desc": "Clique no mapa, use seu GPS ou insira coordenadas para escanear o terreno.", "wf_lbl_coord": "Coordenadas Alvo (Lat, Lon):", "wf_btn_gps": "📍 Fixar Posição GPS", "wf_btn_scan": "Iniciar Varredura por Satélite", "wf_lbl_status": "STATUS DO LINK", "wf_status_wait": "Aguardando inicialização...", "wf_tab_rt": "Tempo Real", "wf_tab_fc": "Previsão Res", "wf_tab_clim": "Climatologia", "wf_tab_goes": "Satélite GOES", "wf_rt_title": "[ TELEMETRIA AO VIVO ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ SENSOR DE SATÉLITE / ALVO ]", "wf_rt_atmos": "[ ATMOSFERA DE SUPERFÍCIE ]", "wf_lbl_temp": "Temp. Ar", "wf_lbl_hum": "Umidade", "wf_lbl_dew": "Pto. Orvalho", "wf_rt_fluid": "[ DINÂMICA DE FLUIDOS ]", "wf_lbl_rad": "Rad. Solar", "wf_lbl_wind": "Vento", "wf_lbl_pres": "Pressão", "wf_rt_therm": "[ PERFIL TÉRMICO VOLUMÉTRICO ]", "wf_rt_moist": "[ UMIDADE DE SUPERFÍCIE ]", "wf_lbl_layer0": "Camada 0-1 cm", "wf_lbl_layer1": "Camada 1-3 cm", "wf_lbl_layer3": "Camada 3-9 cm", "wf_fc_title": "[ PROJEÇÃO SINÓTICA : 7 DIAS ]", "wf_clim_title": "[ ANÁLISE CLIMÁTICA HISTÓRICA ]", "wf_clim_desc": "Precipitação média acumulada (Archive API 2020-2025)."
+                "wf_title": "WEATHER FORECAST", "wf_subtitle": "Módulo de Assimilação Agrometeorológica", "wf_cmd_title": "[ CENTRO DE MONITORAMENTO ]", "wf_cmd_desc": "Clique no mapa, use seu GPS ou insira coordenadas para escanear o terreno.", "wf_lbl_coord": "Coordenadas Alvo (Lat, Lon):", "wf_btn_gps": "📍 Fixar Posição GPS", "wf_btn_scan": "Iniciar Varredura por Satélite", "wf_lbl_status": "STATUS DO LINK", "wf_status_wait": "Aguardando inicialização...", "wf_tab_rt": "Tempo Real", "wf_tab_fc": "Previsão Res", "wf_tab_clim": "Climatologia", "wf_tab_goes": "Satélite GOES", "wf_rt_title": "[ TELEMETRIA AO VIVO ]", "wf_lbl_coord_short": "COORD:", "wf_rt_target": "[ SENSOR DE SATÉLITE / ALVO ]", "wf_rt_atmos": "[ ATMOSFERA DE SUPERFÍCIE ]", "wf_lbl_temp": "Temp. Ar", "wf_lbl_hum": "Umidade", "wf_lbl_dew": "Pto. Orvalho", "wf_rt_fluid": "[ DINÂMICA DE FLUIDOS ]", "wf_lbl_rad": "Rad. Solar", "wf_lbl_wind": "Vento", "wf_lbl_pres": "Pressão", "wf_rt_therm": "[ PERFIL TÉRMICO VOLUMÉTRICO ]", "wf_rt_moist": "[ UMIDADE DE SUPERFÍCIE ]", "wf_lbl_layer0": "Camada 0-1 cm", "wf_lbl_layer1": "Camada 1-3 cm", "wf_lbl_layer3": "Camada 3-9 cm", "wf_fc_title": "[ PROJEÇÃO SINÓTICA : 7 DIAS ]", "wf_clim_title": "[ ANÁLISE CLIMÁTICA HISTÓRICA ]", "wf_clim_desc": "Precipitação média acumulada (Archive API 2020-2025).",
+                "support_title": "Suporte MetricPoint", "support_desc": "Canal habilitado para contato, envie-nos sua pergunta.", "support_btn": "Canal de Contato"
             }
         };
 
@@ -1784,10 +1802,10 @@
                 });
                 markerPronostico = L.marker([lat, lon], {icon: sciFiIcon}).addTo(mapPronostico);
 
-                // ACTUALIZAR IFRAME NASA GOES
+                // ACTUALIZAR IFRAME SATELITAL (WINDY LIVE)
                 const iframeGoes = document.getElementById('iframeGOES');
                 if(iframeGoes) {
-                    iframeGoes.src = `https://weather.ndc.nasa.gov/cgi-bin/get-abi?satellite=GOESEastfullDiskband14&lat=${lat}&lon=${lon}&zoom=2&type=Animation&numframes=10&width=1000&height=650&mapcolor=white&quality=75&palette=ir2.pal`;
+                    iframeGoes.src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=6&level=surface&overlay=satellite&product=satellite&menu=&message=&marker=true&calendar=now&forecast=4&type=map&location=coordinates&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
                 }
 
             } catch(e) {
@@ -1929,6 +1947,9 @@
             if (tabId === 'tabHydroAdv' && window.hydroMap) {
                 setTimeout(() => window.hydroMap.invalidateSize(), 100);
             }
+            if (tabId === 'tabHydroSit') {
+                cargarEstadoCuencasReal();
+            }
         }
 
         function verificarUsoInterno(elementoBtn) {
@@ -1937,6 +1958,37 @@
                 abrirPestanaHydro('tabHydroInt', elementoBtn);
             } else {
                 alert("Access Denied: This emergency console is exclusive to the General Administration account.");
+            }
+        }
+
+        async function cargarEstadoCuencasReal() {
+            const contenedor = document.getElementById("contenedorResumenCuencas");
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/hidro/estado`);
+                const data = await res.json();
+                
+                if(res.ok && data.estaciones) {
+                    contenedor.innerHTML = data.estaciones.map(est => {
+                        let colorEstado = "#22c55e"; // NORMAL
+                        if(est.estado === "PRECAUCIÓN") colorEstado = "#f59e0b";
+                        if(est.estado === "PELIGRO") colorEstado = "#ef4444";
+
+                        return `
+                            <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid ${colorEstado};">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <strong style="color: #f8fafc; font-size: 14px;">${est.rio}</strong>
+                                    <span style="background: ${colorEstado}; color: #020617; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">${est.estado}</span>
+                                </div>
+                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Ubicación: <span style="color:#fff;">${est.ubicacion}</span></p>
+                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">${est.altura_m} m</strong></p>
+                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">${est.caudal_m3s} m³/s</strong></p>
+                                <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: ${est.tendencia}</p>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch(e) {
+                contenedor.innerHTML = `<div style="color: #ef4444; font-size: 13px;">Error de conexión con el servidor hidrológico.</div>`;
             }
         }
 
