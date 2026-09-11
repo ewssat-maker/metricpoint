@@ -1918,35 +1918,44 @@
         }
 
         async function cargarEstadoCuencasReal() {
-            const contenedor = document.getElementById("contenedorResumenCuencas");
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/hidro/estado`);
-                const data = await res.json();
+    const contenedor = document.getElementById("contenedorResumenCuencas");
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/hidro/estado`);
+        const data = await res.json();
+        
+        if(res.ok && data.estaciones) {
+            contenedor.innerHTML = data.estaciones.map(est => {
+                let colorEstado = "#22c55e"; // NORMAL (Verde)
+                let textEstado = est.estado;
                 
-                if(res.ok && data.estaciones) {
-                    contenedor.innerHTML = data.estaciones.map(est => {
-                        let colorEstado = "#22c55e"; // NORMAL
-                        if(est.estado === "PRECAUCIÓN") colorEstado = "#f59e0b";
-                        if(est.estado === "PELIGRO") colorEstado = "#ef4444";
+                // Mapeo cromático de los 5 umbrales
+                if(textEstado === "VIGILANCIA") colorEstado = "#eab308";        // Amarillo
+                else if(textEstado === "ALERTA") colorEstado = "#f97316";       // Naranja
+                else if(textEstado === "ALERTA SEVERA") colorEstado = "#ef4444"; // Rojo
+                else if(textEstado === "EMERGENCIA") colorEstado = "#831843";   // Bordó
+                
+                // Fallbacks heredados por compatibilidad
+                else if(textEstado === "PRECAUCIÓN") colorEstado = "#eab308";
+                else if(textEstado === "PELIGRO") colorEstado = "#ef4444";
 
-                        return `
-                            <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid ${colorEstado};">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <strong style="color: #f8fafc; font-size: 14px;">${est.rio}</strong>
-                                    <span style="background: ${colorEstado}; color: #020617; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">${est.estado}</span>
-                                </div>
-                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Ubicación: <span style="color:#fff;">${est.ubicacion}</span></p>
-                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">${est.altura_m} m</strong></p>
-                                <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">${est.caudal_m3s} m³/s</strong></p>
-                                <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: ${est.tendencia}</p>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            } catch(e) {
-                contenedor.innerHTML = `<div style="color: #ef4444; font-size: 13px;">Error de conexión con el servidor hidrológico.</div>`;
-            }
+                return `
+                    <div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid ${colorEstado};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="color: #f8fafc; font-size: 14px;">${est.rio}</strong>
+                            <span style="background: ${colorEstado}; color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: monospace;">${textEstado}</span>
+                        </div>
+                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Ubicación: <span style="color:#fff;">${est.ubicacion}</span></p>
+                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">${est.altura_m} m</strong></p>
+                        <p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">${est.caudal_m3s} m³/s</strong></p>
+                        <p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: ${est.tendencia}</p>
+                    </div>
+                `;
+            }).join('');
         }
+    } catch(e) {
+        contenedor.innerHTML = `<div style="color: #ef4444; font-size: 13px;">Error de conexión con el servidor hidrológico.</div>`;
+    }
+}
 
         async function dispararAlertaHydro(event) {
             const msg = document.getElementById("txtAlertaHydro").value;
