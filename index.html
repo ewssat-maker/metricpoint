@@ -561,7 +561,6 @@
                         <button class="tab-btn" id="btnTabGemeloBeta" onclick="abrirPestana('tabGemeloBeta', this)">Gemelo Volumétrico</button>
                     </div>
 
-                    <!-- PESTAÑA ORIGINAL -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;"><canvas id="chartAgro" height="100"></canvas></div>
                         <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;"><div id="soilHeatmap" style="width: 100%; height: 350px;"></div></div>
@@ -865,22 +864,26 @@
                                     <span class="live-pulse" style="background-color: #22c55e; box-shadow: 0 0 10px #22c55e;" title="CRON Activo"></span>
                                 </div>
                                 
-                                <p style="font-size: 13px; color: #a78bfa; margin-bottom: 15px;">El sistema evalúa la cuenca automáticamente cada 6 horas. Ingrese valores aquí únicamente si desea forzar una simulación manual (Override).</p>
+                                <p style="font-size: 13px; color: #a78bfa; margin-bottom: 15px;">El sistema evalúa la cuenca automáticamente cada 6 horas midiendo el espejo de agua satelital. Ingrese valores aquí únicamente si desea forzar un escenario extremo (Override).</p>
                                 
                                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                                     <div style="flex: 1;">
                                         <label style="color: #ddd; font-size: 11px; text-transform: uppercase;">Lluvia Alta Montaña (mm):</label>
-                                        <input type="number" id="oraLluviaSinguil" placeholder="Auto (Open-Meteo)" style="background: #2d2d44; color: white; border: 1px solid #5b21b6;">
+                                        <input type="number" id="oraLluviaSinguil" value="200" style="background: #2d2d44; color: white; border: 1px solid #5b21b6;">
                                     </div>
                                     <div style="flex: 1;">
                                         <label style="color: #ddd; font-size: 11px; text-transform: uppercase;">Lluvia Llanura (mm):</label>
-                                        <input type="number" id="oraLluviaLlanura" placeholder="Auto (Open-Meteo)" style="background: #2d2d44; color: white; border: 1px solid #5b21b6;">
+                                        <input type="number" id="oraLluviaLlanura" value="60" style="background: #2d2d44; color: white; border: 1px solid #5b21b6;">
                                     </div>
                                 </div>
                                 
                                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                                     <div style="flex: 1;">
-                                        <label style="color: #ddd; font-size: 11px; text-transform: uppercase;">Cota Actual Escaba (Física):</label>
+                                        <label style="color: #ddd; font-size: 11px; text-transform: uppercase;">Cota Ayer (-24h):</label>
+                                        <input type="number" id="oraCotaAyer" value="624.00" step="0.01" style="background: #2d2d44; color: white; border: 1px solid #5b21b6;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="color: #ddd; font-size: 11px; text-transform: uppercase;">Cota Actual (Física):</label>
                                         <input type="number" id="oraCotaEscaba" value="625.50" step="0.01" style="background: #2d2d44; color: white; border: 1px solid #5b21b6;">
                                     </div>
                                 </div>
@@ -2066,13 +2069,14 @@
         async function consultarOraculo(event) {
             const lluviaSinguil = parseFloat(document.getElementById("oraLluviaSinguil").value) || 0;
             const lluviaLlanura = parseFloat(document.getElementById("oraLluviaLlanura").value) || 0;
-            const cotaActual = parseFloat(document.getElementById("oraCotaEscaba").value) || 625.00;
+            const cotaAyer = parseFloat(document.getElementById("oraCotaAyer").value) || 624.00;
+            const cotaActual = parseFloat(document.getElementById("oraCotaEscaba").value) || 625.50;
             
             const status = document.getElementById("lblStatusOraculo");
             const btn = event.target;
             
             btn.innerText = "FORZANDO SIMULACIÓN...";
-            status.innerText = "Interrumpiendo CRON. Ejecutando XGBoost y Routing Matemático...";
+            status.innerText = "Interrumpiendo CRON. Ejecutando XGBoost con Cota Real...";
             document.getElementById("resOraculoBox").style.display = "none";
             document.getElementById("resOraWait").style.display = "block";
             
@@ -2082,6 +2086,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         cota_actual: cotaActual,
+                        cota_ayer: cotaAyer,
                         lluvia_singuil_mm: lluviaSinguil,
                         lluvia_lamadrid_mm: lluviaLlanura
                     })
