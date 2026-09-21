@@ -9,14 +9,22 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #222; color: #e2e8f0; }
         .container { padding: 20px; display: flex; gap: 20px; height: 100vh; box-sizing: border-box;}
-        .sidebar { width: 350px; background: #2b2b2b; border: 1px solid #444; border-radius: 4px; padding: 20px; overflow-y: auto; }
+        .sidebar { width: 350px; background: #2b2b2b; border: 1px solid #444; border-radius: 4px; padding: 20px; overflow-y: auto; flex-shrink: 0; }
         .main-content { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;}
         
         h3, h4 { color: #00d26a; margin-top: 0; }
         label { font-size: 13px; color: #ccc; display: block; margin-top: 15px; margin-bottom: 5px;}
         input[type="date"], input[type="number"], select { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; }
         
-        #mapPoli { height: 350px; border-radius: 4px; border: 1px solid #444; }
+        /* CORRECCIÓN VISUAL DEL MAPA */
+        #mapPoli { 
+            min-height: 400px; 
+            flex-shrink: 0; 
+            border-radius: 4px; 
+            border: 1px solid #444; 
+            z-index: 1;
+        }
+        
         .btn-primary { background-color: #00d26a; color: #000; width: 100%; padding: 12px; font-weight: bold; cursor: pointer; border: none; border-radius: 4px; margin-top: 20px;}
         .btn-primary:hover { background-color: #00b058; }
         
@@ -63,6 +71,7 @@
             <p>📏 Superficie Lote: <strong id="resHa">--</strong> Ha</p>
             <p>🎯 Colmenas Óptimas: <strong id="resOpt">--</strong> un</p>
             <p>🐝 Colmenas a Distribuir: <strong id="resDisp">--</strong> un</p>
+            <p style="font-size: 12px; color: #aaa; margin-top: 10px;">Viento general desde: <b id="resVientoDir" style="color: #fff;">--°</b></p>
             <p id="resCobertura" style="margin-top: 10px;"></p>
         </div>
     </div>
@@ -86,7 +95,7 @@
             </div>
         </div>
 
-        <div style="background: #2b2b2b; padding: 15px; border-radius: 4px; border: 1px solid #444; height: 300px;">
+        <div style="background: #2b2b2b; padding: 15px; border-radius: 4px; border: 1px solid #444; height: 300px; flex-shrink: 0;">
             <h4>Evolución Fenológica (EVI) <span id="lblCultivoPlot" style="color:#aaa; font-size:12px;"></span></h4>
             <div id="plotEvi" style="width: 100%; height: 230px;"></div>
         </div>
@@ -103,29 +112,41 @@
     document.getElementById('fechaInicio').value = hoy.toISOString().split('T')[0];
     document.getElementById('fechaFin').value = proximaSemana.toISOString().split('T')[0];
 
-    // MAPA: Capa Satelital + Capa de Etiquetas (Rutas y Ciudades)
     var map = L.map('mapPoli').setView([-28.1833, -64.7167], 12);
     
     var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18});
     var etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        opacity: 0.8 // Semitransparente para no tapar el campo
+        maxZoom: 18, opacity: 0.8
     });
 
     satelite.addTo(map);
-    etiquetas.addTo(map); // Agrega rutas, fronteras y nombres de pueblos
+    etiquetas.addTo(map);
     
     var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
+    var capaColmenas = L.layerGroup().addTo(map); // Capa aislada para marcadores de colmenas
+
     var drawControl = new L.Control.Draw({ draw: { polyline: false, marker: false, circlemarker: false, circle: false }, edit: { featureGroup: drawnItems } });
     map.addControl(drawControl);
     
     var poligonoActual = null;
     map.on(L.Draw.Event.CREATED, function (event) {
         drawnItems.clearLayers();
+        capaColmenas.clearLayers(); // Limpiamos colmenas viejas al redibujar
         drawnItems.addLayer(event.layer);
         poligonoActual = event.layer.toGeoJSON().geometry.coordinates;
         document.getElementById('status').innerText = "Lote delimitado correctamente.";
     });
+
+    function obtenerOrigenViento(grados) {
+        if (grados >= 337.5 || grados < 22.5) return 'Norte';
+        if (grados >= 22.5 && grados < 67.5) return 'Noreste';
+        if (grados >= 67.5 && grados < 112.5) return 'Este';
+        if (grados >= 112.5 && grados < 157.5) return 'Sureste';
+        if (grados >= 157.5 && grados < 202.5) return 'Sur';
+        if (grados >= 202.5 && grados < 247.5) return 'Suroeste';
+        if (grados >= 247.5 && grados < 292.5) return 'Oeste';
+        return 'Noroeste';
+    }
 
     async function ejecutarAnalisis() {
         if (!poligonoActual) return alert("Por favor dibuje el lote en el mapa.");
@@ -152,7 +173,7 @@
                 return;
             }
 
-            statusEl.innerText = "Calculando inteligencia biológica en Render...";
+            statusEl.innerText = "Calculando densidad e inteligencia espacial...";
 
             const req = await fetch('https://metricmoisture-backend.onrender.com/api/poli/analisis', {
                 method: 'POST',
@@ -161,7 +182,7 @@
                     coordenadas: poligonoActual,
                     inicio: fInicio,
                     fin: fFin,
-                    cultivo: cultivoSel, // Pasamos el cultivo a Python
+                    cultivo: cultivoSel,
                     colmenas: document.getElementById('numColmenas').value,
                     weather_data: dataMeteo 
                 })
@@ -169,10 +190,12 @@
             const res = await req.json();
             
             if(req.ok) {
+                // Actualizar Panel Lateral
                 document.getElementById('resumenBox').style.display = 'block';
                 document.getElementById('resHa').innerText = res.hectareas;
                 document.getElementById('resOpt').innerText = res.colmenas_optimas;
                 document.getElementById('resDisp').innerText = res.colmenas_disp;
+                document.getElementById('resVientoDir').innerText = `${res.viento_dir_general}° (${obtenerOrigenViento(res.viento_dir_general)})`;
                 
                 const covEl = document.getElementById('resCobertura');
                 if (res.deficit === 0) {
@@ -181,6 +204,7 @@
                     covEl.innerHTML = `<b style='color:#ffaa00;'>Déficit:</b> Faltan ${res.deficit} colmenas para cobertura plena.`;
                 }
 
+                // Generar Tabla
                 const tbody = document.getElementById('tablaCuerpo');
                 tbody.innerHTML = '';
                 res.tabla.forEach(r => {
@@ -190,6 +214,23 @@
                         <td>${r.Viento || '-'}</td><td>${r.Dir || '-'}</td><td><b>${r.Estado}</b></td><td>${r.Detalle}</td>
                     </tr>`;
                 });
+
+                // Dibujar colmenas en el mapa
+                capaColmenas.clearLayers();
+                res.colmenas_ubicaciones.forEach((c, idx) => {
+                    L.circleMarker([c[1], c[0]], {
+                        radius: 5,
+                        fillColor: "#ffaa00",
+                        color: "#000",
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    }).addTo(capaColmenas).bindPopup(`<b>Colmena ${idx + 1}</b><br>Deriva esperada: hacia el ${obtenerOrigenViento((res.viento_dir_general + 180) % 360)}`);
+                });
+
+                // Ajustar zoom para mostrar el polígono y todas las colmenas perfectamente
+                const limitesLote = poligonoActual[0].map(p => [p[1], p[0]]);
+                map.fitBounds(L.polygon(limitesLote).getBounds(), {padding: [20, 20]});
 
                 document.getElementById('lblCultivoPlot').innerText = `- ${cultivoText}`;
                 generarGraficoEVI(cultivoSel, fInicio);
@@ -204,13 +245,10 @@
 
     function generarGraficoEVI(cultivo, fechaInicio) {
         const xVals = [], yVals = [];
-        
-        // Centramos el pico de la campana EVI exactamente en la fecha de floración seleccionada
         const centro = new Date(fechaInicio);
         let d = new Date(centro);
-        d.setMonth(d.getMonth() - 4); // Empezamos a graficar 4 meses antes
+        d.setMonth(d.getMonth() - 4);
         
-        // Parametrización fenológica según el cultivo seleccionado
         let baseEVI, amplitud, duracionDias;
         switch(cultivo) {
             case 'limon': baseEVI = 0.40; amplitud = 0.25; duracionDias = 80; break;
@@ -225,15 +263,13 @@
         for(let i=0; i<24; i++) {
             xVals.push(d.toISOString().split('T')[0]);
             let dias_diff = (d - centro) / (1000 * 60 * 60 * 24);
-            // Campana de Gauss fenológica
             let evi = baseEVI + amplitud * Math.exp(-0.5 * Math.pow(dias_diff / duracionDias, 2)) + (Math.random() * 0.04 - 0.02);
             yVals.push(evi);
-            d.setDate(d.getDate() + 15); // Saltos de 15 días
+            d.setDate(d.getDate() + 15);
         }
 
         const trace = { x: xVals, y: yVals, type: 'scatter', mode: 'lines+markers', line: {color: '#00d26a', width: 3}, marker: {color: '#fff', size: 8} };
         
-        // Línea punteada marcando el inicio de la floración en el gráfico
         const layout = { 
             paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', margin: {l:40, r:20, t:10, b:40}, 
             xaxis: {gridcolor: '#444', tickfont: {color: '#fff'}}, 
