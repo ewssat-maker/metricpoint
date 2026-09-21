@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Cumplimiento Minero ESG</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; margin: 0; padding: 30px; }
+        h2 { font-weight: 400; font-size: 28px; margin-bottom: 40px; }
+        
+        .dashboard-top { display: flex; justify-content: center; gap: 50px; margin-bottom: 40px; align-items: center; }
+        .dial-container { text-align: center; }
+        .dial { width: 120px; height: 120px; border-radius: 50%; border: 12px solid #333; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin-bottom: 15px; position: relative; }
+        .dial-text { font-size: 13px; color: #aaa; }
+        
+        .status-box { background-color: #2a2b2e; padding: 20px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #ddd; min-width: 200px; line-height: 1.8; }
+        
+        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: 0 auto 40px auto; }
+        .card { background-color: #121212; border: 1px solid #333; padding: 20px; border-radius: 8px; display: flex; align-items: center; gap: 15px; transition: border-color 0.3s; }
+        .indicator { width: 18px; height: 18px; border-radius: 50%; background-color: #00d26a; flex-shrink: 0; }
+        .card-content h4 { margin: 0 0 5px 0; font-size: 15px; }
+        .card-content p { margin: 0; font-size: 12px; color: #aaa; }
+        
+        .summary-section { display: flex; justify-content: space-around; max-width: 900px; margin: 0 auto 40px auto; text-align: center; border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 20px 0; }
+        .summary-block h5 { margin: 0 0 10px 0; color: #aaa; font-size: 12px; text-transform: uppercase; font-weight: normal; letter-spacing: 1px;}
+        .summary-block span { font-size: 22px; font-weight: bold; }
+        
+        .controls { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        .control-row { display: flex; align-items: center; justify-content: space-between; font-size: 16px; }
+        
+        input[type="range"] { flex-grow: 1; margin: 0 30px; cursor: pointer; }
+        .val-display { background-color: #1e1e1e; padding: 10px 20px; border-radius: 6px; font-family: monospace; font-size: 16px; min-width: 50px; text-align: center; }
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 60px; height: 30px; margin: 0 30px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; border: 1px solid #555;}
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 3px; background-color: #aaa; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #ff4444; border-color: #ff4444;}
+        input:checked + .slider:before { transform: translateX(28px); background-color: #fff;}
+        
+        /* Selector SO2 */
+        .so2-selector { display: flex; align-items: center; gap: 15px; margin: 0 30px; flex-grow: 1; justify-content: center;}
+        .so2-btn { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+        .so2-display { background-color: #1e1e1e; padding: 10px 40px; border-radius: 6px; font-weight: bold; min-width: 80px; text-align: center; }
+
+        /* Estados dinámicos JS */
+        .border-green { border-color: #00d26a !important; }
+        .border-red { border-color: #ff4444 !important; }
+        .bg-green { background-color: #00d26a !important; }
+        .bg-red { background-color: #ff4444 !important; }
+        .text-green { color: #00d26a !important; }
+        .text-red { color: #ff4444 !important; }
+    </style>
+</head>
+<body>
+
+<h2>Panel de Cumplimiento Minero</h2>
+
+<!-- MÉTRICAS SUPERIORES -->
+<div class="dashboard-top">
+    <div class="dial-container">
+        <div class="dial" id="dial-def" style="border-top-color: #00d26a; border-right-color: #00d26a;">0 mm</div>
+        <div class="dial-text">Deformación Relaves</div>
+    </div>
+    <div class="dial-container">
+        <div class="dial" id="dial-turb" style="border-top-color: #00d26a; border-right-color: #00d26a;">0%</div>
+        <div class="dial-text">Turbidez del Agua</div>
+    </div>
+    <div class="status-box">
+        <div style="margin-bottom: 10px;">Zona Protegida: <span id="lbl-zona">NO (Ok)</span></div>
+        <div>Aire SO2: <span id="lbl-so2">Bajo</span></div>
+    </div>
+</div>
+
+<!-- TARJETAS DE CUMPLIMIENTO ESG -->
+<div class="grid-cards">
+    <div class="card border-green" id="card-gistm">
+        <div class="indicator bg-green" id="ind-gistm"></div>
+        <div class="card-content">
+            <h4>GISTM (Seguridad Relaves)</h4>
+            <p>Deformación ≤ 15 mm/año</p>
+        </div>
+    </div>
+    <div class="card border-green" id="card-ifc">
+        <div class="indicator bg-green" id="ind-ifc"></div>
+        <div class="card-content">
+            <h4>IFC Norma 6 (Biodiversidad)</h4>
+            <p>Sin Expansión Protegida</p>
+        </div>
+    </div>
+    <div class="card border-green" id="card-icmm">
+        <div class="indicator bg-green" id="ind-icmm"></div>
+        <div class="card-content">
+            <h4>ICMM / IFC 3 (Recursos Hídricos)</h4>
+            <p>Turbidez ≤ 30%</p>
+        </div>
+    </div>
+    <div class="card border-green" id="card-aire">
+        <div class="indicator bg-green" id="ind-aire"></div>
+        <div class="card-content">
+            <h4>Calidad Aire (Anomalía SO2)</h4>
+            <p>Nivel SO2 < Alto</p>
+        </div>
+    </div>
+</div>
+
+<!-- RESUMEN DE RIESGO -->
+<div class="summary-section">
+    <div class="summary-block">
+        <h5>Nivel de Riesgo</h5>
+        <span id="txt-riesgo" class="text-green">Cumplimiento</span>
+    </div>
+    <div style="width: 1px; background-color: #333;"></div>
+    <div class="summary-block">
+        <h5>Violaciones Activas</h5>
+        <span id="txt-violaciones">0</span>
+    </div>
+</div>
+
+<!-- SIMULADOR / ENTRADA DE DATOS -->
+<div class="controls">
+    <div class="control-row">
+        <span style="width: 250px;">Deformación (mm/año)</span>
+        <input type="range" id="input-def" min="0" max="30" value="0" step="1" oninput="evaluarReglas()">
+        <div class="val-display" id="val-def">0</div>
+    </div>
+    <div class="control-row">
+        <span style="width: 250px;">Turbidez del Agua (%)</span>
+        <input type="range" id="input-turb" min="0" max="100" value="0" step="1" oninput="evaluarReglas()">
+        <div class="val-display" id="val-turb">0</div>
+    </div>
+    <div class="control-row">
+        <span style="width: 250px;">Expansión Zona Protegida</span>
+        <div style="flex-grow: 1; display: flex; align-items: center;">
+            <label class="switch">
+                <input type="checkbox" id="input-exp" onchange="evaluarReglas()">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    <div class="control-row">
+        <span style="width: 250px;">Anomalía SO2</span>
+        <div class="so2-selector">
+            <button class="so2-btn" onclick="cambiarSO2(-1)">&#10094;</button>
+            <div class="so2-display" id="val-so2">Bajo</div>
+            <button class="so2-btn" onclick="cambiarSO2(1)">&#10095;</button>
+        </div>
+        <div style="width: 90px;"></div> <!-- Spacer para alinear -->
+    </div>
+</div>
+
+<script>
+    const nivelesSO2 = ['Bajo', 'Medio', 'Alto', 'Crítico'];
+    let indiceSO2 = 0;
+
+    function cambiarSO2(direccion) {
+        indiceSO2 += direccion;
+        if (indiceSO2 < 0) indiceSO2 = 0;
+        if (indiceSO2 > nivelesSO2.length - 1) indiceSO2 = nivelesSO2.length - 1;
+        document.getElementById('val-so2').innerText = nivelesSO2[indiceSO2];
+        evaluarReglas();
+    }
+
+    function setEstado(id, cumple) {
+        const card = document.getElementById(`card-${id}`);
+        const ind = document.getElementById(`ind-${id}`);
+        if (cumple) {
+            card.className = "card border-green";
+            ind.className = "indicator bg-green";
+        } else {
+            card.className = "card border-red";
+            ind.className = "indicator bg-red";
+        }
+    }
+
+    function evaluarReglas() {
+        // Leer valores actuales
+        const def = parseInt(document.getElementById('input-def').value);
+        const turb = parseInt(document.getElementById('input-turb').value);
+        const exp = document.getElementById('input-exp').checked;
+        const so2 = nivelesSO2[indiceSO2];
+        
+        let violaciones = 0;
+
+        // 1. Actualizar Textos y Diales
+        document.getElementById('val-def').innerText = def;
+        document.getElementById('dial-def').innerText = def + " mm";
+        document.getElementById('val-turb').innerText = turb;
+        document.getElementById('dial-turb').innerText = turb + "%";
+        
+        document.getElementById('lbl-zona').innerText = exp ? "SÍ (Violación)" : "NO (Ok)";
+        document.getElementById('lbl-zona').style.color = exp ? "#ff4444" : "#ddd";
+        document.getElementById('lbl-so2').innerText = so2;
+        document.getElementById('lbl-so2').style.color = (so2 === 'Alto' || so2 === 'Crítico') ? "#ff4444" : "#ddd";
+
+        // 2. Evaluar GISTM (Seguridad de Dique de Colas/Relaves)
+        if (def > 15) { setEstado('gistm', false); violaciones++; } 
+        else { setEstado('gistm', true); }
+
+        // 3. Evaluar ICMM (Turbidez del Agua Subterránea)
+        if (turb > 30) { setEstado('icmm', false); violaciones++; } 
+        else { setEstado('icmm', true); }
+
+        // 4. Evaluar IFC Norma 6 (Vegas y Salares)
+        if (exp) { setEstado('ifc', false); violaciones++; } 
+        else { setEstado('ifc', true); }
+
+        // 5. Evaluar Calidad de Aire
+        if (so2 === 'Alto' || so2 === 'Crítico') { setEstado('aire', false); violaciones++; } 
+        else { setEstado('aire', true); }
+
+        // 6. Actualizar Resumen Global
+        document.getElementById('txt-violaciones').innerText = violaciones;
+        const txtRiesgo = document.getElementById('txt-riesgo');
+        
+        if (violaciones === 0) {
+            txtRiesgo.innerText = "Cumplimiento";
+            txtRiesgo.className = "text-green";
+        } else if (violaciones === 1 || violaciones === 2) {
+            txtRiesgo.innerText = "Advertencia (Auditoría Requerida)";
+            txtRiesgo.className = "text-red"; // Opcional: naranja
+            txtRiesgo.style.color = "#f59e0b"; 
+        } else {
+            txtRiesgo.innerText = "CRÍTICO (Cese de Operaciones)";
+            txtRiesgo.className = "text-red";
+            txtRiesgo.style.color = ""; // Vuelve a clase roja pura
+        }
+    }
+</script>
+</body>
+</html>
