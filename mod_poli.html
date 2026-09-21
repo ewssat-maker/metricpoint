@@ -10,20 +10,13 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #222; color: #e2e8f0; }
         .container { padding: 20px; display: flex; gap: 20px; height: 100vh; box-sizing: border-box;}
         .sidebar { width: 350px; background: #2b2b2b; border: 1px solid #444; border-radius: 4px; padding: 20px; overflow-y: auto; flex-shrink: 0; }
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;}
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; background: #2b2b2b; border: 1px solid #444; border-radius: 4px;}
         
         h3, h4 { color: #00d26a; margin-top: 0; }
         label { font-size: 13px; color: #ccc; display: block; margin-top: 15px; margin-bottom: 5px;}
         input[type="date"], input[type="number"], select { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; }
         
-        /* CORRECCIÓN VISUAL DEL MAPA */
-        #mapPoli { 
-            min-height: 400px; 
-            flex-shrink: 0; 
-            border-radius: 4px; 
-            border: 1px solid #444; 
-            z-index: 1;
-        }
+        #mapPoli { min-height: 400px; flex-shrink: 0; border-radius: 4px; border: 1px solid #444; z-index: 1;}
         
         .btn-primary { background-color: #00d26a; color: #000; width: 100%; padding: 12px; font-weight: bold; cursor: pointer; border: none; border-radius: 4px; margin-top: 20px;}
         .btn-primary:hover { background-color: #00b058; }
@@ -35,6 +28,22 @@
         .row-nula { background-color: rgba(255, 68, 68, 0.1); }
         
         .info-box { background-color: #2b2b2b; padding: 15px; border-left: 4px solid #00d26a; border-radius: 4px; font-size: 14px; margin-top: 20px; }
+        
+        /* SISTEMA DE PESTAÑAS */
+        .tabs { display: flex; background: #1a1a1a; border-bottom: 2px solid #444; }
+        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: #888; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;}
+        .tab-btn:hover { color: #fff; background: #222; }
+        .tab-btn.active { color: #00d26a; border-bottom: 3px solid #00d26a; background: #2b2b2b;}
+        .tab-content { padding: 20px; display: none; flex-direction: column; gap: 20px; }
+        .tab-content.active { display: flex; }
+
+        /* ESTILOS DEL MÓDULO ECONÓMICO */
+        .eco-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .eco-card { background: #333; padding: 15px; border-radius: 4px; border: 1px solid #444; text-align: center;}
+        .eco-card h5 { margin: 0 0 10px 0; color: #aaa; font-size: 12px; text-transform: uppercase;}
+        .eco-val { font-size: 24px; font-weight: bold; color: #fff; font-family: monospace;}
+        .eco-positivo { color: #00d26a; }
+        .eco-negativo { color: #ff4444; }
     </style>
 </head>
 <body>
@@ -47,7 +56,7 @@
         
         <h4>1. Parámetros</h4>
         <label>Cultivo Objetivo:</label>
-        <select id="selCultivo">
+        <select id="selCultivo" onchange="cargarValoresEconomicos()">
             <option value="limon">Limón / Cítricos</option>
             <option value="arandano">Arándano</option>
             <option value="manzano">Manzano / Peral</option>
@@ -61,7 +70,7 @@
         <label>Fin de Floración:</label>
         <input type="date" id="fechaFin">
         
-        <label style="margin-top: 20px;">Colmenas disponibles:</label>
+        <label style="margin-top: 20px;">Colmenas disponibles (Inventario):</label>
         <input type="number" id="numColmenas" value="50" min="1">
         
         <button class="btn-primary" onclick="ejecutarAnalisis()">GENERAR REPORTE</button>
@@ -77,27 +86,90 @@
     </div>
     
     <div class="main-content">
-        <div id="mapPoli"></div>
-        
-        <div style="background: #2b2b2b; padding: 15px; border-radius: 4px; border: 1px solid #444;">
-            <h4>Reporte Meteorológico</h4>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th><th>Inicio</th><th>Fin</th><th>Hs Aptas</th><th>Viento (km/h)</th><th>Dir (°)</th><th>Estado</th><th>Detalle / Confort</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaCuerpo">
-                        <tr><td colspan="8" style="color: #888;">Dibuje el lote y ejecute el reporte...</td></tr>
-                    </tbody>
-                </table>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="cambiarPestana(event, 'tabBio')">🌍 Inteligencia Espacial</button>
+            <button class="tab-btn" onclick="cambiarPestana(event, 'tabEco')">💰 Impacto Económico</button>
+        </div>
+
+        <!-- PESTAÑA 1: MAPA Y BIOLOGÍA -->
+        <div id="tabBio" class="tab-content active">
+            <div id="mapPoli"></div>
+            
+            <div>
+                <h4>Reporte Meteorológico</h4>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th><th>Inicio</th><th>Fin</th><th>Hs Aptas</th><th>Viento (km/h)</th><th>Dir (°)</th><th>Estado</th><th>Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaCuerpo">
+                            <tr><td colspan="8" style="color: #888;">Dibuje el lote y ejecute el reporte...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="height: 300px; flex-shrink: 0;">
+                <h4>Evolución Fenológica (EVI) <span id="lblCultivoPlot" style="color:#aaa; font-size:12px;"></span></h4>
+                <div id="plotEvi" style="width: 100%; height: 230px;"></div>
             </div>
         </div>
 
-        <div style="background: #2b2b2b; padding: 15px; border-radius: 4px; border: 1px solid #444; height: 300px; flex-shrink: 0;">
-            <h4>Evolución Fenológica (EVI) <span id="lblCultivoPlot" style="color:#aaa; font-size:12px;"></span></h4>
-            <div id="plotEvi" style="width: 100%; height: 230px;"></div>
+        <!-- PESTAÑA 2: FINANZAS Y ROI -->
+        <div id="tabEco" class="tab-content">
+            <h4>Variables del Mercado Agrícola</h4>
+            <p style="font-size: 13px; color: #aaa; margin-top: -15px;">Modifique los valores base para ajustar la proyección a su realidad comercial.</p>
+            
+            <div class="eco-grid">
+                <div>
+                    <label>Rendimiento Base sin abejas (Tn / Ha):</label>
+                    <input type="number" id="ecoRindeBase" oninput="calcularEconomia()">
+                </div>
+                <div>
+                    <label>Incremento de rinde por polinización (%):</label>
+                    <input type="number" id="ecoAumentoRinde" oninput="calcularEconomia()">
+                </div>
+                <div>
+                    <label>Precio Internacional (USD / Tn):</label>
+                    <input type="number" id="ecoPrecioTon" oninput="calcularEconomia()">
+                </div>
+                <div>
+                    <label>Costo de alquiler por colmena (USD):</label>
+                    <input type="number" id="ecoCostoColmena" oninput="calcularEconomia()">
+                </div>
+            </div>
+
+            <hr style="border-color: #444; margin: 10px 0;">
+            
+            <h4>Proyección Financiera del Lote (Anual)</h4>
+            <div class="eco-grid">
+                <div class="eco-card">
+                    <h5>Producción Sin Abejas</h5>
+                    <div class="eco-val" id="resProdSin">-- Tn</div>
+                </div>
+                <div class="eco-card">
+                    <h5>Producción Con Abejas</h5>
+                    <div class="eco-val eco-positivo" id="resProdCon">-- Tn</div>
+                </div>
+                <div class="eco-card">
+                    <h5>Ingreso Bruto (Sin Abejas)</h5>
+                    <div class="eco-val" id="resIngresoSin">USD --</div>
+                </div>
+                <div class="eco-card">
+                    <h5>Ingreso Bruto (Con Abejas)</h5>
+                    <div class="eco-val eco-positivo" id="resIngresoCon">USD --</div>
+                </div>
+                <div class="eco-card">
+                    <h5>Costo Total de Polinización</h5>
+                    <div class="eco-val eco-negativo" id="resCostoAbejas">USD --</div>
+                </div>
+                <div class="eco-card" style="border-color: #00d26a; background: #112a1c;">
+                    <h5 style="color: #00d26a;">Beneficio Neto Extra (ROI)</h5>
+                    <div class="eco-val eco-positivo" id="resGananciaNeta">USD --</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -107,23 +179,90 @@
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <script>
+    // --- Lógica de Pestañas ---
+    function cambiarPestana(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].className = tabcontent[i].className.replace(" active", "");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).className += " active";
+        evt.currentTarget.className += " active";
+        
+        // Refrescar mapa si estaba oculto
+        if(tabName === 'tabBio') {
+            setTimeout(() => { map.invalidateSize(); }, 100);
+        }
+    }
+
+    // --- Base de Datos Agronómica ---
+    const dataEconomica = {
+        'limon': { rinde: 35, aumento: 15, precio: 400, costoColmena: 25 },
+        'arandano': { rinde: 8, aumento: 45, precio: 3500, costoColmena: 35 },
+        'manzano': { rinde: 40, aumento: 60, precio: 600, costoColmena: 30 },
+        'almendro': { rinde: 2, aumento: 90, precio: 4000, costoColmena: 45 },
+        'palto': { rinde: 12, aumento: 50, precio: 2200, costoColmena: 30 },
+        'cucurbitaceas': { rinde: 30, aumento: 70, precio: 300, costoColmena: 20 }
+    };
+
+    function cargarValoresEconomicos() {
+        const cultivo = document.getElementById('selCultivo').value;
+        const datos = dataEconomica[cultivo];
+        
+        document.getElementById('ecoRindeBase').value = datos.rinde;
+        document.getElementById('ecoAumentoRinde').value = datos.aumento;
+        document.getElementById('ecoPrecioTon').value = datos.precio;
+        document.getElementById('ecoCostoColmena').value = datos.costoColmena;
+        
+        calcularEconomia();
+    }
+
+    let hectareasActuales = 0;
+    let colmenasOptimasActuales = 0;
+
+    function calcularEconomia() {
+        if(hectareasActuales === 0) return; // No hay polígono dibujado aún
+
+        const rindeBase = parseFloat(document.getElementById('ecoRindeBase').value) || 0;
+        const aumentoPct = parseFloat(document.getElementById('ecoAumentoRinde').value) || 0;
+        const precio = parseFloat(document.getElementById('ecoPrecioTon').value) || 0;
+        const costoColmena = parseFloat(document.getElementById('ecoCostoColmena').value) || 0;
+
+        const prodTotalSin = rindeBase * hectareasActuales;
+        const prodTotalCon = prodTotalSin * (1 + (aumentoPct / 100));
+        
+        const ingresoSin = prodTotalSin * precio;
+        const ingresoCon = prodTotalCon * precio;
+        
+        const costoAbejas = colmenasOptimasActuales * costoColmena;
+        const gananciaNeta = (ingresoCon - ingresoSin) - costoAbejas;
+
+        document.getElementById('resProdSin').innerText = prodTotalSin.toFixed(1) + " Tn";
+        document.getElementById('resProdCon').innerText = prodTotalCon.toFixed(1) + " Tn";
+        document.getElementById('resIngresoSin').innerText = "USD " + ingresoSin.toLocaleString('en-US', {maximumFractionDigits:0});
+        document.getElementById('resIngresoCon').innerText = "USD " + ingresoCon.toLocaleString('en-US', {maximumFractionDigits:0});
+        document.getElementById('resCostoAbejas').innerText = "USD " + costoAbejas.toLocaleString('en-US', {maximumFractionDigits:0});
+        document.getElementById('resGananciaNeta').innerText = "USD " + gananciaNeta.toLocaleString('en-US', {maximumFractionDigits:0});
+    }
+
+    // --- Lógica Principal y Mapa ---
     const hoy = new Date();
     const proximaSemana = new Date(); proximaSemana.setDate(hoy.getDate() + 7);
     document.getElementById('fechaInicio').value = hoy.toISOString().split('T')[0];
     document.getElementById('fechaFin').value = proximaSemana.toISOString().split('T')[0];
 
     var map = L.map('mapPoli').setView([-28.1833, -64.7167], 12);
-    
     var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18});
-    var etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18, opacity: 0.8
-    });
+    var etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom: 18, opacity: 0.8});
 
-    satelite.addTo(map);
-    etiquetas.addTo(map);
+    satelite.addTo(map); etiquetas.addTo(map);
     
     var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
-    var capaColmenas = L.layerGroup().addTo(map); // Capa aislada para marcadores de colmenas
+    var capaColmenas = L.layerGroup().addTo(map);
 
     var drawControl = new L.Control.Draw({ draw: { polyline: false, marker: false, circlemarker: false, circle: false }, edit: { featureGroup: drawnItems } });
     map.addControl(drawControl);
@@ -131,7 +270,7 @@
     var poligonoActual = null;
     map.on(L.Draw.Event.CREATED, function (event) {
         drawnItems.clearLayers();
-        capaColmenas.clearLayers(); // Limpiamos colmenas viejas al redibujar
+        capaColmenas.clearLayers();
         drawnItems.addLayer(event.layer);
         poligonoActual = event.layer.toGeoJSON().geometry.coordinates;
         document.getElementById('status').innerText = "Lote delimitado correctamente.";
@@ -190,7 +329,6 @@
             const res = await req.json();
             
             if(req.ok) {
-                // Actualizar Panel Lateral
                 document.getElementById('resumenBox').style.display = 'block';
                 document.getElementById('resHa').innerText = res.hectareas;
                 document.getElementById('resOpt').innerText = res.colmenas_optimas;
@@ -204,7 +342,11 @@
                     covEl.innerHTML = `<b style='color:#ffaa00;'>Déficit:</b> Faltan ${res.deficit} colmenas para cobertura plena.`;
                 }
 
-                // Generar Tabla
+                // Alimentar variables globales para el modelo económico
+                hectareasActuales = res.hectareas;
+                colmenasOptimasActuales = res.colmenas_optimas;
+                calcularEconomia();
+
                 const tbody = document.getElementById('tablaCuerpo');
                 tbody.innerHTML = '';
                 res.tabla.forEach(r => {
@@ -215,20 +357,12 @@
                     </tr>`;
                 });
 
-                // Dibujar colmenas en el mapa
                 capaColmenas.clearLayers();
                 res.colmenas_ubicaciones.forEach((c, idx) => {
-                    L.circleMarker([c[1], c[0]], {
-                        radius: 5,
-                        fillColor: "#ffaa00",
-                        color: "#000",
-                        weight: 1,
-                        opacity: 1,
-                        fillOpacity: 0.9
-                    }).addTo(capaColmenas).bindPopup(`<b>Colmena ${idx + 1}</b><br>Deriva esperada: hacia el ${obtenerOrigenViento((res.viento_dir_general + 180) % 360)}`);
+                    L.circleMarker([c[1], c[0]], {radius: 5, fillColor: "#ffaa00", color: "#000", weight: 1, opacity: 1, fillOpacity: 0.9})
+                    .addTo(capaColmenas).bindPopup(`<b>Colmena ${idx + 1}</b><br>Deriva esperada: hacia el ${obtenerOrigenViento((res.viento_dir_general + 180) % 360)}`);
                 });
 
-                // Ajustar zoom para mostrar el polígono y todas las colmenas perfectamente
                 const limitesLote = poligonoActual[0].map(p => [p[1], p[0]]);
                 map.fitBounds(L.polygon(limitesLote).getBounds(), {padding: [20, 20]});
 
@@ -274,13 +408,14 @@
             paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', margin: {l:40, r:20, t:10, b:40}, 
             xaxis: {gridcolor: '#444', tickfont: {color: '#fff'}}, 
             yaxis: {gridcolor: '#444', tickfont: {color: '#fff'}, title: 'Índice EVI', titlefont:{color:'#fff'}}, 
-            shapes: [
-                {type: 'line', y0: baseEVI, y1: baseEVI + amplitud, x0: fechaInicio, x1: fechaInicio, line: {color: '#ffaa00', width: 2, dash: 'dot'}}
-            ]
+            shapes: [{type: 'line', y0: baseEVI, y1: baseEVI + amplitud, x0: fechaInicio, x1: fechaInicio, line: {color: '#ffaa00', width: 2, dash: 'dot'}}]
         };
         
         Plotly.newPlot('plotEvi', [trace], layout, {displayModeBar: false});
     }
+
+    // Inicializar valores económicos al cargar la página
+    window.onload = cargarValoresEconomicos;
 </script>
 </body>
 </html>
