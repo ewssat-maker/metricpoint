@@ -14,7 +14,7 @@
         
         h3, h4 { color: #00d26a; margin-top: 0; }
         label { font-size: 13px; color: #ccc; display: block; margin-top: 15px; margin-bottom: 5px;}
-        input[type="date"], input[type="number"] { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; }
+        input[type="date"], input[type="number"], select { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; }
         
         #mapPoli { height: 350px; border-radius: 4px; border: 1px solid #444; }
         .btn-primary { background-color: #00d26a; color: #000; width: 100%; padding: 12px; font-weight: bold; cursor: pointer; border: none; border-radius: 4px; margin-top: 20px;}
@@ -38,6 +38,16 @@
         <hr style="border-color: #444;">
         
         <h4>1. Parámetros</h4>
+        <label>Cultivo Objetivo:</label>
+        <select id="selCultivo">
+            <option value="limon">Limón / Cítricos</option>
+            <option value="arandano">Arándano</option>
+            <option value="manzano">Manzano / Peral</option>
+            <option value="almendro">Almendro / Nogal</option>
+            <option value="palto">Palto (Aguacate)</option>
+            <option value="cucurbitaceas">Sandía / Melón / Zapallo</option>
+        </select>
+
         <label>Inicio de Floración:</label>
         <input type="date" id="fechaInicio">
         <label>Fin de Floración:</label>
@@ -77,7 +87,7 @@
         </div>
 
         <div style="background: #2b2b2b; padding: 15px; border-radius: 4px; border: 1px solid #444; height: 300px;">
-            <h4>Evolución Fenológica (EVI Simulado)</h4>
+            <h4>Evolución Fenológica (EVI) <span id="lblCultivoPlot" style="color:#aaa; font-size:12px;"></span></h4>
             <div id="plotEvi" style="width: 100%; height: 230px;"></div>
         </div>
     </div>
@@ -88,15 +98,22 @@
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <script>
-    // Fechas por defecto
     const hoy = new Date();
     const proximaSemana = new Date(); proximaSemana.setDate(hoy.getDate() + 7);
     document.getElementById('fechaInicio').value = hoy.toISOString().split('T')[0];
     document.getElementById('fechaFin').value = proximaSemana.toISOString().split('T')[0];
 
-    // Mapa
+    // MAPA: Capa Satelital + Capa de Etiquetas (Rutas y Ciudades)
     var map = L.map('mapPoli').setView([-28.1833, -64.7167], 12);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
+    
+    var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18});
+    var etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        opacity: 0.8 // Semitransparente para no tapar el campo
+    });
+
+    satelite.addTo(map);
+    etiquetas.addTo(map); // Agrega rutas, fronteras y nombres de pueblos
     
     var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
     var drawControl = new L.Control.Draw({ draw: { polyline: false, marker: false, circlemarker: false, circle: false }, edit: { featureGroup: drawnItems } });
@@ -116,7 +133,6 @@
         statusEl.innerText = "Descargando meteorología (IP Local)...";
         
         try {
-            // 1. Extraer centroide para Open-Meteo
             let sumLat = 0, sumLon = 0;
             poligonoActual[0].forEach(p => { sumLon += p[0]; sumLat += p[1]; });
             const lon = sumLon / poligonoActual[0].length;
@@ -124,8 +140,9 @@
             
             const fInicio = document.getElementById('fechaInicio').value;
             const fFin = document.getElementById('fechaFin').value;
+            const cultivoSel = document.getElementById('selCultivo').value;
+            const cultivoText = document.getElementById('selCultivo').options[document.getElementById('selCultivo').selectedIndex].text;
 
-            // 2. Fetch a Open-Meteo directo desde el navegador del usuario
             const urlMeteo = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&start_date=${fInicio}&end_date=${fFin}&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation&timezone=America%2FArgentina%2FBuenos_Aires`;
             const reqMeteo = await fetch(urlMeteo);
             const dataMeteo = await reqMeteo.json();
@@ -137,7 +154,6 @@
 
             statusEl.innerText = "Calculando inteligencia biológica en Render...";
 
-            // 3. Enviar el paquete al backend en Python
             const req = await fetch('https://metricmoisture-backend.onrender.com/api/poli/analisis', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -145,8 +161,9 @@
                     coordenadas: poligonoActual,
                     inicio: fInicio,
                     fin: fFin,
+                    cultivo: cultivoSel, // Pasamos el cultivo a Python
                     colmenas: document.getElementById('numColmenas').value,
-                    weather_data: dataMeteo // El paquete va directo a Python
+                    weather_data: dataMeteo 
                 })
             });
             const res = await req.json();
@@ -174,7 +191,8 @@
                     </tr>`;
                 });
 
-                generarGraficoEVI();
+                document.getElementById('lblCultivoPlot').innerText = `- ${cultivoText}`;
+                generarGraficoEVI(cultivoSel, fInicio);
                 statusEl.innerText = "Análisis completado exitosamente.";
             } else {
                 statusEl.innerText = "Error Servidor: " + res.error;
@@ -184,22 +202,46 @@
         }
     }
 
-    function generarGraficoEVI() {
-        // Replicar la distribución normal de EVI generada en R
+    function generarGraficoEVI(cultivo, fechaInicio) {
         const xVals = [], yVals = [];
-        let d = new Date("2025-08-01");
-        const centro = new Date("2026-02-01");
         
+        // Centramos el pico de la campana EVI exactamente en la fecha de floración seleccionada
+        const centro = new Date(fechaInicio);
+        let d = new Date(centro);
+        d.setMonth(d.getMonth() - 4); // Empezamos a graficar 4 meses antes
+        
+        // Parametrización fenológica según el cultivo seleccionado
+        let baseEVI, amplitud, duracionDias;
+        switch(cultivo) {
+            case 'limon': baseEVI = 0.40; amplitud = 0.25; duracionDias = 80; break;
+            case 'arandano': baseEVI = 0.25; amplitud = 0.35; duracionDias = 45; break;
+            case 'manzano': baseEVI = 0.20; amplitud = 0.55; duracionDias = 35; break;
+            case 'almendro': baseEVI = 0.15; amplitud = 0.50; duracionDias = 30; break;
+            case 'palto': baseEVI = 0.45; amplitud = 0.30; duracionDias = 60; break;
+            case 'cucurbitaceas': baseEVI = 0.10; amplitud = 0.60; duracionDias = 40; break;
+            default: baseEVI = 0.25; amplitud = 0.5; duracionDias = 50;
+        }
+
         for(let i=0; i<24; i++) {
             xVals.push(d.toISOString().split('T')[0]);
             let dias_diff = (d - centro) / (1000 * 60 * 60 * 24);
-            let evi = 0.25 + 0.55 * Math.exp(-0.5 * Math.pow(dias_diff / 50, 2)) + (Math.random() * 0.06 - 0.03);
+            // Campana de Gauss fenológica
+            let evi = baseEVI + amplitud * Math.exp(-0.5 * Math.pow(dias_diff / duracionDias, 2)) + (Math.random() * 0.04 - 0.02);
             yVals.push(evi);
-            d.setDate(d.getDate() + 15);
+            d.setDate(d.getDate() + 15); // Saltos de 15 días
         }
 
         const trace = { x: xVals, y: yVals, type: 'scatter', mode: 'lines+markers', line: {color: '#00d26a', width: 3}, marker: {color: '#fff', size: 8} };
-        const layout = { paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', margin: {l:40, r:20, t:10, b:40}, xaxis: {gridcolor: '#444', tickfont: {color: '#fff'}}, yaxis: {gridcolor: '#444', tickfont: {color: '#fff'}, title: 'Índice EVI', titlefont:{color:'#fff'}}, shapes: [{type: 'line', y0: 0.45, y1: 0.45, x0: xVals[0], x1: xVals[xVals.length-1], line: {color: '#ff4444', dash: 'dash'}}] };
+        
+        // Línea punteada marcando el inicio de la floración en el gráfico
+        const layout = { 
+            paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', margin: {l:40, r:20, t:10, b:40}, 
+            xaxis: {gridcolor: '#444', tickfont: {color: '#fff'}}, 
+            yaxis: {gridcolor: '#444', tickfont: {color: '#fff'}, title: 'Índice EVI', titlefont:{color:'#fff'}}, 
+            shapes: [
+                {type: 'line', y0: baseEVI, y1: baseEVI + amplitud, x0: fechaInicio, x1: fechaInicio, line: {color: '#ffaa00', width: 2, dash: 'dot'}}
+            ]
+        };
         
         Plotly.newPlot('plotEvi', [trace], layout, {displayModeBar: false});
     }
