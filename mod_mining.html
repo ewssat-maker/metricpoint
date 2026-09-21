@@ -40,45 +40,50 @@
 
 <div class="container">
     <div class="sidebar">
-        <h2 style="color: #f59e0b; border-bottom: 1px solid #333; padding-bottom: 10px;" id="tituloModulo">[ METRIC MINE ]</h2>
-        <p style="font-size: 12px; color: #aaa; font-family: monospace; line-height: 1.5;">Seleccione un salar para evaluar el humedal, o dibuje un polígono libre en las montañas para medir nieve.</p>
+        <h2 style="color: #f59e0b; border-bottom: 1px solid #333; padding-bottom: 10px;" id="tituloModulo" data-i18n="mine_title">[ METRIC MINE ]</h2>
+        <p style="font-size: 12px; color: #aaa; font-family: monospace; line-height: 1.5;" data-i18n="mine_desc">Seleccione un salar para evaluar el humedal, o un macizo montañoso para medir nieve.</p>
         
-        <label>Sitio Operativo / Cuenca:</label>
+        <label data-i18n="mine_lbl_sitio">Sitio Operativo / Cuenca:</label>
         <select id="selSitioMinero" onchange="moverMapaASitio()">
-            <option value="custom">Dibujo Libre en Mapa</option>
-            <option value="-23.82,-66.81">Salar de Olaroz (Jujuy)</option>
-            <option value="-25.43,-67.05">Salar del Hombre Muerto (Catamarca)</option>
-            <option value="-24.58,-68.20">Salar de Llullaillaco (Salta)</option>
-            <option value="-24.08,-66.84">Salar de Cauchari (Jujuy)</option>
+            <option value="custom" data-i18n="mine_opt_custom">Dibujo Libre en Mapa</option>
+            <optgroup label="Salares (Auditoría Vega)" data-i18n-group="mine_grp_salares">
+                <option value="-23.82,-66.81">Salar de Olaroz (Jujuy)</option>
+                <option value="-25.43,-67.05">Salar del Hombre Muerto (Catamarca)</option>
+                <option value="-24.58,-68.20">Salar de Llullaillaco (Salta)</option>
+                <option value="-24.08,-66.84">Salar de Cauchari (Jujuy)</option>
+            </optgroup>
+            <optgroup label="Glaciares y Nieves Permanentes" data-i18n-group="mine_grp_nieve">
+                <option value="glaciar_chani">Cerro Chañi (Jujuy/Salta)</option>
+                <option value="glaciar_cachi">Nevado de Cachi (Salta)</option>
+                <option value="glaciar_ojos">Ojos del Salado (Catamarca)</option>
+            </optgroup>
         </select>
         
         <div class="scifi-panel" id="panelMeticas">
-            <h4 style="color: #666;" id="tituloPanel">RESULTADOS DE TELEMETRÍA</h4>
+            <h4 style="color: #666;" id="tituloPanel" data-i18n="mine_panel_title">RESULTADOS DE TELEMETRÍA</h4>
             
-            <!-- Bloque de métricas VEGA (SAR) -->
             <div id="bloqueVega" style="display: none;">
-                <div class="scifi-row"><span class="scifi-label">RVI Actual (Vigor)</span><span class="scifi-val" id="resRVIAct">--</span></div>
-                <div class="scifi-row"><span class="scifi-label">RVI Línea Base (Año Ant.)</span><span class="scifi-val" id="resRVIBase">--</span></div>
-                <div class="scifi-row"><span class="scifi-label">Variación Interanual</span><span class="scifi-val" id="resVar">-- %</span></div>
-                <div class="scifi-row"><span class="scifi-label">Balance Hídrico (7 días)</span><span class="scifi-val" id="resBal">-- mm</span></div>
+                <div class="scifi-row"><span class="scifi-label" data-i18n="mine_rvi_act">RVI Actual (Vigor)</span><span class="scifi-val" id="resRVIAct">--</span></div>
+                <div class="scifi-row"><span class="scifi-label" data-i18n="mine_rvi_base">RVI Línea Base (Año Ant.)</span><span class="scifi-val" id="resRVIBase">--</span></div>
+                <div class="scifi-row"><span class="scifi-label" data-i18n="mine_var">Variación Interanual</span><span class="scifi-val" id="resVar">-- %</span></div>
+                <div class="scifi-row"><span class="scifi-label" data-i18n="mine_bal">Balance Hídrico (7 días)</span><span class="scifi-val" id="resBal">-- mm</span></div>
             </div>
 
-            <!-- Bloque de métricas NIEVE (Óptico) -->
             <div id="bloqueNieve" style="display: none;">
-                <div class="scifi-row"><span class="scifi-label">Superficie Analizada</span><span class="scifi-val" id="resAreaTot">-- ha</span></div>
-                <div class="scifi-row"><span class="scifi-label">Cobertura de Nieve/Hielo</span><span class="scifi-val" id="resAreaNieve">-- ha</span></div>
-                <div class="scifi-row"><span class="scifi-label">Porcentaje Nival</span><span class="scifi-val" id="resCobertura">-- %</span></div>
+                <div class="scifi-row"><span class="scifi-label" data-i18n="mine_area_tot">Superficie Analizada</span><span class="scifi-val" id="resAreaTot">-- ha</span></div>
+                <div class="scifi-row"><span class="scifi-label" data-i18n="mine_area_niev">Cobertura de Nieve/Hielo</span><span class="scifi-val" id="resAreaNieve">-- ha</span></div>
+                <div class="scifi-row"><span class="scifi-label" data-i18n="mine_pct">Porcentaje Nival</span><span class="scifi-val" id="resCobertura">-- %</span></div>
             </div>
         </div>
         
-        <div id="semaforoESG" style="color: #666;">ESPERANDO POLÍGONO...</div>
+        <div id="semaforoESG" style="color: #666;" data-i18n="mine_status_wait">ESPERANDO POLÍGONO...</div>
         
         <div style="display: flex; gap: 10px; margin-top: auto; padding-top: 15px;">
-            <button class="btn-primary btn-vega" id="btnAnalizarVega" onclick="ejecutarAuditoria('vega')">🌱 VEGA (SAR)</button>
-            <button class="btn-primary btn-nieve" id="btnAnalizarNieve" onclick="ejecutarAuditoria('nieve')">🏔️ NIEVE (ÓPTICO)</button>
+            <button class="btn-primary btn-vega" id="btnAnalizarVega" onclick="ejecutarAuditoria('vega')" data-i18n="mine_btn_vega">🌱 VEGA (SAR)</button>
+            <button class="btn-primary btn-nieve" id="btnAnalizarNieve" onclick="ejecutarAuditoria('nieve')" data-i18n="mine_btn_nieve">🏔️ NIEVE (ÓPTICO)</button>
         </div>
         
-        <p id="statusMsg" style="font-size: 11px; color: #777; font-family: monospace; text-align: center; margin-top: 10px;">Sistema Listo.</p>
+        <p id="statusMsg" style="font-size: 11px; color: #777; font-family: monospace; text-align: center; margin-top: 10px;" data-i18n="mine_sys_ready">Sistema Listo.</p>
     </div>
     
     <div class="main-content">
@@ -90,7 +95,47 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
 <script>
-    var map = L.map('mapMining').setView([-24.2, -67.0], 8);
+    // ==========================================
+    // LÓGICA DE IDIOMAS (AISLADA PARA EL IFRAME)
+    // ==========================================
+    const traduccionesLocales = {
+        en: {
+            "mine_title": "[ METRIC MINE ]", "mine_desc": "Select a salt flat to evaluate the wetland, or a mountain massif to measure snow.", "mine_lbl_sitio": "Operational Site / Basin:", "mine_opt_custom": "Free Drawing on Map", "mine_grp_salares": "Salt Flats (Wetland Audit)", "mine_grp_nieve": "Glaciers and Permanent Snow", "mine_panel_title": "TELEMETRY RESULTS", "mine_rvi_act": "Current RVI (Vigor)", "mine_rvi_base": "Baseline RVI (Prev Year)", "mine_var": "Interannual Variation", "mine_bal": "Water Balance (7 days)", "mine_area_tot": "Analyzed Surface", "mine_area_niev": "Snow/Ice Coverage", "mine_pct": "Snow Percentage", "mine_status_wait": "WAITING FOR POLYGON...", "mine_btn_vega": "🌱 WETLAND (SAR)", "mine_btn_nieve": "🏔️ SNOW (OPTICAL)", "mine_sys_ready": "System Ready.", "mine_msg_custom": "Zone delimited manually. Select analysis type.", "mine_msg_salar": "Salt flat loaded. Press 'WETLAND (SAR)'.", "mine_msg_glaciar": "Glacier loaded. Press 'SNOW (OPTICAL)'.", "mine_msg_draw": "Draw a polygon (e.g. over peaks for snow).", "mine_msg_proc_sar": "Scanning with Sentinel-1 SAR...", "mine_msg_proc_opt": "Scanning with Sentinel-2 Optical...", "mine_msg_succ": "Analysis completed successfully."
+        },
+        es: {
+            "mine_title": "[ METRIC MINE ]", "mine_desc": "Seleccione un salar para evaluar el humedal, o un macizo montañoso para medir nieve.", "mine_lbl_sitio": "Sitio Operativo / Cuenca:", "mine_opt_custom": "Dibujo Libre en Mapa", "mine_grp_salares": "Salares (Auditoría Vega)", "mine_grp_nieve": "Glaciares y Nieves Permanentes", "mine_panel_title": "RESULTADOS DE TELEMETRÍA", "mine_rvi_act": "RVI Actual (Vigor)", "mine_rvi_base": "RVI Línea Base (Año Ant.)", "mine_var": "Variación Interanual", "mine_bal": "Balance Hídrico (7 días)", "mine_area_tot": "Superficie Analizada", "mine_area_niev": "Cobertura de Nieve/Hielo", "mine_pct": "Porcentaje Nival", "mine_status_wait": "ESPERANDO POLÍGONO...", "mine_btn_vega": "🌱 VEGA (SAR)", "mine_btn_nieve": "🏔️ NIEVE (ÓPTICO)", "mine_sys_ready": "Sistema Listo.", "mine_msg_custom": "Zona delimitada manualmente. Seleccione tipo de análisis.", "mine_msg_salar": "Salar cargado. Presione 'VEGA (SAR)'.", "mine_msg_glaciar": "Glaciar cargado. Presione 'NIEVE (ÓPTICO)'.", "mine_msg_draw": "Dibuje un polígono (Ej: sobre cumbres para nieve).", "mine_msg_proc_sar": "Escaneando con Sentinel-1 SAR...", "mine_msg_proc_opt": "Escaneando con Sentinel-2 Óptico...", "mine_msg_succ": "Análisis completado exitosamente."
+        },
+        pt: {
+            "mine_title": "[ METRIC MINE ]", "mine_desc": "Selecione uma salina para avaliar o pântano ou um maciço montanhoso para medir neve.", "mine_lbl_sitio": "Local Operacional / Bacia:", "mine_opt_custom": "Desenho Livre no Mapa", "mine_grp_salares": "Salinas (Auditoria de Zonas Úmidas)", "mine_grp_nieve": "Geleiras e Neve Permanente", "mine_panel_title": "RESULTADOS DE TELEMETRIA", "mine_rvi_act": "RVI Atual (Vigor)", "mine_rvi_base": "RVI Linha Base (Ano Ant)", "mine_var": "Variação Interanual", "mine_bal": "Balanço Hídrico (7 dias)", "mine_area_tot": "Superfície Analisada", "mine_area_niev": "Cobertura de Neve/Gelo", "mine_pct": "Porcentagem de Neve", "mine_status_wait": "AGUARDANDO POLÍGONO...", "mine_btn_vega": "🌱 PÂNTANO (SAR)", "mine_btn_nieve": "🏔️ NEVE (ÓPTICO)", "mine_sys_ready": "Sistema Pronto.", "mine_msg_custom": "Zona delimitada manualmente. Selecione o tipo de análise.", "mine_msg_salar": "Salina carregada. Pressione 'PÂNTANO (SAR)'.", "mine_msg_glaciar": "Geleira carregada. Pressione 'NEVE (ÓPTICO)'.", "mine_msg_draw": "Desenhe um polígono (Ex: sobre picos para neve).", "mine_msg_proc_sar": "Escaneando com Sentinel-1 SAR...", "mine_msg_proc_opt": "Escaneando com Sentinel-2 Óptico...", "mine_msg_succ": "Análise concluída com sucesso."
+        }
+    };
+
+    let idiomaActual = "es";
+
+    function aplicarIdiomaLocal(lang) {
+        if (!traduccionesLocales[lang]) return;
+        idiomaActual = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.innerHTML = traduccionesLocales[lang][el.getAttribute('data-i18n')];
+        });
+        document.querySelectorAll('optgroup[data-i18n-group]').forEach(el => {
+            el.label = traduccionesLocales[lang][el.getAttribute('data-i18n-group')];
+        });
+    }
+
+    // El iframe espía al archivo padre (index.html) para mantener el idioma sincronizado
+    try {
+        const langSwitchPadre = window.parent.document.getElementById('langSwitch');
+        if (langSwitchPadre) {
+            aplicarIdiomaLocal(langSwitchPadre.value);
+            langSwitchPadre.addEventListener('change', (e) => aplicarIdiomaLocal(e.target.value));
+        }
+    } catch(e) { console.log("Iframe aislado. Se usa idioma por defecto."); }
+
+    // ==========================================
+    // LÓGICA DE MAPA Y TELEMETRÍA
+    // ==========================================
+    var map = L.map('mapMining').setView([-24.2, -67.0], 7);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
     
     var drawnItems = new L.FeatureGroup(); 
@@ -103,11 +148,14 @@
     
     var poligonoActual = null; 
     
-    const poligonosSalares = {
+    const poligonosMaestros = {
         "-23.82,-66.81": [[[-66.86,-23.86], [-66.76,-23.86], [-66.76,-23.78], [-66.86,-23.78], [-66.86,-23.86]]], 
         "-25.43,-67.05": [[[-67.10,-25.48], [-67.00,-25.48], [-67.00,-25.38], [-67.10,-25.38], [-67.10,-25.48]]], 
         "-24.58,-68.20": [[[-68.25,-24.63], [-68.15,-24.63], [-68.15,-24.53], [-68.25,-24.53], [-68.25,-24.63]]], 
-        "-24.08,-66.84": [[[-66.89,-24.13], [-66.79,-24.13], [-66.79,-24.03], [-66.89,-24.03], [-66.89,-24.13]]]  
+        "-24.08,-66.84": [[[-66.89,-24.13], [-66.79,-24.13], [-66.79,-24.03], [-66.89,-24.03], [-66.89,-24.13]]],
+        "glaciar_chani": [[[-65.80,-24.11], [-65.70,-24.11], [-65.70,-24.01], [-65.80,-24.01], [-65.80,-24.11]]],
+        "glaciar_cachi": [[[-66.43,-24.98], [-66.33,-24.98], [-66.33,-24.88], [-66.43,-24.88], [-66.43,-24.98]]],
+        "glaciar_ojos":  [[[-68.58,-27.15], [-68.48,-27.15], [-68.48,-27.05], [-68.58,-27.05], [-68.58,-27.15]]]
     };
     
     map.on(L.Draw.Event.CREATED, function (event) { 
@@ -115,7 +163,7 @@
         drawnItems.addLayer(event.layer); 
         poligonoActual = event.layer.toGeoJSON().geometry.coordinates; 
         document.getElementById('selSitioMinero').value = 'custom';
-        document.getElementById('statusMsg').innerText = "Zona delimitada manualmente. Seleccione el tipo de análisis.";
+        document.getElementById('statusMsg').innerText = traduccionesLocales[idiomaActual].mine_msg_custom;
         document.getElementById('statusMsg').style.color = "#fff";
     });
 
@@ -125,18 +173,18 @@
         poligonoActual = null;
         
         if(val !== 'custom') {
-            const coords = val.split(',');
-            map.setView([parseFloat(coords[0]), parseFloat(coords[1])], 11);
-            
-            poligonoActual = poligonosSalares[val];
+            poligonoActual = poligonosMaestros[val];
             const latlngs = poligonoActual[0].map(pt => [pt[1], pt[0]]);
-            const rect = L.polygon(latlngs, {color: '#f59e0b', weight: 3, fillColor: '#f59e0b', fillOpacity: 0.2}).addTo(drawnItems);
+            const isGlaciar = val.includes("glaciar");
+            const colorP = isGlaciar ? '#38bdf8' : '#f59e0b';
+            
+            const rect = L.polygon(latlngs, {color: colorP, weight: 3, fillColor: colorP, fillOpacity: 0.2}).addTo(drawnItems);
             map.fitBounds(rect.getBounds(), {padding: [20, 20]});
             
-            document.getElementById('statusMsg').innerText = "Salar cargado. Presione 'Vega (SAR)'.";
-            document.getElementById('statusMsg').style.color = "#f59e0b";
+            document.getElementById('statusMsg').innerText = isGlaciar ? traduccionesLocales[idiomaActual].mine_msg_glaciar : traduccionesLocales[idiomaActual].mine_msg_salar;
+            document.getElementById('statusMsg').style.color = colorP;
         } else {
-            document.getElementById('statusMsg').innerText = "Dibuje un polígono (Ej: sobre cumbres para nieve).";
+            document.getElementById('statusMsg').innerText = traduccionesLocales[idiomaActual].mine_msg_draw;
             document.getElementById('statusMsg').style.color = "#38bdf8";
         }
     }
@@ -152,7 +200,6 @@
         const tituloPanel = document.getElementById('tituloPanel');
         const semaforo = document.getElementById('semaforoESG');
         
-        // Preparar UI según el tipo de análisis
         document.getElementById('bloqueVega').style.display = 'none';
         document.getElementById('bloqueNieve').style.display = 'none';
         
@@ -162,24 +209,21 @@
         if (tipo === 'vega') {
             endpoint = "/api/mineria/analisis_vega";
             colorAcento = "#f59e0b";
-            tituloPanel.innerText = "AUDITORÍA VEGA / HUMEDAL";
+            tituloPanel.innerText = idiomaActual === "en" ? "WETLAND AUDIT (SAR)" : idiomaActual === "pt" ? "AUDITORIA DE PÂNTANO (SAR)" : "AUDITORÍA VEGA / HUMEDAL";
             tituloPanel.style.color = colorAcento;
             document.getElementById('bloqueVega').style.display = 'block';
             btnVega.innerText = "PROCESANDO...";
-            status.innerText = "Escaneando con Sentinel-1 SAR...";
+            status.innerText = traduccionesLocales[idiomaActual].mine_msg_proc_sar;
+            drawnItems.eachLayer(layer => layer.setStyle({color: colorAcento, fillColor: colorAcento}));
         } else {
             endpoint = "/api/mineria/nieve_glaciares";
             colorAcento = "#38bdf8";
-            tituloPanel.innerText = "RESERVAS DE NIEVE (NDSI)";
+            tituloPanel.innerText = idiomaActual === "en" ? "SNOW RESERVES (NDSI)" : idiomaActual === "pt" ? "RESERVAS DE NEVE (NDSI)" : "RESERVAS DE NIEVE (NDSI)";
             tituloPanel.style.color = colorAcento;
             document.getElementById('bloqueNieve').style.display = 'block';
             btnNieve.innerText = "PROCESANDO...";
-            status.innerText = "Escaneando con Sentinel-2 Óptico...";
-            
-            // Cambiar color del polígono a azul
-            drawnItems.eachLayer(function (layer) {
-                layer.setStyle({color: '#38bdf8', fillColor: '#38bdf8'});
-            });
+            status.innerText = traduccionesLocales[idiomaActual].mine_msg_proc_opt;
+            drawnItems.eachLayer(layer => layer.setStyle({color: colorAcento, fillColor: colorAcento}));
         }
         
         semaforo.innerText = "CALCULANDO...";
@@ -203,31 +247,24 @@
                 if (tipo === 'vega') {
                     document.getElementById('resRVIAct').innerText = data.rvi_actual;
                     document.getElementById('resRVIBase').innerText = data.rvi_linea_base;
-                    
                     const resVar = document.getElementById('resVar');
                     resVar.innerText = data.variacion_interanual_pct + " %";
                     resVar.style.color = data.variacion_interanual_pct < 0 ? "#ef4444" : "#22c55e";
                     document.getElementById('resBal').innerText = data.balance_hidrico_7d_mm + " mm";
-                    
-                    semaforo.innerText = data.estado_ambiental;
-                    semaforo.style.borderColor = data.color_semaforo;
-                    semaforo.style.color = data.color_semaforo;
-                    semaforo.style.backgroundColor = data.color_semaforo + "20"; 
                 } else {
                     document.getElementById('resAreaTot').innerText = data.hectareas_analizadas + " ha";
                     document.getElementById('resAreaNieve').innerText = data.hectareas_hielo_nieve + " ha";
-                    
                     const resCob = document.getElementById('resCobertura');
                     resCob.innerText = data.porcentaje_cobertura + " %";
                     resCob.style.color = data.porcentaje_cobertura < 10 ? "#ef4444" : "#38bdf8";
-                    
-                    semaforo.innerText = data.estado_reserva;
-                    semaforo.style.borderColor = data.color_indicador;
-                    semaforo.style.color = data.color_indicador;
-                    semaforo.style.backgroundColor = data.color_indicador + "20";
                 }
                 
-                status.innerText = "Análisis completado exitosamente.";
+                semaforo.innerText = data.estado_reserva || data.estado_ambiental;
+                semaforo.style.borderColor = data.color_indicador || data.color_semaforo;
+                semaforo.style.color = data.color_indicador || data.color_semaforo;
+                semaforo.style.backgroundColor = (data.color_indicador || data.color_semaforo) + "20";
+                
+                status.innerText = traduccionesLocales[idiomaActual].mine_msg_succ;
                 status.style.color = colorAcento;
             } else {
                 status.innerText = "Error: " + (data.error || "Fallo en telemetría");
@@ -237,8 +274,8 @@
             status.innerText = "Error de red conectando al servidor.";
             status.style.color = "#ef4444";
         } finally {
-            btnVega.innerText = "🌱 VEGA (SAR)";
-            btnNieve.innerText = "🏔️ NIEVE (ÓPTICO)";
+            btnVega.innerText = traduccionesLocales[idiomaActual].mine_btn_vega;
+            btnNieve.innerText = traduccionesLocales[idiomaActual].mine_btn_nieve;
         }
     }
 </script>
