@@ -112,23 +112,46 @@
 
     async function ejecutarAnalisis() {
         if (!poligonoActual) return alert("Por favor dibuje el lote en el mapa.");
-        document.getElementById('status').innerText = "Procesando datos meteorológicos...";
+        const statusEl = document.getElementById('status');
+        statusEl.innerText = "Descargando meteorología (IP Local)...";
         
         try {
+            // 1. Extraer centroide para Open-Meteo
+            let sumLat = 0, sumLon = 0;
+            poligonoActual[0].forEach(p => { sumLon += p[0]; sumLat += p[1]; });
+            const lon = sumLon / poligonoActual[0].length;
+            const lat = sumLat / poligonoActual[0].length;
+            
+            const fInicio = document.getElementById('fechaInicio').value;
+            const fFin = document.getElementById('fechaFin').value;
+
+            // 2. Fetch a Open-Meteo directo desde el navegador del usuario
+            const urlMeteo = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&start_date=${fInicio}&end_date=${fFin}&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation&timezone=America%2FArgentina%2FBuenos_Aires`;
+            const reqMeteo = await fetch(urlMeteo);
+            const dataMeteo = await reqMeteo.json();
+
+            if (dataMeteo.error) {
+                statusEl.innerText = "Fallo Open-Meteo: " + dataMeteo.reason;
+                return;
+            }
+
+            statusEl.innerText = "Calculando inteligencia biológica en Render...";
+
+            // 3. Enviar el paquete al backend en Python
             const req = await fetch('https://metricmoisture-backend.onrender.com/api/poli/analisis', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     coordenadas: poligonoActual,
-                    inicio: document.getElementById('fechaInicio').value,
-                    fin: document.getElementById('fechaFin').value,
-                    colmenas: document.getElementById('numColmenas').value
+                    inicio: fInicio,
+                    fin: fFin,
+                    colmenas: document.getElementById('numColmenas').value,
+                    weather_data: dataMeteo // El paquete va directo a Python
                 })
             });
             const res = await req.json();
             
             if(req.ok) {
-                // Actualizar Panel
                 document.getElementById('resumenBox').style.display = 'block';
                 document.getElementById('resHa').innerText = res.hectareas;
                 document.getElementById('resOpt').innerText = res.colmenas_optimas;
@@ -141,7 +164,6 @@
                     covEl.innerHTML = `<b style='color:#ffaa00;'>Déficit:</b> Faltan ${res.deficit} colmenas para cobertura plena.`;
                 }
 
-                // Generar Tabla
                 const tbody = document.getElementById('tablaCuerpo');
                 tbody.innerHTML = '';
                 res.tabla.forEach(r => {
@@ -153,12 +175,12 @@
                 });
 
                 generarGraficoEVI();
-                document.getElementById('status').innerText = "Análisis completado.";
+                statusEl.innerText = "Análisis completado exitosamente.";
             } else {
-                document.getElementById('status').innerText = "Error: " + res.error;
+                statusEl.innerText = "Error Servidor: " + res.error;
             }
         } catch(e) {
-            document.getElementById('status').innerText = "Error de conexión.";
+            statusEl.innerText = "Error de conexión en la red.";
         }
     }
 
