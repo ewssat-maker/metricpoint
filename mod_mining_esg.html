@@ -254,11 +254,15 @@
                     if (window.heatmapLayer) {
                         map.removeLayer(window.heatmapLayer);
                     }
+                    
+                    // 1. Agregamos la capa térmica sin alterar el zIndex manualmente
                     window.heatmapLayer = L.tileLayer(data.url_mapa_calor, {
                         attribution: 'Earth Engine InSAR',
-                        opacity: 0.85
-                        zIndex: 1000 // ¡FORZAMOS QUE LA CAPA QUEDE POR ENCIMA DEL SATÉLITE!
+                        opacity: 0.80
                     }).addTo(map);
+                    
+                    // 2. Le pedimos nativamente a Leaflet que la traiga al frente 
+                    window.heatmapLayer.bringToFront();
                 }
 
                 // Motor Lógico GISTM
