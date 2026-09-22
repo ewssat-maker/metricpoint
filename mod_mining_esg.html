@@ -212,38 +212,53 @@
                 
                 if (window.insarChart) window.insarChart.destroy();
                 
-                window.insarChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: data.serie_fechas_insar,
-                        datasets: [{
-                            label: 'Deformación Acumulada (mm)',
-                            data: data.serie_valores_insar,
-                            borderColor: '#ff4444',
-                            backgroundColor: 'rgba(255, 68, 68, 0.1)',
-                            borderWidth: 2,
-                            pointRadius: 3,
-                            pointBackgroundColor: '#fff',
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: { 
-                                grid: { color: '#333' },
-                                ticks: { color: '#aaa', font: { family: 'monospace', size: 10 } }
-                            },
-                            y: { 
-                                grid: { color: '#333' },
-                                ticks: { color: '#aaa', font: { family: 'monospace' } },
-                                title: { display: true, text: 'Milímetros (mm)', color: '#aaa' }
+                if (data.serie_fechas_insar && data.serie_valores_insar) {
+                    window.insarChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.serie_fechas_insar,
+                            datasets: [{
+                                label: 'Deformación Acumulada (mm)',
+                                data: data.serie_valores_insar,
+                                borderColor: '#ff4444',
+                                backgroundColor: 'rgba(255, 68, 68, 0.1)',
+                                borderWidth: 2,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#fff',
+                                fill: true,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { 
+                                    grid: { color: '#333' },
+                                    ticks: { color: '#aaa', font: { family: 'monospace', size: 10 } }
+                                },
+                                y: { 
+                                    grid: { color: '#333' },
+                                    ticks: { color: '#aaa', font: { family: 'monospace' } },
+                                    title: { display: true, text: 'Milímetros (mm)', color: '#aaa' }
+                                }
                             }
                         }
+                    });
+                }
+
+                // =====================================
+                // RENDERIZAR MAPA DE CALOR INSAR EN LEAFLET
+                // =====================================
+                if (data.url_mapa_calor) {
+                    if (window.heatmapLayer) {
+                        map.removeLayer(window.heatmapLayer);
                     }
-                });
+                    window.heatmapLayer = L.tileLayer(data.url_mapa_calor, {
+                        attribution: 'Earth Engine InSAR',
+                        opacity: 0.8
+                    }).addTo(map);
+                }
 
                 // Motor Lógico GISTM
                 if (def > 15) { 
