@@ -256,7 +256,8 @@
                     }
                     window.heatmapLayer = L.tileLayer(data.url_mapa_calor, {
                         attribution: 'Earth Engine InSAR',
-                        opacity: 0.8
+                        opacity: 0.85
+                        zIndex: 1000 // ¡FORZAMOS QUE LA CAPA QUEDE POR ENCIMA DEL SATÉLITE!
                     }).addTo(map);
                 }
 
