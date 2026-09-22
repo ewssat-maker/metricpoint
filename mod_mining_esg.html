@@ -152,10 +152,9 @@
 
         const statusEl = document.getElementById('statusTxt');
         statusEl.style.color = "#f59e0b";
-        statusEl.innerText = "Conectando con Sentinel-1 y procesando interferometría InSAR en Google Earth Engine...";
+        statusEl.innerText = "Conectando con Sentinel y procesando auditoría en Google Earth Engine...";
 
         try {
-            // Reemplazar URL por la de tu servidor Render (ej. https://tu-app.onrender.com/api/mining/esg-audit)
             const response = await fetch('https://metricmoisture-backend.onrender.com/api/mining/esg-audit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -172,30 +171,27 @@
                 statusEl.innerText = "Auditoría completada exitosamente. Datos satelitales asimilados.";
                 statusEl.style.color = "#00d26a";
 
-                // 1. Extraer Deformación Real desde Python
+                // Ingesta de las 4 métricas satelitales reales desde Earth Engine
                 const def = data.deformacion_mm;
-                
-                // MOCKS: Como todavía no armamos Sentinel-2 (Agua) ni Sentinel-5P (Aire),
-                // inyectamos valores controlados por ahora para mantener el panel funcionando.
-                const turb = 12; // 12% turbidez (OK)
-                const exp = false; // Sin expansión (OK)
-                const so2 = 'Bajo'; // Emisión controlada (OK)
+                const turb = data.turbidez_pct;
+                const exp = data.expansion_ilegal;
+                const so2 = data.anomalia_so2;
 
                 let violaciones = 0;
 
-                // Actualizar Textos y Diales
+                // Actualizar Diales y Textos
                 const dialDef = document.getElementById('dial-def');
                 dialDef.innerText = def + " mm";
                 
-                document.getElementById('dial-turb').innerText = turb + " %";
-                document.getElementById('dial-turb').style.borderColor = "#00d26a";
+                const dialTurb = document.getElementById('dial-turb');
+                dialTurb.innerText = turb + " %";
                 
                 document.getElementById('lbl-zona').innerText = exp ? "SÍ (Violación)" : "NO (Ok)";
                 document.getElementById('lbl-zona').style.color = exp ? "#ff4444" : "#00d26a";
                 document.getElementById('lbl-so2').innerText = so2;
-                document.getElementById('lbl-so2').style.color = "#00d26a";
+                document.getElementById('lbl-so2').style.color = (so2 === 'Alto' || so2 === 'Crítico') ? "#ff4444" : "#00d26a";
 
-                // Evaluar GISTM con el dato real de Sentinel-1
+                // Motor Lógico GISTM (Deformación)
                 if (def > 15) { 
                     setEstado('gistm', false); 
                     violaciones++; 
@@ -205,12 +201,23 @@
                     dialDef.style.borderColor = "#00d26a";
                 }
 
-                // Evaluar resto de reglas (Mocks)
-                if (turb > 30) { setEstado('icmm', false); violaciones++; } else { setEstado('icmm', true); }
+                // Motor Lógico ICMM (Turbidez Hídrica)
+                if (turb > 30) { 
+                    setEstado('icmm', false); 
+                    violaciones++; 
+                    dialTurb.style.borderColor = "#ff4444";
+                } else { 
+                    setEstado('icmm', true); 
+                    dialTurb.style.borderColor = "#00d26a";
+                }
+
+                // Motor Lógico IFC 6 (Biodiversidad y Vegas)
                 if (exp) { setEstado('ifc', false); violaciones++; } else { setEstado('ifc', true); }
+
+                // Motor Lógico Calidad de Aire (SO2)
                 if (so2 === 'Alto' || so2 === 'Crítico') { setEstado('aire', false); violaciones++; } else { setEstado('aire', true); }
 
-                // Actualizar Resumen Global
+                // Cálculo Final de Riesgo ESG
                 document.getElementById('txt-violaciones').innerText = violaciones;
                 document.getElementById('txt-violaciones').style.color = "#fff";
                 const txtRiesgo = document.getElementById('txt-riesgo');
@@ -231,7 +238,7 @@
                 statusEl.style.color = "#ff4444";
             }
         } catch (error) {
-            statusEl.innerText = "Error de red conectando con el backend InSAR.";
+            statusEl.innerText = "Error de red conectando con el backend satelital.";
             statusEl.style.color = "#ff4444";
         }
     }
