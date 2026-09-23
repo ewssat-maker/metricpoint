@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MetricMine OS - Unified</title>
     
-    <!-- Librerías de Mapas y Gráficos -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Librería real para exportación a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        /* =========================================================
-           ARQUITECTURA DE PANTALLA COMPLETA Y GLASSMORPHISM
-        ========================================================= */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #fff; }
         
         #mapFull { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
@@ -28,16 +27,12 @@
             max-height: 90vh; overflow-y: auto;
         }
 
-        /* Scrollbar estilizado para los paneles flotantes */
         .hud-panel::-webkit-scrollbar { width: 6px; }
         .hud-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
 
         #hud-controls { top: 20px; left: 20px; width: 320px; }
         #hud-results { top: 20px; right: 20px; width: 380px; display: none; transition: 0.3s opacity; }
 
-        /* =========================================================
-           TIPOGRAFÍAS Y CONTROLES
-        ========================================================= */
         h2 { margin: 0 0 15px 0; font-family: monospace; font-size: 20px; letter-spacing: 1px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
         h3 { margin: 0 0 15px 0; font-family: monospace; font-size: 16px; letter-spacing: 1px; color: #fff; }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; font-family: monospace; display: block; margin-bottom: 5px; }
@@ -53,16 +48,10 @@
         .btn-export { background: transparent; border: 1px solid #888; color: #fff; padding: 10px; font-size: 11px; cursor: pointer; border-radius: 4px; display: inline-block; width: 48%; text-align: center; font-family: monospace; transition: 0.2s;}
         .btn-export:hover { background: rgba(255,255,255,0.1); border-color: #fff;}
 
-        /* =========================================================
-           COMPONENTES DE RESULTADOS (VEGA / NIEVE)
-        ========================================================= */
         .scifi-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; font-size: 13px; align-items: center;}
         .scifi-label { color: #aaa; font-family: monospace; }
         .scifi-val { font-family: 'Courier New', monospace; font-weight: bold; font-size: 15px; color: #fff;}
 
-        /* =========================================================
-           COMPONENTES DE RESULTADOS (ESG)
-        ========================================================= */
         .dial-container { display: flex; justify-content: space-around; margin-bottom: 15px; }
         .dial-box { text-align: center; }
         .dial { width: 70px; height: 70px; border-radius: 50%; border: 6px solid #333; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; margin: 0 auto; transition: 0.3s;}
@@ -82,10 +71,8 @@
 </head>
 <body>
 
-<!-- MAPA INMERSIVO DE FONDO -->
 <div id="mapFull"></div>
 
-<!-- PANEL FLOTANTE IZQUIERDO: CONTROLES -->
 <div id="hud-controls" class="hud-panel">
     <h2>[ METRIC MINE OS ]</h2>
     <p style="font-size: 11px; color: #888; font-family: monospace; margin-top: -10px; margin-bottom: 20px;">Gestión Hídrica, Nival y ESG</p>
@@ -108,36 +95,26 @@
     
     <p id="statusMsg" style="font-size: 11px; color: #fff; font-family: monospace; margin-bottom: 20px; background: rgba(255,255,255,0.1); padding: 8px; border-radius: 4px;">Sistema Listo. Seleccione un área o dibuje.</p>
 
-    <!-- Botones de Análisis Integrados -->
-    <button class="btn-run btn-vega" id="btnVega" onclick="ejecutarAnalisis('vega')">🌱 AUDITORÍA VEGA (SAR)</button>
-    <button class="btn-run btn-nieve" id="btnNieve" onclick="ejecutarAnalisis('nieve')">🏔️ RESERVAS DE NIEVE (ÓPTICO)</button>
-    
+    <button class="btn-run btn-vega" onclick="ejecutarAnalisis('vega')">🌱 AUDITORÍA VEGA (SAR)</button>
+    <button class="btn-run btn-nieve" onclick="ejecutarAnalisis('nieve')">🏔️ RESERVAS DE NIEVE (ÓPTICO)</button>
     <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0;"></div>
-    
-    <button class="btn-run btn-esg" id="btnESG" onclick="ejecutarAnalisis('esg')">🛡️ AUDITORÍA COMPLETA ESG</button>
+    <button class="btn-run btn-esg" onclick="ejecutarAnalisis('esg')">🛡️ AUDITORÍA COMPLETA ESG</button>
 </div>
 
-<!-- PANEL FLOTANTE DERECHO: RESULTADOS (Oculto por defecto) -->
 <div id="hud-results" class="hud-panel">
     <button id="btn-close-res" onclick="cerrarResultados()">✖</button>
     <h3 id="resTitulo">RESULTADOS SATELITALES</h3>
     
-    <!-- BLOQUE RESULTADOS VEGA -->
     <div id="bloqueVega" style="display: none;">
         <div class="scifi-row"><span class="scifi-label">RVI Actual (Vigor)</span><span class="scifi-val" id="resRVIAct">--</span></div>
         <div class="scifi-row"><span class="scifi-label">RVI Línea Base (Año Ant.)</span><span class="scifi-val" id="resRVIBase">--</span></div>
         <div class="scifi-row"><span class="scifi-label">Variación Interanual</span><span class="scifi-val" id="resVar">-- %</span></div>
-        <div class="scifi-row"><span class="scifi-label">Balance Hídrico (7 días)</span><span class="scifi-val" id="resBal">-- mm</span></div>
     </div>
 
-    <!-- BLOQUE RESULTADOS NIEVE -->
     <div id="bloqueNieve" style="display: none;">
-        <div class="scifi-row"><span class="scifi-label">Superficie Analizada</span><span class="scifi-val" id="resAreaTot">-- ha</span></div>
-        <div class="scifi-row"><span class="scifi-label">Cobertura Nieve/Hielo</span><span class="scifi-val" id="resAreaNieve">-- ha</span></div>
         <div class="scifi-row"><span class="scifi-label">Porcentaje Nival</span><span class="scifi-val" id="resCobertura">-- %</span></div>
     </div>
 
-    <!-- BLOQUE RESULTADOS ESG -->
     <div id="bloqueESG" style="display: none;">
         <div class="dial-container">
             <div class="dial-box">
@@ -149,17 +126,14 @@
                 <div class="dial-label">Turbidez<br>Agua (%)</div>
             </div>
         </div>
-
         <div class="esg-status-row">
             <div>Expansión Ilegal:<br><span id="lbl-zona" style="color:#aaa; font-weight:bold; font-size:14px;">--</span></div>
             <div style="text-align: right;">Anomalía SO2:<br><span id="lbl-so2" style="color:#aaa; font-weight:bold; font-size:14px;">--</span></div>
         </div>
-
         <div class="chart-box">
             <div style="color: #00d26a; font-family: monospace; font-size: 10px; margin-bottom: 5px;">DEFORMACIÓN ACUMULADA (InSAR)</div>
             <canvas id="chartInSAR" height="80"></canvas>
         </div>
-
         <div class="esg-card" id="card-gistm">
             <h4><span>GISTM (Relaves)</span> <span id="ind-gistm">⚫</span></h4>
             <p>Límite ≤ 15 mm/año</p>
@@ -168,40 +142,31 @@
             <h4><span>ICMM (Recursos Hídricos)</span> <span id="ind-icmm">⚫</span></h4>
             <p>Límite Turbidez ≤ 30%</p>
         </div>
-        
         <div style="text-align: center; margin-top: 15px; font-family: monospace; padding: 10px; background: rgba(0,0,0,0.6); border-radius: 4px;">
             <div style="font-size: 10px; color: #aaa;">ESTADO GENERAL DE RIESGO</div>
             <div id="txt-riesgo" style="font-size: 16px; font-weight: bold; margin-top: 5px; color: #aaa;">ESPERANDO...</div>
         </div>
     </div>
 
-    <!-- BOTONES DE EXPORTACIÓN -->
-    <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+    <div id="export-controls" style="display: flex; justify-content: space-between; margin-top: 25px;">
         <button class="btn-export" onclick="descargarReporte()">📄 DESCARGAR PDF</button>
         <button class="btn-export" onclick="exportarDatos()">📊 EXPORTAR MATRIZ</button>
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-
 <script>
-    // ==========================================
-    // 1. INICIALIZACIÓN DEL MAPA MAESTRO
-    // ==========================================
-    // Movimos los controles de zoom a la derecha abajo para que los paneles no los tapen
     var map = L.map('mapFull', { zoomControl: false }).setView([-24.2, -67.0], 7);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Capa Satelital
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
-    // Capa de Etiquetas de Ciudades y Rutas (Transparente encima del satélite)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom: 18, opacity: 0.8}).addTo(map);
     
-    // Control de dibujo
     var drawnItems = new L.FeatureGroup(); 
     map.addLayer(drawnItems);
+    
+    // Controles de dibujo posicionados sobre los botones de zoom
     var drawControl = new L.Control.Draw({ 
+        position: 'bottomright',
         draw: { polyline: false, polygon: true, circle: false, rectangle: true, marker: false, circlemarker: false }, 
         edit: { featureGroup: drawnItems } 
     }); 
@@ -209,7 +174,6 @@
     
     var poligonoActual = null; 
     
-    // Diccionario maestro de geometrías
     const poligonosMaestros = {
         "-23.82,-66.81": [[[-66.86,-23.86], [-66.76,-23.86], [-66.76,-23.78], [-66.86,-23.78], [-66.86,-23.86]]], 
         "-25.43,-67.05": [[[-67.10,-25.48], [-67.00,-25.48], [-67.00,-25.38], [-67.10,-25.38], [-67.10,-25.48]]], 
@@ -237,20 +201,14 @@
             poligonoActual = poligonosMaestros[val];
             const latlngs = poligonoActual[0].map(pt => [pt[1], pt[0]]);
             const colorP = '#f59e0b';
-            
             const rect = L.polygon(latlngs, {color: colorP, weight: 3, fillColor: colorP, fillOpacity: 0.1}).addTo(drawnItems);
             map.fitBounds(rect.getBounds(), {padding: [50, 50]});
             document.getElementById('statusMsg').innerText = "Geometría cargada. Listo para escanear.";
         }
     }
 
-    function cerrarResultados() {
-        document.getElementById('hud-results').style.display = 'none';
-    }
+    function cerrarResultados() { document.getElementById('hud-results').style.display = 'none'; }
 
-    // ==========================================
-    // 2. ORQUESTADOR DE SOLICITUDES BACKEND
-    // ==========================================
     async function ejecutarAnalisis(tipo) {
         if (!poligonoActual) { return alert("Por favor, dibuje un polígono o seleccione un sitio."); }
         
@@ -258,10 +216,8 @@
         const resHud = document.getElementById('hud-results');
         const resTitulo = document.getElementById('resTitulo');
         
-        // Limpiar capas térmicas anteriores si existieran
         if (window.heatmapLayer) { map.removeLayer(window.heatmapLayer); }
 
-        // Ocultar todos los bloques internos
         document.getElementById('bloqueVega').style.display = 'none';
         document.getElementById('bloqueNieve').style.display = 'none';
         document.getElementById('bloqueESG').style.display = 'none';
@@ -269,17 +225,14 @@
         let endpoint = "";
         let payload = { coordenadas: poligonoActual };
 
-        // Configuración según el tipo
         if (tipo === 'vega') {
-            endpoint = "/api/mineria/analisis_vega";
-            payload.sitio = document.getElementById('selSitioMinero').options[document.getElementById('selSitioMinero').selectedIndex].text;
+            endpoint = "/api/mining/wetland";
             status.innerText = "Escaneando con Sentinel-1 SAR...";
             resTitulo.innerText = "AUDITORÍA VEGA / HUMEDAL";
             resTitulo.style.color = "#f59e0b";
             drawnItems.eachLayer(layer => layer.setStyle({color: '#f59e0b'}));
         } else if (tipo === 'nieve') {
-            endpoint = "/api/mineria/nieve_glaciares";
-            payload.sitio = document.getElementById('selSitioMinero').options[document.getElementById('selSitioMinero').selectedIndex].text;
+            endpoint = "/api/mining/snow";
             status.innerText = "Calculando área con Sentinel-2...";
             resTitulo.innerText = "RESERVAS DE NIEVE (NDSI)";
             resTitulo.style.color = "#38bdf8";
@@ -301,40 +254,34 @@
             
             if (response.ok) {
                 status.innerText = "Análisis completado exitosamente.";
-                resHud.style.display = 'block'; // Mostrar el HUD derecho
+                resHud.style.display = 'block';
 
                 if (tipo === 'vega') {
                     document.getElementById('bloqueVega').style.display = 'block';
-                    document.getElementById('resRVIAct').innerText = data.rvi_actual;
-                    document.getElementById('resRVIBase').innerText = data.rvi_linea_base;
+                    document.getElementById('resRVIAct').innerText = data.rvi_actual || 0;
+                    document.getElementById('resRVIBase').innerText = data.rvi_baseline || 0;
                     const resVar = document.getElementById('resVar');
-                    resVar.innerText = data.variacion_interanual_pct + " %";
-                    resVar.style.color = data.variacion_interanual_pct < 0 ? "#ef4444" : "#22c55e";
-                    document.getElementById('resBal').innerText = data.balance_hidrico_7d_mm + " mm";
+                    resVar.innerText = (data.variacion_pct || 0) + " %";
+                    resVar.style.color = data.variacion_pct < 0 ? "#ef4444" : "#22c55e";
                 } 
                 else if (tipo === 'nieve') {
                     document.getElementById('bloqueNieve').style.display = 'block';
-                    document.getElementById('resAreaTot').innerText = data.hectareas_analizadas + " ha";
-                    document.getElementById('resAreaNieve').innerText = data.hectareas_hielo_nieve + " ha";
                     const resCob = document.getElementById('resCobertura');
-                    resCob.innerText = data.porcentaje_cobertura + " %";
-                    resCob.style.color = data.porcentaje_cobertura < 10 ? "#ef4444" : "#38bdf8";
+                    resCob.innerText = (data.cobertura_nieve_pct || 0) + " %";
+                    resCob.style.color = data.cobertura_nieve_pct < 10 ? "#ef4444" : "#38bdf8";
                 } 
                 else if (tipo === 'esg') {
                     document.getElementById('bloqueESG').style.display = 'block';
-                    
-                    // Llenar datos ESG
                     const dialDef = document.getElementById('dial-def');
-                    dialDef.innerText = data.deformacion_mm;
+                    dialDef.innerText = data.deformacion_mm || 0;
                     const dialTurb = document.getElementById('dial-turb');
-                    dialTurb.innerText = data.turbidez_pct;
+                    dialTurb.innerText = data.turbidez_pct || 0;
                     
                     document.getElementById('lbl-zona').innerText = data.expansion_ilegal ? "SÍ" : "NO";
                     document.getElementById('lbl-zona').style.color = data.expansion_ilegal ? "#ff4444" : "#00d26a";
-                    document.getElementById('lbl-so2').innerText = data.anomalia_so2;
+                    document.getElementById('lbl-so2').innerText = data.anomalia_so2 || "Bajo";
                     document.getElementById('lbl-so2').style.color = (data.anomalia_so2 === 'Alto' || data.anomalia_so2 === 'Crítico') ? "#ff4444" : "#00d26a";
 
-                    // Reglas GISTM e ICMM
                     let fallas = 0;
                     if (data.deformacion_mm > 15) { dialDef.style.borderColor = "#ff4444"; document.getElementById('ind-gistm').innerText = "🔴"; document.getElementById('card-gistm').style.borderLeftColor = "#ff4444"; fallas++; } 
                     else { dialDef.style.borderColor = "#00d26a"; document.getElementById('ind-gistm').innerText = "🟢"; document.getElementById('card-gistm').style.borderLeftColor = "#00d26a";}
@@ -346,22 +293,17 @@
                     if(fallas === 0){ txtRiesgo.innerText = "CUMPLIMIENTO TOTAL"; txtRiesgo.style.color = "#00d26a"; }
                     else { txtRiesgo.innerText = "RIESGO IDENTIFICADO"; txtRiesgo.style.color = "#ff4444"; }
 
-                    // Renderizar Mapa de Calor sobre el mapa inmersivo
                     if (data.url_mapa_calor) {
                         window.heatmapLayer = L.tileLayer(data.url_mapa_calor, { opacity: 0.85 }).addTo(map);
                         window.heatmapLayer.bringToFront();
                     }
 
-                    // Renderizar Gráfico
                     const ctx = document.getElementById('chartInSAR').getContext('2d');
                     if (window.insarChart) window.insarChart.destroy();
                     if (data.serie_fechas_insar && data.serie_valores_insar) {
                         window.insarChart = new Chart(ctx, {
                             type: 'line',
-                            data: {
-                                labels: data.serie_fechas_insar,
-                                datasets: [{ label: 'Deformación (mm)', data: data.serie_valores_insar, borderColor: '#00d26a', borderWidth: 2, pointRadius: 1, tension: 0.3 }]
-                            },
+                            data: { labels: data.serie_fechas_insar, datasets: [{ label: 'Deformación (mm)', data: data.serie_valores_insar, borderColor: '#00d26a', borderWidth: 2, pointRadius: 1, tension: 0.3 }] },
                             options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#888', font: { size: 9 } } } } }
                         });
                     }
@@ -374,15 +316,60 @@
         }
     }
 
-    // ==========================================
-    // 3. FUNCIONES DE EXPORTACIÓN (Ejemplos)
-    // ==========================================
+    // Funciones de Exportación Reales
     function descargarReporte() {
-        alert("Generando PDF estructurado con las métricas en pantalla... (Esta función requiere conexión a html2pdf.js en el backend).");
+        const elemento = document.getElementById('hud-results');
+        const controles = document.getElementById('export-controls');
+        const btnCerrar = document.getElementById('btn-close-res');
+        
+        // Ocultar botones temporalmente para la foto
+        controles.style.display = 'none';
+        btnCerrar.style.display = 'none';
+        
+        const opt = {
+            margin:       0.2,
+            filename:     'Reporte_MetricMine.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#111' },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(elemento).save().then(() => {
+            controles.style.display = 'flex';
+            btnCerrar.style.display = 'block';
+        });
     }
 
     function exportarDatos() {
-        alert("Exportando la matriz ráster filtrada y la serie temporal en formato .CSV...");
+        let csvContent = "data:text/csv;charset=utf-8,Metrica,Valor\n";
+        
+        let bloqueActivo;
+        if (document.getElementById('bloqueVega').style.display === 'block') bloqueActivo = document.getElementById('bloqueVega');
+        if (document.getElementById('bloqueNieve').style.display === 'block') bloqueActivo = document.getElementById('bloqueNieve');
+        if (document.getElementById('bloqueESG').style.display === 'block') bloqueActivo = document.getElementById('bloqueESG');
+
+        if (bloqueActivo) {
+            if (bloqueActivo.id === 'bloqueESG') {
+                csvContent += `"Deformacion Acumulada (mm)","${document.getElementById('dial-def').innerText}"\n`;
+                csvContent += `"Turbidez del Agua (%)","${document.getElementById('dial-turb').innerText}"\n`;
+                csvContent += `"Expansion Ilegal","${document.getElementById('lbl-zona').innerText}"\n`;
+                csvContent += `"Anomalia SO2","${document.getElementById('lbl-so2').innerText}"\n`;
+            } else {
+                bloqueActivo.querySelectorAll('.scifi-row').forEach(row => {
+                    let lbl = row.querySelector('.scifi-label').innerText;
+                    let val = row.querySelector('.scifi-val').innerText;
+                    csvContent += `"${lbl}","${val}"\n`;
+                });
+            }
+        }
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "MetricMine_Data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
 </body>
