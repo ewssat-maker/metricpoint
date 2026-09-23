@@ -9,24 +9,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #0d0d0d; color: #e2e8f0; }
-        .container { padding: 20px; display: flex; gap: 20px; box-sizing: border-box; height: 100vh;}
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #0d0d0d; color: #e2e8f0; overflow: hidden; }
         
-        .sidebar { width: 400px; background: #0d0d0d; border: 1px solid #222; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; border: 1px solid #222; border-radius: 4px; }
+        /* Estructura idéntica a MetricMoisture */
+        .container { display: flex; height: 100vh; width: 100vw; }
+        .sidebar { width: 400px; min-width: 400px; background: #0d0d0d; border-right: 1px solid #222; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; box-sizing: border-box; z-index: 10; }
+        .main-content { flex-grow: 1; height: 100vh; position: relative; }
+        #mapMining { width: 100%; height: 100%; background: #000; }
         
         h2, h3, h4 { color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: monospace; margin-top: 0; }
         label { color: #888; font-family: monospace; font-size: 11px; text-transform: uppercase; display: block; margin-top: 10px; margin-bottom: 5px;}
-        
         input[type="text"], select { width: 100%; background: #000; border: 1px solid #444; color: #f59e0b; font-weight: bold; font-family: monospace; padding: 10px; font-size: 14px; box-sizing: border-box; margin-bottom: 15px;}
         
         .btn-primary { color: #000; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; padding: 12px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; flex: 1; border-radius: 4px;}
-        .btn-vega { background-color: #f59e0b; }
-        .btn-vega:hover { background-color: #d97706; }
-        .btn-nieve { background-color: #38bdf8; }
-        .btn-nieve:hover { background-color: #0284c7; }
-        
-        #mapMining { width: 100%; height: 100%; background: #000; }
+        .btn-vega { background-color: #f59e0b; } .btn-vega:hover { background-color: #d97706; }
+        .btn-nieve { background-color: #38bdf8; } .btn-nieve:hover { background-color: #0284c7; }
         
         .scifi-panel { background-color: #0a0a0a; padding: 15px; border: 1px solid #333; margin-top: 15px; border-radius: 4px;}
         .scifi-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; border-bottom: 1px solid #222; padding-bottom: 5px;}
@@ -61,14 +58,12 @@
         
         <div class="scifi-panel" id="panelMeticas">
             <h4 style="color: #666;" id="tituloPanel" data-i18n="mine_panel_title">RESULTADOS DE TELEMETRÍA</h4>
-            
             <div id="bloqueVega" style="display: none;">
                 <div class="scifi-row"><span class="scifi-label" data-i18n="mine_rvi_act">RVI Actual (Vigor)</span><span class="scifi-val" id="resRVIAct">--</span></div>
                 <div class="scifi-row"><span class="scifi-label" data-i18n="mine_rvi_base">RVI Línea Base (Año Ant.)</span><span class="scifi-val" id="resRVIBase">--</span></div>
                 <div class="scifi-row"><span class="scifi-label" data-i18n="mine_var">Variación Interanual</span><span class="scifi-val" id="resVar">-- %</span></div>
                 <div class="scifi-row"><span class="scifi-label" data-i18n="mine_bal">Balance Hídrico (7 días)</span><span class="scifi-val" id="resBal">-- mm</span></div>
             </div>
-
             <div id="bloqueNieve" style="display: none;">
                 <div class="scifi-row"><span class="scifi-label" data-i18n="mine_area_tot">Superficie Analizada</span><span class="scifi-val" id="resAreaTot">-- ha</span></div>
                 <div class="scifi-row"><span class="scifi-label" data-i18n="mine_area_niev">Cobertura de Nieve/Hielo</span><span class="scifi-val" id="resAreaNieve">-- ha</span></div>
@@ -93,7 +88,6 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-
 <script>
     // ==========================================
     // LÓGICA DE IDIOMAS (AISLADA PARA EL IFRAME)
@@ -123,14 +117,13 @@
         });
     }
 
-    // El iframe espía al archivo padre (index.html) para mantener el idioma sincronizado
     try {
         const langSwitchPadre = window.parent.document.getElementById('langSwitch');
         if (langSwitchPadre) {
             aplicarIdiomaLocal(langSwitchPadre.value);
             langSwitchPadre.addEventListener('change', (e) => aplicarIdiomaLocal(e.target.value));
         }
-    } catch(e) { console.log("Iframe aislado. Se usa idioma por defecto."); }
+    } catch(e) {}
 
     // ==========================================
     // LÓGICA DE MAPA Y TELEMETRÍA
