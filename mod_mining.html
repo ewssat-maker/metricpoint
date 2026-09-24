@@ -12,7 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- NUEVO: Plotly para el Gemelo Digital 3D -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <style>
@@ -65,16 +64,18 @@
         
         .esg-status-row { display: flex; justify-content: space-between; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); font-size: 12px; font-family: monospace;}
         
-        .esg-card { background: rgba(0,0,0,0.5); padding: 12px; border-radius: 4px; margin-bottom: 8px; border-left: 4px solid #333; transition: 0.3s;}
-        .esg-card h4 { margin: 0 0 4px 0; font-family: monospace; font-size: 12px; display: flex; justify-content: space-between;}
-        .esg-card p { margin: 0; color: #888; font-size: 10px; }
+        .esg-card { background: rgba(0,0,0,0.5); padding: 12px; border-radius: 4px; margin-bottom: 8px; border-left: 4px solid #333; transition: 0.3s; display: flex; align-items: center; gap: 15px;}
+        /* Restauración del CSS para los semáforos circulares */
+        .indicator { width: 14px; height: 14px; border-radius: 50%; background-color: #333; flex-shrink: 0; transition: 0.3s; box-shadow: 0 0 5px rgba(0,0,0,0.5);}
+        .esg-card-content h4 { margin: 0 0 4px 0; font-family: monospace; font-size: 12px; color: #fff;}
+        .esg-card-content p { margin: 0; color: #888; font-size: 10px; }
         
         .chart-box { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);}
         
         #btn-close-res { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #888; font-size: 16px; cursor: pointer; }
         #btn-close-res:hover { color: #fff; }
 
-        /* NUEVO: Visor Modal para 3D */
+        /* Visor Modal para 3D */
         #visor3D { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
         #plot3D { width: 80%; height: 80%; background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; box-shadow: 0 0 50px rgba(0, 210, 106, 0.2);}
         #btn-close-3d { position: absolute; top: 30px; right: 50px; background: #ff4444; color: #fff; border: none; padding: 10px 20px; font-family: monospace; font-weight: bold; cursor: pointer; border-radius: 4px; z-index: 2001;}
@@ -146,22 +147,33 @@
             <div style="text-align: right;">Anomalía SO2:<br><span id="lbl-so2" style="color:#aaa; font-weight:bold; font-size:14px;">--</span></div>
         </div>
         
-        <button class="btn-3d" onclick="abrirModelo3D()">Cube VISUALIZAR MODELO 3D</button>
+        <!-- Botón 3D corregido -->
+        <button class="btn-3d" onclick="abrirModelo3D()">🧊 VISUALIZAR MODELO 3D</button>
 
         <div class="chart-box" style="margin-top: 15px;">
             <div style="color: #00d26a; font-family: monospace; font-size: 10px; margin-bottom: 5px;">DEFORMACIÓN ACUMULADA (InSAR)</div>
             <canvas id="chartInSAR" height="80"></canvas>
         </div>
+
+        <!-- Tarjetas con Semáforo Circular Restauradas -->
         <div class="esg-card" id="card-gistm">
-            <h4><span>GISTM (Relaves)</span> <span id="ind-gistm">⚫</span></h4>
-            <p>Límite ≤ 15 mm/año</p>
+            <div class="indicator" id="ind-gistm"></div>
+            <div class="esg-card-content">
+                <h4>GISTM (Relaves)</h4>
+                <p>Límite ≤ 15 mm/año</p>
+            </div>
         </div>
         <div class="esg-card" id="card-icmm">
-            <h4><span>ICMM (Recursos Hídricos)</span> <span id="ind-icmm">⚫</span></h4>
-            <p>Límite Turbidez ≤ 30%</p>
+            <div class="indicator" id="ind-icmm"></div>
+            <div class="esg-card-content">
+                <h4>ICMM (Recursos Hídricos)</h4>
+                <p>Límite Turbidez ≤ 30%</p>
+            </div>
         </div>
+        
         <div style="text-align: center; margin-top: 15px; font-family: monospace; padding: 10px; background: rgba(0,0,0,0.6); border-radius: 4px;">
             <div style="font-size: 10px; color: #aaa;">ESTADO GENERAL DE RIESGO</div>
+            <!-- Aquí el texto volverá a actualizarse correctamente -->
             <div id="txt-riesgo" style="font-size: 16px; font-weight: bold; margin-top: 5px; color: #aaa;">ESPERANDO...</div>
         </div>
     </div>
@@ -185,7 +197,7 @@
     map.addControl(drawControl);
     
     var poligonoActual = null; 
-    let tipoAnalisisActivo = ""; // Variable para saber qué exportar
+    let tipoAnalisisActivo = ""; 
     
     const poligonosMaestros = {
         "-23.82,-66.81": [[[-66.86,-23.86], [-66.76,-23.86], [-66.76,-23.78], [-66.86,-23.78], [-66.86,-23.86]]], 
@@ -270,23 +282,83 @@
                     document.getElementById('resCobertura').innerText = (data.cobertura_nieve_pct || 0) + " %";
                 } else if (tipo === 'esg') {
                     document.getElementById('bloqueESG').style.display = 'block';
-                    document.getElementById('dial-def').innerText = data.deformacion_mm || 0;
-                    document.getElementById('dial-turb').innerText = data.turbidez_pct || 0;
-                    document.getElementById('lbl-zona').innerText = data.expansion_ilegal ? "SÍ" : "NO";
-                    document.getElementById('lbl-so2').innerText = data.anomalia_so2 || "Bajo";
+                    
+                    // Asegurarnos de que los valores sean números para la lógica del semáforo
+                    const def = parseFloat(data.deformacion_mm) || 0;
+                    const turb = parseFloat(data.turbidez_pct) || 0;
+                    const exp = data.expansion_ilegal;
+                    const so2 = data.anomalia_so2 || "Bajo";
 
+                    const dialDef = document.getElementById('dial-def');
+                    const dialTurb = document.getElementById('dial-turb');
+                    dialDef.innerText = def;
+                    dialTurb.innerText = turb;
+
+                    document.getElementById('lbl-zona').innerText = exp ? "SÍ (Violación)" : "NO";
+                    document.getElementById('lbl-zona').style.color = exp ? "#ff4444" : "#00d26a";
+                    document.getElementById('lbl-so2').innerText = so2;
+                    document.getElementById('lbl-so2').style.color = (so2 === 'Alto' || so2 === 'Crítico') ? "#ff4444" : "#00d26a";
+
+                    // ==========================================
+                    // LÓGICA DE SEMÁFOROS Y ESTADO DE RIESGO
+                    // ==========================================
+                    let fallas = 0;
+
+                    if (def > 15) {
+                        dialDef.style.borderColor = "#ff4444";
+                        document.getElementById('ind-gistm').style.backgroundColor = "#ff4444";
+                        document.getElementById('ind-gistm').style.boxShadow = "0 0 8px #ff4444";
+                        document.getElementById('card-gistm').style.borderLeftColor = "#ff4444";
+                        fallas++;
+                    } else {
+                        dialDef.style.borderColor = "#00d26a";
+                        document.getElementById('ind-gistm').style.backgroundColor = "#00d26a";
+                        document.getElementById('ind-gistm').style.boxShadow = "0 0 8px #00d26a";
+                        document.getElementById('card-gistm').style.borderLeftColor = "#00d26a";
+                    }
+
+                    if (turb > 30) {
+                        dialTurb.style.borderColor = "#ff4444";
+                        document.getElementById('ind-icmm').style.backgroundColor = "#ff4444";
+                        document.getElementById('ind-icmm').style.boxShadow = "0 0 8px #ff4444";
+                        document.getElementById('card-icmm').style.borderLeftColor = "#ff4444";
+                        fallas++;
+                    } else {
+                        dialTurb.style.borderColor = "#00d26a";
+                        document.getElementById('ind-icmm').style.backgroundColor = "#00d26a";
+                        document.getElementById('ind-icmm').style.boxShadow = "0 0 8px #00d26a";
+                        document.getElementById('card-icmm').style.borderLeftColor = "#00d26a";
+                    }
+
+                    if (exp) fallas++;
+                    if (so2 === 'Alto' || so2 === 'Crítico') fallas++;
+
+                    const txtRiesgo = document.getElementById('txt-riesgo');
+                    if (fallas === 0) {
+                        txtRiesgo.innerText = "CUMPLIMIENTO TOTAL";
+                        txtRiesgo.style.color = "#00d26a";
+                    } else if (fallas <= 2) {
+                        txtRiesgo.innerText = "ADVERTENCIA (AUDITORÍA)";
+                        txtRiesgo.style.color = "#f59e0b";
+                    } else {
+                        txtRiesgo.innerText = "CRÍTICO (CESE OPERACIONES)";
+                        txtRiesgo.style.color = "#ff4444";
+                    }
+
+                    // Renderizado de Mapa de Calor (Superpuesto en el mapa principal)
                     if (data.url_mapa_calor) {
                         window.heatmapLayer = L.tileLayer(data.url_mapa_calor, { opacity: 0.85 }).addTo(map);
                         window.heatmapLayer.bringToFront();
                     }
 
+                    // Gráfico de Serie Temporal InSAR
                     const ctx = document.getElementById('chartInSAR').getContext('2d');
                     if (window.insarChart) window.insarChart.destroy();
                     if (data.serie_fechas_insar) {
                         window.insarChart = new Chart(ctx, {
                             type: 'line',
-                            data: { labels: data.serie_fechas_insar, datasets: [{ label: 'Deformación (mm)', data: data.serie_valores_insar, borderColor: '#00d26a', borderWidth: 2, pointRadius: 1, tension: 0.3 }] },
-                            options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#888', font: { size: 9 } } } } }
+                            data: { labels: data.serie_fechas_insar, datasets: [{ label: 'Deformación (mm)', data: data.serie_valores_insar, borderColor: '#00d26a', backgroundColor: 'rgba(0, 210, 106, 0.1)', borderWidth: 2, pointRadius: 1, tension: 0.3, fill: true }] },
+                            options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#888', font: { size: 9 } }, grid: {color: '#333'} } } }
                         });
                     }
                 }
@@ -300,15 +372,13 @@
     function abrirModelo3D() {
         document.getElementById('visor3D').style.display = 'flex';
         
-        // Generación de matriz topográfica simulada de un piletón (dique de colas)
         let z_data = [];
         for(let i=0; i<50; i++) {
             let row = [];
             for(let j=0; j<50; j++) {
-                // Estructura de piletón (bordes altos, centro bajo)
                 let borde = Math.max(Math.abs(i-25), Math.abs(j-25));
                 let elevacion = borde * 2; 
-                // Simulamos hundimiento estructural (deformación) en una esquina interior
+                // Simulamos hundimiento estructural (deformación InSAR)
                 if(i > 15 && i < 25 && j > 30 && j < 40) { elevacion -= 15; }
                 row.push(elevacion);
             }
@@ -318,8 +388,9 @@
         var data = [{
             z: z_data,
             type: 'surface',
-            colorscale: 'Reds', // Focos de deformación en rojo
-            reversescale: true
+            colorscale: 'Reds', 
+            reversescale: true,
+            contours: { z: { show: true, usecolormap: true, highlightcolor: "white", project: { z: true } } }
         }];
         
         var layout = {
@@ -343,10 +414,9 @@
     }
 
     // =========================================================
-    // EXPORTACIÓN PROFESIONAL A PDF
+    // EXPORTACIÓN A PDF Y CSV
     // =========================================================
     function descargarReportePDF() {
-        // 1. Crear el lienzo corporativo en memoria (Fondo blanco, sin transparencias)
         const canvasHtml = document.createElement('div');
         canvasHtml.style.padding = '40px';
         canvasHtml.style.background = '#ffffff';
@@ -361,7 +431,6 @@
             </div>
         `;
 
-        // 2. Volcar los datos según el panel activo
         if (tipoAnalisisActivo === 'esg') {
             const def = document.getElementById('dial-def').innerText;
             const turb = document.getElementById('dial-turb').innerText;
@@ -374,22 +443,19 @@
                     <tr style="background: #f4f4f4;"><th style="padding: 10px; border: 1px solid #ddd;">Expansión en Zonas Protegidas (IFC)</th><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${exp}</td></tr>
                 </table>
             `;
-            // Capturar la gráfica
             const canvasChart = document.getElementById('chartInSAR');
-            if (canvasChart) { htmlStr += `<h4 style="margin-bottom:10px;">Curva de Deformación</h4><img src="${canvasChart.toDataURL()}" style="width: 100%; max-height: 250px; object-fit: contain; border: 1px solid #ccc; padding: 10px;">`; }
+            if (canvasChart) { htmlStr += `<h4 style="margin-bottom:10px;">Curva de Deformación Histórica</h4><img src="${canvasChart.toDataURL()}" style="width: 100%; max-height: 250px; object-fit: contain; border: 1px solid #ccc; padding: 10px;">`; }
         } else {
-            // Estructura genérica para Vega / Nieve
             htmlStr += `<h3 style="color: #333; margin-bottom: 20px;">[ PARÁMETROS OPERATIVOS ]</h3><ul>`;
             const divActivo = tipoAnalisisActivo === 'vega' ? document.getElementById('bloqueVega') : document.getElementById('bloqueNieve');
             divActivo.querySelectorAll('.scifi-row').forEach(row => {
-                htmlStr += `<li style="margin-bottom: 10px;"><b>${row.querySelector('.scifi-label').innerText}:</b> ${row.querySelector('.scifi-val').innerText}</li>`;
+                htmlStr += `<li style="margin-bottom: 10px; font-size: 14px;"><b>${row.querySelector('.scifi-label').innerText}:</b> ${row.querySelector('.scifi-val').innerText}</li>`;
             });
             htmlStr += `</ul>`;
         }
 
         canvasHtml.innerHTML = htmlStr;
 
-        // 3. Ejecutar html2pdf sobre el lienzo limpio
         const opt = {
             margin:       0.5,
             filename:     `MetricMine_Reporte_${tipoAnalisisActivo.toUpperCase()}.pdf`,
@@ -411,6 +477,8 @@
             if (tipoAnalisisActivo === 'esg') {
                 csvContent += `"Deformacion (mm)","${document.getElementById('dial-def').innerText}"\n`;
                 csvContent += `"Turbidez (%)","${document.getElementById('dial-turb').innerText}"\n`;
+                csvContent += `"Expansion Ilegal","${document.getElementById('lbl-zona').innerText}"\n`;
+                csvContent += `"Anomalia SO2","${document.getElementById('lbl-so2').innerText}"\n`;
             } else {
                 bloqueActivo.querySelectorAll('.scifi-row').forEach(row => {
                     csvContent += `"${row.querySelector('.scifi-label').innerText}","${row.querySelector('.scifi-val').innerText}"\n`;
