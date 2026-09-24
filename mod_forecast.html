@@ -14,9 +14,6 @@
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <style>
-        /* =========================================================
-           ARQUITECTURA HUD BLINDADA
-        ========================================================= */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #111; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #fff; }
         
         #mapFull { position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 1; }
@@ -62,10 +59,14 @@
         .chart-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);}
         .radar-badge { display: inline-block; padding: 5px 10px; background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; font-family: monospace; font-size: 11px; border-radius: 4px; margin-bottom: 15px; font-weight: bold;}
         
+        /* NUEVO: Caja de Alertas Meteorológicas Extremas */
+        .alert-box { background: rgba(220, 38, 38, 0.2); border: 1px solid #ef4444; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);}
+        .alert-box h4 { margin: 0 0 8px 0; color: #fca5a5; font-family: monospace; font-size: 13px; text-transform: uppercase;}
+        .alert-box p { margin: 0; font-size: 13px; color: #fff; font-weight: bold;}
+
         #btn-close-res { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #888; font-size: 16px; cursor: pointer; }
         #btn-close-res:hover { color: #fff; }
 
-        /* VISOR 3D GEOTÉRMICO */
         #visor3D { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
         #plot3D { width: 80%; height: 80%; background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; box-shadow: 0 0 50px rgba(245, 158, 11, 0.2);}
         #btn-close-3d { position: absolute; top: 30px; right: 50px; background: #ff4444; color: #fff; border: none; padding: 10px 20px; font-family: monospace; font-weight: bold; cursor: pointer; border-radius: 4px; z-index: 2001;}
@@ -75,14 +76,12 @@
 
 <div id="mapFull"></div>
 
-<!-- Modal 3D Oculto para Cubo Geotérmico -->
 <div id="visor3D">
     <button id="btn-close-3d" onclick="cerrarModelo3D()">CERRAR VISOR 3D</button>
     <h3 style="color: #f59e0b; margin-bottom: 20px;">CUBO GEOTÉRMICO (Perfil de Temperatura del Suelo)</h3>
     <div id="plot3D"></div>
 </div>
 
-<!-- PANEL IZQUIERDO: CONTROLES -->
 <div id="hud-controls" class="hud-panel">
     <h2>[ WEATHER FORECAST ]</h2>
     <p style="font-size: 11px; color: #888; font-family: monospace; margin-top: -10px; margin-bottom: 20px;">Predicción Atmosférica y Geotérmica</p>
@@ -123,11 +122,16 @@
     <button class="btn-run" onclick="ejecutarPronostico()">📡 EJECUTAR MODELADO</button>
 </div>
 
-<!-- PANEL DERECHO: RESULTADOS -->
 <div id="hud-results" class="hud-panel">
     <button id="btn-close-res" onclick="cerrarResultados()">✖</button>
     <h3>DIAGNÓSTICO ATMOSFÉRICO</h3>
     <div class="radar-badge" id="lblModeloStatus">⚙️ MODELO: --</div>
+
+    <!-- NUEVO: Contenedor de Alertas Meteorológicas -->
+    <div id="boxAlertas" class="alert-box">
+        <h4>⚠️ ALERTA EXTREMA ACTIVA</h4>
+        <p id="txtAlertaMeteo"></p>
+    </div>
 
     <div class="weather-grid">
         <div class="weather-card">
@@ -142,14 +146,12 @@
         </div>
     </div>
 
-    <!-- Módulo Atmosférico -->
     <div style="color: #38bdf8; font-family: monospace; font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px;">VARIABLES ATMOSFÉRICAS</div>
     <div class="scifi-row"><span class="scifi-label">Presión Atmosférica</span><span class="scifi-val" id="resPresion">-- hPa</span></div>
     <div class="scifi-row"><span class="scifi-label">Humedad Relativa</span><span class="scifi-val" id="resHumedad">-- %</span></div>
     <div class="scifi-row"><span class="scifi-label">Viento (Ráfagas)</span><span class="scifi-val" id="resViento">-- km/h</span></div>
     <div class="scifi-row" style="border-bottom: none; margin-bottom: 20px;"><span class="scifi-label">Punto de Rocío</span><span class="scifi-val" id="resRocio">-- °C</span></div>
 
-    <!-- Módulo Geotérmico Restaurado -->
     <div style="color: #f59e0b; font-family: monospace; font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px;">DATOS GEOTERMÓMETROS (Suelo)</div>
     <div class="scifi-row"><span class="scifi-label">Suelo Superficial (-5 cm)</span><span class="scifi-val-warm" id="geo5">-- °C</span></div>
     <div class="scifi-row"><span class="scifi-label">Subsuelo Raíces (-10 cm)</span><span class="scifi-val-warm" id="geo10">-- °C</span></div>
@@ -157,7 +159,6 @@
 
     <button class="btn-3d" onclick="abrirCuboTermico()">🧊 VISUALIZAR CUBO GEOTÉRMICO 3D</button>
 
-    <!-- Gráfico Predictivo -->
     <div class="chart-box">
         <div id="lblChartTitle" style="color: #38bdf8; font-family: monospace; font-size: 11px; margin-bottom: 10px;">PROYECCIÓN TÉRMICA</div>
         <canvas id="chartForecast" height="100"></canvas>
@@ -165,14 +166,12 @@
 </div>
 
 <script>
-    // Inicialización de Mapa Base
     var map = L.map('mapFull', { zoomControl: false }).setView([-26.8241, -65.2226], 7);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom: 18, opacity: 0.8}).addTo(map);
 
-    // Controles de Dibujo
     var drawnItems = new L.FeatureGroup(); 
     map.addLayer(drawnItems);
     var drawControl = new L.Control.Draw({ 
@@ -184,13 +183,14 @@
 
     var coordenadaActiva = null;
     var marcadorActivo = null;
+    var thermalLayerOverlay = null; // Capa para el mapa de calor superpuesto
 
-    // Lógica 1: Clic Libre en el Mapa
     map.on('click', function(e) {
-        if(document.getElementById('selCiudad').value !== 'custom') return; // Solo si está en modo personalizado
+        if(document.getElementById('selCiudad').value !== 'custom') return;
         
         drawnItems.clearLayers();
         if (marcadorActivo) map.removeLayer(marcadorActivo);
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
         
         coordenadaActiva = [e.latlng.lat, e.latlng.lng];
         marcadorActivo = L.circleMarker(coordenadaActiva, { radius: 8, fillColor: "#38bdf8", color: "#fff", weight: 2, fillOpacity: 0.8 }).addTo(map);
@@ -199,25 +199,25 @@
         cerrarResultados();
     });
 
-    // Lógica 2: Dibujo de Polígonos
     map.on(L.Draw.Event.CREATED, function (event) { 
-        document.getElementById('selCiudad').value = 'custom'; // Forzar modo custom
+        document.getElementById('selCiudad').value = 'custom';
         drawnItems.clearLayers(); 
         if (marcadorActivo) map.removeLayer(marcadorActivo);
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
         
         drawnItems.addLayer(event.layer); 
-        const coords = event.layer.getBounds().getCenter(); // Tomamos el centro del polígono para el pronóstico
+        const coords = event.layer.getBounds().getCenter();
         coordenadaActiva = [coords.lat, coords.lng];
         
         document.getElementById('statusMsg').innerText = "Área delimitada. Listo para modelar.";
         cerrarResultados();
     });
 
-    // Lógica 3: Uso del Selector Pre-cargado
     function manejarSelectorUbicacion() {
         const val = document.getElementById('selCiudad').value;
         drawnItems.clearLayers();
         if (marcadorActivo) map.removeLayer(marcadorActivo);
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
         
         if (val === 'custom') {
             coordenadaActiva = null;
@@ -237,6 +237,7 @@
 
     function cerrarResultados() {
         document.getElementById('hud-results').style.display = 'none';
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
     }
 
     function ejecutarPronostico() {
@@ -248,7 +249,6 @@
         statusMsg.innerText = `Ejecutando integración con Modelo ${modeloSeleccionado.toUpperCase()}...`;
         statusMsg.style.color = "#38bdf8";
 
-        // Simulación de cálculo
         setTimeout(() => {
             statusMsg.innerText = "Simulación finalizada correctamente.";
             statusMsg.style.color = "#00d26a";
@@ -259,7 +259,12 @@
     function mostrarResultados(modelo) {
         document.getElementById('hud-results').style.display = 'block';
 
-        // Títulos según Modelo
+        const ciudadSelector = document.getElementById('selCiudad');
+        const nombreCiudad = ciudadSelector.options[ciudadSelector.selectedIndex]?.text || "Área Seleccionada";
+        
+        // Identificamos si es alta montaña para simular helada
+        const esAltaMontana = nombreCiudad.includes("Tafí") || nombreCiudad.includes("Cachi") || nombreCiudad.includes("Purmamarca") || nombreCiudad.includes("Tilcara");
+
         const badge = document.getElementById('lblModeloStatus');
         const chartTitle = document.getElementById('lblChartTitle');
         
@@ -271,41 +276,94 @@
             chartTitle.innerHTML = "PROYECCIÓN SINÓPTICA GLOBAL (Próximas 120h)";
         }
 
-        // Datos Atmosféricos Simulados
-        document.getElementById('resTemp').innerText = "28 °C";
-        document.getElementById('resTermica').innerText = "ST: 30 °C";
-        document.getElementById('resLluvia').innerText = "20 %";
-        document.getElementById('resMilimetros').innerText = "Acumulado: 4.5 mm";
+        // Arrays de datos dinámicos según ubicación
+        let labelsWRF = ['Hoy', '+12h', '+24h', '+36h', '+48h', '+60h', '+72h'];
+        let dataWRF = esAltaMontana ? [12, 5, 2, -2, 4, -1, 8] : [28, 22, 29, 21, 30, 20, 28];
+        
+        let labelsGFS = ['Hoy', '+24h', '+48h', '+72h', '+96h', '+120h'];
+        let dataGFS = esAltaMontana ? [12, 1, -3, 2, -1, 5] : [28, 29, 30, 25, 22, 24];
 
-        document.getElementById('resPresion').innerText = "1009 hPa";
+        let serieActiva = modelo === 'wrf' ? dataWRF : dataGFS;
+        let tempMinima = Math.min(...serieActiva);
+        let tempActual = serieActiva[0];
+
+        // LÓGICA DE ALERTAS TEMPRANAS
+        const boxAlertas = document.getElementById('boxAlertas');
+        const txtAlerta = document.getElementById('txtAlertaMeteo');
+        let alertasActivas = [];
+
+        if (tempMinima <= 3) {
+            alertasActivas.push(`❄️ RIESGO DE HELADA: Las proyecciones indican una caída a ${tempMinima}°C en las próximas horas. Riesgo de daño tisular en cultivos.`);
+        }
+        
+        // Simulamos tormenta severa si la temperatura es muy alta (inestabilidad)
+        if (tempActual >= 30) {
+            alertasActivas.push(`⛈️ ALERTA DE TORMENTA SEVERA: Alta inestabilidad atmosférica detectada. Posibilidad de granizo aislado.`);
+            document.getElementById('resLluvia').innerText = "85 %";
+            document.getElementById('resMilimetros').innerText = "Acumulado: 45.2 mm";
+        } else {
+            document.getElementById('resLluvia').innerText = esAltaMontana ? "10 %" : "20 %";
+            document.getElementById('resMilimetros').innerText = "Acumulado: 4.5 mm";
+        }
+
+        if (alertasActivas.length > 0) {
+            boxAlertas.style.display = 'block';
+            txtAlerta.innerHTML = alertasActivas.join('<br><br>');
+        } else {
+            boxAlertas.style.display = 'none';
+        }
+
+        // =======================================================
+        // GENERACIÓN DEL FOOTPRINT TÉRMICO SOBRE EL MAPA (HEATMAP)
+        // =======================================================
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
+
+        // Simulamos el radio de acción del modelo sobre el lote/punto
+        let areaBounds;
+        if (drawnItems.getLayers().length > 0) {
+            areaBounds = drawnItems.getBounds();
+        } else {
+            let latlng = L.latLng(coordenadaActiva[0], coordenadaActiva[1]);
+            areaBounds = latlng.toBounds(8000); // 8 km a la redonda
+        }
+
+        // Elegimos el color del polígono térmico basado en la temperatura
+        let colorTermico = tempActual <= 5 ? '#3b82f6' : (tempActual >= 28 ? '#ef4444' : '#f59e0b');
+
+        thermalLayerOverlay = L.rectangle(areaBounds, {
+            color: colorTermico,
+            weight: 0,
+            fillColor: colorTermico,
+            fillOpacity: 0.45,
+            className: 'thermal-glow'
+        }).addTo(map);
+
+        // Actualización de UI
+        document.getElementById('resTemp').innerText = `${tempActual} °C`;
+        document.getElementById('resTermica').innerText = `ST: ${tempActual + (tempActual>20?2:-2)} °C`;
+        document.getElementById('resPresion').innerText = esAltaMontana ? "850 hPa" : "1009 hPa";
         document.getElementById('resHumedad').innerText = "55 %";
         document.getElementById('resViento').innerText = "22 km/h (N)";
-        document.getElementById('resRocio').innerText = "18 °C";
+        document.getElementById('resRocio').innerText = `${tempActual - 6} °C`;
 
-        // Datos Geotérmicos Simulados (Recuperados)
-        document.getElementById('geo5').innerText = "32.4 °C";
-        document.getElementById('geo10').innerText = "27.1 °C";
-        document.getElementById('geo50').innerText = "21.5 °C";
+        document.getElementById('geo5').innerText = `${(tempActual + 2).toFixed(1)} °C`;
+        document.getElementById('geo10').innerText = `${(tempActual).toFixed(1)} °C`;
+        document.getElementById('geo50').innerText = `${(tempActual - 3).toFixed(1)} °C`;
 
-        // Gráfico de Serie Temporal adaptado al modelo
         const ctx = document.getElementById('chartForecast').getContext('2d');
         if (window.forecastChart) window.forecastChart.destroy();
         
-        const labelsWRF = ['Hoy', '+12h', '+24h', '+36h', '+48h', '+60h', '+72h'];
-        const dataWRF = [28, 22, 29, 21, 30, 20, 28];
+        let chartColor = tempActual <= 5 ? '#3b82f6' : '#38bdf8'; // Azul oscuro si hay helada
         
-        const labelsGFS = ['Hoy', '+24h', '+48h', '+72h', '+96h', '+120h'];
-        const dataGFS = [28, 29, 30, 25, 22, 24];
-
         window.forecastChart = new Chart(ctx, {
             type: 'line',
             data: { 
                 labels: modelo === 'wrf' ? labelsWRF : labelsGFS, 
                 datasets: [{ 
                     label: 'Temperatura (°C)', 
-                    data: modelo === 'wrf' ? dataWRF : dataGFS, 
-                    borderColor: '#38bdf8', 
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)', 
+                    data: serieActiva, 
+                    borderColor: chartColor, 
+                    backgroundColor: tempActual <= 5 ? 'rgba(59, 130, 246, 0.2)' : 'rgba(56, 189, 248, 0.1)', 
                     borderWidth: 2, 
                     pointRadius: 3, 
                     pointBackgroundColor: '#fff',
@@ -324,43 +382,42 @@
         });
     }
 
-    // =========================================================
-    // VISOR 3D: CUBO GEOTÉRMICO
-    // =========================================================
     function abrirCuboTermico() {
         document.getElementById('visor3D').style.display = 'flex';
         
-        // Generación de 3 capas térmicas para simular el cubo del suelo
         const gridSize = 20;
-        let z_superficie = [], c_superficie = []; // -5cm
-        let z_medio = [], c_medio = [];       // -20cm
-        let z_profundo = [], c_profundo = []; // -50cm
+        let z_superficie = [], c_superficie = []; 
+        let z_medio = [], c_medio = [];       
+        let z_profundo = [], c_profundo = []; 
+
+        // Recuperar la temperatura base del panel para teñir el cubo
+        let tempBase = parseFloat(document.getElementById('geo5').innerText);
+        let colorScaleCubo = tempBase <= 10 ? 'YlGnBu' : 'YlOrRd'; // Frío o Caliente
 
         for(let i=0; i<gridSize; i++) {
             let rowS = [], colS = [];
             let rowM = [], colM = [];
             let rowP = [], colP = [];
             for(let j=0; j<gridSize; j++) {
-                // Relieve suave
                 let onda = Math.sin(i/3) + Math.cos(j/3);
                 
                 rowS.push(onda);
-                colS.push(32 + onda); // Temperatura caliente en superficie
+                colS.push(tempBase + onda); 
                 
-                rowM.push(onda - 20); // Profundidad Z=-20
-                colM.push(26 + onda*0.5); // Temp más fresca
+                rowM.push(onda - 20); 
+                colM.push((tempBase - 5) + onda*0.5); 
                 
-                rowP.push(onda - 50); // Profundidad Z=-50
-                colP.push(20); // Temp estable profunda
+                rowP.push(onda - 50); 
+                colP.push(tempBase - 10); 
             }
             z_superficie.push(rowS); c_superficie.push(colS);
             z_medio.push(rowM); c_medio.push(colM);
             z_profundo.push(rowP); c_profundo.push(colP);
         }
 
-        var trace1 = { z: z_superficie, surfacecolor: c_superficie, type: 'surface', name: 'Superficie (-5cm)', colorscale: 'YlOrRd', showscale: true, colorbar: {title: '°C'} };
-        var trace2 = { z: z_medio, surfacecolor: c_medio, type: 'surface', name: 'Raíces (-20cm)', colorscale: 'YlOrRd', showscale: false };
-        var trace3 = { z: z_profundo, surfacecolor: c_profundo, type: 'surface', name: 'Base (-50cm)', colorscale: 'YlOrRd', showscale: false };
+        var trace1 = { z: z_superficie, surfacecolor: c_superficie, type: 'surface', name: 'Superficie (-5cm)', colorscale: colorScaleCubo, showscale: true, colorbar: {title: '°C'} };
+        var trace2 = { z: z_medio, surfacecolor: c_medio, type: 'surface', name: 'Raíces (-20cm)', colorscale: colorScaleCubo, showscale: false };
+        var trace3 = { z: z_profundo, surfacecolor: c_profundo, type: 'surface', name: 'Base (-50cm)', colorscale: colorScaleCubo, showscale: false };
 
         var layout = {
             title: 'Perfil Térmico Estructural (Suelo)',
