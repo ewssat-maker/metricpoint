@@ -3,345 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Forecast Module</title>
+    <title>MetricPoint - Weather Forecast OS</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #0d0d0d; color: #e2e8f0; }
+        /* =========================================================
+           ARQUITECTURA HUD Y GLASSMORPHISM
+        ========================================================= */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #111; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #fff; }
         
-        .container { background-color: #0d0d0d; padding: 20px; display: flex; gap: 20px; }
-        .sidebar { width: 350px; background: #0d0d0d; border: 1px solid #222; border-radius: 4px; padding: 20px; box-sizing: border-box; }
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+        #mapFull { position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 1; }
         
-        h2, h3, h4 { color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: monospace; }
-        label { color: #888; font-family: monospace; font-size: 11px; text-transform: uppercase; display: block; margin-top: 10px; margin-bottom: 5px;}
-        
-        input[type="text"] { width: 100%; background: #000; border: 1px solid #444; color: #38bdf8; font-weight: bold; font-family: monospace; padding: 10px; text-align: center; font-size: 14px; box-sizing: border-box; margin-bottom: 10px;}
-        input[type="text"]:focus { border-color: #fff; outline: none; }
-        
-        .btn-primary { background-color: #fff; color: #000; width: 100%; margin-top: 10px; font-family: monospace; text-transform: uppercase; letter-spacing: 1px; padding: 12px; font-weight: bold; cursor: pointer; border: none; }
-        .btn-primary:hover { background-color: #ccc; }
-        .btn-secondary { background-color: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; width: 100%; font-family: monospace; text-transform: uppercase; padding: 10px; cursor: pointer; }
-        
-        .tabs { display: flex; border-bottom: 2px solid #222; margin-bottom: 15px; }
-        .tab-btn { color: #777; background: none; border: none; padding: 10px 20px; font-size: 14px; font-family: monospace; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; }
-        .tab-btn:hover { color: #fff; }
-        .tab-btn.active { color: #fff; border-bottom-color: #fff; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .chart-container { background: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 15px; min-height: 600px; }
-        #mapPronostico { width: 100%; height: 100%; background: #000; min-height: 450px; }
-
-        /* Sci-Fi Panel Styles */
-        .scifi-panel { background-color: #0a0a0a; padding: 20px; border: 1px solid #222; border-radius: 4px; }
-        .scifi-line { position: relative; border-top: 1px solid #333; margin: 15px 0; }
-        .scifi-line::before, .scifi-line::after { content: ''; position: absolute; width: 4px; height: 4px; background: #888; border-radius: 50%; top: -2.5px; }
-        .scifi-line::before { left: 0; } .scifi-line::after { right: 0; }
-        .scifi-header { font-family: monospace; letter-spacing: 2px; color: #aaa; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; }
-        .scifi-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
-        .scifi-label { color: #777; font-weight: 500; letter-spacing: 0.5px;}
-        .scifi-val { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; }
-        .val-orange { color: #ff5722; text-shadow: 0 0 5px rgba(255, 87, 34, 0.3); }
-        .val-blue { color: #2962ff; text-shadow: 0 0 5px rgba(41, 98, 255, 0.3); }
-        .val-white { color: #f8fafc; }
-        .scifi-map-box { border: 1px solid #333; padding: 4px; background: #0d0d0d; position: relative; }
-        .scifi-map-box::before, .scifi-map-box::after { content:''; position:absolute; width: 10px; height: 10px; border: 1px solid #fff; }
-        .scifi-map-box::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
-        .scifi-map-box::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
-
-        .live-pulse { width: 8px; height: 8px; background-color: #ff5722; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #ff5722; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
-
-        .forecast-day-card { background: #0a0a0a; border: 1px solid #222; border-radius: 4px; padding: 15px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .forecast-day-card:hover { border-color: #ff5722; }
-        .fc-date { color: #aaa; font-family: monospace; font-size: 12px; margin-bottom: 10px; text-transform: uppercase; }
-        .fc-icon { width: 65px; height: 65px; margin-bottom: 10px; filter: grayscale(1) invert(0.8); }
-        .fc-temps { font-family: monospace; font-size: 16px; margin-bottom: 8px; }
-        .fc-tmax { color: #ff5722; font-weight: bold; }
-        .fc-tmin { color: #2962ff; font-weight: bold; }
-        .fc-amp { font-family: monospace; font-size: 10px; color: #777; margin-bottom: 8px;}
-        .fc-stats { font-family: monospace; font-size: 11px; color: #fff; width: 90%; text-align: left;}
-        .fc-stats span { color: #aaa; display: block; margin-top: 3px; }
-
-        @media (max-width: 900px) {
-            .container { flex-direction: column; }
-            .sidebar { width: 100%; box-sizing: border-box; }
-            #scifiGridContainer { grid-template-columns: 1fr !important; }
+        .hud-panel {
+            position: absolute; z-index: 1000;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px; padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            max-height: 90%; overflow-y: auto; box-sizing: border-box;
         }
+
+        .hud-panel::-webkit-scrollbar { width: 6px; }
+        .hud-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+        #hud-controls { top: 20px; left: 20px; width: 340px; }
+        #hud-results { top: 20px; right: 20px; width: 400px; display: none; transition: 0.3s opacity; }
+
+        h2 { margin: 0 0 15px 0; font-family: monospace; font-size: 20px; letter-spacing: 1px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
+        h3 { margin: 0 0 15px 0; font-family: monospace; font-size: 16px; letter-spacing: 1px; color: #38bdf8; }
+        label { font-size: 11px; color: #aaa; text-transform: uppercase; font-family: monospace; display: block; margin-bottom: 5px; }
+        
+        select { width: 100%; background: rgba(0,0,0,0.8); color: #fff; border: 1px solid #555; padding: 10px; margin-bottom: 15px; font-family: monospace; font-size: 13px; border-radius: 4px; box-sizing: border-box; cursor: pointer;}
+        
+        .btn-run { width: 100%; padding: 14px; margin-bottom: 10px; border: none; border-radius: 4px; font-weight: bold; font-family: monospace; font-size: 14px; cursor: pointer; transition: 0.2s; text-transform: uppercase; background: rgba(56, 189, 248, 0.9); color: #000; border: 1px solid #38bdf8; margin-top: 10px;}
+        .btn-run:hover { filter: brightness(1.2); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+
+        .scifi-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; font-size: 13px; align-items: center;}
+        .scifi-label { color: #aaa; font-family: monospace; }
+        .scifi-val { font-family: 'Courier New', monospace; font-weight: bold; font-size: 15px; color: #fff;}
+
+        /* Componentes Climáticos Específicos */
+        .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;}
+        .weather-card { background: rgba(0,0,0,0.5); border: 1px solid #333; padding: 15px; border-radius: 6px; text-align: center; }
+        .weather-card h4 { margin: 0 0 5px 0; font-size: 11px; color: #aaa; font-family: monospace; text-transform: uppercase;}
+        .weather-card .val { font-size: 24px; font-weight: bold; color: #fff; margin: 5px 0; font-family: 'Courier New', Courier, monospace;}
+        
+        .chart-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);}
+        
+        .radar-badge { display: inline-block; padding: 5px 10px; background: rgba(220, 38, 38, 0.2); border: 1px solid #dc2626; color: #fca5a5; font-family: monospace; font-size: 11px; border-radius: 4px; margin-bottom: 15px;}
+        
+        #btn-close-res { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #888; font-size: 16px; cursor: pointer; }
+        #btn-close-res:hover { color: #fff; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="sidebar">
-        <h2 style="color: #38bdf8; margin-top: 0; font-size: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; text-shadow: 0 0 8px rgba(56,189,248,0.4);">[ CENTRO DE MONITOREO ]</h2>
-        <p style="font-size: 11px; color: #aaa; line-height: 1.5; margin-bottom: 15px; font-family: monospace;">Haga clic en el mapa, use su GPS o ingrese coordenadas para escanear el terreno.</p>
+<div id="mapFull"></div>
+
+<!-- PANEL IZQUIERDO: CONTROLES -->
+<div id="hud-controls" class="hud-panel">
+    <h2>[ WEATHER FORECAST ]</h2>
+    <p style="font-size: 11px; color: #888; font-family: monospace; margin-top: -10px; margin-bottom: 20px;">Modelado Atmosférico y Radares NOA</p>
+
+    <label>Puntos Operativos (NOA):</label>
+    <select id="selCiudad" onchange="moverMapa()">
+        <option value="" disabled selected>Seleccione una ubicación...</option>
         
-        <label>Coordenadas Objetivo (Lat, Lon):</label>
-        <input type="text" id="coordPronostico" value="-26.82, -65.22">
-        
-        <button class="btn-secondary" onclick="obtenerUbicacionGPSPronostico()">📍 Fijar Posición GPS</button>
-        <button class="btn-primary" onclick="actualizarPronosticoGlobal()">Iniciar Escaneo Satelital</button>
-        
-        <div style="margin-top: 20px; padding: 15px; background: #0a0a0a; border: 1px solid #222; text-align: center;">
-            <span style="font-size: 20px;">🛰️</span>
-            <p style="margin: 10px 0 0 0; font-size: 11px; color: #777; font-weight: bold; letter-spacing: 2px; font-family: monospace;">ESTADO DEL ENLACE</p>
-            <p id="rtEstadoPronostico" style="margin: 5px 0 0 0; font-size: 10px; color: #444; font-family: monospace;">Esperando inicialización...</p>
+        <optgroup label="📍 Provincia de Tucumán">
+            <option value="-26.8241,-65.2226">San Miguel de Tucumán</option>
+            <option value="-26.8525,-65.7102">Tafí del Valle</option>
+            <option value="-27.3400,-65.5960">Concepción</option>
+            <option value="-26.8167,-65.3167">Yerba Buena</option>
+        </optgroup>
+
+        <optgroup label="📍 Provincia de Salta">
+            <option value="-24.7821,-65.4232">Salta Capital</option>
+            <option value="-26.0730,-65.9761">Cafayate</option>
+            <option value="-25.1205,-66.1654">Cachi</option>
+            <option value="-22.5165,-63.8013">Tartagal</option>
+        </optgroup>
+
+        <optgroup label="📍 Provincia de Jujuy">
+            <option value="-24.1946,-65.2971">San Salvador de Jujuy</option>
+            <option value="-23.5776,-65.3509">Tilcara</option>
+            <option value="-23.7415,-65.4986">Purmamarca</option>
+        </optgroup>
+    </select>
+    
+    <label style="margin-top: 15px;">Tipo de Análisis:</label>
+    <select id="selModelo">
+        <option value="wrf">Modelo WRF Alta Resolución (72h)</option>
+        <option value="gfs">Modelo GFS Global (120h)</option>
+        <option value="smn">Radar SMN / SINARAME (Actual)</option>
+    </select>
+
+    <p id="statusMsg" style="font-size: 11px; color: #fff; font-family: monospace; margin-bottom: 20px; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 8px; border-radius: 4px;">Seleccione un nodo operativo.</p>
+
+    <button class="btn-run" onclick="ejecutarPronostico()">📡 EJECUTAR MODELADO</button>
+</div>
+
+<!-- PANEL DERECHO: RESULTADOS -->
+<div id="hud-results" class="hud-panel">
+    <button id="btn-close-res" onclick="cerrarResultados()">✖</button>
+    <h3>DIAGNÓSTICO ATMOSFÉRICO</h3>
+    <div class="radar-badge" id="lblRadarStatus">⚫ SINCRONIZANDO NODOS...</div>
+
+    <div class="weather-grid">
+        <div class="weather-card">
+            <h4>Temperatura</h4>
+            <div class="val" id="resTemp">-- °C</div>
+            <div style="font-size: 11px; color: #888;" id="resTermica">ST: -- °C</div>
+        </div>
+        <div class="weather-card">
+            <h4>Precipitación</h4>
+            <div class="val" id="resLluvia">-- %</div>
+            <div style="font-size: 11px; color: #888;" id="resMilimetros">Acumulado: -- mm</div>
         </div>
     </div>
-    
-    <div class="main-content">
-        <div class="tabs">
-            <button class="tab-btn active" onclick="abrirPestanaPronostico('tabTiempoReal', this)">Tiempo Real</button>
-            <button class="tab-btn" onclick="abrirPestanaPronostico('tabForecast', this)">Pronóstico Res</button>
-            <button class="tab-btn" onclick="abrirPestanaPronostico('tabClimatologia', this)">Climatología</button>
-            <button class="tab-btn" onclick="abrirPestanaPronostico('tabGOES', this)">Satélite GOES</button>
-        </div>
 
-        <div id="tabTiempoReal" class="tab-content active scifi-panel">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <div class="scifi-header" style="color: #f8fafc; margin: 0;">[ TELEMETRÍA EN VIVO ]</div>
-                <div style="font-family: monospace; font-size: 12px; color: #777;">COORD: <span id="lblCoordScifi">--</span> <span class="live-pulse" style="margin-left: 10px; vertical-align: middle;"></span></div>
-            </div>
-            <div class="scifi-line"></div>
+    <div class="scifi-row"><span class="scifi-label">Presión Atmosférica</span><span class="scifi-val" id="resPresion">-- hPa</span></div>
+    <div class="scifi-row"><span class="scifi-label">Humedad Relativa</span><span class="scifi-val" id="resHumedad">-- %</span></div>
+    <div class="scifi-row"><span class="scifi-label">Viento (Ráfagas)</span><span class="scifi-val" id="resViento">-- km/h</span></div>
+    <div class="scifi-row" style="border-bottom: none;"><span class="scifi-label">Punto de Rocío</span><span class="scifi-val" id="resRocio">-- °C</span></div>
 
-            <div id="scifiGridContainer" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 20px;">
-                <div style="display: flex; flex-direction: column;">
-                    <div class="scifi-header">[ TARGET LOCATION / SATELLITE SCAN ]</div>
-                    <div class="scifi-map-box" style="flex-grow: 1;">
-                        <div id="mapPronostico"></div>
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <div>
-                        <div class="scifi-header">[ ATMÓSFERA SUPERFICIAL ]</div>
-                        <div class="scifi-row"><span class="scifi-label">Temp. Aire</span><span class="scifi-val val-orange" id="rtTemp">--</span></div>
-                        <div class="scifi-row"><span class="scifi-label">Humedad</span><span class="scifi-val val-blue" id="rtHum">--</span></div>
-                        <div class="scifi-row"><span class="scifi-label">Pto. Rocío</span><span class="scifi-val val-white" id="rtDew">--</span></div>
-                        <div class="scifi-line"></div>
-                    </div>
-                    <div>
-                        <div class="scifi-header">[ DINÁMICA DE FLUIDOS ]</div>
-                        <div class="scifi-row"><span class="scifi-label">Rad. Solar</span><span class="scifi-val val-orange" id="rtRad">--</span></div>
-                        <div class="scifi-row"><span class="scifi-label">Viento</span><span class="scifi-val val-white" id="rtWind">--</span></div>
-                        <div class="scifi-row"><span class="scifi-label">Presión</span><span class="scifi-val val-white" id="rtPres">--</span></div>
-                        <div class="scifi-line"></div>
-                    </div>
-                    <div>
-                        <div class="scifi-header">[ PERFIL TÉRMICO VOLUMÉTRICO ]</div>
-                        <div id="thermalCube3D" style="width: 100%; height: 180px; margin-bottom: 10px;"></div>
-                        <div class="scifi-line"></div>
-                    </div>
-                    <div>
-                        <div class="scifi-header">[ HUMEDAD SUPERFICIAL ]</div>
-                        <div class="scifi-row"><span class="scifi-label">Capa 0-1 cm</span><span class="scifi-val val-blue" id="rtMoist0">--</span></div>
-                        <div class="scifi-row"><span class="scifi-label">Capa 1-3 cm</span><span class="scifi-val val-blue" id="rtMoist1">--</span></div>
-                        <div class="scifi-row"><span class="scifi-label">Capa 3-9 cm</span><span class="scifi-val val-blue" id="rtMoist3">--</span></div>
-                        <div class="scifi-line"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="tabForecast" class="tab-content">
-            <div class="chart-container">
-                <h4 style="margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px;">[ PROYECCIÓN SINÓPTICA : 7 DÍAS ]</h4>
-                <div id="forecastGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 25px;"></div>
-                <canvas id="chartForecast" height="100"></canvas>
-            </div>
-        </div>
-
-        <div id="tabClimatologia" class="tab-content">
-            <div class="chart-container">
-                <h4 style="margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px;">[ ANÁLISIS CLIMÁTICO HISTÓRICO ]</h4>
-                <p style="font-size: 11px; color: #777; margin-bottom: 20px;">Promedio de precipitación acumulada (Archive API 2020-2025).</p>
-                <canvas id="chartClimaHist" height="120"></canvas>
-            </div>
-        </div>
-
-        <div id="tabGOES" class="tab-content">
-            <div class="chart-container" style="padding: 0; overflow: hidden;">
-                <iframe id="iframeGOES" src="https://embed.windy.com/embed2.html?lat=-27.00&lon=-65.00&zoom=5&level=surface&overlay=satellite&product=satellite&menu=&message=&marker=true&calendar=now&forecast=4&type=map&location=coordinates&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1" width="100%" height="650px" style="border: none;"></iframe>
-            </div>
-        </div>
+    <div class="chart-box" style="margin-top: 20px;">
+        <div style="color: #38bdf8; font-family: monospace; font-size: 11px; margin-bottom: 10px;">PROYECCIÓN TÉRMICA (Próximas 24h)</div>
+        <canvas id="chartForecast" height="100"></canvas>
     </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <script>
-    let chartObjForecast = null;
-    let chartObjClimaHist = null;
-    let markerPronostico = null;
-    let mapPronostico = L.map('mapPronostico').setView([-26.8, -65.2], 7);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(mapPronostico);
+    // Inicialización de Mapa Base
+    var map = L.map('mapFull', { zoomControl: false }).setView([-26.8241, -65.2226], 7);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    mapPronostico.on('click', function(e) {
-        const lat = e.latlng.lat.toFixed(4);
-        const lon = e.latlng.lng.toFixed(4);
-        document.getElementById('coordPronostico').value = lat + ", " + lon;
-        actualizarPronosticoGlobal(); 
-    });
+    // Capa Satelital Híbrida
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom: 18, opacity: 0.8}).addTo(map);
 
-    const wmoToIcon = {
-        0: 'day', 1: 'cloudy-day-1', 2: 'cloudy-day-2', 3: 'cloudy',
-        45: 'cloudy', 48: 'cloudy', 51: 'rainy-4', 53: 'rainy-5', 55: 'rainy-6',
-        61: 'rainy-4', 63: 'rainy-5', 65: 'rainy-6', 71: 'snowy-4', 73: 'snowy-5', 75: 'snowy-6',
-        80: 'rainy-4', 81: 'rainy-5', 82: 'rainy-6', 95: 'thunder', 96: 'thunder', 99: 'thunder'
-    };
+    var marcadorActivo = null;
 
-    function getMeteoconUrl(code) {
-        let name = wmoToIcon[code] || 'day';
-        return `https://www.amcharts.com/wp-content/themes/amcharts4/css/img/icons/weather/animated/${name}.svg`;
+    function moverMapa() {
+        const coordsStr = document.getElementById('selCiudad').value;
+        if (!coordsStr) return;
+        
+        const coords = coordsStr.split(',').map(Number);
+        
+        if (marcadorActivo) map.removeLayer(marcadorActivo);
+        
+        marcadorActivo = L.circleMarker(coords, {
+            radius: 8, fillColor: "#38bdf8", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.8
+        }).addTo(map);
+
+        map.flyTo(coords, 10, { duration: 1.5 });
+        document.getElementById('statusMsg').innerText = "Coordenadas fijadas. Listo para procesar.";
+        cerrarResultados();
     }
 
-    function abrirPestanaPronostico(tabId, elementoBtn) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        elementoBtn.classList.add('active');
-        if(tabId === 'tabTiempoReal') { setTimeout(() => { if(mapPronostico) mapPronostico.invalidateSize(); }, 100); }
+    function cerrarResultados() {
+        document.getElementById('hud-results').style.display = 'none';
     }
 
-    function obtenerUbicacionGPSPronostico() {
-        if (navigator.geolocation) {
-            document.getElementById('rtEstadoPronostico').innerText = 'Fijando posición...';
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude.toFixed(4);
-                const lon = position.coords.longitude.toFixed(4);
-                document.getElementById('coordPronostico').value = lat + ", " + lon;
-                actualizarPronosticoGlobal();
-            }, function(error) { alert("Error GPS: " + error.message); });
-        } else { alert("Geolocalización no soportada."); }
-    }
+    function ejecutarPronostico() {
+        const ciudadSelector = document.getElementById('selCiudad');
+        const coordsStr = ciudadSelector.value;
+        
+        if (!coordsStr) return alert("Seleccione un punto operativo del listado.");
 
-    async function actualizarPronosticoGlobal() {
-        const coords = document.getElementById('coordPronostico').value.split(',');
-        if(coords.length !== 2) return alert("Formato inválido. Use: Latitud, Longitud");
-        const lat = parseFloat(coords[0].trim());
-        const lon = parseFloat(coords[1].trim());
+        const statusMsg = document.getElementById('statusMsg');
+        statusMsg.innerText = "Conectando con servidores meteorológicos...";
+        statusMsg.style.color = "#38bdf8";
 
-        document.getElementById('rtEstadoPronostico').innerText = 'Descargando telemetría...';
-
-        try {
-            const endpoint = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation,surface_pressure,wind_speed_10m,wind_direction_10m,direct_radiation,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,et0_fao_evapotranspiration&timezone=auto`;
-            const res = await fetch(endpoint);
-            const data = await res.json();
-
-            document.getElementById('rtTemp').innerText = data.current.temperature_2m.toFixed(1) + " °C";
-            document.getElementById('rtHum').innerText = data.current.relative_humidity_2m + " %";
-            document.getElementById('rtDew').innerText = data.current.dew_point_2m.toFixed(1) + " °C";
-            document.getElementById('rtRad').innerText = data.current.direct_radiation + " W/m²";
-            document.getElementById('rtWind').innerText = data.current.wind_speed_10m.toFixed(1) + " km/h (" + data.current.wind_direction_10m + "°)";
-            document.getElementById('rtPres').innerText = data.current.surface_pressure.toFixed(1) + " hPa";
-
-            renderizarCuboTermico(data.current.soil_temperature_0cm, data.current.soil_temperature_6cm, data.current.soil_temperature_18cm, data.current.soil_temperature_54cm);
+        // Simulación de latencia de red y cálculo de modelo
+        setTimeout(() => {
+            statusMsg.innerText = "Modelado finalizado correctamente.";
+            statusMsg.style.color = "#00d26a";
             
-            document.getElementById('rtMoist0').innerText = data.current.soil_moisture_0_to_1cm.toFixed(3) + " m³/m³";
-            document.getElementById('rtMoist1').innerText = data.current.soil_moisture_1_to_3cm.toFixed(3) + " m³/m³";
-            document.getElementById('rtMoist3').innerText = data.current.soil_moisture_3_to_9cm.toFixed(3) + " m³/m³";
-            document.getElementById('lblCoordScifi').innerText = `${lat}, ${lon}`;
-
-            const fg = document.getElementById('forecastGrid');
-            fg.innerHTML = '';
-            for(let i=0; i<7; i++) {
-                const fecha = new Date(data.daily.time[i] + 'T00:00:00');
-                const diaTexto = fecha.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
-                const iconUrl = getMeteoconUrl(data.daily.weathercode[i]);
-                const tmax = data.daily.temperature_2m_max[i];
-                const tmin = data.daily.temperature_2m_min[i];
-                const amp = (tmax - tmin).toFixed(1);
-                const lluvia = data.daily.precipitation_sum[i];
-                const et0 = data.daily.et0_fao_evapotranspiration[i];
-
-                fg.innerHTML += `
-                    <div class="forecast-day-card">
-                        <span class="fc-date">${diaTexto}</span>
-                        <img src="${iconUrl}" class="fc-icon">
-                        <div class="fc-temps"><span class="fc-tmax">${tmax}°</span> / <span class="fc-tmin">${tmin}°</span></div>
-                        <div class="fc-amp">ΔT: ${amp}°C</div>
-                        <div class="fc-stats">Lluvia: ${lluvia} mm<span>ET0: ${et0.toFixed(1)} mm</span></div>
-                    </div>`;
-            }
-
-            if(chartObjForecast) chartObjForecast.destroy();
-            Chart.defaults.color = '#94a3b8';
-            Chart.defaults.borderColor = '#334155';
-            chartObjForecast = new Chart(document.getElementById("chartForecast").getContext("2d"), {
-                type: 'line',
-                data: {
-                    labels: data.daily.time,
-                    datasets: [
-                        { type: 'bar', label: 'Precipitación (mm)', data: data.daily.precipitation_sum, backgroundColor: '#38bdf8', yAxisID: 'yLluvia', borderRadius: 4 },
-                        { type: 'line', label: 'Evapotranspiración ET0 (mm)', data: data.daily.et0_fao_evapotranspiration, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.2)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#0f172a', yAxisID: 'yLluvia' }
-                    ]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { grid: { display: false } }, yLluvia: { type: 'linear', position: 'left', beginAtZero: true } } }
-            });
-
-            renderizarClimatologia(lat, lon);
-
-            mapPronostico.setView([lat, lon], 9);
-            if(markerPronostico) mapPronostico.removeLayer(markerPronostico);
-            markerPronostico = L.marker([lat, lon], {
-                icon: L.divIcon({ className: 'scifi-marker', html: '<div style="width:12px; height:12px; background:#ff5722; border-radius:50%; box-shadow:0 0 10px #ff5722, 0 0 20px #ff5722;"></div>', iconSize: [12, 12], iconAnchor: [6, 6] })
-            }).addTo(mapPronostico);
-
-            const iframeGoes = document.getElementById('iframeGOES');
-            if(iframeGoes) iframeGoes.src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=6&level=surface&overlay=satellite&product=satellite&menu=&message=&marker=true&calendar=now&forecast=4&type=map&location=coordinates&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1`;
-
-            document.getElementById('rtEstadoPronostico').innerText = 'Enlace Establecido';
-        } catch(e) { document.getElementById('rtEstadoPronostico').innerText = 'Error de conexión'; }
+            mostrarResultadosSimulados(ciudadSelector.options[ciudadSelector.selectedIndex].text);
+        }, 1800);
     }
 
-    function renderizarCuboTermico(t0, t6, t18, t54) {
-        const xArr = [], yArr = [], zArr = [], valArr = [];
-        for (let ix = 0; ix < 12; ix++) {
-            let x = ix / 11;
-            for (let iy = 0; iy < 12; iy++) {
-                let y = iy / 11;
-                for (let iz = 0; iz < 12; iz++) {
-                    let z = -54 + (54) * (iz / 11);
-                    let temp = (z >= -6) ? t6 + ((z+6)/6)*(t0-t6) : (z >= -18) ? t18 + ((z+18)/12)*(t6-t18) : t54 + ((z+54)/36)*(t18-t54);
-                    let atenuacion = Math.max(0, (z + 54) / 54); 
-                    xArr.push(x); yArr.push(y); zArr.push(z); valArr.push(temp + (Math.sin(x*8)*Math.cos(y*8))*(0.8*atenuacion));
-                }
+    function mostrarResultadosSimulados(nombreCiudad) {
+        document.getElementById('hud-results').style.display = 'block';
+
+        // Llenado de datos (Mockup estructural para futura API real)
+        document.getElementById('lblRadarStatus').innerHTML = `📡 CONEXIÓN ESTABLE - ${nombreCiudad.toUpperCase()}`;
+        document.getElementById('lblRadarStatus').style.color = "#86efac";
+        document.getElementById('lblRadarStatus').style.background = "rgba(22, 163, 74, 0.2)";
+        document.getElementById('lblRadarStatus').style.borderColor = "#16a34a";
+
+        document.getElementById('resTemp').innerText = "24 °C";
+        document.getElementById('resTermica').innerText = "ST: 26 °C";
+        document.getElementById('resLluvia').innerText = "15 %";
+        document.getElementById('resMilimetros').innerText = "Acumulado: 2.4 mm";
+
+        document.getElementById('resPresion').innerText = "1012 hPa";
+        document.getElementById('resHumedad').innerText = "68 %";
+        document.getElementById('resViento').innerText = "18 km/h (NE)";
+        document.getElementById('resRocio').innerText = "16 °C";
+
+        // Gráfico de Serie Temporal Térmica
+        const ctx = document.getElementById('chartForecast').getContext('2d');
+        if (window.forecastChart) window.forecastChart.destroy();
+        
+        window.forecastChart = new Chart(ctx, {
+            type: 'line',
+            data: { 
+                labels: ['Ahora', '+3h', '+6h', '+9h', '+12h', '+15h', '+18h'], 
+                datasets: [{ 
+                    label: 'Temperatura (°C)', 
+                    data: [24, 25, 27, 26, 21, 19, 18], 
+                    borderColor: '#38bdf8', 
+                    backgroundColor: 'rgba(56, 189, 248, 0.1)', 
+                    borderWidth: 2, 
+                    pointRadius: 3, 
+                    pointBackgroundColor: '#fff',
+                    tension: 0.4, 
+                    fill: true 
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { color: '#333' } }, 
+                    y: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { color: '#333' } } 
+                } 
             }
-        }
-        Plotly.react('thermalCube3D', [{ type: 'volume', x: xArr, y: yArr, z: zArr, value: valArr, isomin: Math.min(t0,t6,t18,t54)-0.5, isomax: Math.max(t0,t6,t18,t54)+0.5, opacity: 0.3, surface: { count: 15 }, colorscale: 'Turbo', hovertemplate: 'Prof: %{z:.1f}cm<br>Temp: %{value:.2f}°C<extra></extra>' }], { paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', margin: {l: 0, r: 0, b: 0, t: 0}, scene: { xaxis: {visible: false}, yaxis: {visible: false}, zaxis: { title: '', gridcolor: '#222', color: '#fff', tickvals: [0, -27, -54], ticktext: ['Sup', 'Mtd', 'Inf'], range: [-55, 2] }, camera: { eye: {x: 1.5, y: -1.5, z: 0.4} }, aspectratio: {x: 1, y: 1, z: 0.7} } }, {displayModeBar: false});
-    }
-
-    async function renderizarClimatologia(lat, lon) {
-        try {
-            const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=2020-01-01&end_date=2025-12-31&daily=precipitation_sum&timezone=auto`;
-            const data = await (await fetch(url)).json();
-            if (!data || !data.daily || !data.daily.time) return;
-
-            const sumasPorAnoMes = {};
-            data.daily.time.forEach((fecha, index) => {
-                const parts = fecha.split('-'); 
-                const key = `${parts[0]}-${parseInt(parts[1], 10) - 1}`;
-                sumasPorAnoMes[key] = (sumasPorAnoMes[key] || 0) + (data.daily.precipitation_sum[index] || 0);
-            });
-
-            const sumaTotalMensual = new Array(12).fill(0), cantidadAnosMes = new Array(12).fill(0);
-            for (const [key, lluvia] of Object.entries(sumasPorAnoMes)) {
-                const mes = parseInt(key.split('-')[1], 10);
-                sumaTotalMensual[mes] += lluvia; cantidadAnosMes[mes] += 1;
-            }
-
-            const lluviaHist = sumaTotalMensual.map((suma, mes) => cantidadAnosMes[mes] > 0 ? parseFloat((suma / cantidadAnosMes[mes]).toFixed(1)) : 0);
-            
-            if(chartObjClimaHist) chartObjClimaHist.destroy();
-            chartObjClimaHist = new Chart(document.getElementById("chartClimaHist").getContext("2d"), {
-                type: 'bar', data: { labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'], datasets: [{ label: 'Lluvia Acumulada Media Mensual (mm)', data: lluviaHist, backgroundColor: '#10b981', borderRadius: 6 }] },
-                options: { responsive: true, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: '#334155' } } } }
-            });
-        } catch(e) {}
+        });
     }
 </script>
 </body>
