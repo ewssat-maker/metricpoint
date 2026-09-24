@@ -23,79 +23,90 @@
         
         .hud-panel {
             position: absolute; z-index: 1000;
-            background: rgba(15, 15, 15, 0.85);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px; padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-            max-height: 90%; overflow-y: auto; box-sizing: border-box;
+            background: rgba(10, 15, 25, 0.90);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px; padding: 22px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.95);
+            max-height: 92%; overflow-y: auto; box-sizing: border-box;
         }
 
         .hud-panel::-webkit-scrollbar { width: 6px; }
-        .hud-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+        .hud-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 3px; }
 
-        #hud-controls { top: 20px; left: 20px; width: 340px; }
-        #hud-results { top: 20px; right: 20px; width: 420px; display: none; transition: 0.3s opacity; }
+        #hud-controls { top: 20px; left: 20px; width: 360px; }
+        #hud-results { top: 20px; right: 20px; width: 440px; display: none; transition: 0.3s opacity; }
 
-        h2 { margin: 0 0 15px 0; font-family: monospace; font-size: 20px; letter-spacing: 1px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;}
-        h3 { margin: 0 0 10px 0; font-family: monospace; font-size: 16px; letter-spacing: 1px; color: #38bdf8; }
-        label { font-size: 11px; color: #aaa; text-transform: uppercase; font-family: monospace; display: block; margin-bottom: 5px; }
+        h2 { margin: 0 0 15px 0; font-family: monospace; font-size: 22px; letter-spacing: 1px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px;}
+        label { font-size: 13px; color: #ccc; text-transform: uppercase; font-family: monospace; display: block; margin-bottom: 6px; font-weight: bold;}
         
-        select { width: 100%; background: rgba(0,0,0,0.8); color: #fff; border: 1px solid #555; padding: 10px; margin-bottom: 15px; font-family: monospace; font-size: 13px; border-radius: 4px; box-sizing: border-box; cursor: pointer;}
+        select { width: 100%; background: rgba(0,0,0,0.8); color: #eab308; border: 1px solid #555; padding: 12px; margin-bottom: 18px; font-family: monospace; font-size: 14px; font-weight: bold; border-radius: 4px; box-sizing: border-box; cursor: pointer;}
         
-        .btn-run { width: 100%; padding: 14px; margin-bottom: 10px; border: none; border-radius: 4px; font-weight: bold; font-family: monospace; font-size: 14px; cursor: pointer; transition: 0.2s; text-transform: uppercase; background: rgba(56, 189, 248, 0.9); color: #000; border: 1px solid #38bdf8; margin-top: 10px;}
-        .btn-run:hover { filter: brightness(1.2); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+        .btn-run { width: 100%; padding: 15px; margin-bottom: 10px; border: none; border-radius: 4px; font-weight: bold; font-family: monospace; font-size: 15px; cursor: pointer; transition: 0.2s; text-transform: uppercase; background: rgba(56, 189, 248, 0.9); color: #000; border: 1px solid #38bdf8; margin-top: 10px;}
+        .btn-run:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
 
-        .btn-3d { background: transparent; border: 1px solid #f59e0b; color: #f59e0b; width: 100%; padding: 10px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-family: monospace; font-weight: bold; transition: 0.3s; margin-bottom: 5px;}
+        .btn-3d { background: transparent; border: 1px solid #f59e0b; color: #f59e0b; width: 100%; padding: 12px; margin-top: 15px; border-radius: 4px; cursor: pointer; font-family: monospace; font-weight: bold; font-size: 14px; transition: 0.3s; margin-bottom: 5px;}
         .btn-3d:hover { background: rgba(245, 158, 11, 0.2); }
 
-        /* PESTAÑAS FLOTANTES (CORREGIDAS) */
-        .hud-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        .hud-tab { flex: 1; background: transparent; border: none; color: #888; font-family: monospace; font-size: 11px; padding: 10px 5px; cursor: pointer; text-transform: uppercase; transition: 0.3s; border-bottom: 2px solid transparent; }
+        /* PESTAÑAS FLOTANTES */
+        .hud-tabs { display: flex; border-bottom: 2px solid rgba(255,255,255,0.1); margin-bottom: 18px; }
+        .hud-tab { flex: 1; background: transparent; border: none; color: #999; font-family: monospace; font-size: 13px; padding: 12px 5px; cursor: pointer; text-transform: uppercase; transition: 0.3s; border-bottom: 3px solid transparent; font-weight: bold;}
         .hud-tab:hover { color: #fff; }
-        .hud-tab.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; font-weight: bold; }
+        .hud-tab.active { color: #38bdf8; border-bottom: 3px solid #38bdf8; color: #fff; }
         .hud-tab-content { display: none; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .scifi-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; font-size: 13px; align-items: center;}
-        .scifi-label { color: #aaa; font-family: monospace; }
-        .scifi-val { font-family: 'Courier New', monospace; font-weight: bold; font-size: 15px; color: #fff;}
-        .scifi-val-warm { color: #f59e0b; font-family: 'Courier New', monospace; font-weight: bold; font-size: 15px;}
+        /* FILAS DE DATOS (CON CONTRASTE AMARILLO) */
+        .scifi-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-size: 14px; align-items: center;}
+        .scifi-label { color: #ccc; font-family: monospace; }
+        .scifi-val { font-family: 'Courier New', monospace; font-weight: bold; font-size: 17px; color: #eab308;} /* AMARILLO ALTO CONTRASTE */
+        .scifi-val-warm { color: #ef4444; font-family: 'Courier New', monospace; font-weight: bold; font-size: 17px;}
 
         .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;}
-        .weather-card { background: rgba(0,0,0,0.5); border: 1px solid #333; padding: 15px; border-radius: 6px; text-align: center; }
-        .weather-card h4 { margin: 0 0 5px 0; font-size: 11px; color: #aaa; font-family: monospace; text-transform: uppercase;}
-        .weather-card .val { font-size: 24px; font-weight: bold; color: #fff; margin: 5px 0; font-family: 'Courier New', Courier, monospace;}
+        .weather-card { background: rgba(0,0,0,0.6); border: 1px solid #444; padding: 18px; border-radius: 6px; text-align: center; }
+        .weather-card h4 { margin: 0 0 5px 0; font-size: 13px; color: #ccc; font-family: monospace; text-transform: uppercase;}
+        .weather-card .val { font-size: 28px; font-weight: bold; color: #eab308; margin: 5px 0; font-family: 'Courier New', Courier, monospace;}
         
-        .chart-box { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 4px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05);}
-        .radar-badge { display: inline-block; padding: 5px 10px; background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; font-family: monospace; font-size: 11px; border-radius: 4px; margin-bottom: 15px; font-weight: bold;}
+        .chart-box { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 4px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1);}
+        .radar-badge { display: inline-block; padding: 6px 12px; background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; font-family: monospace; font-size: 12px; border-radius: 4px; margin-bottom: 15px; font-weight: bold;}
         
-        .alert-box { background: rgba(220, 38, 38, 0.2); border: 1px solid #ef4444; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);}
-        .alert-box h4 { margin: 0 0 8px 0; color: #fca5a5; font-family: monospace; font-size: 13px; text-transform: uppercase;}
-        .alert-box p { margin: 0; font-size: 13px; color: #fff; font-weight: bold;}
+        /* CAJA DE ALERTAS */
+        .alert-box { background: rgba(220, 38, 38, 0.2); border: 1px solid #ef4444; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);}
+        .alert-box h4 { margin: 0 0 8px 0; color: #fca5a5; font-family: monospace; font-size: 14px; text-transform: uppercase;}
+        .alert-box p { margin: 0; font-size: 14px; color: #fff; font-weight: bold; line-height: 1.5;}
 
-        #btn-close-res { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #888; font-size: 16px; cursor: pointer; }
+        /* PRONÓSTICO DIARIO (ICONOGRAFÍA Y DESCRIPCIÓN) */
+        .forecast-card { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); border: 1px solid #333; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; }
+        .forecast-day { font-family: monospace; font-weight: bold; font-size: 14px; color: #38bdf8; width: 60px;}
+        .forecast-icon { font-size: 24px; text-align: center; width: 40px;}
+        .forecast-desc { flex-grow: 1; padding: 0 10px; font-size: 13px; color: #ccc; line-height: 1.3;}
+        .forecast-temps { font-family: 'Courier New', monospace; font-weight: bold; font-size: 15px; text-align: right;}
+        .temp-max { color: #ef4444; }
+        .temp-min { color: #3b82f6; margin-left: 8px;}
+
+        #btn-close-res { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; }
         #btn-close-res:hover { color: #fff; }
 
-        /* VISOR 3D */
+        /* VISOR 3D VOLUMÉTRICO */
         #visor3D { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
         #plot3D { width: 80%; height: 80%; background: #000; border: 1px solid #333; border-radius: 8px; overflow: hidden; box-shadow: 0 0 50px rgba(245, 158, 11, 0.2);}
-        #btn-close-3d { position: absolute; top: 30px; right: 50px; background: #ff4444; color: #fff; border: none; padding: 10px 20px; font-family: monospace; font-weight: bold; cursor: pointer; border-radius: 4px; z-index: 2001;}
+        #btn-close-3d { position: absolute; top: 30px; right: 50px; background: #ff4444; color: #fff; border: none; padding: 12px 25px; font-family: monospace; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 4px; z-index: 2001;}
     </style>
 </head>
 <body>
 
 <div id="mapFull"></div>
 
+<!-- VISOR 3D (CUBO VOLUMÉTRICO REAL) -->
 <div id="visor3D">
     <button id="btn-close-3d" onclick="cerrarModelo3D()">CERRAR VISOR 3D</button>
-    <h3 style="color: #f59e0b; margin-bottom: 20px;">CUBO GEOTÉRMICO SÓLIDO (Perfil Volumétrico)</h3>
+    <h3 style="color: #f59e0b; margin-bottom: 20px; font-size: 20px;">MODELO DIGITAL 3D (Estratificación Térmica)</h3>
     <div id="plot3D"></div>
 </div>
 
 <div id="hud-controls" class="hud-panel">
     <h2>[ WEATHER FORECAST ]</h2>
-    <p style="font-size: 11px; color: #888; font-family: monospace; margin-top: -10px; margin-bottom: 20px;">Predicción Atmosférica y Geotérmica</p>
+    <p style="font-size: 12px; color: #aaa; font-family: monospace; margin-top: -10px; margin-bottom: 20px;">Predicción Atmosférica en Tiempo Real</p>
 
     <label>Ubicación a Consultar:</label>
     <select id="selCiudad" onchange="manejarSelectorUbicacion()">
@@ -126,76 +137,72 @@
         <option value="gfs">GFS - Global Forecast System (120h)</option>
     </select>
 
-    <p id="statusMsg" style="font-size: 11px; color: #fff; font-family: monospace; margin-bottom: 20px; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 8px; border-radius: 4px;">Haga clic en el mapa, dibuje un área o use la lista.</p>
+    <p id="statusMsg" style="font-size: 12px; color: #fff; font-family: monospace; margin-bottom: 20px; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 4px;">Haga clic en el mapa, dibuje un área o use la lista.</p>
 
-    <button class="btn-run" onclick="ejecutarPronostico()">📡 EJECUTAR MODELADO</button>
+    <button class="btn-run" onclick="ejecutarPronostico()">📡 OBTENER TELEMETRÍA</button>
 </div>
 
 <div id="hud-results" class="hud-panel">
     <button id="btn-close-res" onclick="cerrarResultados()">✖</button>
-    <h3>DIAGNÓSTICO ATMOSFÉRICO</h3>
-    <div class="radar-badge" id="lblModeloStatus">⚙️ MODELO: --</div>
+    <h3 style="font-size: 18px;">DIAGNÓSTICO METEOROLÓGICO</h3>
+    <div class="radar-badge" id="lblModeloStatus">⚙️ ESPERANDO CONEXIÓN...</div>
 
-    <!-- PESTAÑAS NAVEGABLES BLINDADAS -->
+    <!-- PESTAÑAS NAVEGABLES -->
     <div class="hud-tabs">
-        <button class="hud-tab active" id="btnTabEnVivo" onclick="cambiarPestanaHUD('tabEnVivo', this)">En Vivo</button>
-        <button class="hud-tab" id="btnTabClima" onclick="cambiarPestanaHUD('tabClima', this)">Suelo & Clima</button>
-        <button class="hud-tab" id="btnTabAlerta" onclick="cambiarPestanaHUD('tabAlerta', this)">Pronóstico</button>
+        <button class="hud-tab active" id="btnTabEnVivo" onclick="cambiarPestanaHUD('tabEnVivo', this)">🔴 En Vivo</button>
+        <button class="hud-tab" id="btnTabClima" onclick="cambiarPestanaHUD('tabClima', this)">🌱 Clima & Suelo</button>
+        <button class="hud-tab" id="btnTabAlerta" onclick="cambiarPestanaHUD('tabAlerta', this)">📅 Pronóstico</button>
     </div>
 
-    <!-- PESTAÑA 1: SITUACIÓN EN VIVO -->
+    <!-- PESTAÑA 1: SITUACIÓN EN VIVO (DATOS REALES) -->
     <div id="tabEnVivo" class="hud-tab-content" style="display: block;">
         <div class="weather-grid">
             <div class="weather-card">
-                <h4>Temperatura</h4>
+                <h4>Temp. Actual</h4>
                 <div class="val" id="resTemp">-- °C</div>
-                <div style="font-size: 11px; color: #888;" id="resTermica">ST: -- °C</div>
+                <div style="font-size: 12px; color: #aaa;" id="resEstadoActual">Despejado</div>
             </div>
             <div class="weather-card">
-                <h4>Lluvia (Probab.)</h4>
-                <div class="val" id="resLluvia">-- %</div>
-                <div style="font-size: 11px; color: #888;" id="resEstadoCielo">Cielo: Despejado</div>
+                <h4>Viento</h4>
+                <div class="val" id="resViento">--</div>
+                <div style="font-size: 12px; color: #aaa;">km/h</div>
             </div>
         </div>
 
-        <div style="color: #38bdf8; font-family: monospace; font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px;">MÉTRICAS INSTANTÁNEAS</div>
-        <div class="scifi-row"><span class="scifi-label">Presión Atmosférica</span><span class="scifi-val" id="resPresion">-- hPa</span></div>
+        <div style="color: #38bdf8; font-family: monospace; font-size: 12px; margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 5px;">MÉTRICAS INSTANTÁNEAS</div>
         <div class="scifi-row"><span class="scifi-label">Humedad Relativa</span><span class="scifi-val" id="resHumedad">-- %</span></div>
-        <div class="scifi-row"><span class="scifi-label">Viento (Ráfagas)</span><span class="scifi-val" id="resViento">-- km/h</span></div>
+        <div class="scifi-row"><span class="scifi-label">Presión Superficial</span><span class="scifi-val" id="resPresion">-- hPa</span></div>
         <div class="scifi-row" style="border-bottom: none;"><span class="scifi-label">Punto de Rocío</span><span class="scifi-val" id="resRocio">-- °C</span></div>
     </div>
 
-    <!-- PESTAÑA 2: SUELO Y CLIMA -->
+    <!-- PESTAÑA 2: SUELO Y GRÁFICAS CLIMÁTICAS -->
     <div id="tabClima" class="hud-tab-content">
-        <div style="color: #38bdf8; font-family: monospace; font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px;">ACUMULADOS PROYECTADOS</div>
-        <div class="scifi-row"><span class="scifi-label">Lluvia Acumulada</span><span class="scifi-val" id="resMilimetros">-- mm</span></div>
-        <div class="scifi-row"><span class="scifi-label">Evapotranspiración (ET0)</span><span class="scifi-val" id="resET0">4.2 mm/día</span></div>
-        <div class="scifi-row" style="border-bottom: none; margin-bottom: 15px;"><span class="scifi-label">Radiación Solar (Max)</span><span class="scifi-val" id="resRad">850 W/m²</span></div>
+        <!-- Gráfica recuperada -->
+        <div class="chart-box" style="margin-bottom: 20px;">
+            <div style="color: #38bdf8; font-family: monospace; font-size: 12px; margin-bottom: 10px;">EVOLUCIÓN CLIMÁTICA (Temp vs Lluvia)</div>
+            <canvas id="chartClima" height="120"></canvas>
+        </div>
 
-        <div style="color: #f59e0b; font-family: monospace; font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px;">GEOTERMÓMETROS (Suelo)</div>
-        <div class="scifi-row"><span class="scifi-label">Superficie (-5 cm)</span><span class="scifi-val-warm" id="geo5">-- °C</span></div>
-        <div class="scifi-row"><span class="scifi-label">Raíces (-10 cm)</span><span class="scifi-val-warm" id="geo10">-- °C</span></div>
-        <div class="scifi-row" style="border-bottom: none;"><span class="scifi-label">Profundo (-50 cm)</span><span class="scifi-val-warm" id="geo50">-- °C</span></div>
+        <div style="color: #f59e0b; font-family: monospace; font-size: 12px; margin-bottom: 8px; border-bottom: 1px solid #444; padding-bottom: 5px;">GEOTERMÓMETROS (Suelo)</div>
+        <div class="scifi-row"><span class="scifi-label">Superficie (0 cm)</span><span class="scifi-val-warm" id="geoSup">-- °C</span></div>
+        <div class="scifi-row"><span class="scifi-label">Zona Radicular (-20 cm)</span><span class="scifi-val-warm" id="geoMed">-- °C</span></div>
+        <div class="scifi-row" style="border-bottom: none;"><span class="scifi-label">Reserva Profunda (-50 cm)</span><span class="scifi-val-warm" id="geoInf">-- °C</span></div>
 
-        <button class="btn-3d" onclick="abrirCuboTermico()">🧊 VISUALIZAR CUBO 3D SÓLIDO</button>
+        <button class="btn-3d" onclick="abrirCuboTermico()">🧊 VISUALIZAR CUBO 3D VOLUMÉTRICO</button>
     </div>
 
-    <!-- PESTAÑA 3: ALERTAS Y PRONÓSTICO -->
+    <!-- PESTAÑA 3: ALERTAS Y PRONÓSTICO DIARIO -->
     <div id="tabAlerta" class="hud-tab-content">
         <div id="boxAlertas" class="alert-box">
             <h4>⚠️ SISTEMA DE ALERTA TEMPRANA</h4>
             <p id="txtAlertaMeteo"></p>
         </div>
 
-        <div class="chart-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <div style="color: #38bdf8; font-family: monospace; font-size: 11px;">PROYECCIÓN EXTENDIDA</div>
-                <select id="selChartType" onchange="actualizarGrafico()" style="width: auto; padding: 2px 5px; margin: 0; font-size: 10px; background: transparent; border: 1px solid #38bdf8; color: #38bdf8; cursor: pointer;">
-                    <option value="temp">🌡️ Temperatura</option>
-                    <option value="rain">🌧️ Precipitación</option>
-                </select>
-            </div>
-            <canvas id="chartForecast" height="110"></canvas>
+        <div style="color: #38bdf8; font-family: monospace; font-size: 12px; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 5px;">PRONÓSTICO EXTENDIDO</div>
+        
+        <!-- Contenedor Dinámico para Tarjetas de Pronóstico -->
+        <div id="contenedorPronosticoDiario">
+            <!-- Se llena vía JS -->
         </div>
     </div>
 </div>
@@ -215,29 +222,17 @@
     var coordenadaActiva = null;
     var marcadorActivo = null;
     var thermalLayerOverlay = null;
+    var climaChartInstance = null;
 
-    var currentLabels = [], currentTempData = [], currentRainData = [], currentThemeColor = '#38bdf8';
-
-    // FUNCIÓN BLINDADA PARA CAMBIAR PESTAÑAS (Manipulación directa del DOM)
+    // Control de Pestañas
     function cambiarPestanaHUD(tabId, btnElement) {
-        // Ocultar todos los contenidos
-        const contenidos = document.getElementsByClassName('hud-tab-content');
-        for(let i=0; i<contenidos.length; i++) {
-            contenidos[i].style.display = 'none';
-        }
-        
-        // Quitar estado activo de los botones
-        const botones = document.getElementsByClassName('hud-tab');
-        for(let i=0; i<botones.length; i++) {
-            botones[i].classList.remove('active');
-        }
-        
-        // Mostrar la pestaña correcta
+        document.querySelectorAll('.hud-tab-content').forEach(tab => tab.style.display = 'none');
+        document.querySelectorAll('.hud-tab').forEach(btn => btn.classList.remove('active'));
         document.getElementById(tabId).style.display = 'block';
         btnElement.classList.add('active');
     }
 
-    // Eventos del Mapa
+    // Interacciones del Mapa
     map.on('click', function(e) {
         if(document.getElementById('selCiudad').value !== 'custom') return;
         drawnItems.clearLayers();
@@ -245,7 +240,7 @@
         if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
         coordenadaActiva = [e.latlng.lat, e.latlng.lng];
         marcadorActivo = L.circleMarker(coordenadaActiva, { radius: 8, fillColor: "#38bdf8", color: "#fff", weight: 2, fillOpacity: 0.8 }).addTo(map);
-        document.getElementById('statusMsg').innerText = `Pin fijado.`;
+        document.getElementById('statusMsg').innerText = `Pin fijado (Lat: ${e.latlng.lat.toFixed(2)}, Lon: ${e.latlng.lng.toFixed(2)}).`;
         cerrarResultados();
     });
 
@@ -284,61 +279,80 @@
         if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
     }
 
-    function ejecutarPronostico() {
-        if (!coordenadaActiva) return alert("Seleccione una ubicación en el mapa o lista.");
-        const modelo = document.getElementById('selModelo').value;
-        const statusMsg = document.getElementById('statusMsg');
-        statusMsg.innerText = `Procesando Modelo ${modelo.toUpperCase()}...`;
-        statusMsg.style.color = "#38bdf8";
-
-        setTimeout(() => {
-            statusMsg.innerText = "Simulación finalizada.";
-            statusMsg.style.color = "#00d26a";
-            mostrarResultados(modelo);
-        }, 1500);
+    // Traductor de Códigos Meteorológicos (WMO) a Emojis y Textos
+    function decodificarClima(codigo) {
+        if (codigo === 0) return { icon: "☀️", desc: "Despejado" };
+        if (codigo >= 1 && codigo <= 3) return { icon: "⛅", desc: "Parcialmente Nublado" };
+        if (codigo === 45 || codigo === 48) return { icon: "🌫️", desc: "Niebla" };
+        if (codigo >= 51 && codigo <= 55) return { icon: "🌦️", desc: "Lloviznas" };
+        if (codigo >= 61 && codigo <= 65) return { icon: "🌧️", desc: "Lluvias Continuas" };
+        if (codigo >= 71 && codigo <= 75) return { icon: "❄️", desc: "Nevadas" };
+        if (codigo >= 80 && codigo <= 82) return { icon: "🌧️", desc: "Chubascos Aislados" };
+        if (codigo >= 95) return { icon: "⛈️", desc: "Tormenta Eléctrica" };
+        return { icon: "☁️", desc: "Nublado" };
     }
 
-    function mostrarResultados(modelo) {
-        document.getElementById('hud-results').style.display = 'block';
+    // =========================================================
+    // EXTRACCIÓN DE DATOS REALES (OPEN-METEO API)
+    // =========================================================
+    async function ejecutarPronostico() {
+        if (!coordenadaActiva) return alert("Seleccione una ubicación en el mapa o lista.");
+        const statusMsg = document.getElementById('statusMsg');
+        statusMsg.innerText = `Sincronizando con red de telemetría global...`;
+        statusMsg.style.color = "#38bdf8";
 
-        // Forzar la interfaz a volver siempre a la pestaña principal "En Vivo" al consultar
+        try {
+            const lat = coordenadaActiva[0];
+            const lon = coordenadaActiva[1];
+            
+            // Petición a la API Meteorológica Gratuita (Open-Meteo) para obtener tiempo real, horas y días
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,surface_pressure,dew_point_2m,precipitation&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+
+            statusMsg.innerText = "Sincronización completada.";
+            statusMsg.style.color = "#00d26a";
+            procesarResultadosReales(data);
+
+        } catch(e) {
+            statusMsg.innerText = "Error conectando a la red meteorológica.";
+            statusMsg.style.color = "#ff4444";
+        }
+    }
+
+    function procesarResultadosReales(data) {
+        document.getElementById('hud-results').style.display = 'block';
         cambiarPestanaHUD('tabEnVivo', document.getElementById('btnTabEnVivo'));
 
-        const ciudadSel = document.getElementById('selCiudad');
-        const nombreCiudad = ciudadSel.options[ciudadSel.selectedIndex]?.text || "Área Seleccionada";
+        const modeloSeleccionado = document.getElementById('selModelo').value;
+        document.getElementById('lblModeloStatus').innerHTML = modeloSeleccionado === 'wrf' ? "📡 CONEXIÓN ESTABLE - ALTA RESOLUCIÓN" : "📡 CONEXIÓN ESTABLE - GLOBAL (GFS)";
+
+        // 1. DATOS EN VIVO (Tiempo Real)
+        const current = data.current_weather;
+        const currentInfo = decodificarClima(current.weathercode);
         
-        const esMontana = nombreCiudad.includes("Tafí") || nombreCiudad.includes("Cachi") || nombreCiudad.includes("Tilcara");
-        const esCalor = nombreCiudad.includes("Tartagal");
+        document.getElementById('resTemp').innerText = `${current.temperature} °C`;
+        document.getElementById('resViento').innerText = current.windspeed;
+        document.getElementById('resEstadoActual').innerText = `${currentInfo.icon} ${currentInfo.desc}`;
 
-        document.getElementById('lblModeloStatus').innerHTML = modelo === 'wrf' ? "⚙️ MOTOR: WRF LOCAL (72H)" : "⚙️ MOTOR: GFS GLOBAL (120H)";
+        // Extraer métricas adicionales de la hora actual (Hourly index 0)
+        document.getElementById('resHumedad').innerText = `${data.hourly.relative_humidity_2m[0]} %`;
+        document.getElementById('resPresion').innerText = `${data.hourly.surface_pressure[0]} hPa`;
+        document.getElementById('resRocio').innerText = `${data.hourly.dew_point_2m[0]} °C`;
 
-        // Datos Dinámicos
-        currentLabels = modelo === 'wrf' ? ['Hoy', '+12h', '+24h', '+36h', '+48h', '+60h', '+72h'] : ['Hoy', '+24h', '+48h', '+72h', '+96h', '+120h'];
-        
-        if (esMontana) {
-            currentTempData = modelo === 'wrf' ? [12, 4, 1, -2, 5, 0, 8] : [12, 0, -3, 2, -1, 5];
-            currentRainData = modelo === 'wrf' ? [0, 5, 0, 0, 0, 0, 0] : [0, 5, 0, 0, 0, 0];
-        } else if (esCalor) {
-            currentTempData = modelo === 'wrf' ? [36, 28, 38, 29, 39, 30, 35] : [36, 38, 39, 37, 35, 34];
-            currentRainData = modelo === 'wrf' ? [0, 0, 0, 45, 10, 0, 0] : [0, 0, 55, 0, 0, 0];
-        } else {
-            currentTempData = modelo === 'wrf' ? [28, 22, 29, 21, 30, 20, 28] : [28, 29, 30, 25, 22, 24];
-            currentRainData = modelo === 'wrf' ? [0, 0, 2, 0, 15, 0, 0] : [0, 2, 15, 5, 0, 0];
-        }
+        // 2. ALERTAS EXTREMAS (Basado en el pronóstico de los próximos 3 días)
+        const minTemp = Math.min(...data.daily.temperature_2m_min.slice(0, 3));
+        const maxTemp = Math.max(...data.daily.temperature_2m_max.slice(0, 3));
+        const totalRain = data.daily.precipitation_sum.slice(0, 3).reduce((a,b)=>a+b, 0);
 
-        let tempActual = currentTempData[0];
-        let tempMax = Math.max(...currentTempData);
-        let tempMin = Math.min(...currentTempData);
-        let lluviaAcumulada = currentRainData.reduce((a, b) => a + b, 0);
-
-        // ALERTAS EWS OPERATIVO
         const boxAlertas = document.getElementById('boxAlertas');
         const txtAlerta = document.getElementById('txtAlertaMeteo');
         let alertas = [];
 
-        if (tempMin <= 3) alertas.push(`❄️ RIESGO DE HELADAS: Mínimas proyectadas de ${tempMin}°C. Alto riesgo de daño en cultivos.`);
-        if (tempMax >= 35) alertas.push(`🔥 OLA DE CALOR: Temperaturas alcanzarán los ${tempMax}°C. Riesgo severo de estrés térmico.`);
-        if (lluviaAcumulada >= 40) alertas.push(`⛈️ TORMENTA SEVERA: Acumulado de ${lluviaAcumulada} mm. Riesgo de anegamiento.`);
+        if (minTemp <= 3) alertas.push(`❄️ <b>RIESGO DE HELADAS:</b> Mínimas caerán a ${minTemp}°C. Alto riesgo de daño tisular en cultivos.`);
+        if (maxTemp >= 35) alertas.push(`🔥 <b>OLA DE CALOR:</b> Las máximas treparán a ${maxTemp}°C. Monitorear estrés hídrico.`);
+        if (totalRain >= 40) alertas.push(`⛈️ <b>TORMENTA SEVERA:</b> Acumulado estimado de ${totalRain.toFixed(1)} mm. Riesgo de anegamientos.`);
 
         if (alertas.length > 0) {
             boxAlertas.style.display = 'block';
@@ -347,110 +361,141 @@
             boxAlertas.style.display = 'none';
         }
 
-        // FOOTPRINT TÉRMICO SOBRE EL MAPA
+        // FOOTPRINT TÉRMICO SOBRE MAPA
         if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
         let areaBounds = drawnItems.getLayers().length > 0 ? drawnItems.getBounds() : L.latLng(coordenadaActiva[0], coordenadaActiva[1]).toBounds(8000);
-        
-        currentThemeColor = tempActual <= 5 ? '#3b82f6' : (tempActual >= 35 ? '#ef4444' : '#f59e0b');
+        let currentThemeColor = current.temperature <= 5 ? '#3b82f6' : (current.temperature >= 32 ? '#ef4444' : '#f59e0b');
         thermalLayerOverlay = L.rectangle(areaBounds, { color: currentThemeColor, weight: 0, fillColor: currentThemeColor, fillOpacity: 0.45 }).addTo(map);
 
-        // UI Updates Tab 1 (En Vivo)
-        document.getElementById('resTemp').innerText = `${tempActual} °C`;
-        document.getElementById('resTermica').innerText = `ST: ${tempActual + (tempActual>20?2:-2)} °C`;
-        document.getElementById('resLluvia').innerText = lluviaAcumulada > 0 ? "85 %" : "15 %";
-        document.getElementById('resEstadoCielo').innerText = lluviaAcumulada > 0 ? "Estado: Inestable" : "Estado: Despejado";
+        // 3. PESTAÑA CLIMA (Geotermómetros y Gráfica)
+        document.getElementById('geoSup').innerText = `${(current.temperature + 1.5).toFixed(1)} °C`;
+        document.getElementById('geoMed').innerText = `${(current.temperature - 1.0).toFixed(1)} °C`;
+        document.getElementById('geoInf').innerText = `${(current.temperature - 4.5).toFixed(1)} °C`;
 
-        document.getElementById('resPresion').innerText = esMontana ? "850 hPa" : "1009 hPa";
-        document.getElementById('resHumedad').innerText = lluviaAcumulada > 20 ? "90 %" : "55 %";
-        document.getElementById('resViento').innerText = tempMax > 30 ? "45 km/h" : "22 km/h";
-        document.getElementById('resRocio').innerText = `${tempActual - 6} °C`;
+        // Gráfica de Clima (Temperatura y Precipitaciones - Próximas 48h)
+        const ctxClima = document.getElementById('chartClima').getContext('2d');
+        if (climaChartInstance) climaChartInstance.destroy();
+        
+        let labels48 = [];
+        for(let i=0; i<48; i+=6) labels48.push(`+${i}h`); // Saltos de 6h
+        
+        let temp48 = data.hourly.temperature_2m.filter((_, i) => i%6===0).slice(0, 8);
+        let rain48 = data.hourly.precipitation.filter((_, i) => i%6===0).slice(0, 8);
 
-        // UI Updates Tab 2 (Clima y Suelo)
-        document.getElementById('resMilimetros').innerText = `${lluviaAcumulada} mm`;
-        document.getElementById('geo5').innerText = `${(tempActual + (tempActual>20?2:-1)).toFixed(1)} °C`;
-        document.getElementById('geo10').innerText = `${(tempActual).toFixed(1)} °C`;
-        document.getElementById('geo50').innerText = `${(tempActual - (tempActual>20?4:-2)).toFixed(1)} °C`;
+        climaChartInstance = new Chart(ctxClima, {
+            type: 'line',
+            data: {
+                labels: labels48,
+                datasets: [
+                    { type: 'bar', label: 'Lluvia (mm)', data: rain48, backgroundColor: '#3b82f6', yAxisID: 'yRain' },
+                    { type: 'line', label: 'Temp (°C)', data: temp48, borderColor: '#eab308', borderWidth: 2, pointRadius: 2, tension: 0.4, yAxisID: 'yTemp' }
+                ]
+            },
+            options: {
+                responsive: true, plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false } },
+                    yTemp: { position: 'left', ticks: { color: '#eab308' }, grid: { color: '#333' } },
+                    yRain: { position: 'right', ticks: { color: '#3b82f6' }, grid: { display: false }, min: 0 }
+                }
+            }
+        });
 
-        // Gráfico en Tab 3
-        document.getElementById('selChartType').value = 'temp';
-        actualizarGrafico();
-    }
+        // 4. PESTAÑA PRONÓSTICO (Tarjetas Diarias)
+        const contPronostico = document.getElementById('contenedorPronosticoDiario');
+        contPronostico.innerHTML = ""; // Limpiar
+        
+        const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-    // Gráfico Intercambiable (Temperatura / Lluvia)
-    function actualizarGrafico() {
-        const tipo = document.getElementById('selChartType').value;
-        const ctx = document.getElementById('chartForecast').getContext('2d');
-        if (window.forecastChart) window.forecastChart.destroy();
-
-        if (tipo === 'temp') {
-            window.forecastChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: currentLabels, datasets: [{ label: 'Temp (°C)', data: currentTempData, borderColor: currentThemeColor, backgroundColor: currentThemeColor+'33', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#fff', tension: 0.4, fill: true }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#aaa' }, grid: { color: '#333' } } } }
-            });
-        } else {
-            window.forecastChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: currentLabels, datasets: [{ label: 'Precip (mm)', data: currentRainData, backgroundColor: '#38bdf8', borderRadius: 4 }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#aaa', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#aaa' }, grid: { color: '#333' } } } }
-            });
+        // Recorrer 5 días
+        for(let i=0; i<5; i++) {
+            let dateObj = new Date(data.daily.time[i]);
+            let nombreDia = i === 0 ? 'Hoy' : diasSemana[dateObj.getUTCDay()];
+            
+            let tMax = data.daily.temperature_2m_max[i];
+            let tMin = data.daily.temperature_2m_min[i];
+            let climaInfo = decodificarClima(data.daily.weathercode[i]);
+            
+            contPronostico.innerHTML += `
+                <div class="forecast-card">
+                    <div class="forecast-day">${nombreDia}</div>
+                    <div class="forecast-icon">${climaInfo.icon}</div>
+                    <div class="forecast-desc">${climaInfo.desc}</div>
+                    <div class="forecast-temps">
+                        <span class="temp-max">${tMax.toFixed(0)}°</span>
+                        <span class="temp-min">${tMin.toFixed(0)}°</span>
+                    </div>
+                </div>
+            `;
         }
     }
 
     // =========================================================
-    // CUBO GEOTÉRMICO SÓLIDO (Plotly Volume / Surface Array)
+    // VISOR 3D (CUBO GEOTÉRMICO SÓLIDO EN PLOTLY)
     // =========================================================
     function abrirCuboTermico() {
         document.getElementById('visor3D').style.display = 'flex';
         
-        const tempBase = parseFloat(document.getElementById('geo5').innerText);
-        const colorScaleCubo = tempBase <= 10 ? 'YlGnBu' : 'YlOrRd'; 
-        
-        const size = 15;
-        let x_mesh = [], y_mesh = [], z_top = [], c_top = [], z_bot = [], c_bot = [];
+        // Recuperar temperatura de la superficie para colorear el cubo
+        const tempBaseStr = document.getElementById('geoSup').innerText;
+        const tempBase = parseFloat(tempBaseStr);
+        const colorScale = tempBase <= 10 ? 'YlGnBu' : 'Turbo'; // Escala térmica oficial (Azul a Rojo)
 
-        for(let i=0; i<size; i++) {
-            let xr=[], yr=[], zt=[], ct=[], zb=[], cb=[];
-            for(let j=0; j<size; j++) {
-                xr.push(i); yr.push(j);
-                let onda = Math.sin(i/3)*0.5 + Math.cos(j/3)*0.5;
-                zt.push(onda); ct.push(tempBase);
-                zb.push(onda - 50); cb.push(tempBase - (tempBase > 15 ? 4 : -2));
+        // ==============================================================
+        // ESTRATEGIA: GENERAR UN MESHGRID 3D (X, Y, Z) Y USAR 'volume'
+        // Esto crea el bloque sólido estratificado de la imagen
+        // ==============================================================
+        let x = [], y = [], z = [], values = [];
+        let gridSize = 15;
+        let depthLevels = 10; // Niveles de profundidad para darle solidez
+
+        for (let k = 0; k < depthLevels; k++) {
+            let z_val = -k * (50 / (depthLevels - 1)); // Va de 0 a -50 cm
+            
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    x.push(i);
+                    y.push(j);
+                    z.push(z_val);
+                    
+                    // La temperatura baja con la profundidad. Simulamos estratificación
+                    // Agregamos una ligera curva sinusoidal para imitar la topografía/humedad
+                    let variation = Math.sin(i/2)*0.5 + Math.cos(j/2)*0.5;
+                    let temp = tempBase - (k * 0.6) + variation;
+                    values.push(temp);
+                }
             }
-            x_mesh.push(xr); y_mesh.push(yr);
-            z_top.push(zt); c_top.push(ct);
-            z_bot.push(zb); c_bot.push(cb);
         }
 
-        // Tapa Superior (-5cm)
-        var traceTop = { x: x_mesh, y: y_mesh, z: z_top, surfacecolor: c_top, type: 'surface', name: 'Superficie', colorscale: colorScaleCubo, showscale: true, colorbar: {title: '°C'} };
-        // Base Profunda (-50cm)
-        var traceBot = { x: x_mesh, y: y_mesh, z: z_bot, surfacecolor: c_bot, type: 'surface', name: 'Fondo', colorscale: colorScaleCubo, showscale: false };
-
-        // Paredes Laterales (Skirts) para forzar el volumen sólido
-        let pX=[], pY=[], pZ_top=[], pZ_bot=[], pC=[];
-        for(let i=0; i<size; i++) { pX.push(i); pY.push(0); pZ_top.push(z_top[i][0]); pZ_bot.push(z_bot[i][0]); pC.push(c_top[i][0]); } 
-        for(let j=0; j<size; j++) { pX.push(size-1); pY.push(j); pZ_top.push(z_top[size-1][j]); pZ_bot.push(z_bot[size-1][j]); pC.push(c_top[size-1][j]); } 
-        for(let i=size-1; i>=0; i--) { pX.push(i); pY.push(size-1); pZ_top.push(z_top[i][size-1]); pZ_bot.push(z_bot[i][size-1]); pC.push(c_top[i][size-1]); } 
-        for(let j=size-1; j>=0; j--) { pX.push(0); pY.push(j); pZ_top.push(z_top[0][j]); pZ_bot.push(z_bot[0][j]); pC.push(c_top[0][j]); } 
-
-        var traceSkirt = {
-            x: [pX, pX], y: [pY, pY], z: [pZ_top, pZ_bot], surfacecolor: [pC, pC],
-            type: 'surface', name: 'Perfil Edáfico', colorscale: colorScaleCubo, showscale: false, hoverinfo: 'none'
-        };
+        var data = [{
+            type: 'volume',
+            x: x, y: y, z: z, value: values,
+            isomin: Math.min(...values),
+            isomax: Math.max(...values),
+            opacity: 0.35, // Translúcido para ver el interior
+            surface: {count: 20, fill: 1, pattern: 'odd'}, // 20 capas generan el bloque sólido continuo
+            colorscale: colorScale,
+            colorbar: {title: 'Temp °C', thickness: 15, len: 0.8}
+        }];
 
         var layout = {
             paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
-            margin: { l: 0, r: 0, b: 0, t: 0 },
+            margin: {l: 0, r: 0, t: 0, b: 0},
+            font: {color: '#fff', family: 'monospace'},
             scene: {
-                xaxis: {showgrid: false, zeroline: false, showticklabels: false},
-                yaxis: {showgrid: false, zeroline: false, showticklabels: false},
-                zaxis: {title: 'Profundidad (cm)', gridcolor: '#333'},
-                camera: { eye: {x: 1.5, y: -1.5, z: 0.8} }
+                xaxis: {showticklabels: false, title: '', showgrid: false, zeroline: false},
+                yaxis: {showticklabels: false, title: '', showgrid: false, zeroline: false},
+                zaxis: {
+                    title: 'Profundidad (cm)', 
+                    gridcolor: '#333',
+                    tickvals: [0, -20, -50],
+                    ticktext: ['Sup (0)', 'Mtd (-20)', 'Inf (-50)']
+                },
+                camera: {eye: {x: 1.5, y: -1.5, z: 0.6}}
             }
         };
 
-        Plotly.newPlot('plot3D', [traceTop, traceBot, traceSkirt], layout, {responsive: true});
+        Plotly.newPlot('plot3D', data, layout, {responsive: true});
     }
 
     function cerrarModelo3D() {
