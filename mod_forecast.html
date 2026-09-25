@@ -1,64 +1,1027 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MetricPoint - Pronóstico</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;color:#fff;font-family:Segoe UI,Tahoma,sans-serif}#map{position:absolute;inset:0}.panel{position:absolute;z-index:1000;top:20px;width:360px;max-height:calc(100% - 40px);overflow:auto;padding:22px;background:rgba(10,15,25,.94);border:1px solid #556;border-radius:8px;box-shadow:0 10px 40px #000}.left{left:20px}.right{right:20px;width:440px;display:none}h2{margin:0 0 18px;font:24px monospace;border-bottom:1px solid #445;padding-bottom:10px}label{display:block;margin:13px 0 6px;color:#ccc;font:700 13px monospace;text-transform:uppercase}select,button{width:100%;padding:12px;border-radius:4px;font:700 14px monospace}select{background:#000;color:#eab308;border:1px solid #667}button{border:0;cursor:pointer}.run{margin-top:18px;background:#38bdf8;color:#00131d}.close{position:absolute;right:12px;top:10px;width:auto;padding:3px;background:none;color:#aaa;font-size:22px}.badge{display:inline-block;margin:5px 0 18px;padding:7px 10px;border:1px solid #38bdf8;color:#38bdf8;font:13px monospace}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card,.box{padding:14px;margin-bottom:12px;background:rgba(0,0,0,.5);border:1px solid #445;border-radius:6px}.card{text-align:center}.card h4{margin:0;color:#ccc;font:13px monospace}.value{margin:8px 0;color:#eab308;font:bold 28px monospace}.row{display:flex;justify-content:space-between;border-bottom:1px solid #334;padding:9px 0;font-family:monospace}.row b{color:#eab308}.tabs{margin-bottom:15px}.tabs select{color:#fff;border-color:#38bdf8}.view{display:none}.view.active{display:block}.section{margin:15px 0 8px;color:#38bdf8;border-bottom:1px solid #445;padding-bottom:5px;font:700 13px monospace}.forecast{display:flex;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid #334;font-family:monospace}.forecast .day{width:52px;color:#38bdf8}.forecast .icon{font-size:23px}.forecast .desc{flex:1;color:#ddd;font-size:12px}.max{color:#ef4444}.min{color:#60a5fa;margin-left:7px}.lights{display:flex;justify-content:space-between;align-items:center;margin:10px 0;font-family:monospace;font-size:13px}.light{display:inline-block;width:14px;height:14px;margin-left:4px;border-radius:50%;background:#333;opacity:.35}.on.green{background:#22c55e;opacity:1;box-shadow:0 0 10px #22c55e}.on.yellow{background:#eab308;opacity:1;box-shadow:0 0 10px #eab308}.on.red{background:#ef4444;opacity:1;box-shadow:0 0 10px #ef4444}.chart{height:220px}.three{background:#000;color:#eab308;border:1px solid #eab308;margin-top:15px}.error{color:#f87171}.ok{color:#22c55e}@media(max-width:900px){.panel{width:calc(100% - 30px);left:15px;right:15px;top:15px}.right{top:auto;bottom:15px;max-height:55%}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetricPoint - Weather Forecast OS</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #111;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #mapFull {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .hud-panel {
+            position: absolute;
+            z-index: 1000;
+            background: rgba(10, 15, 25, 0.92);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.95);
+            max-height: 95%;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .hud-panel::-webkit-scrollbar { width: 6px; }
+        .hud-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 3px; }
+
+        #hud-controls { top: 20px; left: 20px; width: 380px; }
+        #hud-results { top: 20px; right: 20px; width: 450px; display: none; }
+
+        h2 {
+            margin: 0 0 15px 0;
+            font-family: monospace;
+            font-size: 24px;
+            letter-spacing: 1px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #ccc;
+            text-transform: uppercase;
+            font-family: monospace;
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            background: rgba(0,0,0,0.8);
+            color: #eab308;
+            border: 1px solid #555;
+            padding: 12px;
+            margin-bottom: 18px;
+            font-family: monospace;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+
+        select:focus { border-color: #38bdf8; outline: none; }
+
+        .btn-run {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+            color: #00131d;
+        }
+
+        .btn-run:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+        }
+
+        .btn-3d {
+            background: transparent;
+            border: 2px solid #eab308;
+            color: #eab308;
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .btn-3d:hover { background: rgba(234, 179, 8, 0.2); }
+
+        .selector-vista-box {
+            background: rgba(56, 189, 248, 0.08);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #38bdf8;
+            margin-bottom: 20px;
+        }
+
+        .selector-vista-box label {
+            color: #38bdf8;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .selector-vista-box select {
+            margin-bottom: 0;
+            border-color: #38bdf8;
+            background: #000;
+            color: #fff;
+        }
+
+        .scifi-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+            font-size: 15px;
+            align-items: center;
+        }
+
+        .scifi-label { color: #ddd; font-family: monospace; font-weight: bold; }
+        .scifi-val {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 18px;
+            color: #eab308;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .weather-card {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #444;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .weather-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #ccc;
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+
+        .weather-card .val {
+            font-size: 32px;
+            font-weight: bold;
+            color: #eab308;
+            margin: 5px 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .chart-box {
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .radar-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            background: rgba(56, 189, 248, 0.2);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 999px;
+        }
+
+        .semaforo-box {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .semaforo-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .semaforo-row:last-child { margin-bottom: 0; }
+
+        .luces { display: flex; gap: 6px; }
+
+        .luz {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #222;
+            border: 1px solid #555;
+            opacity: 0.3;
+            transition: 0.3s;
+        }
+
+        .luz.verde.activa { background: #22c55e; border-color: #22c55e; opacity: 1; box-shadow: 0 0 12px #22c55e; }
+        .luz.amarilla.activa { background: #eab308; border-color: #eab308; opacity: 1; box-shadow: 0 0 12px #eab308; }
+        .luz.roja.activa { background: #ef4444; border-color: #ef4444; opacity: 1; box-shadow: 0 0 12px #ef4444; }
+
+        .txt-alerta {
+            font-size: 13px;
+            color: #fff;
+            margin-top: 10px;
+            border-top: 1px solid #444;
+            padding-top: 10px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .forecast-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .forecast-day {
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 15px;
+            color: #38bdf8;
+            width: 60px;
+        }
+
+        .forecast-icon { font-size: 28px; text-align: center; width: 50px; }
+        .forecast-desc {
+            flex-grow: 1;
+            padding: 0 10px;
+            font-size: 14px;
+            color: #ddd;
+            line-height: 1.3;
+            font-weight: bold;
+        }
+
+        .forecast-temps {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: right;
+        }
+
+        .temp-max { color: #ef4444; }
+        .temp-min { color: #3b82f6; margin-left: 10px; }
+
+        #btn-close-res {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #btn-close-res:hover { color: #fff; }
+
+        #visor3D {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #plot3D {
+            width: 85%;
+            height: 85%;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(234, 179, 8, 0.2);
+        }
+
+        #btn-close-3d {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .vista-contenido { display: none; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
-<div id="map"></div>
-<div class="panel left">
-<h2>[ WEATHER FORECAST ]</h2>
-<div style="color:#bbb;font:13px monospace">Agrometeorología de precisión</div>
-<label>Ubicación</label>
-<select id="location" onchange="selectLocation()">
-<option value="custom">📍 Seleccionar en el mapa</option>
-<option value="-26.8241,-65.2226">San Miguel de Tucumán</option>
-<option value="-26.8525,-65.7102">Tafí del Valle</option>
-<option value="-27.3400,-65.5960">Concepción</option>
-<option value="-24.7821,-65.4232">Salta Capital</option>
-<option value="-26.0730,-65.9761">Cafayate</option>
-<option value="-25.1205,-66.1654">Cachi</option>
-<option value="-22.5165,-63.8013">Tartagal</option>
-<option value="-24.1946,-65.2971">San Salvador de Jujuy</option>
-<option value="-23.5776,-65.3509">Tilcara</option>
-</select>
-<label>Visualización</label>
-<select id="range"><option value="72">Pronóstico 72 horas</option><option value="120">Pronóstico 120 horas</option></select>
-<div id="status" style="margin-top:15px;padding:10px;background:#ffffff12;font:13px monospace">Elija una ciudad o haga clic en el mapa.</div>
-<button class="run" id="run" onclick="loadWeather()">📡 OBTENER TELEMETRÍA REAL</button>
+
+<div id="mapFull"></div>
+
+<div id="visor3D">
+    <button id="btn-close-3d" onclick="cerrarModelo3D()">CERRAR VISOR 3D</button>
+    <h3 style="color: #eab308; margin-bottom: 20px; font-size: 22px;">MODELO DIGITAL 3D (Estratificación Térmica)</h3>
+    <div id="plot3D"></div>
 </div>
-<div class="panel right" id="results">
-<button class="close" onclick="closeResults()">×</button>
-<h3>DIAGNÓSTICO METEOROLÓGICO</h3><div class="badge" id="source">ESPERANDO DATOS</div>
-<div class="tabs"><select onchange="showView(this.value)"><option value="live">🔴 Tiempo real</option><option value="climate">🌱 Clima y suelo</option><option value="forecast">📅 Pronóstico y alertas</option></select></div>
-<div id="live" class="view active"><div class="grid"><div class="card"><h4>TEMP. ACTUAL</h4><div class="value" id="temp">--</div><div id="condition">--</div></div><div class="card"><h4>PROB. LLUVIA</h4><div class="value" id="rainprob">--</div><div id="wind">Viento: --</div></div></div><div class="section">MÉTRICAS INSTANTÁNEAS</div><div class="row">Humedad <b id="humidity">--</b></div><div class="row">Presión <b id="pressure">--</b></div><div class="row">Punto de rocío <b id="dew">--</b></div></div>
-<div id="climate" class="view"><div class="box chart"><canvas id="chart"></canvas></div><div class="section">TEMPERATURA DEL SUELO</div><div class="row">Superficie (0 cm) <b id="soil0">--</b></div><div class="row">Zona radicular (18 cm) <b id="soil18">--</b></div><div class="row">Profunda (54 cm) <b id="soil54">--</b></div></div>
-<div id="forecast" class="view"><div class="box"><div class="lights">Frío / heladas <span><i id="coldg" class="light green"></i><i id="coldy" class="light yellow"></i><i id="coldr" class="light red"></i></span></div><div class="lights">Estrés por calor <span><i id="heatg" class="light green"></i><i id="heaty" class="light yellow"></i><i id="heatr" class="light red"></i></span></div><div class="lights">Precipitaciones <span><i id="raing" class="light green"></i><i id="rainy" class="light yellow"></i><i id="rainr" class="light red"></i></span></div><div id="alerts" style="margin-top:12px;font:12px monospace"></div></div><div class="section">PRONÓSTICO DIARIO</div><div id="days"></div></div>
+
+<div id="hud-controls" class="hud-panel">
+    <h2>[ WEATHER FORECAST ]</h2>
+    <p style="font-size: 13px; color: #bbb; font-family: monospace; margin-top: -10px; margin-bottom: 25px;">Agrometeorología de Precisión</p>
+
+    <label>Ubicación a Consultar:</label>
+    <select id="selCiudad" onchange="manejarSelectorUbicacion()">
+        <option value="custom" selected>📍 Seleccionar o Dibujar en Mapa</option>
+        <optgroup label="Provincia de Tucumán">
+            <option value="-26.8241,-65.2226">San Miguel de Tucumán</option>
+            <option value="-26.8525,-65.7102">Tafí del Valle</option>
+            <option value="-27.3400,-65.5960">Concepción</option>
+        </optgroup>
+        <optgroup label="Provincia de Salta">
+            <option value="-24.7821,-65.4232">Salta Capital</option>
+            <option value="-26.0730,-65.9761">Cafayate</option>
+            <option value="-25.1205,-66.1654">Cachi</option>
+            <option value="-22.5165,-63.8013">Tartagal</option>
+        </optgroup>
+        <optgroup label="Provincia de Jujuy">
+            <option value="-24.1946,-65.2971">San Salvador de Jujuy</option>
+            <option value="-23.5776,-65.3509">Tilcara</option>
+        </optgroup>
+    </select>
+
+    <label style="margin-top: 15px;">Motor de Simulación:</label>
+    <select id="selModelo">
+        <option value="wrf">WRF - Alta Resolución Local (72h)</option>
+        <option value="gfs">GFS - Global Forecast System (120h)</option>
+    </select>
+
+    <p id="statusMsg" style="font-size: 13px; color: #fff; font-family: monospace; margin-bottom: 20px; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 4px;">
+        Haga clic en el mapa o seleccione una ciudad.
+    </p>
+
+    <button class="btn-run" onclick="ejecutarPronostico()">📡 OBTENER TELEMETRÍA REAL</button>
 </div>
+
+<div id="hud-results" class="hud-panel">
+    <button id="btn-close-res" onclick="cerrarResultados()">✖</button>
+    <h3 style="font-size: 20px; color: #fff; margin-bottom: 5px;">DIAGNÓSTICO METEOROLÓGICO</h3>
+    <div class="radar-badge" id="lblModeloStatus">⚙️ ESPERANDO CONEXIÓN...</div>
+
+    <div class="selector-vista-box">
+        <label>SELECCIONAR ÁREA DE VISUALIZACIÓN:</label>
+        <select id="selSeccionPanel" onchange="cambiarSeccionHUD()">
+            <option value="vistaEnVivo">🔴 METEOROLOGÍA EN VIVO (Tiempo Real)</option>
+            <option value="vistaClima">🌱 CLIMA Y SUELO (Sólido 3D e Histórico)</option>
+            <option value="vistaPronostico">📅 PRONÓSTICO Y ALERTAS EXTENDIDAS</option>
+        </select>
+    </div>
+
+    <div id="vistaEnVivo" class="vista-contenido" style="display: block;">
+        <div class="weather-grid">
+            <div class="weather-card">
+                <h4>Temp. Actual</h4>
+                <div class="val" id="resTemp">-- °C</div>
+                <div style="font-size: 14px; color: #aaa;" id="resEstadoActual">Despejado</div>
+            </div>
+            <div class="weather-card">
+                <h4>Prob. Lluvia</h4>
+                <div class="val" id="resLluvia">-- %</div>
+                <div style="font-size: 14px; color: #aaa;" id="resVientoHeader">Viento: -- km/h</div>
+            </div>
+        </div>
+
+        <div style="color: #38bdf8; font-family: monospace; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; font-weight: bold;">
+            MÉTRICAS INSTANTÁNEAS
+        </div>
+
+        <div class="scifi-row">
+            <span class="scifi-label">Humedad Relativa</span>
+            <span class="scifi-val" id="resHumedad">-- %</span>
+        </div>
+        <div class="scifi-row">
+            <span class="scifi-label">Presión Superficial</span>
+            <span class="scifi-val" id="resPresion">-- hPa</span>
+        </div>
+        <div class="scifi-row" style="border-bottom: none;">
+            <span class="scifi-label">Punto de Rocío</span>
+            <span class="scifi-val" id="resRocio">-- °C</span>
+        </div>
+    </div>
+
+    <div id="vistaClima" class="vista-contenido">
+        <div class="chart-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="color: #38bdf8; font-family: monospace; font-size: 13px; font-weight: bold;">CLIMOGRAMA PROYECTADO</div>
+                <select id="selChartClima" onchange="renderizarGraficoClima()" style="width: auto; padding: 2px 5px; margin: 0; font-size: 12px; background: transparent; border: 1px solid #38bdf8; color: #fff;">
+                    <option value="temp">🌡️ Evolución de Temperatura</option>
+                    <option value="rain">🌧️ Evolución de Precipitación</option>
+                </select>
+            </div>
+            <canvas id="chartClimaDinamico" height="120"></canvas>
+        </div>
+
+        <div style="color: #eab308; font-family: monospace; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; font-weight: bold;">
+            GEOTERMÓMETROS Y CONDICIONES DEL SUELO
+        </div>
+
+        <div class="scifi-row"><span class="scifi-label">Superficie Terreno (0 cm)</span><span class="scifi-val" id="geoSup">-- °C</span></div>
+        <div class="scifi-row"><span class="scifi-label">Zona Radicular (-18 cm)</span><span class="scifi-val" id="geoMed">-- °C</span></div>
+        <div class="scifi-row" style="border-bottom: none;"><span class="scifi-label">Reserva Profunda (-54 cm)</span><span class="scifi-val" id="geoInf">-- °C</span></div>
+
+        <button class="btn-3d" onclick="abrirCuboTermico()">🧊 RENDERIZAR CUBO 3D VOLUMÉTRICO</button>
+    </div>
+
+    <div id="vistaPronostico" class="vista-contenido">
+        <div class="semaforo-box">
+            <h4 style="margin: 0 0 15px 0; color: #fca5a5; font-family: monospace; font-size: 14px; text-transform: uppercase; border-bottom: 1px solid #444; padding-bottom: 5px;">
+                🚦 SEMÁFOROS DE RIESGO
+            </h4>
+
+            <div class="semaforo-row">
+                <span class="scifi-label">Heladas / Frío Extremo</span>
+                <div class="luces">
+                    <div id="frio-v" class="luz verde"></div>
+                    <div id="frio-a" class="luz amarilla"></div>
+                    <div id="frio-r" class="luz roja"></div>
+                </div>
+            </div>
+
+            <div class="semaforo-row">
+                <span class="scifi-label">Estrés por Calor</span>
+                <div class="luces">
+                    <div id="calor-v" class="luz verde"></div>
+                    <div id="calor-a" class="luz amarilla"></div>
+                    <div id="calor-r" class="luz roja"></div>
+                </div>
+            </div>
+
+            <div class="semaforo-row">
+                <span class="scifi-label">Tormentas y Precipitaciones</span>
+                <div class="luces">
+                    <div id="lluvia-v" class="luz verde"></div>
+                    <div id="lluvia-a" class="luz amarilla"></div>
+                    <div id="lluvia-r" class="luz roja"></div>
+                </div>
+            </div>
+
+            <div id="txtDetalleAlerta" class="txt-alerta"></div>
+        </div>
+
+        <div style="color: #38bdf8; font-family: monospace; font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 5px; font-weight: bold;">
+            PROYECCIÓN METEOROLÓGICA DIARIA
+        </div>
+
+        <div id="contenedorPronosticoDiario"></div>
+    </div>
+</div>
+
 <script>
-'use strict';
-const map=L.map('map').setView([-26.8241,-65.2226],7);L.control.zoom({position:'bottomright'}).addTo(map);L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18}).addTo(map);L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:18,opacity:.8}).addTo(map);
-let active=null,marker=null,area=null,chart=null;
-function setStatus(text,cls=''){const el=document.getElementById('status');el.textContent=text;el.className=cls}function closeResults(){document.getElementById('results').style.display='none';if(area)map.removeLayer(area)}
-function setPoint(lat,lon){active=[Number(lat),Number(lon)];if(marker)map.removeLayer(marker);marker=L.circleMarker(active,{radius:8,fillColor:'#38bdf8',color:'#fff',weight:2,fillOpacity:.85}).addTo(map)}
-map.on('click',e=>{if(document.getElementById('location').value!=='custom')return;setPoint(e.latlng.lat,e.latlng.lng);setStatus('Pin fijado.');closeResults()});
-function selectLocation(){const v=document.getElementById('location').value;if(v==='custom'){active=null;setStatus('Haga clic en el mapa.');return}const [lat,lon]=v.split(',');setPoint(lat,lon);map.flyTo(active,10,{duration:1});setStatus('Ubicación cargada.');closeResults()}
-function showView(id){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function codeInfo(c){c=Number(c);if(c===0)return['☀️','Despejado'];if(c<=3)return['⛅','Parcialmente nublado'];if(c<=48)return['🌫️','Niebla'];if(c<=55)return['🌦️','Llovizna'];if(c<=65)return['🌧️','Lluvia'];if(c<=75)return['❄️','Nieve'];if(c<=82)return['🌧️','Chubascos'];if(c>=95)return['⛈️','Tormenta'];return['☁️','Nublado']}
-function val(a,i=0,fallback=0){return Number.isFinite(Number(a?.[i]))?Number(a[i]):fallback}
-async function loadWeather(){if(!active){alert('Seleccione una ubicación en el mapa o en la lista.');return}const button=document.getElementById('run');button.disabled=true;setStatus('Consultando Open-Meteo...');try{const p=new URLSearchParams({latitude:active[0].toFixed(5),longitude:active[1].toFixed(5),current:'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,weather_code,wind_speed_10m',hourly:'temperature_2m,relative_humidity_2m,surface_pressure,dew_point_2m,precipitation,precipitation_probability,soil_temperature_0cm,soil_temperature_18cm,soil_temperature_54cm',daily:'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum',forecast_days:'7',timezone:'auto'});const url='https://api.open-meteo.com/v1/forecast?'+p;const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),15000);let response;try{response=await fetch(url,{signal:controller.signal,cache:'no-store'})}finally{clearTimeout(timeout)}if(!response.ok){let detail='';try{detail=await response.text()}catch(_){}throw new Error(`Open-Meteo HTTP ${response.status}${detail?': '+detail.slice(0,160):''}`)}const data=await response.json();if(!data.current||!data.hourly||!data.daily)throw new Error('Respuesta incompleta de Open-Meteo');render(data);setStatus('Sincronización completada. Datos reales recibidos.','ok')}catch(e){console.error('Pronóstico:',e);const reason=e.name==='AbortError'?'tiempo de espera agotado':e.message||'fallo de red';setStatus(`Error de conexión: ${reason}. Si usas file://, abre el archivo mediante HTTPS o un servidor local.`,'error')}finally{button.disabled=false}}
-function render(d){const c=d.current,h=d.hourly,day=d.daily;const info=codeInfo(c.weather_code);document.getElementById('results').style.display='block';document.getElementById('source').textContent='📡 OPEN-METEO · DATOS EN VIVO';document.getElementById('temp').textContent=val([c.temperature_2m],0).toFixed(1)+' °C';document.getElementById('condition').textContent=info[0]+' '+info[1];document.getElementById('rainprob').textContent=val(h.precipitation_probability).toFixed(0)+' %';document.getElementById('wind').textContent='Viento: '+val([c.wind_speed_10m]).toFixed(0)+' km/h';document.getElementById('humidity').textContent=val([c.relative_humidity_2m]).toFixed(0)+' %';document.getElementById('pressure').textContent=val(h.surface_pressure).toFixed(0)+' hPa';document.getElementById('dew').textContent=val(h.dew_point_2m).toFixed(1)+' °C';document.getElementById('soil0').textContent=val(h.soil_temperature_0cm,val(h.time,0,0)).toFixed(1)+' °C';document.getElementById('soil18').textContent=val(h.soil_temperature_18cm).toFixed(1)+' °C';document.getElementById('soil54').textContent=val(h.soil_temperature_54cm).toFixed(1)+' °C';
-const limit=Math.min(Number(document.getElementById('range').value),h.time.length),labels=[],temps=[],rain=[];for(let i=0;i<limit;i+=6){labels.push(new Date(h.time[i]).toLocaleString('es',{weekday:'short',hour:'2-digit',minute:'2-digit'}));temps.push(val(h.temperature_2m,i));rain.push(val(h.precipitation,i))}if(chart)chart.destroy();chart=new Chart(document.getElementById('chart'),{type:'line',data:{labels,datasets:[{label:'Temperatura °C',data:temps,borderColor:'#eab308',backgroundColor:'#eab30833',fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#ccc'}},y:{ticks:{color:'#ccc'}}}}});
-['coldg','coldy','coldr','heatg','heaty','heatr','raing','rainy','rainr'].forEach(id=>document.getElementById(id).classList.remove('on'));const min=Math.min(...day.temperature_2m_min.slice(0,3).map(Number)),max=Math.max(...day.temperature_2m_max.slice(0,3).map(Number)),total=day.precipitation_sum.slice(0,3).reduce((a,b)=>a+Number(b||0),0),alerts=[];if(min<=3){coldr.classList.add('on');alerts.push('❄️ Riesgo de heladas')}else if(min<=8){coldy.classList.add('on');alerts.push('🥶 Frío riesgoso')}else coldg.classList.add('on');if(max>=35){heatr.classList.add('on');alerts.push('🔥 Calor severo')}else if(max>=30){heaty.classList.add('on');alerts.push('☀️ Temperaturas elevadas')}else heatg.classList.add('on');if(total>=40){rainr.classList.add('on');alerts.push('⛈️ Lluvia intensa')}else if(total>=15){rainy.classList.add('on');alerts.push('🌧️ Lluvia moderada')}else raing.classList.add('on');document.getElementById('alerts').innerHTML=alerts.length?alerts.join('<br>'):'✅ Condiciones normales';document.getElementById('days').innerHTML=day.time.slice(0,5).map((date,i)=>{const x=codeInfo(day.weather_code[i]);return `<div class="forecast"><span class="day">${i?'':'HOY'}</span><span class="icon">${x[0]}</span><span class="desc">${x[1]}</span><span class="max">${Number(day.temperature_2m_max[i]).toFixed(0)}°</span><span class="min">${Number(day.temperature_2m_min[i]).toFixed(0)}°</span></div>`}).join('')}
+    var map = L.map('mapFull', { zoomControl: false }).setView([-26.8241, -65.2226], 7);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 18, opacity: 0.8 }).addTo(map);
+
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+        position: 'bottomright',
+        draw: {
+            polyline: false,
+            polygon: true,
+            circle: false,
+            rectangle: true,
+            marker: false,
+            circlemarker: false
+        },
+        edit: { featureGroup: drawnItems }
+    });
+
+    map.addControl(drawControl);
+
+    var coordenadaActiva = null;
+    var marcadorActivo = null;
+    var thermalLayerOverlay = null;
+    var climaChartInstance = null;
+
+    var realLabels = [];
+    var realTempData = [];
+    var realRainData = [];
+
+    function cambiarSeccionHUD() {
+        const vistaSeleccionada = document.getElementById('selSeccionPanel').value;
+        document.getElementById('vistaEnVivo').style.display = 'none';
+        document.getElementById('vistaClima').style.display = 'none';
+        document.getElementById('vistaPronostico').style.display = 'none';
+        document.getElementById(vistaSeleccionada).style.display = 'block';
+    }
+
+    map.on('click', function (e) {
+        if (document.getElementById('selCiudad').value !== 'custom') return;
+
+        drawnItems.clearLayers();
+        if (marcadorActivo) map.removeLayer(marcadorActivo);
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
+
+        coordenadaActiva = [e.latlng.lat, e.latlng.lng];
+        marcadorActivo = L.circleMarker(coordenadaActiva, {
+            radius: 8,
+            fillColor: "#38bdf8",
+            color: "#fff",
+            weight: 2,
+            fillOpacity: 0.8
+        }).addTo(map);
+
+        document.getElementById('statusMsg').innerText = "Pin fijado.";
+        cerrarResultados();
+    });
+
+    map.on(L.Draw.Event.CREATED, function (event) {
+        document.getElementById('selCiudad').value = 'custom';
+        drawnItems.clearLayers();
+
+        if (marcadorActivo) map.removeLayer(marcadorActivo);
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
+
+        drawnItems.addLayer(event.layer);
+        coordenadaActiva = [event.layer.getBounds().getCenter().lat, event.layer.getBounds().getCenter().lng];
+        document.getElementById('statusMsg').innerText = "Área delimitada.";
+        cerrarResultados();
+    });
+
+    function manejarSelectorUbicacion() {
+        const val = document.getElementById('selCiudad').value;
+        drawnItems.clearLayers();
+
+        if (marcadorActivo) map.removeLayer(marcadorActivo);
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
+
+        if (val === 'custom') {
+            coordenadaActiva = null;
+            document.getElementById('statusMsg').innerText = "Haga clic en el mapa.";
+            return;
+        }
+
+        coordenadaActiva = val.split(',').map(Number);
+        marcadorActivo = L.circleMarker(coordenadaActiva, {
+            radius: 8,
+            fillColor: "#38bdf8",
+            color: "#fff",
+            weight: 2,
+            fillOpacity: 0.8
+        }).addTo(map);
+
+        map.flyTo(coordenadaActiva, 10, { duration: 1.5 });
+        document.getElementById('statusMsg').innerText = "Ubicación cargada.";
+        cerrarResultados();
+    }
+
+    function cerrarResultados() {
+        document.getElementById('hud-results').style.display = 'none';
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
+    }
+
+    function decodificarClima(codigo) {
+        const valor = Number(codigo ?? 0);
+
+        if (valor === 0) return { icon: "☀️", desc: "Despejado" };
+        if (valor >= 1 && valor <= 3) return { icon: "⛅", desc: "Parc. Nublado" };
+        if (valor === 45 || valor === 48) return { icon: "🌫️", desc: "Niebla" };
+        if (valor >= 51 && valor <= 55) return { icon: "🌦️", desc: "Lloviznas" };
+        if (valor >= 61 && valor <= 65) return { icon: "🌧️", desc: "Lluvias" };
+        if (valor >= 71 && valor <= 75) return { icon: "❄️", desc: "Nevadas" };
+        if (valor >= 80 && valor <= 82) return { icon: "🌧️", desc: "Chubascos" };
+        if (valor >= 95) return { icon: "⛈️", desc: "Tormentas" };
+        return { icon: "☁️", desc: "Nublado" };
+    }
+
+    async function ejecutarPronostico() {
+        if (!coordenadaActiva) {
+            alert("Seleccione una ubicación en el mapa o lista.");
+            return;
+        }
+
+        const statusMsg = document.getElementById('statusMsg');
+        statusMsg.innerText = "Sincronizando con red meteorológica global...";
+        statusMsg.style.color = "#38bdf8";
+
+        try {
+            const [lat, lon] = coordenadaActiva;
+
+            const params = new URLSearchParams({
+                latitude: String(lat),
+                longitude: String(lon),
+                current_weather: "true",
+                hourly: [
+                    "temperature_2m",
+                    "relative_humidity_2m",
+                    "surface_pressure",
+                    "dew_point_2m",
+                    "precipitation",
+                    "precipitation_probability",
+                    "soil_temperature_0cm",
+                    "soil_temperature_18cm",
+                    "soil_temperature_54cm"
+                ].join(","),
+                daily: [
+                    "weathercode",
+                    "temperature_2m_max",
+                    "temperature_2m_min",
+                    "precipitation_sum"
+                ].join(","),
+                timezone: "auto"
+            });
+
+            const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
+            console.log("Open-Meteo URL:", url);
+
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 15000);
+
+            let response;
+            try {
+                response = await fetch(url, {
+                    method: "GET",
+                    cache: "no-store",
+                    signal: controller.signal
+                });
+            } finally {
+                clearTimeout(timeout);
+            }
+
+            if (!response.ok) {
+                const txt = await response.text();
+                throw new Error(`Open-Meteo respondió ${response.status}: ${txt}`);
+            }
+
+            const data = await response.json();
+
+            if (!data || !data.current_weather || !data.hourly || !data.daily) {
+                throw new Error("La respuesta de Open-Meteo no contiene los datos esperados.");
+            }
+
+            statusMsg.innerText = "Sincronización completada. Datos reales recibidos.";
+            statusMsg.style.color = "#00d26a";
+            procesarResultadosReales(data);
+
+        } catch (e) {
+            console.error("Error completo del módulo meteorológico:", e);
+            const reason = e.name === "AbortError" ? "tiempo de espera agotado" : e.message;
+            statusMsg.innerText = `Error real: ${reason}. Si lo abres como file://, usa localhost o HTTPS.`;
+            statusMsg.style.color = "#ef4444";
+        }
+    }
+
+    function apagarSemaforos() {
+        document.querySelectorAll('.luz').forEach(l => l.classList.remove('activa'));
+    }
+
+    function procesarResultadosReales(data) {
+        document.getElementById('hud-results').style.display = 'block';
+
+        document.getElementById('selSeccionPanel').value = 'vistaEnVivo';
+        cambiarSeccionHUD();
+
+        const modeloSeleccionado = document.getElementById('selModelo').value;
+        document.getElementById('lblModeloStatus').innerHTML =
+            modeloSeleccionado === 'wrf'
+                ? "📡 CONEXIÓN ACTIVA - ALTA RESOLUCIÓN"
+                : "📡 CONEXIÓN ACTIVA - GLOBAL (GFS)";
+
+        const current = data.current_weather || {};
+        const hourly = data.hourly || {};
+        const daily = data.daily || {};
+
+        const currentTemp = Number(current.temperature ?? current.temperature_2m ?? hourly.temperature_2m?.[0] ?? 0);
+        const windSpeed = Number(current.windspeed ?? current.wind_speed_10m ?? 0);
+        const weatherCode = Number(current.weathercode ?? current.weather_code ?? hourly.weathercode?.[0] ?? 0);
+        const probLluvia = Number(hourly.precipitation_probability?.[0] ?? 0);
+
+        const currentInfo = decodificarClima(weatherCode);
+
+        document.getElementById('resTemp').innerText = `${currentTemp.toFixed(1)} °C`;
+        document.getElementById('resVientoHeader').innerText = `Viento: ${windSpeed.toFixed(0)} km/h`;
+        document.getElementById('resEstadoActual').innerText = `${currentInfo.icon} ${currentInfo.desc}`;
+        document.getElementById('resLluvia').innerText = `${probLluvia.toFixed(0)} %`;
+
+        const humedad = Number(hourly.relative_humidity_2m?.[0] ?? 0);
+        const presion = Number(hourly.surface_pressure?.[0] ?? 0);
+        const rocio = Number(hourly.dew_point_2m?.[0] ?? 0);
+
+        document.getElementById('resHumedad').innerText = `${humedad.toFixed(0)} %`;
+        document.getElementById('resPresion').innerText = `${presion.toFixed(0)} hPa`;
+        document.getElementById('resRocio').innerText = `${rocio.toFixed(1)} °C`;
+
+        let tSup = Number(hourly.soil_temperature_0cm?.[0] ?? currentTemp + 1.5);
+        let tMed = Number(hourly.soil_temperature_18cm?.[0] ?? currentTemp - 1.0);
+        let tInf = Number(hourly.soil_temperature_54cm?.[0] ?? currentTemp - 4.5);
+
+        document.getElementById('geoSup').innerText = `${tSup.toFixed(1)} °C`;
+        document.getElementById('geoMed').innerText = `${tMed.toFixed(1)} °C`;
+        document.getElementById('geoInf').innerText = `${tInf.toFixed(1)} °C`;
+
+        let horasRequeridas = modeloSeleccionado === 'wrf' ? 72 : 120;
+        let saltos = modeloSeleccionado === 'wrf' ? 6 : 12;
+
+        realLabels = [];
+        realTempData = [];
+        realRainData = [];
+
+        const maxIndices = Math.min(
+            horasRequeridas,
+            (hourly.time || []).length,
+            (hourly.temperature_2m || []).length,
+            (hourly.precipitation || []).length
+        );
+
+        for (let i = 0; i < maxIndices; i += saltos) {
+            const fechaHora = new Date(hourly.time[i]);
+            const hora = fechaHora.getHours().toString().padStart(2, '0');
+            realLabels.push(`${hora}:00`);
+            realTempData.push(Number(hourly.temperature_2m[i] ?? 0));
+            realRainData.push(Number(hourly.precipitation[i] ?? 0));
+        }
+
+        document.getElementById('selChartClima').value = 'temp';
+        renderizarGraficoClima();
+
+        if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
+
+        const areaBounds = drawnItems.getLayers().length > 0
+            ? drawnItems.getBounds()
+            : L.latLng(coordenadaActiva[0], coordenadaActiva[1]).toBounds(8000);
+
+        const currentThemeColor = currentTemp <= 5 ? '#3b82f6' : (currentTemp >= 32 ? '#ef4444' : '#eab308');
+        thermalLayerOverlay = L.rectangle(areaBounds, {
+            color: currentThemeColor,
+            weight: 0,
+            fillColor: currentThemeColor,
+            fillOpacity: 0.45
+        }).addTo(map);
+
+        apagarSemaforos();
+        let mensajes = [];
+        const txtDetalle = document.getElementById('txtDetalleAlerta');
+
+        const minTempArray = Array.isArray(daily.temperature_2m_min)
+            ? daily.temperature_2m_min.slice(0, 3).map(v => Number(v ?? 0))
+            : [0, 0, 0];
+
+        const maxTempArray = Array.isArray(daily.temperature_2m_max)
+            ? daily.temperature_2m_max.slice(0, 3).map(v => Number(v ?? 0))
+            : [0, 0, 0];
+
+        const rainArray = Array.isArray(daily.precipitation_sum)
+            ? daily.precipitation_sum.slice(0, 3).map(v => Number(v ?? 0))
+            : [0, 0, 0];
+
+        const minTemp = Math.min(...minTempArray);
+        const maxTemp = Math.max(...maxTempArray);
+        const totalRain = rainArray.reduce((a, b) => a + b, 0);
+
+        if (minTemp <= 3) {
+            document.getElementById('frio-r').classList.add('activa');
+            mensajes.push(`❄️ Riesgo crítico de heladas (${minTemp.toFixed(1)}°C).`);
+        } else if (minTemp <= 8) {
+            document.getElementById('frio-a').classList.add('activa');
+            mensajes.push(`🥶 Descenso térmico riesgoso (${minTemp.toFixed(1)}°C).`);
+        } else {
+            document.getElementById('frio-v').classList.add('activa');
+        }
+
+        if (maxTemp >= 35) {
+            document.getElementById('calor-r').classList.add('activa');
+            mensajes.push(`🔥 Ola de calor severa (${maxTemp.toFixed(1)}°C).`);
+        } else if (maxTemp >= 30) {
+            document.getElementById('calor-a').classList.add('activa');
+            mensajes.push(`☀️ Temperaturas elevadas (${maxTemp.toFixed(1)}°C).`);
+        } else {
+            document.getElementById('calor-v').classList.add('activa');
+        }
+
+        if (totalRain >= 40) {
+            document.getElementById('lluvia-r').classList.add('activa');
+            mensajes.push(`⛈️ Tormentas intensas. Acumulado proyectado: ${totalRain.toFixed(1)}mm.`);
+        } else if (totalRain >= 15) {
+            document.getElementById('lluvia-a').classList.add('activa');
+            mensajes.push(`🌧️ Precipitaciones moderadas (${totalRain.toFixed(1)}mm).`);
+        } else {
+            document.getElementById('lluvia-v').classList.add('activa');
+        }
+
+        if (mensajes.length > 0) {
+            txtDetalle.style.display = 'block';
+            txtDetalle.style.color = "#fff";
+            txtDetalle.innerHTML = mensajes.join('<br>');
+        } else {
+            txtDetalle.style.display = 'block';
+            txtDetalle.style.color = "#22c55e";
+            txtDetalle.innerHTML = "✅ Condiciones meteorológicas dentro de parámetros normales.";
+        }
+
+        const contPronostico = document.getElementById('contenedorPronosticoDiario');
+        contPronostico.innerHTML = "";
+        const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+        for (let i = 0; i < 5; i++) {
+            const dateObj = new Date((daily.time || [])[i] || new Date());
+            const nombreDia = i === 0 ? 'HOY' : diasSemana[dateObj.getUTCDay()] || 'DÍA';
+
+            const tMax = Number((daily.temperature_2m_max || [])[i] ?? 0);
+            const tMin = Number((daily.temperature_2m_min || [])[i] ?? 0);
+            const climaInfo = decodificarClima((daily.weathercode || daily.weather_code || [])[i] ?? 0);
+
+            contPronostico.innerHTML += `
+                <div class="forecast-card">
+                    <div class="forecast-day">${nombreDia}</div>
+                    <div class="forecast-icon">${climaInfo.icon}</div>
+                    <div class="forecast-desc">${climaInfo.desc}</div>
+                    <div class="forecast-temps">
+                        <span class="temp-max">${tMax.toFixed(0)}°</span>
+                        <span class="temp-min">${tMin.toFixed(0)}°</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function renderizarGraficoClima() {
+        const tipo = document.getElementById('selChartClima').value;
+        const canvas = document.getElementById('chartClimaDinamico');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+
+        if (climaChartInstance) climaChartInstance.destroy();
+
+        if (tipo === 'temp') {
+            climaChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: realLabels,
+                    datasets: [{
+                        label: 'Temp (°C)',
+                        data: realTempData,
+                        borderColor: '#eab308',
+                        backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } },
+                            grid: { color: 'rgba(255,255,255,0.08)' }
+                        }
+                    }
+                }
+            });
+        } else {
+            climaChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: realLabels,
+                    datasets: [{
+                        label: 'Precip (mm)',
+                        data: realRainData,
+                        backgroundColor: '#38bdf8',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } },
+                            grid: { color: 'rgba(255,255,255,0.08)' }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function abrirCuboTermico() {
+        if (typeof Plotly === 'undefined') {
+            alert('Plotly no está cargado.');
+            return;
+        }
+
+        const valorGeoSup = parseFloat(document.getElementById('geoSup').innerText);
+        const temp_hoy = Number.isFinite(valorGeoSup) ? valorGeoSup : 0;
+
+        let x_grid = [], y_grid = [], z_grid = [], val_grid = [];
+        let size = 15;
+        let gradiente_z = 0.6;
+
+        for (let k = 0; k < size; k++) {
+            let z = -3 + k * (3 / (size - 1));
+            for (let j = 0; j < size; j++) {
+                let y = j * (10 / (size - 1));
+                for (let i = 0; i < size; i++) {
+                    let x = i * (10 / (size - 1));
+                    x_grid.push(x);
+                    y_grid.push(y);
+                    z_grid.push(z);
+
+                    let temp = temp_hoy + (z * gradiente_z) + (Math.sin(x) * 0.3) + (Math.cos(y) * 0.3);
+                    val_grid.push(temp);
+                }
+            }
+        }
+
+        var trace = {
+            type: 'volume',
+            x: x_grid,
+            y: y_grid,
+            z: z_grid,
+            value: val_grid,
+            isomin: temp_hoy - 4,
+            isomax: temp_hoy + 1,
+            opacity: 0.4,
+            surface: { count: 20 },
+            colorscale: 'Turbo',
+            colorbar: { title: 'Temp °C', tickfont: { color: 'white', size: 14 } }
+        };
+
+        var layout = {
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            margin: { l: 0, r: 0, t: 0, b: 0 },
+            font: { color: '#fff', family: 'monospace' },
+            scene: {
+                xaxis: { showticklabels: false, title: '', showgrid: false, zeroline: false },
+                yaxis: { showticklabels: false, title: '', showgrid: false, zeroline: false },
+                zaxis: {
+                    title: 'Profundidad Edáfica',
+                    gridcolor: '#334155',
+                    tickvals: [-3, -1.5, 0],
+                    ticktext: ['Inf (-54cm)', 'Mtd (-18cm)', 'Sup (0cm)'],
+                    color: "white"
+                },
+                aspectratio: { x: 1, y: 1, z: 0.7 },
+                camera: { eye: { x: 1.5, y: -1.5, z: 0.5 } }
+            }
+        };
+
+        document.getElementById('visor3D').style.display = 'flex';
+        Plotly.newPlot('plot3D', [trace], layout, { responsive: true });
+    }
+
+    function cerrarModelo3D() {
+        document.getElementById('visor3D').style.display = 'none';
+        if (typeof Plotly !== 'undefined') {
+            Plotly.purge('plot3D');
+        }
+    }
 </script>
 </body>
 </html>
