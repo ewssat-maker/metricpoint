@@ -37,8 +37,8 @@
         .login-box h1 { color: #08306b; margin-top: 0; margin-bottom: 5px; font-size: 28px; }
         .login-box p { font-size: 14px; color: #666; margin-bottom: 30px; }
         .login-box label { font-weight: 600; font-size: 13px; color: #333; display: block; margin-top: 15px; margin-bottom: 5px; }
-        .login-box input[type="email"], .login-box input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
-        .login-box input:focus { border-color: #08306b; outline: none; }
+        .login-box input[type="email"], .login-box input[type="password"], .login-box input[type="text"], .login-box input[type="number"], .login-box input[type="tel"], .login-box select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
+        .login-box input:focus, .login-box select:focus { border-color: #08306b; outline: none; }
         
         .legal-check { display: flex; align-items: flex-start; margin-top: 15px; gap: 8px; }
         .legal-check input { margin-top: 3px; cursor: pointer; }
@@ -53,6 +53,10 @@
         .divider { display: flex; align-items: center; text-align: center; margin: 20px 0; }
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
         .divider span { padding: 0 10px; color: #888; font-size: 13px; }
+
+        /* SCROLL PERSONALIZADO PARA REGISTRO */
+        #registerFormContainer::-webkit-scrollbar { width: 6px; }
+        #registerFormContainer::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 10px; }
 
         /* MODALES LEGALES */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; }
@@ -158,33 +162,15 @@
         /* ==========================================
            4. ESTILOS HYDRO ALERTAS
            ========================================== */
-        .hydro-cmd-btn {
-            background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-size: 14px; flex-grow: 1; justify-content: center;
-        }
-        .hydro-cmd-btn.active {
-            background: #0f172a; color: #38bdf8; border-color: #0f172a; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-        .hydro-cmd-btn:hover:not(.active) {
-            background: #e2e8f0; color: #0f172a;
-        }
+        .hydro-cmd-btn { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; font-size: 14px; flex-grow: 1; justify-content: center; }
+        .hydro-cmd-btn.active { background: #0f172a; color: #38bdf8; border-color: #0f172a; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .hydro-cmd-btn:hover:not(.active) { background: #e2e8f0; color: #0f172a; }
         
-        .alert-history-item {
-            background: #1e293b; padding: 12px; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 8px; font-size: 13px; color: #cbd5e1;
-        }
-        .alert-history-time {
-            font-weight: bold; color: #94a3b8; display: block; margin-bottom: 4px; font-size: 11px; font-family: monospace;
-        }
+        .alert-history-item { background: #1e293b; padding: 12px; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 8px; font-size: 13px; color: #cbd5e1; }
+        .alert-history-time { font-weight: bold; color: #94a3b8; display: block; margin-bottom: 4px; font-size: 11px; font-family: monospace; }
 
-        @keyframes flashRed {
-            0% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; }
-            50% { background-color: #ffe4e6; box-shadow: 0 0 20px #ef4444; }
-            100% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; }
-        }
-        .alert-active {
-            background: #fef2f2 !important;
-            border-color: #ef4444 !important;
-            animation: flashRed 2s infinite;
-        }
+        @keyframes flashRed { 0% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; } 50% { background-color: #ffe4e6; box-shadow: 0 0 20px #ef4444; } 100% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; } }
+        .alert-active { background: #fef2f2 !important; border-color: #ef4444 !important; animation: flashRed 2s infinite; }
 
         /* ==========================================
            DISEÑO RESPONSIVO (COMPUTADORA Y CELULAR)
@@ -248,6 +234,11 @@
                 <p data-i18n="legal_p3">La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.</p>
                 <h4 data-i18n="legal_h3">3. Uso y Licencias</h4>
                 <p data-i18n="legal_p4">El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.</p>
+                <!-- NUEVAS CLÁUSULAS -->
+                <h4 data-i18n="legal_h4">4. Limitación de Responsabilidad</h4>
+                <p data-i18n="legal_p5">En ningún caso MetricPoint, sus desarrolladores o afiliados serán responsables por daños directos, indirectos, lucro cesante, pérdida de cosechas, fallas en sistemas de riego, o daños derivados de decisiones agronómicas o comerciales tomadas basándose en la información provista por la Plataforma.</p>
+                <h4 data-i18n="legal_h5">5. Ley Aplicable y Jurisdicción (Foro)</h4>
+                <p data-i18n="legal_p6">Estos Términos y Condiciones se regirán e interpretarán de acuerdo con las leyes del Estado de Nueva York, Estados Unidos de América. Cualquier disputa, controversia o litigio que surja en relación con la Plataforma será sometido a la jurisdicción exclusiva de los tribunales estatales y federales ubicados en el Condado de Nueva York, Nueva York.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn-close-modal" onclick="cerrarTyC()" data-i18n="btn_close">Cerrar</button>
@@ -264,11 +255,11 @@
             </div>
             <div class="modal-body">
                 <h4 data-i18n="priv_h1">1. Información que recopilamos</h4>
-                <p data-i18n="priv_p1">Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para calcular los balances hídricos.</p>
+                <p data-i18n="priv_p1">Recopilamos su información corporativa, correo electrónico (con contraseña cifrada en hash) y las coordenadas geoespaciales (polígonos) de los lotes analizados para calcular los balances hídricos. Los historiales de consultas, coordenadas agrícolas y diagnósticos financieros son procesados y almacenados utilizando cifrado de grado militar. La Plataforma opera con una arquitectura donde sus datos son inaccesibles en texto plano para los administradores.</p>
                 <h4 data-i18n="priv_h2">2. Compartición con Terceros</h4>
                 <p data-i18n="priv_p2">MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.</p>
                 <h4 data-i18n="priv_h3">3. Derechos del Usuario</h4>
-                <p data-i18n="priv_p3">En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.</p>
+                <p data-i18n="priv_p3">En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta corporativa, perfil y polígonos cifrados contactando al administrador del sistema en cualquier momento.</p>
             </div>
             <div class="modal-footer">
                 <button class="btn-close-modal" onclick="cerrarPrivacidad()" data-i18n="btn_close">Cerrar</button>
@@ -291,7 +282,9 @@
             </div>
 
             <div class="auth-right">
-                <div class="login-box">
+                
+                <!-- CONTENEDOR LOGIN -->
+                <div id="loginFormContainer" class="login-box">
                     <h1>Suite MetricPoint</h1>
                     <p data-i18n="login_desc">Precision Agrometeorology. Enter your credentials.</p>
                     
@@ -301,22 +294,79 @@
                     <label data-i18n="lbl_pass">Password</label>
                     <input type="password" id="authPassword" placeholder="••••••••">
 
-                    <div class="legal-check">
-                        <input type="checkbox" id="chkLegal">
-                        <label for="chkLegal">
-                            <span data-i18n="lbl_read">I have read and accept the </span> 
-                            <a onclick="abrirTyC()" data-i18n="lbl_tyc">Terms and Conditions</a>
-                            <span data-i18n="lbl_and"> and the </span>
-                            <a onclick="abrirPrivacidad()" data-i18n="lbl_priv">Privacy Policy</a>
-                        </label>
-                    </div>
-                    
                     <button class="btn-auth-primary" onclick="hacerLogin()" data-i18n="btn_login">Sign In</button>
                     <div class="divider"><span data-i18n="lbl_or">or</span></div>
-                    <button class="btn-auth-secondary" onclick="hacerRegistro()" data-i18n="btn_trial">Create Account (48-Hour Free Trial)</button>
+                    <button class="btn-auth-secondary" onclick="mostrarRegistro()" data-i18n="btn_trial">Create Corporate Account</button>
                     
-                    <p id="authStatus" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
+                    <p id="authStatusLogin" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
                 </div>
+
+                <!-- CONTENEDOR REGISTRO CORPORATIVO -->
+                <div id="registerFormContainer" class="login-box" style="display:none; padding: 20px 10px; max-height: 90vh; overflow-y: auto;">
+                    <h1 style="font-size: 24px;" data-i18n="reg_title">Crear Cuenta Corporativa</h1>
+                    
+                    <h3 style="color:#08306b; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:5px; margin-top:20px;" data-i18n="reg_sec1">1. Información Corporativa y Fiscal</h3>
+                    
+                    <label data-i18n="reg_razon">Razón Social (Empresa):</label>
+                    <input type="text" id="regRazon">
+                    
+                    <label data-i18n="reg_cuit">Identificación Tributaria (CUIT / Tax ID):</label>
+                    <input type="text" id="regCuit" data-i18n="ph_cuit" placeholder="Sin guiones">
+                    
+                    <label data-i18n="reg_domicilio">Domicilio Legal / Fiscal:</label>
+                    <input type="text" id="regDomicilio">
+
+                    <h3 style="color:#08306b; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:5px; margin-top:20px;" data-i18n="reg_sec2">2. Contacto Autorizado</h3>
+                    
+                    <label data-i18n="reg_nombre">Nombre y Apellido Completo:</label>
+                    <input type="text" id="regNombre">
+                    
+                    <label data-i18n="reg_cargo">Cargo (Ej: Ing. Agrónomo):</label>
+                    <input type="text" id="regCargo">
+                    
+                    <label data-i18n="reg_tel">Teléfono (Con código de país):</label>
+                    <input type="tel" id="regTel">
+                    
+                    <label data-i18n="lbl_email">Correo Electrónico Corporativo:</label>
+                    <input type="email" id="regEmail">
+                    
+                    <label data-i18n="lbl_pass">Contraseña de Acceso:</label>
+                    <input type="password" id="regPassword">
+
+                    <h3 style="color:#08306b; font-size:14px; border-bottom:1px solid #ccc; padding-bottom:5px; margin-top:20px;" data-i18n="reg_sec3">3. Perfil Operativo (Calibración)</h3>
+                    
+                    <label data-i18n="reg_coord">Coordenadas del Lote (Latitud, Longitud):</label>
+                    <input type="text" id="regCoord" data-i18n="ph_coord" placeholder="Ej: -26.83, -65.22">
+                    
+                    <label data-i18n="reg_hec">Superficie Total (Hectáreas):</label>
+                    <input type="number" id="regHectareas">
+                    
+                    <label data-i18n="reg_crop">Cultivo Principal:</label>
+                    <select id="regCultivo">
+                        <option value="soja" data-i18n="crop_soy">Soja / Maíz</option>
+                        <option value="citrus" data-i18n="crop_citrus">Citrus (Limón)</option>
+                        <option value="cana" data-i18n="crop_sugarcane">Caña de Azúcar</option>
+                        <option value="acuicultura" data-i18n="crop_aqua">Acuicultura</option>
+                        <option value="otro" data-i18n="crop_other">Otro</option>
+                    </select>
+
+                    <div class="legal-check" style="margin-top:25px; margin-bottom: 20px;">
+                        <input type="checkbox" id="chkLegalReg">
+                        <label for="chkLegalReg">
+                            <span data-i18n="lbl_read">He leído y acepto los </span> 
+                            <a onclick="abrirTyC()" data-i18n="lbl_tyc">Términos y Condiciones</a>
+                            <span data-i18n="lbl_and"> y la </span>
+                            <a onclick="abrirPrivacidad()" data-i18n="lbl_priv">Política de Privacidad</a>
+                            <span data-i18n="lbl_jurisdiction">, sometiéndome a la jurisdicción de Nueva York.</span>
+                        </label>
+                    </div>
+
+                    <button class="btn-auth-primary" onclick="hacerRegistroCorp()" data-i18n="btn_submit_reg" style="margin-top: 0;">Registrar Cuenta Corporativa</button>
+                    <button class="btn-auth-secondary" onclick="mostrarLogin()" data-i18n="btn_back_login">Volver al Inicio de Sesión</button>
+                    
+                    <p id="authStatusReg" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px; padding-bottom: 20px;"></p>
+                </div>
+
             </div>
         </div>
 
@@ -612,7 +662,7 @@
                     <button class="hydro-cmd-btn active" onclick="abrirPestanaHydro('tabHydroAdv', this)" data-i18n="hydro_tab_adv">⚠️ Warnings Panel</button>
                     <button class="hydro-cmd-btn" onclick="abrirPestanaHydro('tabHydroSit', this)" data-i18n="hydro_tab_sit">📊 Current Situation (Basin)</button>
                     <button class="hydro-cmd-btn" onclick="verificarUsoInterno(this)" data-i18n="hydro_tab_admin">⚙️ Internal Use (Admin)</button>
-                    <button class="hydro-cmd-btn" style="border-color: #8b5cf6; color: #6d28d9;" onclick="verificarUsoInternoOraculo(this)">⚙️ Motor Predictivo Híbrido</button>
+                    <button class="hydro-cmd-btn" style="border-color: #8b5cf6; color: #6d28d9;" onclick="verificarUsoInternoOraculo(this)">⚙️️ Motor Predictivo Híbrido</button>
                 </div>
                 
                 <div class="main-content" style="width: 100%;">
@@ -695,7 +745,7 @@
                         </div>
                     </div>
 
-                    <!-- NUEVA PESTAÑA: MOTOR PREDICTIVO HÍBRIDO -->
+                    <!-- PESTAÑA: MOTOR PREDICTIVO HÍBRIDO -->
                     <div id="tabHydroOraculo" class="tab-content">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             
@@ -809,10 +859,20 @@
         const traducciones = {
             en: {
                 "landing_title": "Geospatial Intelligence", "landing_subtitle": "Direct SAR telemetry to your agronomic control center.", "landing_scroll": "▼ Discover MetricPoint's architecture ▼",
-                "login_desc": "Precision Agrometeorology. Enter your credentials.", "lbl_email": "Email Address", "ph_email": "example@company.com", "lbl_pass": "Password", "btn_login": "Sign In", "lbl_or": "or", "btn_trial": "Create Account (48-Hour Free Trial)",
+                "login_desc": "Precision Agrometeorology. Enter your credentials.", "lbl_email": "Email Address", "ph_email": "example@company.com", "lbl_pass": "Password", "btn_login": "Sign In", "lbl_or": "or", "btn_trial": "Create Corporate Account",
+                
+                // NUEVAS TRADUCCIONES FORMULARIO REGISTRO (EN)
+                "reg_title": "Create Corporate Account", "reg_sec1": "1. Corporate & Tax Info", "reg_razon": "Company Name:", "reg_cuit": "Tax ID:", "ph_cuit": "No dashes", "reg_domicilio": "Legal Address:", 
+                "reg_sec2": "2. Authorized Contact", "reg_nombre": "Full Name:", "reg_cargo": "Role (e.g., Agronomist):", "reg_tel": "Phone (with country code):",
+                "reg_sec3": "3. Agrometeorological Profile", "reg_coord": "Lot Coordinates (Lat, Lon):", "ph_coord": "Ex: -26.83, -65.22", "reg_hec": "Total Area (Hectares):", "reg_crop": "Main Crop:",
+                "crop_soy": "Soy / Corn", "crop_citrus": "Citrus (Lemon)", "crop_sugarcane": "Sugarcane", "crop_aqua": "Aquaculture", "crop_other": "Other",
+                "btn_submit_reg": "Register Corporate Account", "btn_back_login": "Back to Login", "lbl_jurisdiction": ", submitting to the jurisdiction of New York.",
+
                 "lbl_read": "I have read and accept the ", "lbl_tyc": "Terms and Conditions", "lbl_and": " and the ", "lbl_priv": "Privacy Policy", "msg_tyc_req": "You must accept the legal terms to register.",
-                "legal_title": "Terms and Conditions of Use", "legal_p1": "By registering, accessing or using the MetricPoint platform, you agree to be bound by these terms.", "legal_h1": "1. Agronomic Disclaimer", "legal_p2": "The Platform provides satellite and radar telemetry tools. You understand that it is strictly a decision assistance tool and does not replace agronomic judgment in the field. MetricPoint assumes no liability for yield losses or crop damage resulting from decisions made based on the platform.", "legal_h2": "2. Third Party Data Sources", "legal_p3": "The architecture is fed by the European Space Agency (Copernicus) and the National Meteorological Service (SMN). We do not guarantee 100% uptime in case of government server crashes.", "legal_h3": "3. Use and Licenses", "legal_p4": "Trial access lasts 48 hours. Web scraping, resale of information or sharing credentials without a commercial license is explicitly prohibited.", "btn_close": "Close",
-                "priv_title": "Privacy Policy", "priv_h1": "1. Information we collect", "priv_p1": "We collect your email (with encrypted password) and the geospatial coordinates (polygons) of the analyzed lots for calculating water balances.", "priv_h2": "2. Sharing with Third Parties", "priv_p2": "MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.", "priv_h3": "3. User Rights", "priv_p3": "In compliance with current regulations, you may request the permanent deletion of your account and polygons by contacting the system administrator.",
+                "legal_title": "Terms and Conditions of Use", "legal_p1": "By registering, accessing or using the MetricPoint platform, you agree to be bound by these terms.", "legal_h1": "1. Agronomic Disclaimer", "legal_p2": "The Platform provides satellite and radar telemetry tools. You understand that it is strictly a decision assistance tool and does not replace agronomic judgment in the field. MetricPoint assumes no liability for yield losses or crop damage resulting from decisions made based on the platform.", "legal_h2": "2. Third Party Data Sources", "legal_p3": "The architecture is fed by the European Space Agency (Copernicus) and the National Meteorological Service (SMN). We do not guarantee 100% uptime in case of government server crashes.", "legal_h3": "3. Use and Licenses", "legal_p4": "Trial access lasts 48 hours. Web scraping, resale of information or sharing credentials without a commercial license is explicitly prohibited.", 
+                "legal_h4": "4. Limitation of Liability", "legal_p5": "In no event shall MetricPoint, its developers or affiliates be liable for direct, indirect, lost profits, crop loss, irrigation system failure, or damages arising from agronomic or business decisions made based on information provided by the Platform.", 
+                "legal_h5": "5. Governing Law and Jurisdiction", "legal_p6": "These Terms and Conditions shall be governed by and construed in accordance with the laws of the State of New York, USA. Any dispute, controversy or litigation arising in connection with the Platform shall be submitted to the exclusive jurisdiction of the state and federal courts located in New York County, New York.", "btn_close": "Close",
+                "priv_title": "Privacy Policy", "priv_h1": "1. Information we collect", "priv_p1": "We collect your corporate information, email (with hashed password) and geospatial coordinates (polygons) of the analyzed lots to calculate water balances. Consultation histories, agricultural coordinates and financial diagnostics are processed and stored using military-grade encryption. The Platform operates with a zero-knowledge architecture.", "priv_h2": "2. Sharing with Third Parties", "priv_p2": "MetricPoint does not sell or trade your data. We send coordinates anonymously to Google Earth Engine and the European Space Agency exclusively for processing SAR images and 3D Models.", "priv_h3": "3. User Rights", "priv_p3": "In compliance with current regulations, you may request the permanent deletion of your corporate account, profile and encrypted polygons by contacting the system administrator at any time.",
                 "tab_intro_who": "Who We Are", "tab_intro_prod": "Our Products", "tab_intro_contact": "Contact Us",
                 "who_title": "MetricPoint: Geospatial Intelligence",
                 "who_p1": "MetricPoint is a cutting-edge AgTech platform specializing in geospatial intelligence and agronomic modeling using SAR satellite technology.",
@@ -845,7 +905,7 @@
                 "hydro_radar_badge": "ACTIVE SATELLITE RADAR",
                 "hydro_history_title": "[ EVENT HISTORY ]",
                 "hydro_no_history": "No events registered in the current session.",
-                "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - TUCUMAN BASIN ]",
+                "hydro_rfs_title": "[ RFS : RIVER Forecast System - TUCUMAN BASIN ]",
                 "hydro_rfs_sub": "Global hydrological flow and flood risk model (GEOGLOWS)",
                 "hydro_admin_title": "⚠️ Emergency Dispatch Console (GOD MODE)",
                 "hydro_admin_desc": "The message drafted here will be sent via SMS to registered contacts and will immediately update the public Warnings panel and the risk map.",
@@ -858,7 +918,7 @@
                 "lbl_climate_data": "Climate Data", "lbl_total_rain": "Total Accumulated Rain:", "lbl_diag": "Agrometeorological Diagnostics",
                 "tab_moist": "Moisture & Vigor", "tab_clim": "Climate & Rain", "tab_3d": "3D Model (Campaign)", "tab_xray": "Spatial X-Ray",
                 "mod2_subtitle": "SINARAME Network - Live Precipitation Echoes", "lbl_layers": "Layer Control", "lbl_layer_desc": "Real-time monitoring of rain echoes using the National Meteorological Service radar network.", "btn_refresh": "Refresh Radar",
-                "msg_auth_err": "Please fill both fields.", "msg_login": "Signing in...", "msg_reg": "Registering...", "msg_err_serv": "Connection error to server.",
+                "msg_auth_err": "Please fill all required fields.", "msg_login": "Signing in...", "msg_reg": "Registering corporate profile...", "msg_err_serv": "Connection error to server.",
                 "diag_base": "During the analyzed campaign (START to END), the lot received an accumulated <strong>RAIN mm</strong> of precipitation. The average atmospheric demand (ET0) remained at <strong>ET0 mm/day</strong>.<br><br>",
                 "diag_def": "The global balance shows a <strong>marked water deficit</strong>, forcing the crop to structurally depend on the edaphic profile. ",
                 "diag_fav": "The global balance shows a <strong>favorable</strong> atmospheric behavior. ",
@@ -870,10 +930,20 @@
             },
             es: {
                 "landing_title": "Inteligencia Geoespacial", "landing_subtitle": "Telemetría SAR directa a su centro de control agronómico.", "landing_scroll": "▼ Descubre la arquitectura de MetricPoint ▼",
-                "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta (48 Horas Gratis)",
+                "login_desc": "Agrometeorología de Precisión. Ingrese sus credenciales.", "lbl_email": "Correo Electrónico", "ph_email": "ejemplo@empresa.com", "lbl_pass": "Contraseña", "btn_login": "Iniciar Sesión", "lbl_or": "o", "btn_trial": "Crear Cuenta Corporativa",
+                
+                // NUEVAS TRADUCCIONES FORMULARIO REGISTRO (ES)
+                "reg_title": "Crear Cuenta Corporativa", "reg_sec1": "1. Información Corporativa y Fiscal", "reg_razon": "Razón Social (Empresa):", "reg_cuit": "Identificación Tributaria (CUIT):", "ph_cuit": "Sin guiones", "reg_domicilio": "Domicilio Legal / Fiscal:", 
+                "reg_sec2": "2. Contacto Autorizado", "reg_nombre": "Nombre y Apellido Completo:", "reg_cargo": "Cargo (Ej: Ing. Agrónomo):", "reg_tel": "Teléfono (Con código de país):",
+                "reg_sec3": "3. Perfil Operativo (Calibración)", "reg_coord": "Coordenadas del Lote (Lat, Lon):", "ph_coord": "Ej: -26.83, -65.22", "reg_hec": "Superficie Total (Hectáreas):", "reg_crop": "Cultivo Principal:",
+                "crop_soy": "Soja / Maíz", "crop_citrus": "Citrus (Limón)", "crop_sugarcane": "Caña de Azúcar", "crop_aqua": "Acuicultura", "crop_other": "Otro",
+                "btn_submit_reg": "Registrar Cuenta Corporativa", "btn_back_login": "Volver al Inicio de Sesión", "lbl_jurisdiction": ", sometiéndome a la jurisdicción de Nueva York.",
+
                 "lbl_read": "He leído y acepto los ", "lbl_tyc": "Términos y Condiciones", "lbl_and": " y la ", "lbl_priv": "Política de Privacidad", "msg_tyc_req": "Debes aceptar los términos legales para registrarte.",
-                "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.", "btn_close": "Cerrar",
-                "priv_title": "Aviso de Privacidad", "priv_h1": "1. Información que recopilamos", "priv_p1": "Recopilamos su correo electrónico (con contraseña cifrada) y las coordenadas geoespaciales (polígonos) de los lotes analizados para el cálculo de balances hídricos.", "priv_h2": "2. Compartición con Terceros", "priv_p2": "MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.", "priv_h3": "3. Derechos del Usuario", "priv_p3": "En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta y polígonos contactando al administrador del sistema.",
+                "legal_title": "Términos y Condiciones de Uso", "legal_p1": "Al registrarse, acceder o utilizar la plataforma MetricPoint, usted acepta estar sujeto a estos términos.", "legal_h1": "1. Descargo de Responsabilidad Agronómica", "legal_p2": "La Plataforma proporciona herramientas de telemetría satelital y radar. Usted comprende que es estrictamente una herramienta de asistencia para la toma de decisiones y no reemplaza el juicio agronómico a campo. MetricPoint no asume ninguna responsabilidad por pérdidas de rendimiento o daños a cultivos resultantes de decisiones tomadas en base a la plataforma.", "legal_h2": "2. Fuentes de Datos de Terceros", "legal_p3": "La arquitectura se nutre de la Agencia Espacial Europea (Copernicus) y el Servicio Meteorológico Nacional (SMN). No garantizamos un uptime del 100% en caso de caídas de servidores gubernamentales.", "legal_h3": "3. Uso y Licencias", "legal_p4": "El acceso Trial dura 48 horas. Se prohíbe explícitamente el web scraping, reventa de información o compartir credenciales sin licencia comercial.",
+                "legal_h4": "4. Limitación de Responsabilidad", "legal_p5": "En ningún caso MetricPoint, sus desarrolladores o afiliados serán responsables por daños directos, indirectos, lucro cesante, pérdida de cosechas, fallas en sistemas de riego, o daños derivados de decisiones agronómicas o comerciales tomadas basándose en la información provista por la Plataforma.", 
+                "legal_h5": "5. Ley Aplicable y Jurisdicción (Foro)", "legal_p6": "Estos Términos y Condiciones se regirán e interpretarán de acuerdo con las leyes del Estado de Nueva York, Estados Unidos de América. Cualquier disputa, controversia o litigio que surja en relación con la Plataforma será sometido a la jurisdicción exclusiva de los tribunales estatales y federales ubicados en el Condado de Nueva York, Nueva York.", "btn_close": "Cerrar",
+                "priv_title": "Aviso de Privacidad", "priv_h1": "1. Información que recopilamos", "priv_p1": "Recopilamos su información corporativa, correo electrónico (con contraseña cifrada en hash) y las coordenadas geoespaciales (polígonos) de los lotes analizados para calcular los balances hídricos. Los historiales de consultas, coordenadas agrícolas y diagnósticos financieros son procesados y almacenados utilizando cifrado de grado militar. La Plataforma opera con una arquitectura donde sus datos son inaccesibles en texto plano para los administradores.", "priv_h2": "2. Compartición con Terceros", "priv_p2": "MetricPoint no vende ni comercializa sus datos. Enviamos coordenadas de forma anónima a Google Earth Engine y la Agencia Espacial Europea exclusivamente para el procesamiento de imágenes SAR y Modelos 3D.", "priv_h3": "3. Derechos del Usuario", "priv_p3": "En cumplimiento con las normativas vigentes, usted puede solicitar la eliminación definitiva de su cuenta corporativa, perfil y polígonos cifrados contactando al administrador del sistema en cualquier momento.",
                 "tab_intro_who": "Quiénes Somos", "tab_intro_prod": "Nuestros Productos", "tab_intro_contact": "Contacto",
                 "who_title": "MetricPoint: Inteligencia Geoespacial",
                 "who_p1": "MetricPoint es una plataforma AgTech de vanguardia especializada en inteligencia geoespacial y modelado agronómico mediante tecnología satelital SAR.",
@@ -922,7 +992,7 @@
                 "lbl_diag": "Diagnóstico Agrometeorológico",
                 "tab_moist": "Humedad y Vigor", "tab_clim": "Clima y Precipitaciones", "tab_3d": "Modelo 3D (Campaña)", "tab_xray": "Spatial X-Ray",
                 "mod2_subtitle": "Red SINARAME - Ecos en Vivo", "lbl_layers": "Control de Capas", "lbl_layer_desc": "Monitoreo en tiempo real de ecos de lluvia sobre la región utilizando el SMN.", "btn_refresh": "Refrescar Radar",
-                "msg_auth_err": "Complete ambos campos.", "msg_login": "Iniciando sesión...", "msg_reg": "Registrando...", "msg_err_serv": "Error de conexión al servidor.",
+                "msg_auth_err": "Complete todos los campos requeridos.", "msg_login": "Iniciando sesión...", "msg_reg": "Registrando perfil corporativo...", "msg_err_serv": "Error de conexión al servidor.",
                 "diag_base": "Durante la campaña analizada (START al END), el lote recibió un acumulado de <strong>RAIN mm</strong> de precipitaciones. La demanda atmosférica promedio (ET0) se mantuvo en <strong>ET0 mm/día</strong>.<br><br>",
                 "diag_def": "El balance global muestra un <strong>déficit hídrico marcado</strong>, obligando al cultivo a depender estructuralmente del perfil edáfico. ",
                 "diag_fav": "El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. ",
@@ -934,7 +1004,21 @@
             },
             pt: {
                 "landing_title": "Inteligência Geoespacial", "landing_subtitle": "Telemetria SAR direta para seu centro de controle agronômico.", "landing_scroll": "▼ Descubra a arquitetura MetricPoint ▼",
-                "login_desc": "Agrometeorologia de Precisão. Insira suas credenciales.",
+                "login_desc": "Agrometeorologia de Precisão. Insira suas credenciais.", "lbl_email": "Correio Eletrônico", "ph_email": "exemplo@empresa.com", "lbl_pass": "Senha", "btn_login": "Entrar", "lbl_or": "ou", "btn_trial": "Criar Conta Corporativa",
+                
+                // NUEVAS TRADUCCIONES FORMULARIO REGISTRO (PT)
+                "reg_title": "Criar Conta Corporativa", "reg_sec1": "1. Informações Corporativas e Fiscais", "reg_razon": "Razão Social (Empresa):", "reg_cuit": "Identificação Tributária (CNPJ/NIF):", "ph_cuit": "Sem traços", "reg_domicilio": "Endereço Legal:", 
+                "reg_sec2": "2. Contato Autorizado", "reg_nombre": "Nome Completo:", "reg_cargo": "Cargo (Ex: Eng. Agrônomo):", "reg_tel": "Telefone (com código de país):",
+                "reg_sec3": "3. Perfil Operacional (Calibração)", "reg_coord": "Coordenadas do Lote (Lat, Lon):", "ph_coord": "Ex: -26.83, -65.22", "reg_hec": "Área Total (Hectares):", "reg_crop": "Cultura Principal:",
+                "crop_soy": "Soja / Milho", "crop_citrus": "Citrus (Limão)", "crop_sugarcane": "Cana-de-açúcar", "crop_aqua": "Aquicultura", "crop_other": "Outro",
+                "btn_submit_reg": "Registrar Conta Corporativa", "btn_back_login": "Voltar ao Login", "lbl_jurisdiction": ", submetendo-me à jurisdição de Nova York.",
+
+                "lbl_read": "Li e aceito os ", "lbl_tyc": "Termos e Condições", "lbl_and": " e a ", "lbl_priv": "Política de Privacidade", "msg_tyc_req": "Você deve aceitar os termos legais para se registrar.",
+                "legal_title": "Termos e Condições de Uso", "legal_p1": "Ao se registrar, acessar ou usar a plataforma MetricPoint, você concorda em ficar vinculado a estes termos.", "legal_h1": "1. Isenção de Responsabilidade Agronômica", "legal_p2": "A Plataforma fornece ferramentas de telemetria de satélite e radar. Você entende que é estritamente uma ferramenta de assistência à decisão e não substitui o julgamento agronômico em campo. MetricPoint não assume nenhuma responsabilidade por perdas de rendimento ou danos às colheitas resultantes de decisões tomadas com base na plataforma.", "legal_h2": "2. Fontes de Dados de Terceiros", "legal_p3": "A arquitetura é alimentada pela Agência Espacial Europeia (Copernicus) e pelo Serviço Meteorológico Nacional (SMN). Não garantimos 100% de tempo de atividade em caso de falhas em servidores governamentais.", "legal_h3": "3. Uso e Licenças", "legal_p4": "O acesso de avaliação dura 48 horas. A extração da web, revenda de informações ou compartilhamento de credenciais sem uma licença comercial é explicitamente proibida.",
+                "legal_h4": "4. Limitação de Responsabilidade", "legal_p5": "Em nenhum caso a MetricPoint, seus desenvolvedores ou afiliados serão responsáveis por danos diretos, indiretos, lucros cessantes, perda de safra, falha no sistema de irrigação ou danos decorrentes de decisões agronômicas ou de negócios tomadas com base nas informações fornecidas pela Plataforma.", 
+                "legal_h5": "5. Lei Aplicável e Jurisdição (Foro)", "legal_p6": "Estes Termos e Condições serão regidos e interpretados de acordo com as leis do Estado de Nova York, EUA. Qualquer disputa, controvérsia ou litígio decorrente em relação à Plataforma será submetido à jurisdição exclusiva dos tribunais estaduais e federais localizados no Condado de Nova York, Nova York.", "btn_close": "Fechar",
+                "priv_title": "Aviso de Privacidade", "priv_h1": "1. Informações que coletamos", "priv_p1": "Coletamos suas informações corporativas, e-mail (com senha criptografada em hash) e coordenadas geoespaciais (polígonos) dos lotes analisados para calcular balanços hídricos. Os históricos de consultas, coordenadas agrícolas e diagnósticos financeiros são processados e armazenados usando criptografia de nível militar. A Plataforma opera com uma arquitetura de conhecimento zero.", "priv_h2": "2. Compartilhamento com Terceiros", "priv_p2": "MetricPoint não vende nem negocia seus dados. Enviamos coordenadas anonimamente para o Google Earth Engine e a Agência Espacial Europeia exclusivamente para o processamento de imagens SAR e Modelos 3D.", "priv_h3": "3. Direitos do Usuário", "priv_p3": "Em conformidade com os regulamentos vigentes, você pode solicitar a exclusão permanente de sua conta corporativa, perfil e polígonos criptografados entrando em contato com o administrador do sistema a qualquer momento.",
+                
                 "hub_subtitle": "Selecione o módulo de análise que deseja usar",
                 "mod_hydro_desc": "Monitoramento hidrológico, alertas precoces de cheias e status da bacia.",
                 "mod_mine_desc": "Auditoria ESG, estresse hídrico em salinas e saúde de áreas úmidas altoandinas.",
@@ -971,7 +1055,8 @@
                 "contact_msg": "Sua Mensagem",
                 "btn_send": "Enviar Mensagem",
                 "wf_title": "WEATHER FORECAST", "wf_subtitle": "Módulo de Assimilação Agrometeorológica", 
-                "support_title": "Suporte MetricPoint", "support_desc": "Canal habilitado para contato, envie-nos sua pergunta.", "support_btn": "Canal de Contato"
+                "support_title": "Suporte MetricPoint", "support_desc": "Canal habilitado para contato, envie-nos sua pergunta.", "support_btn": "Canal de Contato",
+                "msg_auth_err": "Preencha todos os campos obrigatórios.", "msg_login": "Iniciando sessão...", "msg_reg": "Registrando perfil corporativo...", "msg_err_serv": "Erro de conexão com o servidor."
             }
         };
 
@@ -1014,6 +1099,19 @@
         function abrirPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'flex'; }
         function cerrarPrivacidad() { document.getElementById('modalPrivacidad').style.display = 'none'; }
 
+        // FUNCIONES DE TRANSICIÓN LOGIN / REGISTRO
+        function mostrarRegistro() {
+            document.getElementById('loginFormContainer').style.display = 'none';
+            document.getElementById('registerFormContainer').style.display = 'block';
+            document.getElementById('authStatusReg').innerText = '';
+        }
+        
+        function mostrarLogin() {
+            document.getElementById('registerFormContainer').style.display = 'none';
+            document.getElementById('loginFormContainer').style.display = 'block';
+            document.getElementById('authStatusLogin').innerText = '';
+        }
+
         function abrirModulo(moduloId) {
             document.getElementById('dashboardHub').style.display = 'none'; 
             document.getElementById('moduloAgrometeo').style.display = 'none'; 
@@ -1049,25 +1147,53 @@
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
         function getMsg(key) { return traducciones[document.getElementById('langSwitch').value][key] || key; }
 
-        async function hacerRegistro() {
-            const email = document.getElementById("authEmail").value; const password = document.getElementById("authPassword").value; const statusLabel = document.getElementById("authStatus"); const tycChecked = document.getElementById("chkLegal").checked;
-            if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
+        // REGISTRO CORPORATIVO ACTUALIZADO
+        async function hacerRegistroCorp() {
+            const r_social = document.getElementById("regRazon").value;
+            const r_cuit = document.getElementById("regCuit").value;
+            const r_domicilio = document.getElementById("regDomicilio").value;
+            const r_nombre = document.getElementById("regNombre").value;
+            const r_cargo = document.getElementById("regCargo").value;
+            const r_tel = document.getElementById("regTel").value;
+            const r_email = document.getElementById("regEmail").value;
+            const r_password = document.getElementById("regPassword").value;
+            const r_coord = document.getElementById("regCoord").value;
+            const r_hec = document.getElementById("regHectareas").value;
+            const r_cultivo = document.getElementById("regCultivo").value;
+            
+            const tycChecked = document.getElementById("chkLegalReg").checked;
+            const statusLabel = document.getElementById("authStatusReg");
+            
+            if(!r_social || !r_cuit || !r_nombre || !r_email || !r_password || !r_coord || !r_hec) { 
+                statusLabel.innerText = getMsg("msg_auth_err"); return; 
+            }
             if(!tycChecked) { statusLabel.innerText = getMsg("msg_tyc_req"); return; }
+            
             statusLabel.innerText = getMsg("msg_reg");
+            
             try {
-                const res = await fetch(`${BACKEND_URL}/api/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                // Modificado para coincidir con la arquitectura del "Fort Knox" corporativo
+                const payload = { 
+                    razon_social: r_social, cuit: r_cuit, domicilio: r_domicilio,
+                    nombre_contacto: r_nombre, cargo: r_cargo, telefono: r_tel,
+                    email: r_email, password: r_password,
+                    coordenadas: r_coord, hectareas: parseFloat(r_hec), cultivo: r_cultivo
+                };
+
+                const res = await fetch(`${BACKEND_URL}/api/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
+                
                 if(res.ok) { 
                     localStorage.setItem("metric_token", data.token); 
-                    localStorage.setItem("metric_email", email); 
+                    localStorage.setItem("metric_email", r_email); 
                     document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; 
                 } 
-                else { statusLabel.innerText = data.error; }
+                else { statusLabel.innerText = data.error || "Error al registrar cliente corporativo."; }
             } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
         }
 
         async function hacerLogin() {
-            const email = document.getElementById("authEmail").value; const password = document.getElementById("authPassword").value; const statusLabel = document.getElementById("authStatus");
+            const email = document.getElementById("authEmail").value; const password = document.getElementById("authPassword").value; const statusLabel = document.getElementById("authStatusLogin");
             if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
             statusLabel.innerText = getMsg("msg_login");
             try {
@@ -1750,7 +1876,7 @@
                 }
             } catch(e) {
                 status.innerText = "❌ Error de red conectando al servidor XGBoost.";
-                btn.innerText = "▶️ REINTENTAR";
+                btn.innerText = "▶️️ REINTENTAR";
             }
         }
         
