@@ -197,6 +197,19 @@
             border-radius: 4px;
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.1);
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-box > div:last-child {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        .chart-box canvas {
+            max-height: 100%;
         }
 
         .radar-badge {
@@ -340,6 +353,13 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        #btn-close-3d:hover {
+            background: #dc2626;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
         }
 
         .vista-contenido { display: none; animation: fadeIn 0.4s ease; }
@@ -441,14 +461,16 @@
 
     <div id="vistaClima" class="vista-contenido">
         <div class="chart-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="color: #38bdf8; font-family: monospace; font-size: 13px; font-weight: bold;">CLIMOGRAMA PROYECTADO</div>
-                <select id="selChartClima" onchange="renderizarGraficoClima()" style="width: auto; padding: 2px 5px; margin: 0; font-size: 12px; background: transparent; border: 1px solid #38bdf8; color: #fff;">
+                <select id="selChartClima" onchange="renderizarGraficoClima()" style="width: auto; padding: 6px 8px; margin: 0; font-size: 12px; background: rgba(0,0,0,0.6); border: 1px solid #38bdf8; color: #fff; border-radius: 3px; cursor: pointer;">
                     <option value="temp">🌡️ Evolución de Temperatura</option>
                     <option value="rain">🌧️ Evolución de Precipitación</option>
                 </select>
             </div>
-            <canvas id="chartClimaDinamico" height="120"></canvas>
+            <div style="flex: 1; position: relative; min-height: 0;">
+                <canvas id="chartClimaDinamico" style="position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important;"></canvas>
+            </div>
         </div>
 
         <div style="color: #eab308; font-family: monospace; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; font-weight: bold;">
@@ -546,6 +568,11 @@
         document.getElementById('vistaClima').style.display = 'none';
         document.getElementById('vistaPronostico').style.display = 'none';
         document.getElementById(vistaSeleccionada).style.display = 'block';
+        
+        // Redibuja el gráfico si es necesario
+        if (vistaSeleccionada === 'vistaClima' && climaChartInstance) {
+            setTimeout(() => climaChartInstance.resize(), 200);
+        }
     }
 
     map.on('click', function (e) {
@@ -611,6 +638,11 @@
     function cerrarResultados() {
         document.getElementById('hud-results').style.display = 'none';
         if (thermalLayerOverlay) map.removeLayer(thermalLayerOverlay);
+    }
+
+    function cerrarModelo3D() {
+        document.getElementById('visor3D').style.display = 'none';
+        Plotly.purge('plot3D');
     }
 
     function decodificarClima(codigo) {
@@ -898,6 +930,7 @@
                         backgroundColor: 'rgba(234, 179, 8, 0.2)',
                         borderWidth: 3,
                         pointRadius: 4,
+                        pointBackgroundColor: '#eab308',
                         tension: 0.3,
                         fill: true
                     }]
@@ -905,7 +938,16 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { 
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#eab308',
+                            bodyColor: '#fff',
+                            borderColor: '#eab308',
+                            borderWidth: 1
+                        }
+                    },
                     scales: {
                         x: {
                             ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } },
@@ -927,13 +969,23 @@
                         label: 'Precip (mm)',
                         data: realRainData,
                         backgroundColor: '#38bdf8',
-                        borderRadius: 4
+                        borderRadius: 4,
+                        borderSkipped: false
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: { 
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#38bdf8',
+                            bodyColor: '#fff',
+                            borderColor: '#38bdf8',
+                            borderWidth: 1
+                        }
+                    },
                     scales: {
                         x: {
                             ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } },
@@ -941,7 +993,8 @@
                         },
                         y: {
                             ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } },
-                            grid: { color: 'rgba(255,255,255,0.08)' }
+                            grid: { color: 'rgba(255,255,255,0.08)' },
+                            beginAtZero: true
                         }
                     }
                 }
@@ -956,23 +1009,25 @@
         }
 
         const valorGeoSup = parseFloat(document.getElementById('geoSup').innerText);
-        const temp_hoy = Number.isFinite(valorGeoSup) ? valorGeoSup : 0;
+        const temp_hoy = Number.isFinite(valorGeoSup) ? valorGeoSup : 20;
 
         let x_grid = [], y_grid = [], z_grid = [], val_grid = [];
-        let size = 15;
-        let gradiente_z = 0.6;
+        let size = 12;
+        let gradiente_z = 0.5; // Cambio de temperatura por profundidad
 
+        // Generar malla volumétrica: 100cm x 100cm x 100cm de profundidad
         for (let k = 0; k < size; k++) {
-            let z = -3 + k * (3 / (size - 1));
+            let z = -100 + k * (100 / (size - 1)); // -100cm a 0cm (profundidad)
             for (let j = 0; j < size; j++) {
-                let y = j * (10 / (size - 1));
+                let y = j * (100 / (size - 1)); // 0 a 100cm
                 for (let i = 0; i < size; i++) {
-                    let x = i * (10 / (size - 1));
+                    let x = i * (100 / (size - 1)); // 0 a 100cm
                     x_grid.push(x);
                     y_grid.push(y);
                     z_grid.push(z);
 
-                    let temp = temp_hoy + (z * gradiente_z) + (Math.sin(x) * 0.3) + (Math.cos(y) * 0.3);
+                    // Modelar temperatura: disminuye con profundidad
+                    let temp = temp_hoy + (z * gradiente_z / 100) + (Math.sin(x / 30) * 0.5) + (Math.cos(y / 30) * 0.5);
                     val_grid.push(temp);
                 }
             }
@@ -984,44 +1039,62 @@
             y: y_grid,
             z: z_grid,
             value: val_grid,
-            isomin: temp_hoy - 4,
-            isomax: temp_hoy + 1,
-            opacity: 0.4,
-            surface: { count: 20 },
+            isomin: temp_hoy - 8,
+            isomax: temp_hoy + 2,
+            opacity: 0.5,
+            surface: { count: 15 },
             colorscale: 'Turbo',
-            colorbar: { title: 'Temp °C', tickfont: { color: 'white', size: 14 } }
-        };
-
-        var layout = {
-            paper_bgcolor: 'transparent',
-            plot_bgcolor: 'transparent',
-            margin: { l: 0, r: 0, t: 0, b: 0 },
-            font: { color: '#fff', family: 'monospace' },
-            scene: {
-                xaxis: { showticklabels: false, title: '', showgrid: false, zeroline: false },
-                yaxis: { showticklabels: false, title: '', showgrid: false, zeroline: false },
-                zaxis: {
-                    title: 'Profundidad Edáfica',
-                    gridcolor: '#334155',
-                    tickvals: [-3, -1.5, 0],
-                    ticktext: ['Inf (-54cm)', 'Mtd (-18cm)', 'Sup (0cm)'],
-                    color: "white"
-                },
-                aspectratio: { x: 1, y: 1, z: 0.7 },
-                camera: { eye: { x: 1.5, y: -1.5, z: 0.5 } }
+            colorbar: { 
+                title: 'Temp °C',
+                tickfont: { color: 'white', size: 12 },
+                x: 1.02
             }
         };
 
-        document.getElementById('visor3D').style.display = 'flex';
-        Plotly.newPlot('plot3D', [trace], layout, { responsive: true });
-    }
+        var layout = {
+            paper_bgcolor: 'rgba(0,0,0,0.5)',
+            plot_bgcolor: 'rgba(0,0,0,0.2)',
+            margin: { l: 20, r: 80, t: 20, b: 20 },
+            font: { color: '#fff', family: 'monospace', size: 12 },
+            scene: {
+                xaxis: { 
+                    title: 'X (cm)',
+                    backgroundcolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    showbackground: true,
+                    titlefont: { color: '#38bdf8' }
+                },
+                yaxis: { 
+                    title: 'Y (cm)',
+                    backgroundcolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    showbackground: true,
+                    titlefont: { color: '#38bdf8' }
+                },
+                zaxis: { 
+                    title: 'Profundidad (cm)',
+                    backgroundcolor: 'rgba(0,0,0,0.3)',
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    showbackground: true,
+                    titlefont: { color: '#38bdf8' }
+                },
+                camera: {
+                    eye: { x: 1.5, y: 1.5, z: 1.3 }
+                }
+            }
+        };
 
-    function cerrarModelo3D() {
-        document.getElementById('visor3D').style.display = 'none';
-        if (typeof Plotly !== 'undefined') {
-            Plotly.purge('plot3D');
-        }
+        var config = {
+            responsive: true,
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['lasso2d', 'select2d']
+        };
+
+        document.getElementById('visor3D').style.display = 'flex';
+        Plotly.newPlot('plot3D', [trace], layout, config);
     }
 </script>
+
 </body>
 </html>
