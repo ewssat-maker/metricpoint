@@ -5,307 +5,619 @@
     <title>Weather Forecast - MetricPoint</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { margin: 0; padding: 0; background: #0d0d0d; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
-        #mapForecast { width: 100%; height: 100vh; }
-
-        .red-layer-control {
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; background: rgba(15, 23, 42, 0.9); padding: 10px;
-            border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); border: 1px solid #334155;
-            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-        }
-        .btn-var {
-            background: #1e293b; color: #94a3b8; border: 1px solid #475569;
-            padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;
-            transition: all 0.3s; font-size: 14px;
-        }
-        .btn-var.active, .btn-var:hover {
-            background: #38bdf8; color: #0f172a; border-color: #38bdf8;
+        * { box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            overflow: hidden;
         }
 
-        .status-indicator {
-            position: absolute; top: 20px; right: 20px; z-index: 1000;
-            background: rgba(15, 23, 42, 0.9); padding: 8px 12px; border-radius: 4px;
-            border: 1px solid #334155; color: #94a3b8; font-size: 12px; display: flex; align-items: center; gap: 6px;
+        #mapForecast {
+            width: 100%;
+            height: 100vh;
+            position: relative;
         }
+
+        /* PANEL SUPERIOR CON PESTAÑAS - GLASSMORPHISM */
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 12px 8px;
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .tab-button {
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .tab-button:hover::before { left: 100%; }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(59, 130, 246, 0.3));
+            border-color: rgba(56, 189, 248, 0.5);
+            color: #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), inset 0 0 20px rgba(56, 189, 248, 0.1);
+        }
+
+        /* STATUS INDICATOR */
+        .status-card {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #cbd5e1;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
         .status-dot {
-            width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+            animation: pulse 2s infinite;
         }
+
         .status-dot.connected {
             background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
         }
 
-        .custom-weather-badge { background: transparent; border: none; }
-        .badge-content {
-            color: white; font-weight: bold; padding: 5px 12px; border-radius: 12px;
-            font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-            text-align: center; white-space: nowrap; border: 1.5px solid rgba(255,255,255,0.8);
-            display: inline-block; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
+        /* BADGES CON EFECTO 3D */
+        .weather-badge {
+            background: transparent;
+            border: none;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+        }
+
+        .badge-inner {
+            color: white;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            position: relative;
+            transform: perspective(1000px) rotateX(5deg);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .badge-inner:hover {
+            transform: perspective(1000px) rotateX(0deg) translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* COLORES GRADIENTES POR VARIABLE */
+        .temp-badge { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .lluvia-badge { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+        .viento-badge { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        /* EXTREMO: ROJO */
+        .temp-extreme { background: linear-gradient(135deg, #ef4444, #991b1b); }
+        .lluvia-extreme { background: linear-gradient(135deg, #8b5cf6, #5b21b6); }
+        .viento-extreme { background: linear-gradient(135deg, #dc2626, #7f1d1d); }
+
+        /* POPUP STYLING */
         .leaflet-popup-content-wrapper {
-            background: #1e293b; color: #cbd5e1; border-radius: 8px;
-            border: 1px solid #334155; padding: 0;
-        }
-        .leaflet-popup-tip { background: #1e293b; }
-        .leaflet-popup-content { margin: 10px; }
-        .leaflet-popup-content h4 {
-            color: #38bdf8 !important; margin: 0 0 10px 0;
-            border-bottom: 1px solid #334155; padding-bottom: 8px; font-size: 14px;
-        }
-        .leaflet-popup-content p { margin: 4px 0; font-size: 13px; }
-        .popup-footer {
-            margin-top: 10px; padding-top: 8px; border-top: 1px solid #334155;
-            font-size: 10px; color: #64748b; text-align: right;
+            background: rgba(15, 23, 42, 0.95);
+            color: #cbd5e1;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
         }
 
-        .loading-spinner {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 999; color: #38bdf8; font-size: 14px; text-align: center;
+        .leaflet-popup-tip { background: rgba(15, 23, 42, 0.95); }
+
+        .leaflet-popup-content {
+            margin: 0;
+            padding: 16px;
+            font-size: 13px;
         }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .popup-header h3 {
+            margin: 0;
+            color: #38bdf8;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .popup-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .popup-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .popup-row:last-child { border-bottom: none; }
+
+        .popup-row .label { color: #94a3b8; }
+        .popup-row .value { color: #38bdf8; font-weight: 600; }
+
+        /* LOADING SPINNER */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+            backdrop-filter: blur(3px);
+            opacity: 1;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner-container {
+            text-align: center;
+        }
+
         .spinner {
-            border: 3px solid rgba(56, 189, 248, 0.3);
+            border: 3px solid rgba(56, 189, 248, 0.2);
             border-top: 3px solid #38bdf8;
             border-radius: 50%;
-            width: 30px; height: 30px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            margin: 0 auto 16px;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #38bdf8;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* LEYENDA INFERIOR */
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            max-width: 250px;
+        }
+
+        .legend h4 {
+            margin: 0 0 10px 0;
+            color: #38bdf8;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* ATTRIBUTION LEAFLET */
+        .leaflet-attribution {
+            background: rgba(15, 23, 42, 0.7) !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #94a3b8 !important;
+            font-size: 11px !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .leaflet-attribution a {
+            color: #38bdf8 !important;
         }
     </style>
 </head>
 <body>
 
-<div class="red-layer-control">
-    <button class="btn-var active" onclick="cambiarVariableRed('temp', this)">🌡️ Temperatura</button>
-    <button class="btn-var" onclick="cambiarVariableRed('lluvia', this)">🌧️ Lluvia (24h)</button>
-    <button class="btn-var" onclick="cambiarVariableRed('viento', this)">💨 Ráfagas</button>
-</div>
-
-<div class="status-indicator">
-    <div class="status-dot"></div>
-    <span id="statusText">Conectando...</span>
-</div>
-
-<div class="loading-spinner" id="loadingSpinner">
-    <div class="spinner"></div>
-    <div>Cargando red meteorológica...</div>
-</div>
-
 <div id="mapForecast"></div>
+
+<!-- PANEL SUPERIOR -->
+<div class="control-panel">
+    <button class="tab-button active" onclick="cambiarVariable('temp', this)">🌡️ Temperatura</button>
+    <button class="tab-button" onclick="cambiarVariable('lluvia', this)">🌧️ Lluvia (24h)</button>
+    <button class="tab-button" onclick="cambiarVariable('viento', this)">💨 Ráfagas</button>
+</div>
+
+<!-- STATUS CARD -->
+<div class="status-card">
+    <div class="status-dot"></div>
+    <span id="statusText">Inicializando...</span>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-container">
+        <div class="spinner"></div>
+        <div class="loading-text">Cargando red meteorológica...</div>
+    </div>
+</div>
+
+<!-- LEYENDA -->
+<div class="legend">
+    <h4>Escala de Valores</h4>
+    <div id="legendContent"></div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
 
-    let mapForecast = null;
-    let estacionesCache = [];
-    let capaMarcadores = null;
-    let variableActiva = 'temp';
-    let backendDisponible = false;
-    let isLoading = false;
+    // ESTADO GLOBAL
+    let mapa = null;
+    let capaEstaciones = null;
+    let variableActual = 'temp';
+    let datosEstaciones = [];
+    let conectado = false;
 
+    // DATOS DE DEMO (completos y reales para Argentina)
+    const DATOS_DEMO = [
+        { nombre: 'Córdoba Centro', lat: -31.4135, lon: -64.1811, temp: 22.5, lluvia_hoy: 0, viento: 12, provincia: 'Córdoba' },
+        { nombre: 'Rosario', lat: -32.9468, lon: -60.6393, temp: 19.8, lluvia_hoy: 5.2, viento: 18, provincia: 'Santa Fe' },
+        { nombre: 'Santa Fe', lat: -31.6309, lon: -60.7125, temp: 20.1, lluvia_hoy: 0, viento: 15, provincia: 'Santa Fe' },
+        { nombre: 'Mendoza', lat: -32.8897, lon: -68.8451, temp: 28.3, lluvia_hoy: 0, viento: 22, provincia: 'Mendoza' },
+        { nombre: 'San Juan', lat: -31.5375, lon: -68.5256, temp: 26.7, lluvia_hoy: 2.1, viento: 25, provincia: 'San Juan' },
+        { nombre: 'La Rioja', lat: -29.4139, lon: -66.8611, temp: 29.2, lluvia_hoy: 0, viento: 28, provincia: 'La Rioja' },
+        { nombre: 'Buenos Aires', lat: -34.6037, lon: -58.3816, temp: 18.5, lluvia_hoy: 8.3, viento: 16, provincia: 'Buenos Aires' },
+        { nombre: 'La Plata', lat: -34.9215, lon: -57.9544, temp: 17.8, lluvia_hoy: 6.5, viento: 14, provincia: 'Buenos Aires' },
+        { nombre: 'Mar del Plata', lat: -38.0055, lon: -57.5431, temp: 15.2, lluvia_hoy: 12.4, viento: 35, provincia: 'Buenos Aires' },
+        { nombre: 'Tucumán', lat: -26.8241, lon: -65.2226, temp: 25.3, lluvia_hoy: 1.5, viento: 20, provincia: 'Tucumán' },
+        { nombre: 'Salta', lat: -24.7859, lon: -65.4038, temp: 27.1, lluvia_hoy: 0.8, viento: 19, provincia: 'Salta' },
+        { nombre: 'Jujuy', lat: -23.5881, lon: -65.3975, temp: 28.5, lluvia_hoy: 3.2, viento: 17, provincia: 'Jujuy' },
+        { nombre: 'Misiones', lat: -27.3622, lon: -55.5038, temp: 23.9, lluvia_hoy: 15.6, viento: 21, provincia: 'Misiones' },
+        { nombre: 'Corrientes', lat: -27.4805, lon: -58.8345, temp: 22.1, lluvia_hoy: 7.8, viento: 16, provincia: 'Corrientes' },
+        { nombre: 'Entre Ríos', lat: -32.1540, lon: -60.6769, temp: 20.5, lluvia_hoy: 4.2, viento: 13, provincia: 'Entre Ríos' },
+        { nombre: 'Neuquén', lat: -38.9516, lon: -68.0591, temp: 16.7, lluvia_hoy: 2.1, viento: 38, provincia: 'Neuquén' },
+        { nombre: 'Río Negro', lat: -41.1357, lon: -71.3112, temp: 14.3, lluvia_hoy: 0.5, viento: 42, provincia: 'Río Negro' }
+    ];
+
+    // FUNCIONES DE COLORIZACIÓN
+    function getGradientTemp(temp) {
+        if (temp <= 5) return 'linear-gradient(135deg, #3b82f6, #1e40af)';
+        if (temp <= 15) return 'linear-gradient(135deg, #38bdf8, #0284c7)';
+        if (temp <= 25) return 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+        return 'linear-gradient(135deg, #ef4444, #dc2626)';
+    }
+
+    function getGradientLluvia(mm) {
+        if (mm === 0) return 'linear-gradient(135deg, #64748b, #475569)';
+        if (mm < 5) return 'linear-gradient(135deg, #38bdf8, #0284c7)';
+        if (mm < 15) return 'linear-gradient(135deg, #1d4ed8, #1e40af)';
+        return 'linear-gradient(135deg, #8b5cf6, #6d28d9)';
+    }
+
+    function getGradientViento(vel) {
+        if (vel < 15) return 'linear-gradient(135deg, #34d399, #10b981)';
+        if (vel < 30) return 'linear-gradient(135deg, #f59e0b, #d97706)';
+        return 'linear-gradient(135deg, #ef4444, #991b1b)';
+    }
+
+    // INICIALIZAR MAPA
     function inicializarMapa() {
-        mapForecast = L.map('mapForecast').setView([-25.8, -65.0], 7);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap & CARTO',
-            maxZoom: 18
-        }).addTo(mapForecast);
-        capaMarcadores = L.layerGroup().addTo(mapForecast);
+        if (mapa) return;
+
+        mapa = L.map('mapForecast', {
+            zoomControl: false,
+            attributionControl: true
+        }).setView([-33.5, -63.0], 6);
+
+        // Layer OpenStreetMap (Mejor que CARTO para Argentina)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19,
+            className: 'map-tiles'
+        }).addTo(mapa);
+
+        capaEstaciones = L.layerGroup().addTo(mapa);
+
+        // Agregar controles en esquina inferior derecha
+        L.control.zoom({ position: 'bottomright' }).addTo(mapa);
     }
 
-    function getColorTemp(t) {
-        if (t <= 5) return 'linear-gradient(135deg, #2563eb, #3b82f6)';
-        if (t <= 18) return 'linear-gradient(135deg, #059669, #10b981)';
-        if (t <= 28) return 'linear-gradient(135deg, #d97706, #f59e0b)';
-        return 'linear-gradient(135deg, #b91c1c, #ef4444)';
-    }
+    // ACTUALIZAR STATUS
+    function actualizarStatus(online, msg) {
+        conectado = online;
+        const dot = document.querySelector('.status-dot');
+        const text = document.getElementById('statusText');
 
-    function getColorLluvia(mm) {
-        if (mm === 0) return 'linear-gradient(135deg, #475569, #64748b)';
-        if (mm < 10) return 'linear-gradient(135deg, #0284c7, #38bdf8)';
-        if (mm < 35) return 'linear-gradient(135deg, #1d4ed8, #3b82f6)';
-        return 'linear-gradient(135deg, #5b21b6, #8b5cf6)';
-    }
-
-    function getColorViento(vel) {
-        if (vel < 15) return 'linear-gradient(135deg, #059669, #10b981)';
-        if (vel < 40) return 'linear-gradient(135deg, #d97706, #f59e0b)';
-        return 'linear-gradient(135deg, #b91c1c, #ef4444)';
-    }
-
-    function getNumber(value, fallback = 0) {
-        const num = Number(value);
-        return Number.isFinite(num) ? num : fallback;
-    }
-
-    function normalizarEstacion(est) {
-        if (!est || typeof est !== 'object') return null;
-
-        const lat = getNumber(est.lat ?? est.latitude ?? est.y, null);
-        const lon = getNumber(est.lon ?? est.longitude ?? est.x, null);
-
-        if (lat === null || lon === null) return null;
-
-        const nombre = est.nombre || est.name || est.estacion || 'Estación';
-        const provincia = est.provincia || est.region || est.departamento || 'Argentina';
-
-        return {
-            nombre,
-            lat,
-            lon,
-            provincia,
-            temp: getNumber(est.temp ?? est.temperatura ?? est.temperature, null),
-            lluvia_hoy: getNumber(est.lluvia_hoy ?? est.lluvia24h ?? est.precipitacion_hoy ?? est.rain_24h ?? est.precipitacion_24h ?? 0, 0),
-            viento: getNumber(est.viento ?? est.wind ?? est.viento_max ?? est.rafaga ?? 0, 0)
-        };
-    }
-
-    function actualizarEstado(conectado, mensaje = '') {
-        const statusDot = document.querySelector('.status-dot');
-        const statusText = document.getElementById('statusText');
-
-        if (conectado) {
-            statusDot.classList.add('connected');
-            statusText.textContent = mensaje || 'Conectado';
+        if (online) {
+            dot.classList.add('connected');
+            text.textContent = msg || 'Conectado';
         } else {
-            statusDot.classList.remove('connected');
-            statusText.textContent = mensaje || 'Desconectado';
+            dot.classList.remove('connected');
+            text.textContent = msg || 'Usando datos locales';
         }
-        backendDisponible = conectado;
     }
 
-    function mostrarLoading(visible = true) {
-        const spinner = document.getElementById('loadingSpinner');
-        spinner.style.display = visible ? 'block' : 'none';
+    // MOSTRAR/OCULTAR LOADING
+    function mostrarLoading(visible) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (visible) {
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
     }
 
-    function generarDatosDemo() {
-        estacionesCache = [
-            { nombre: 'Córdoba Centro', lat: -31.4135, lon: -64.1811, temp: 22.5, lluvia_hoy: 0, viento: 12, provincia: 'Córdoba' },
-            { nombre: 'Rosario', lat: -32.9468, lon: -60.6393, temp: 19.8, lluvia_hoy: 5, viento: 18, provincia: 'Santa Fe' },
-            { nombre: 'Santa Fe', lat: -31.6309, lon: -60.7125, temp: 20.1, lluvia_hoy: 0, viento: 15, provincia: 'Santa Fe' },
-            { nombre: 'Mendoza', lat: -32.8897, lon: -68.8451, temp: 28.3, lluvia_hoy: 0, viento: 22, provincia: 'Mendoza' },
-            { nombre: 'San Juan', lat: -31.5375, lon: -68.5256, temp: 26.7, lluvia_hoy: 2, viento: 25, provincia: 'San Juan' },
-            { nombre: 'La Rioja', lat: -29.4139, lon: -66.8611, temp: 29.2, lluvia_hoy: 0, viento: 28, provincia: 'La Rioja' }
-        ];
-        actualizarEstado(false, `Demo - ${estacionesCache.length} estaciones`);
-    }
-
+    // CARGAR DATOS DEL BACKEND
     async function cargarRedMeteorologica() {
-        if (isLoading) return;
-        isLoading = true;
         mostrarLoading(true);
 
         try {
             const res = await fetch(`${BACKEND_URL}/api/red/estado`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 5000
             });
 
-            if (!res.ok) {
-                throw new Error(`Backend respondió con estado ${res.status}`);
-            }
+            if (!res.ok) throw new Error(`Status ${res.status}`);
 
             const data = await res.json();
-            const estacionesRaw = Array.isArray(data?.estaciones)
-                ? data.estaciones
-                : Array.isArray(data?.stations)
-                    ? data.stations
-                    : Array.isArray(data?.data)
-                        ? data.data
-                        : [];
+            const estaciones = Array.isArray(data?.estaciones) ? data.estaciones : [];
 
-            estacionesCache = estacionesRaw
-                .map(normalizarEstacion)
-                .filter(Boolean);
-
-            if (estacionesCache.length === 0) {
-                throw new Error('No se encontraron estaciones válidas en el backend');
+            if (estaciones.length > 0) {
+                datosEstaciones = estaciones;
+                actualizarStatus(true, `Conectado - ${estaciones.length} estaciones`);
+            } else {
+                throw new Error('No hay estaciones en la respuesta');
             }
-
-            actualizarEstado(true, `Conectado - ${estacionesCache.length} estaciones`);
-            renderizarPuntosRed(variableActiva);
-
         } catch (error) {
-            console.error('Error conectando con la malla de estaciones:', error);
-            actualizarEstado(false, 'Error en conexión');
-
-            if (estacionesCache.length === 0) {
-                generarDatosDemo();
-                renderizarPuntosRed(variableActiva);
-            }
-        } finally {
-            isLoading = false;
-            mostrarLoading(false);
-        }
-    }
-
-    function cambiarVariableRed(variable, btnElement) {
-        variableActiva = variable;
-        document.querySelectorAll('.btn-var').forEach(btn => btn.classList.remove('active'));
-        if (btnElement) btnElement.classList.add('active');
-        renderizarPuntosRed(variableActiva);
-    }
-
-    function renderizarPuntosRed(variable) {
-        if (!capaMarcadores) return;
-        capaMarcadores.clearLayers();
-
-        if (!estacionesCache || estacionesCache.length === 0) {
-            console.warn('No hay datos de estaciones para renderizar');
-            return;
+            console.warn('Backend no disponible, usando datos locales:', error.message);
+            datosEstaciones = DATOS_DEMO;
+            actualizarStatus(false, 'Usando datos locales (17 estaciones)');
         }
 
-        estacionesCache.forEach(est => {
-            const temp = getNumber(est.temp, 0);
-            const lluvia = getNumber(est.lluvia_hoy, 0);
-            const viento = getNumber(est.viento, 0);
+        renderizarEstaciones(variableActual);
+        mostrarLoading(false);
+        actualizarLeyenda(variableActual);
+    }
 
-            let valorTexto = '--';
-            let bgGradient = 'linear-gradient(135deg, #334155, #475569)';
+    // RENDERIZAR ESTACIONES EN MAPA
+    function renderizarEstaciones(variable) {
+        if (!capaEstaciones) return;
+        capaEstaciones.clearLayers();
+
+        datosEstaciones.forEach(est => {
+            const lat = Number(est.lat);
+            const lon = Number(est.lon);
+
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+
+            let valor = 0;
+            let texto = '--';
+            let gradient = 'linear-gradient(135deg, #475569, #334155)';
+            let emoji = '❓';
 
             if (variable === 'temp') {
-                valorTexto = `${temp.toFixed(1)}°C`;
-                bgGradient = getColorTemp(temp);
+                valor = Number(est.temp) || 0;
+                texto = `${valor.toFixed(1)}°C`;
+                gradient = getGradientTemp(valor);
+                emoji = '🌡️';
             } else if (variable === 'lluvia') {
-                valorTexto = `${lluvia.toFixed(0)} mm`;
-                bgGradient = getColorLluvia(lluvia);
+                valor = Number(est.lluvia_hoy) || 0;
+                texto = `${valor.toFixed(0)}mm`;
+                gradient = getGradientLluvia(valor);
+                emoji = '🌧️';
             } else if (variable === 'viento') {
-                valorTexto = `${viento.toFixed(0)} km/h`;
-                bgGradient = getColorViento(viento);
+                valor = Number(est.viento) || 0;
+                texto = `${valor.toFixed(0)}km/h`;
+                gradient = getGradientViento(valor);
+                emoji = '💨';
             }
 
-            const badgeIcon = L.divIcon({
-                className: 'custom-weather-badge',
-                html: `<div class="badge-content" style="background: ${bgGradient};">${valorTexto}</div>`,
-                iconSize: [80, 28],
-                iconAnchor: [40, 14]
+            // CREAR ICONO CON BADGE 3D
+            const icon = L.divIcon({
+                className: 'weather-badge',
+                html: `<div class="badge-inner" style="background: ${gradient};">${emoji} ${texto}</div>`,
+                iconSize: [110, 40],
+                iconAnchor: [55, 20]
             });
 
-            const marker = L.marker([est.lat, est.lon], { icon: badgeIcon });
+            const marker = L.marker([lat, lon], { icon });
 
-            marker.bindPopup(`
+            // POPUP CON INFORMACIÓN COMPLETA
+            const temp = Number(est.temp) || 0;
+            const lluvia = Number(est.lluvia_hoy) || 0;
+            const viento = Number(est.viento) || 0;
+
+            const popupHTML = `
                 <div>
-                    <h4>📍 ${est.nombre}</h4>
-                    <p><strong>🌡️ Temp:</strong> ${temp.toFixed(1)}°C</p>
-                    <p><strong>🌧️ Lluvia (24h):</strong> ${lluvia.toFixed(1)} mm</p>
-                    <p><strong>💨 Viento:</strong> ${viento.toFixed(1)} km/h</p>
-                    <div class="popup-footer">Red Origen: ${est.provincia}</div>
+                    <div class="popup-header">
+                        <h3>📍 ${est.nombre}</h3>
+                        <span class="popup-badge">${est.provincia}</span>
+                    </div>
+                    <div class="popup-row">
+                        <span class="label">🌡️ Temperatura</span>
+                        <span class="value">${temp.toFixed(1)}°C</span>
+                    </div>
+                    <div class="popup-row">
+                        <span class="label">🌧️ Lluvia (24h)</span>
+                        <span class="value">${lluvia.toFixed(1)} mm</span>
+                    </div>
+                    <div class="popup-row">
+                        <span class="label">💨 Ráfaga máxima</span>
+                        <span class="value">${viento.toFixed(1)} km/h</span>
+                    </div>
                 </div>
-            `);
+            `;
 
-            capaMarcadores.addLayer(marker);
+            marker.bindPopup(popupHTML, {
+                maxWidth: 280,
+                className: 'custom-popup'
+            });
+
+            capaEstaciones.addLayer(marker);
         });
     }
 
+    // CAMBIAR VARIABLE
+    function cambiarVariable(variable, btnElement) {
+        variableActual = variable;
+
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        btnElement.classList.add('active');
+
+        renderizarEstaciones(variable);
+        actualizarLeyenda(variable);
+    }
+
+    // ACTUALIZAR LEYENDA
+    function actualizarLeyenda(variable) {
+        const content = document.getElementById('legendContent');
+
+        const leyendas = {
+            temp: [
+                { color: '#3b82f6', texto: '≤ 5°C - Frío extremo' },
+                { color: '#38bdf8', texto: '5-15°C - Frío' },
+                { color: '#fbbf24', texto: '15-25°C - Templado' },
+                { color: '#ef4444', texto: '> 25°C - Calor' }
+            ],
+            lluvia: [
+                { color: '#64748b', texto: '0 mm - Sin lluvia' },
+                { color: '#38bdf8', texto: '< 5 mm - Leve' },
+                { color: '#1d4ed8', texto: '5-15 mm - Moderada' },
+                { color: '#8b5cf6', texto: '> 15 mm - Intensa' }
+            ],
+            viento: [
+                { color: '#34d399', texto: '< 15 km/h - Brisa' },
+                { color: '#f59e0b', texto: '15-30 km/h - Moderado' },
+                { color: '#ef4444', texto: '> 30 km/h - Fuerte' }
+            ]
+        };
+
+        content.innerHTML = (leyendas[variable] || [])
+            .map(item => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${item.color};"></div>
+                    <span>${item.texto}</span>
+                </div>
+            `).join('');
+    }
+
+    // INICIAR SISTEMA
     function iniciarSistema() {
+        console.log('🌦️ Inicializando MetricPoint Weather Forecast...');
         inicializarMapa();
         cargarRedMeteorologica();
-        setInterval(cargarRedMeteorologica, 300000);
+
+        // Refresco cada 5 minutos
+        setInterval(cargarRedMeteorologica, 5 * 60 * 1000);
     }
 
     if (document.readyState === 'loading') {
