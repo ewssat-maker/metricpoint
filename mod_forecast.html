@@ -7,13 +7,12 @@
     <style>
         body { margin: 0; padding: 0; background: #0d0d0d; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
         #mapForecast { width: 100%; height: 100vh; }
-        
-        /* Controles Flotantes tipo Red Meteorológica */
+
         .red-layer-control {
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
             z-index: 1000; background: rgba(15, 23, 42, 0.9); padding: 10px;
             border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); border: 1px solid #334155;
-            display: flex; gap: 10px;
+            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
         }
         .btn-var {
             background: #1e293b; color: #94a3b8; border: 1px solid #475569;
@@ -23,8 +22,19 @@
         .btn-var.active, .btn-var:hover {
             background: #38bdf8; color: #0f172a; border-color: #38bdf8;
         }
-        
-        /* Píldoras Numéricas (Badges) */
+
+        .status-indicator {
+            position: absolute; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(15, 23, 42, 0.9); padding: 8px 12px; border-radius: 4px;
+            border: 1px solid #334155; color: #94a3b8; font-size: 12px; display: flex; align-items: center; gap: 6px;
+        }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
+        }
+        .status-dot.connected {
+            background: #10b981;
+        }
+
         .custom-weather-badge { background: transparent; border: none; }
         .badge-content {
             color: white; font-weight: bold; padding: 5px 12px; border-radius: 12px;
@@ -33,19 +43,56 @@
             display: inline-block; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
-        /* Tema Oscuro para los Popups de Leaflet */
-        .leaflet-popup-content-wrapper { background: #1e293b; color: #cbd5e1; border-radius: 8px; border: 1px solid #334155; }
+        .leaflet-popup-content-wrapper {
+            background: #1e293b; color: #cbd5e1; border-radius: 8px;
+            border: 1px solid #334155; padding: 0;
+        }
         .leaflet-popup-tip { background: #1e293b; }
-        .leaflet-popup-content h4 { color: #38bdf8 !important; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 5px; }
+        .leaflet-popup-content { margin: 10px; }
+        .leaflet-popup-content h4 {
+            color: #38bdf8 !important; margin: 0 0 10px 0;
+            border-bottom: 1px solid #334155; padding-bottom: 8px; font-size: 14px;
+        }
+        .leaflet-popup-content p { margin: 4px 0; font-size: 13px; }
+        .popup-footer {
+            margin-top: 10px; padding-top: 8px; border-top: 1px solid #334155;
+            font-size: 10px; color: #64748b; text-align: right;
+        }
+
+        .loading-spinner {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 999; color: #38bdf8; font-size: 14px; text-align: center;
+        }
+        .spinner {
+            border: 3px solid rgba(56, 189, 248, 0.3);
+            border-top: 3px solid #38bdf8;
+            border-radius: 50%;
+            width: 30px; height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
-<!-- Panel de Control -->
 <div class="red-layer-control">
     <button class="btn-var active" onclick="cambiarVariableRed('temp', this)">🌡️ Temperatura</button>
     <button class="btn-var" onclick="cambiarVariableRed('lluvia', this)">🌧️ Lluvia (24h)</button>
     <button class="btn-var" onclick="cambiarVariableRed('viento', this)">💨 Ráfagas</button>
+</div>
+
+<div class="status-indicator">
+    <div class="status-dot"></div>
+    <span id="statusText">Conectando...</span>
+</div>
+
+<div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner"></div>
+    <div>Cargando red meteorológica...</div>
 </div>
 
 <div id="mapForecast"></div>
@@ -53,102 +100,201 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
-    
-    // 1. Configuración del Mapa base (Oscuro para contraste)
-    const mapForecast = L.map('mapForecast').setView([-25.8, -65.0], 7);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap & CARTO',
-        maxZoom: 18
-    }).addTo(mapForecast);
 
+    let mapForecast = null;
     let estacionesCache = [];
-    let capaMarcadores = L.layerGroup().addTo(mapForecast);
+    let capaMarcadores = null;
     let variableActiva = 'temp';
+    let backendDisponible = false;
+    let isLoading = false;
 
-    // 2. Lógica de Colores Gradientes
+    function inicializarMapa() {
+        mapForecast = L.map('mapForecast').setView([-25.8, -65.0], 7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap & CARTO',
+            maxZoom: 18
+        }).addTo(mapForecast);
+        capaMarcadores = L.layerGroup().addTo(mapForecast);
+    }
+
     function getColorTemp(t) {
-        if (t <= 5) return 'linear-gradient(135deg, #2563eb, #3b82f6)';   // Azul frío
-        if (t <= 18) return 'linear-gradient(135deg, #059669, #10b981)';  // Verde templado
-        if (t <= 28) return 'linear-gradient(135deg, #d97706, #f59e0b)';  // Naranja cálido
-        return 'linear-gradient(135deg, #b91c1c, #ef4444)';               // Rojo calor extremo
+        if (t <= 5) return 'linear-gradient(135deg, #2563eb, #3b82f6)';
+        if (t <= 18) return 'linear-gradient(135deg, #059669, #10b981)';
+        if (t <= 28) return 'linear-gradient(135deg, #d97706, #f59e0b)';
+        return 'linear-gradient(135deg, #b91c1c, #ef4444)';
     }
 
     function getColorLluvia(mm) {
-        if (mm === 0) return 'linear-gradient(135deg, #475569, #64748b)'; // Gris (sin lluvia)
-        if (mm < 10) return 'linear-gradient(135deg, #0284c7, #38bdf8)';  // Celeste
-        if (mm < 35) return 'linear-gradient(135deg, #1d4ed8, #3b82f6)';  // Azul fuerte
-        return 'linear-gradient(135deg, #5b21b6, #8b5cf6)';               // Violeta tormenta severa
+        if (mm === 0) return 'linear-gradient(135deg, #475569, #64748b)';
+        if (mm < 10) return 'linear-gradient(135deg, #0284c7, #38bdf8)';
+        if (mm < 35) return 'linear-gradient(135deg, #1d4ed8, #3b82f6)';
+        return 'linear-gradient(135deg, #5b21b6, #8b5cf6)';
     }
 
     function getColorViento(vel) {
-        if (vel < 15) return 'linear-gradient(135deg, #059669, #10b981)'; // Brisa
-        if (vel < 40) return 'linear-gradient(135deg, #d97706, #f59e0b)'; // Viento moderado
-        return 'linear-gradient(135deg, #b91c1c, #ef4444)';               // Alerta viento fuerte
+        if (vel < 15) return 'linear-gradient(135deg, #059669, #10b981)';
+        if (vel < 40) return 'linear-gradient(135deg, #d97706, #f59e0b)';
+        return 'linear-gradient(135deg, #b91c1c, #ef4444)';
     }
 
-    // 3. Conexión al Backend
+    function getNumber(value, fallback = 0) {
+        const num = Number(value);
+        return Number.isFinite(num) ? num : fallback;
+    }
+
+    function normalizarEstacion(est) {
+        if (!est || typeof est !== 'object') return null;
+
+        const lat = getNumber(est.lat ?? est.latitude ?? est.y, null);
+        const lon = getNumber(est.lon ?? est.longitude ?? est.x, null);
+
+        if (lat === null || lon === null) return null;
+
+        const nombre = est.nombre || est.name || est.estacion || 'Estación';
+        const provincia = est.provincia || est.region || est.departamento || 'Argentina';
+
+        return {
+            nombre,
+            lat,
+            lon,
+            provincia,
+            temp: getNumber(est.temp ?? est.temperatura ?? est.temperature, null),
+            lluvia_hoy: getNumber(est.lluvia_hoy ?? est.lluvia24h ?? est.precipitacion_hoy ?? est.rain_24h ?? est.precipitacion_24h ?? 0, 0),
+            viento: getNumber(est.viento ?? est.wind ?? est.viento_max ?? est.rafaga ?? 0, 0)
+        };
+    }
+
+    function actualizarEstado(conectado, mensaje = '') {
+        const statusDot = document.querySelector('.status-dot');
+        const statusText = document.getElementById('statusText');
+
+        if (conectado) {
+            statusDot.classList.add('connected');
+            statusText.textContent = mensaje || 'Conectado';
+        } else {
+            statusDot.classList.remove('connected');
+            statusText.textContent = mensaje || 'Desconectado';
+        }
+        backendDisponible = conectado;
+    }
+
+    function mostrarLoading(visible = true) {
+        const spinner = document.getElementById('loadingSpinner');
+        spinner.style.display = visible ? 'block' : 'none';
+    }
+
+    function generarDatosDemo() {
+        estacionesCache = [
+            { nombre: 'Córdoba Centro', lat: -31.4135, lon: -64.1811, temp: 22.5, lluvia_hoy: 0, viento: 12, provincia: 'Córdoba' },
+            { nombre: 'Rosario', lat: -32.9468, lon: -60.6393, temp: 19.8, lluvia_hoy: 5, viento: 18, provincia: 'Santa Fe' },
+            { nombre: 'Santa Fe', lat: -31.6309, lon: -60.7125, temp: 20.1, lluvia_hoy: 0, viento: 15, provincia: 'Santa Fe' },
+            { nombre: 'Mendoza', lat: -32.8897, lon: -68.8451, temp: 28.3, lluvia_hoy: 0, viento: 22, provincia: 'Mendoza' },
+            { nombre: 'San Juan', lat: -31.5375, lon: -68.5256, temp: 26.7, lluvia_hoy: 2, viento: 25, provincia: 'San Juan' },
+            { nombre: 'La Rioja', lat: -29.4139, lon: -66.8611, temp: 29.2, lluvia_hoy: 0, viento: 28, provincia: 'La Rioja' }
+        ];
+        actualizarEstado(false, `Demo - ${estacionesCache.length} estaciones`);
+    }
+
     async function cargarRedMeteorologica() {
+        if (isLoading) return;
+        isLoading = true;
+        mostrarLoading(true);
+
         try {
-            const res = await fetch(`${BACKEND_URL}/api/red/estado`);
+            const res = await fetch(`${BACKEND_URL}/api/red/estado`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!res.ok) {
+                throw new Error(`Backend respondió con estado ${res.status}`);
+            }
+
             const data = await res.json();
-            estacionesCache = data.estaciones;
+            const estacionesRaw = Array.isArray(data?.estaciones)
+                ? data.estaciones
+                : Array.isArray(data?.stations)
+                    ? data.stations
+                    : Array.isArray(data?.data)
+                        ? data.data
+                        : [];
+
+            estacionesCache = estacionesRaw
+                .map(normalizarEstacion)
+                .filter(Boolean);
+
+            if (estacionesCache.length === 0) {
+                throw new Error('No se encontraron estaciones válidas en el backend');
+            }
+
+            actualizarEstado(true, `Conectado - ${estacionesCache.length} estaciones`);
             renderizarPuntosRed(variableActiva);
-        } catch (e) {
-            console.error("Error conectando con la malla de estaciones:", e);
+
+        } catch (error) {
+            console.error('Error conectando con la malla de estaciones:', error);
+            actualizarEstado(false, 'Error en conexión');
+
+            if (estacionesCache.length === 0) {
+                generarDatosDemo();
+                renderizarPuntosRed(variableActiva);
+            }
+        } finally {
+            isLoading = false;
+            mostrarLoading(false);
         }
     }
 
-    // 4. Alternador de Capas (Botones)
     function cambiarVariableRed(variable, btnElement) {
         variableActiva = variable;
         document.querySelectorAll('.btn-var').forEach(btn => btn.classList.remove('active'));
-        if(btnElement) btnElement.classList.add('active');
+        if (btnElement) btnElement.classList.add('active');
         renderizarPuntosRed(variableActiva);
     }
 
-    // 5. Motor de Renderizado de Píldoras
     function renderizarPuntosRed(variable) {
+        if (!capaMarcadores) return;
         capaMarcadores.clearLayers();
-        
+
+        if (!estacionesCache || estacionesCache.length === 0) {
+            console.warn('No hay datos de estaciones para renderizar');
+            return;
+        }
+
         estacionesCache.forEach(est => {
+            const temp = getNumber(est.temp, 0);
+            const lluvia = getNumber(est.lluvia_hoy, 0);
+            const viento = getNumber(est.viento, 0);
+
             let valorTexto = '--';
             let bgGradient = 'linear-gradient(135deg, #334155, #475569)';
 
-            // SIMULADOR TEMPORAL (Se eliminará cuando configuremos la ingesta real automatizada)
-            let tempSimulada = est.temp !== null ? est.temp : (Math.random() * 20 + 10);
-            let lluviaSimulada = est.lluvia_hoy !== null ? est.lluvia_hoy : (Math.random() > 0.6 ? Math.random() * 40 : 0);
-            let vientoSimulado = est.viento !== null ? est.viento : (Math.random() * 45);
-
             if (variable === 'temp') {
-                valorTexto = `${tempSimulada.toFixed(1)}°C`;
-                bgGradient = getColorTemp(tempSimulada);
+                valorTexto = `${temp.toFixed(1)}°C`;
+                bgGradient = getColorTemp(temp);
             } else if (variable === 'lluvia') {
-                valorTexto = `${lluviaSimulada.toFixed(0)} mm`;
-                bgGradient = getColorLluvia(lluviaSimulada);
+                valorTexto = `${lluvia.toFixed(0)} mm`;
+                bgGradient = getColorLluvia(lluvia);
             } else if (variable === 'viento') {
-                valorTexto = `${vientoSimulado.toFixed(0)} km/h`;
-                bgGradient = getColorViento(vientoSimulado);
+                valorTexto = `${viento.toFixed(0)} km/h`;
+                bgGradient = getColorViento(viento);
             }
 
-            // Construir el ícono flotante
             const badgeIcon = L.divIcon({
                 className: 'custom-weather-badge',
                 html: `<div class="badge-content" style="background: ${bgGradient};">${valorTexto}</div>`,
-                iconSize: [60, 24],
-                iconAnchor: [30, 12]
+                iconSize: [80, 28],
+                iconAnchor: [40, 14]
             });
 
-            // Colocar en el mapa
             const marker = L.marker([est.lat, est.lon], { icon: badgeIcon });
-            
-            // Construir la tarjeta de diagnóstico detallada al hacer clic
+
             marker.bindPopup(`
-                <div style="min-width: 160px;">
-                    <h4>${est.nombre}</h4>
-                    <p style="margin:4px 0; font-size:13px;"><strong>🌡️ Temp:</strong> ${tempSimulada.toFixed(1)}°C</p>
-                    <p style="margin:4px 0; font-size:13px;"><strong>🌧️ Lluvia (24h):</strong> ${lluviaSimulada.toFixed(1)} mm</p>
-                    <p style="margin:4px 0; font-size:13px;"><strong>💨 Viento:</strong> ${vientoSimulado.toFixed(1)} km/h</p>
-                    <p style="margin:10px 0 0 0; font-size:10px; color:#64748b; text-align: right; border-top: 1px solid #334155; padding-top: 4px;">Red Origen: ${est.provincia}</p>
+                <div>
+                    <h4>📍 ${est.nombre}</h4>
+                    <p><strong>🌡️ Temp:</strong> ${temp.toFixed(1)}°C</p>
+                    <p><strong>🌧️ Lluvia (24h):</strong> ${lluvia.toFixed(1)} mm</p>
+                    <p><strong>💨 Viento:</strong> ${viento.toFixed(1)} km/h</p>
+                    <div class="popup-footer">Red Origen: ${est.provincia}</div>
                 </div>
             `);
 
@@ -156,10 +302,17 @@
         });
     }
 
-    // Iniciar sistema y establecer refresco automático cada 5 minutos
-    cargarRedMeteorologica();
-    setInterval(cargarRedMeteorologica, 300000);
+    function iniciarSistema() {
+        inicializarMapa();
+        cargarRedMeteorologica();
+        setInterval(cargarRedMeteorologica, 300000);
+    }
 
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarSistema);
+    } else {
+        iniciarSistema();
+    }
 </script>
 </body>
 </html>
