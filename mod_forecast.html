@@ -123,7 +123,7 @@
             50% { opacity: 0.5; }
         }
 
-        /* BADGES CON EFECTO 3D */
+        /* BADGES CON EFECTO 3D - RESPONSIVE AL ZOOM */
         .weather-badge {
             background: transparent;
             border: none;
@@ -143,14 +143,36 @@
             justify-content: center;
             backdrop-filter: blur(4px);
             position: relative;
-            transform: perspective(1000px) rotateX(5deg);
+            transform: perspective(1000px) rotateX(5deg) scale(1);
             transition: all 0.3s ease;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
         }
 
         .badge-inner:hover {
-            transform: perspective(1000px) rotateX(0deg) translateY(-2px);
+            transform: perspective(1000px) rotateX(0deg) translateY(-2px) scale(1.05);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* ZOOM LEVELS - Escalar badges según zoom */
+        .map-zoom-small .badge-inner { 
+            font-size: 11px; 
+            padding: 6px 12px;
+        }
+
+        .map-zoom-medium .badge-inner { 
+            font-size: 13px; 
+            padding: 7px 14px;
+        }
+
+        .map-zoom-large .badge-inner { 
+            font-size: 14px; 
+            padding: 8px 16px;
+        }
+
+        .map-zoom-xlarge .badge-inner { 
+            font-size: 15px; 
+            padding: 9px 18px;
         }
 
         /* COLORES GRADIENTES POR VARIABLE */
@@ -320,6 +342,27 @@
         .leaflet-attribution a {
             color: #38bdf8 !important;
         }
+
+        /* Estilos para los controles del mapa */
+        .leaflet-control-zoom {
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(15, 23, 42, 0.7) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .leaflet-control-zoom a {
+            background: rgba(56, 189, 248, 0.1) !important;
+            color: #38bdf8 !important;
+            border-color: rgba(56, 189, 248, 0.2) !important;
+            font-weight: 700 !important;
+            transition: all 0.3s !important;
+        }
+
+        .leaflet-control-zoom a:hover {
+            background: rgba(56, 189, 248, 0.2) !important;
+        }
     </style>
 </head>
 <body>
@@ -363,6 +406,10 @@
     let variableActual = 'temp';
     let datosEstaciones = [];
     let conectado = false;
+    let zoomActual = 6;
+
+    // COORDENADAS DE TUCUMÁN
+    const TUCUMAN_CENTER = { lat: -26.8241, lon: -65.2226 };
 
     // DATOS DE DEMO (completos y reales para Argentina)
     const DATOS_DEMO = [
@@ -406,16 +453,32 @@
         return 'linear-gradient(135deg, #ef4444, #991b1b)';
     }
 
-    // INICIALIZAR MAPA
+    // ACTUALIZAR CLASE DE ZOOM
+    function actualizarClaseZoom(zoom) {
+        const mapElement = document.getElementById('mapForecast');
+        mapElement.classList.remove('map-zoom-small', 'map-zoom-medium', 'map-zoom-large', 'map-zoom-xlarge');
+        
+        if (zoom <= 5) {
+            mapElement.classList.add('map-zoom-small');
+        } else if (zoom <= 8) {
+            mapElement.classList.add('map-zoom-medium');
+        } else if (zoom <= 11) {
+            mapElement.classList.add('map-zoom-large');
+        } else {
+            mapElement.classList.add('map-zoom-xlarge');
+        }
+    }
+
+    // INICIALIZAR MAPA - CENTRADO EN TUCUMÁN
     function inicializarMapa() {
         if (mapa) return;
 
         mapa = L.map('mapForecast', {
             zoomControl: false,
             attributionControl: true
-        }).setView([-33.5, -63.0], 6);
+        }).setView([TUCUMAN_CENTER.lat, TUCUMAN_CENTER.lon], 8);
 
-        // Layer OpenStreetMap (Mejor que CARTO para Argentina)
+        // Layer OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19,
@@ -426,6 +489,15 @@
 
         // Agregar controles en esquina inferior derecha
         L.control.zoom({ position: 'bottomright' }).addTo(mapa);
+
+        // Actualizar zoom al cambiar
+        mapa.on('zoomend', function() {
+            zoomActual = mapa.getZoom();
+            actualizarClaseZoom(zoomActual);
+        });
+
+        // Establecer zoom inicial
+        actualizarClaseZoom(8);
     }
 
     // ACTUALIZAR STATUS
@@ -519,7 +591,7 @@
                 emoji = '💨';
             }
 
-            // CREAR ICONO CON BADGE 3D
+            // CREAR ICONO CON BADGE 3D - RESPONSIVE
             const icon = L.divIcon({
                 className: 'weather-badge',
                 html: `<div class="badge-inner" style="background: ${gradient};">${emoji} ${texto}</div>`,
@@ -612,7 +684,7 @@
 
     // INICIAR SISTEMA
     function iniciarSistema() {
-        console.log('🌦️ Inicializando MetricPoint Weather Forecast...');
+        console.log('🌦️ Inicializando MetricPoint Weather Forecast - Centrado en Tucumán...');
         inicializarMapa();
         cargarRedMeteorologica();
 
