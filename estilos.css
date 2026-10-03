@@ -1,0 +1,121 @@
+/* ==========================================
+   1. ESTILOS GLOBALES & IDIOMAS
+   ========================================== */
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
+.lang-selector { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+.lang-selector select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b; }
+
+/* ==========================================
+   2. LANDING PAGE & LOGIN
+   ========================================== */
+#landingWrapper { display: flex; flex-direction: column; width: 100vw; background-color: #020617; flex-grow: 1; }
+#authScreen { display: flex; width: 100%; height: 100vh; background-color: #ffffff; }
+.auth-left { width: 60%; height: 100%; position: relative; overflow: hidden; background-color: #041d42; }
+.auth-left video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+.auth-slide-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(8, 48, 107, 0.95), transparent); color: white; padding: 80px 40px 40px 40px; box-sizing: border-box; pointer-events: none; }
+.auth-slide-overlay h2 { margin: 0 0 10px 0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+.auth-slide-overlay p { margin: 0; font-size: 18px; color: #e0f3db; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+.scroll-indicator { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); color: white; font-size: 14px; text-align: center; animation: bounce 2s infinite; opacity: 0.7; pointer-events: none; }
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); } 40% { transform: translateY(-10px) translateX(-50%); } 60% { transform: translateY(-5px) translateX(-50%); } }
+.auth-right { width: 40%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #ffffff; box-shadow: -10px 0 25px rgba(0,0,0,0.15); z-index: 10; }
+.login-box { width: 80%; max-width: 380px; }
+.login-box h1 { color: #08306b; margin-top: 0; margin-bottom: 5px; font-size: 28px; }
+.login-box p { font-size: 14px; color: #666; margin-bottom: 30px; }
+.login-box label { font-weight: 600; font-size: 13px; color: #333; display: block; margin-top: 15px; margin-bottom: 5px; }
+.login-box input, .login-box select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
+.login-box input:focus, .login-box select:focus { border-color: #08306b; outline: none; }
+.legal-check { display: flex; align-items: flex-start; margin-top: 15px; gap: 8px; }
+.legal-check input { margin-top: 3px; cursor: pointer; }
+.legal-check label { margin-top: 0; font-size: 12px; color: #555; line-height: 1.4; }
+.legal-check a { color: #08306b; text-decoration: underline; cursor: pointer; font-weight: bold; }
+.btn-auth-primary { width: 100%; padding: 12px; background-color: #08306b; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; margin-top: 20px; cursor: pointer; transition: 0.3s; }
+.btn-auth-primary:hover { background-color: #041d42; }
+.btn-auth-secondary { width: 100%; padding: 12px; background-color: #ffffff; color: #08306b; border: 1px solid #08306b; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+.btn-auth-secondary:hover { background-color: #f0f7fa; }
+.divider { display: flex; align-items: center; text-align: center; margin: 20px 0; }
+.divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #ddd; }
+.divider span { padding: 0 10px; color: #888; font-size: 13px; }
+#registerFormContainer::-webkit-scrollbar { width: 6px; }
+#registerFormContainer::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 10px; }
+
+/* MODALES LEGALES */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; }
+.modal-content { background: white; width: 90%; max-width: 700px; max-height: 80vh; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+.modal-header { background: #08306b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { margin: 0; font-size: 18px; }
+.modal-body { padding: 20px; overflow-y: auto; font-size: 14px; color: #333; line-height: 1.6; }
+.modal-body h4 { color: #08306b; margin-top: 20px; margin-bottom: 5px; }
+.modal-footer { padding: 15px 20px; background: #f4f7f6; text-align: right; border-top: 1px solid #ddd; }
+.btn-close-modal { padding: 8px 15px; background: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+/* SECCIÓN TÉCNICA */
+#techSection { padding: 80px 20px 40px 20px; background-color: #020617; overflow: hidden; }
+.intro-tabs-container { width: 100%; max-width: 1100px; margin: 0 auto; background: rgba(15, 23, 42, 0.85); border-radius: 12px; border: 1px solid #1e293b; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+.intro-tabs-header { display: flex; background: #0f172a; border-bottom: 2px solid #1e293b; }
+.intro-tab-btn { flex: 1; padding: 20px 10px; font-size: 16px; font-weight: bold; color: #94a3b8; background: none; border: none; cursor: pointer; transition: 0.3s; border-bottom: 3px solid transparent; }
+.intro-tab-btn:hover { color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
+.intro-tab-btn.active { color: #38bdf8; border-bottom-color: #38bdf8; background: rgba(15, 23, 42, 1); }
+.intro-tab-content { padding: 40px; display: none; color: #cbd5e1; line-height: 1.6; }
+.intro-tab-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.about-text { font-size: 17px; margin-bottom: 20px; text-align: justify; }
+.product-showcase { display: flex; gap: 40px; margin-bottom: 40px; align-items: center; background: rgba(30, 41, 59, 0.5); padding: 30px; border-radius: 12px; border-left: 4px solid #10b981; transition: 0.3s; }
+.product-showcase:hover { transform: translateY(-5px); }
+.product-showcase video { width: 50%; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 1px solid #1e293b; }
+.product-info { width: 50%; }
+.product-info h3 { margin-top: 0; font-size: 26px; margin-bottom: 15px; }
+.contact-form { display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin: 0 auto; background: rgba(30, 41, 59, 0.5); padding: 40px; border-radius: 12px; border: 1px solid #1e293b; }
+.contact-form input, .contact-form textarea { padding: 15px; border-radius: 6px; border: 1px solid #1e293b; background: #0f172a; color: white; font-family: inherit; font-size: 15px; }
+
+/* ESPACIO DE TRABAJO */
+#workspace { padding: 20px; display: none; margin-top: 40px; flex-grow: 1; }
+.header { background-color: #08306b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.header-left h1 { margin: 0; font-size: 24px; }
+.header-left span { font-size: 14px; font-style: italic; color: #6baed6; }
+#dashboardHub { max-width: 1000px; margin: 0 auto 40px auto; text-align: center; }
+.hub-video-container { position: relative; width: 100%; height: 350px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden; background-color: #041d42; }
+.hub-video-container video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+.hub-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.hub-card { background: linear-gradient(135deg, #08306b 0%, #15509e 100%); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); padding: 30px 20px; width: 280px; cursor: pointer; transition: 0.3s; border-bottom: 5px solid #31a354; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hub-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); background: linear-gradient(135deg, #0a3d8a 0%, #1b5bba 100%); border-bottom-color: #6baed6; }
+.hub-card h3 { color: #ffffff; margin-top: 0; margin-bottom: 10px; font-size: 18px; text-align: center; }
+.hub-card p { color: #e0f3db; font-size: 13px; margin: 0; text-align: center; }
+.container { display: flex; gap: 20px; }
+.sidebar { width: 350px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.main-content { flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+#map { height: 600px; border-radius: 8px; border: 2px solid #ccc; z-index: 1;}
+.chart-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
+label { font-weight: bold; font-size: 13px; color: #333; display: block; margin-top: 12px; margin-bottom: 4px; }
+.btn-primary { width: 100%; padding: 10px; background-color: #31a354; color: white; border: none; border-radius: 4px; font-weight: bold; margin-top: 15px; cursor: pointer; transition: 0.3s;}
+.btn-primary:hover { background-color: #238b45; }
+.btn-secondary { padding: 8px 15px; background-color: #08306b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px;}
+.btn-secondary:hover { background-color: #041d42; }
+.btn-danger { background-color: #d73027; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+#status { margin-top: 15px; font-size: 13px; font-weight: bold; color: #d73027; }
+.soil-card, .climate-card, .ingesta-card { margin-top: 15px; padding: 15px; border-radius: 6px; display: none; }
+.soil-card { background: #f0f9e8; border: 1px solid #ccece6; }
+.climate-card { background: #e0f3db; border: 1px solid #a8ddb5; }
+.ingesta-card { display: block; padding: 12px; background: #f7f7f7; border: 1px dashed #08306b; }
+.tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; display: none; }
+.tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; color: #666; cursor: pointer; }
+.tab-btn.active { color: #08306b; border-bottom: 3px solid #08306b; margin-bottom: -2px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.gemelo-control-panel { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1e293b; }
+.split-layout { display: flex; flex-direction: row; background-color: #020617; border: 2px solid #1e293b; border-radius: 8px; overflow: hidden; height: 600px; }
+.split-layout-left { flex-grow: 1; position: relative; height: 100%; }
+.split-layout-right { width: 320px; background: #0f172a; border-left: 2px solid #1e293b; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;}
+
+/* HYDRO ALERTAS */
+.hydro-cmd-btn { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 12px 24px; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; flex-grow: 1; justify-content: center; }
+.hydro-cmd-btn.active { background: #0f172a; color: #38bdf8; border-color: #0f172a; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+.alert-history-item { background: #1e293b; padding: 12px; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 8px; font-size: 13px; color: #cbd5e1; }
+@keyframes flashRed { 0% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; } 50% { background-color: #ffe4e6; box-shadow: 0 0 20px #ef4444; } 100% { background-color: #fef2f2; box-shadow: 0 0 0px #ef4444; } }
+.alert-active { background: #fef2f2 !important; border-color: #ef4444 !important; animation: flashRed 2s infinite; }
+
+@media (max-width: 900px) {
+    .auth-right, .auth-left, .sidebar, .main-content, .split-layout-left, .split-layout-right { width: 100% !important; }
+    #authScreen, .container, .split-layout, .intro-tabs-header, .product-showcase { flex-direction: column !important; }
+    #map { height: 400px; }
+    #hydroSplitGrid { grid-template-columns: 1fr !important; }
+}
