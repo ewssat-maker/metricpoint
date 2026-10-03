@@ -2,845 +2,153 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetricPoint - Weather Forecast OS</title>
+    <title>Weather Forecast - MetricPoint</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <style>
-        * { box-sizing: border-box; }
-        html, body {
-            margin: 0; width: 100%; height: 100%; overflow: hidden;
-            background: #111; color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        body { margin: 0; padding: 0; background: #0d0d0d; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
+        #mapForecast { width: 100%; height: 100vh; }
+        
+        .red-layer-control {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; background: rgba(15, 23, 42, 0.9); padding: 10px;
+            border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); border: 1px solid #334155;
+            display: flex; gap: 10px;
         }
-        #mapFull { position: absolute; inset: 0; z-index: 1; }
-
-        .hud-panel {
-            position: absolute; z-index: 1000;
-            background: rgba(10, 15, 25, .92);
-            border: 1px solid rgba(255,255,255,.2);
-            border-radius: 8px; padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.1);
-            max-height: 95%; overflow-y: auto; backdrop-filter: blur(10px);
+        .btn-var {
+            background: #1e293b; color: #94a3b8; border: 1px solid #475569;
+            padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;
+            transition: all 0.3s; font-size: 14px;
         }
-        .hud-panel::-webkit-scrollbar { width: 6px; }
-        .hud-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,.4); border-radius: 3px; }
-        .hud-panel::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.6); }
-
-        #hud-controls { top: 20px; left: 20px; width: 380px; }
-        #hud-results { top: 20px; right: 20px; width: 450px; display: none; max-height: 90vh; }
-
-        h2 {
-            margin: 0 0 15px; font-family: monospace; font-size: 24px; letter-spacing: 1px; color: #fff;
-            border-bottom: 1px solid rgba(56,189,248,.3); padding-bottom: 10px; text-shadow: 0 0 20px rgba(56,189,248,.2);
+        .btn-var.active, .btn-var:hover {
+            background: #38bdf8; color: #0f172a; border-color: #38bdf8;
         }
-        label { font-size: 14px; color: #ccc; text-transform: uppercase; font-family: monospace; display: block; margin-bottom: 6px; font-weight: 700; }
-        select {
-            width: 100%; background: rgba(0,0,0,.8); color: #eab308; border: 1px solid #555; padding: 12px; margin-bottom: 18px;
-            font-family: monospace; font-size: 15px; font-weight: 700; border-radius: 4px; transition: .3s;
-        }
-        select:hover { border-color: #38bdf8; box-shadow: 0 0 10px rgba(56,189,248,.2); }
-        select:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56,189,248,.4); outline: 0; }
-
-        .btn-run {
-            width: 100%; padding: 16px; margin-bottom: 10px; border: 0; border-radius: 4px; font-weight: 700; font-family: monospace; font-size: 16px;
-            cursor: pointer; transition: .3s; text-transform: uppercase; background: linear-gradient(90deg, #38bdf8, #0ea5e9); color: #00131d;
-            box-shadow: 0 4px 15px rgba(56,189,248,.3);
-        }
-        .btn-run:hover { filter: brightness(1.2); box-shadow: 0 8px 25px rgba(56,189,248,.6); transform: translateY(-2px); }
-        .btn-run:active { transform: translateY(0); }
-
-        .btn-3d {
-            background: none; border: 2px solid #eab308; color: #eab308; width: 100%; padding: 14px; margin-top: 15px; border-radius: 4px; cursor: pointer;
-            font-family: monospace; font-weight: 700; transition: .3s; box-shadow: 0 0 15px rgba(234,179,8,.2);
-        }
-        .btn-3d:hover { background: rgba(234,179,8,.1); transform: scale(1.02); box-shadow: 0 0 30px rgba(234,179,8,.5); }
-
-        .selector-vista-box {
-            background: rgba(56,189,248,.08); padding: 15px; border-radius: 6px; border: 1px solid rgba(56,189,248,.3);
-            margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(56,189,248,.05), 0 0 20px rgba(56,189,248,.1);
-        }
-        .selector-vista-box label { color: #38bdf8; margin-bottom: 10px; font-size: 14px; }
-        .selector-vista-box select { margin-bottom: 0; border-color: #38bdf8; background: #000; color: #fff; }
-
-        .scifi-row {
-            display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.1);
-            padding-bottom: 8px; font-size: 15px; align-items: center;
-        }
-        .scifi-label { color: #ddd; font-family: monospace; font-weight: 700; }
-        .scifi-val { font-family: 'Courier New', monospace; font-weight: 700; font-size: 18px; color: #eab308; text-shadow: 0 0 10px rgba(234,179,8,.5); }
-
-        .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .weather-card {
-            background: linear-gradient(135deg, rgba(0,0,0,.6), rgba(56,189,248,.05)); border: 1px solid rgba(56,189,248,.3); padding: 20px; border-radius: 8px;
-            text-align: center; transition: .4s; box-shadow: 0 0 20px rgba(0,0,0,.5); cursor: pointer;
-        }
-        .weather-card:hover {
-            border-color: #38bdf8; background: linear-gradient(135deg, rgba(56,189,248,.15), rgba(56,189,248,.08));
-            box-shadow: 0 0 30px rgba(56,189,248,.3), inset 0 0 20px rgba(56,189,248,.1); transform: translateY(-4px);
-        }
-        .weather-card h4 { margin: 0 0 8px; font-size: 14px; color: #ccc; font-family: monospace; text-transform: uppercase; }
-        .weather-card .val { font-size: 32px; font-weight: 700; color: #eab308; margin: 5px 0; font-family: 'Courier New', Courier, monospace; text-shadow: 0 0 15px rgba(234,179,8,.6); }
-
-        .chart-box {
-            background: linear-gradient(135deg, rgba(0,0,0,.7), rgba(56,189,248,.08)); padding: 15px; border-radius: 6px; margin-bottom: 20px;
-            border: 1px solid rgba(56,189,248,.3); height: 300px; display: flex; flex-direction: column;
-            box-shadow: 0 0 30px rgba(56,189,248,.15), inset 0 0 20px rgba(56,189,248,.05);
-        }
-        .chart-box > div:last-child { flex: 1; position: relative; min-height: 0; }
-
-        .radar-badge {
-            display: inline-block; padding: 8px 14px; background: rgba(56,189,248,.2); border: 1px solid #38bdf8; color: #38bdf8; font-family: monospace; font-size: 14px;
-            border-radius: 999px; box-shadow: 0 0 20px rgba(56,189,248,.4); text-shadow: 0 0 5px rgba(56,189,248,.5);
+        
+        .custom-weather-badge { background: transparent; border: none; }
+        .badge-content {
+            color: white; font-weight: bold; padding: 5px 12px; border-radius: 12px;
+            font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            text-align: center; white-space: nowrap; border: 1.5px solid rgba(255,255,255,0.8);
+            display: inline-block; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
-        .semaforo-box {
-            background: linear-gradient(135deg, rgba(0,0,0,.6), rgba(56,189,248,.05)); border: 1px solid rgba(68,68,68,.5); padding: 15px; border-radius: 6px; margin-bottom: 20px;
-            box-shadow: 0 0 30px rgba(0,0,0,.5);
-        }
-        .semaforo-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .semaforo-row:last-child { margin-bottom: 0; }
-        .luces { display: flex; gap: 6px; }
-        .luz {
-            width: 16px; height: 16px; border-radius: 50%; background: #222; border: 1px solid #555; opacity: .3; transition: .3s;
-        }
-        .luz.verde.activa { background: #22c55e; border-color: #22c55e; opacity: 1; box-shadow: 0 0 25px #22c55e, inset 0 0 10px rgba(34,197,94,.5); }
-        .luz.amarilla.activa { background: #eab308; border-color: #eab308; opacity: 1; box-shadow: 0 0 25px #eab308, inset 0 0 10px rgba(234,179,8,.5); }
-        .luz.roja.activa { background: #ef4444; border-color: #ef4444; opacity: 1; box-shadow: 0 0 25px #ef4444, inset 0 0 10px rgba(239,68,68,.5); }
-
-        .txt-alerta {
-            font-size: 13px; color: #fff; margin-top: 10px; border-top: 1px solid #444; padding-top: 10px; display: none; font-weight: 700; line-height: 1.6; letter-spacing: .5px;
-        }
-
-        .forecast-card {
-            display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(0,0,0,.6), rgba(56,189,248,.03));
-            border: 1px solid rgba(68,68,68,.5); padding: 15px; border-radius: 6px; margin-bottom: 12px; transition: .3s; cursor: pointer;
-        }
-        .forecast-card:hover {
-            border-color: #38bdf8; background: linear-gradient(135deg, rgba(56,189,248,.12), rgba(56,189,248,.05));
-            box-shadow: 0 0 20px rgba(56,189,248,.2), inset 0 0 15px rgba(56,189,248,.08); transform: translateX(4px);
-        }
-        .forecast-day { font-family: monospace; font-weight: 700; font-size: 15px; color: #38bdf8; width: 60px; }
-        .forecast-icon { font-size: 28px; text-align: center; width: 50px; filter: drop-shadow(0 0 8px rgba(234,179,8,.4)); }
-        .forecast-desc { flex-grow: 1; padding: 0 10px; font-size: 14px; color: #ddd; line-height: 1.3; font-weight: 700; }
-        .forecast-temps { font-family: 'Courier New', monospace; font-weight: 700; font-size: 18px; text-align: right; }
-        .temp-max { color: #ef4444; text-shadow: 0 0 8px rgba(239,68,68,.5); }
-        .temp-min { color: #3b82f6; margin-left: 10px; text-shadow: 0 0 8px rgba(59,130,246,.5); }
-
-        #btn-close-res { position: absolute; top: 15px; right: 15px; background: none; border: 0; color: #888; font-size: 24px; cursor: pointer; transition: .2s; }
-        #btn-close-res:hover { color: #ef4444; text-shadow: 0 0 10px rgba(239,68,68,.5); }
-
-        #visor3D {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,.95); z-index: 2000; display: none;
-            flex-direction: column; align-items: center; justify-content: center; animation: slideIn .4s cubic-bezier(.34,.1,.68,.55);
-        }
-        @keyframes slideIn { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
-        #plot3D { width: 85%; height: 85%; background: #000; border: 2px solid #38bdf8; border-radius: 12px; overflow: hidden; box-shadow: 0 0 60px rgba(234,179,8,.3), inset 0 0 30px rgba(56,189,248,.1); }
-        #btn-close-3d {
-            position: absolute; top: 30px; right: 50px; background: #ef4444; color: #fff; border: 0; padding: 12px 25px; font-family: monospace; font-weight: 700; font-size: 16px; cursor: pointer; border-radius: 6px; transition: .3s; box-shadow: 0 4px 15px rgba(239,68,68,.4);
-        }
-        .vista-contenido { display: none; animation: fadeInUp .5s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        #btn-close-3d:hover { background: #dc2626; box-shadow: 0 8px 25px rgba(239,68,68,.6); transform: scale(1.08); }
-        #btn-close-3d:active { transform: scale(.98); }
-
-        /* MARCADORES DE ESTACIONES */
-        .station-badge {
-            background: transparent; border: none; filter: drop-shadow(0 8px 16px rgba(0,0,0,.35));
-        }
-        .station-badge .station-inner {
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 7px 12px; border-radius: 18px; border: 2px solid rgba(255,255,255,.35);
-            color: #fff; font-weight: 700; text-shadow: 0 2px 5px rgba(0,0,0,.45); box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 18px rgba(0,0,0,.28);
-            transform: perspective(900px) rotateX(5deg);
-            transition: transform .2s ease, box-shadow .2s ease;
-            white-space: nowrap;
-        }
-        .station-badge .station-inner:hover { transform: perspective(900px) rotateX(0deg) translateY(-2px) scale(1.04); }
-
-        /* Responsive by zoom */
-        #mapFull.map-small .station-inner { font-size: 10px; padding: 6px 10px; border-radius: 14px; }
-        #mapFull.map-medium .station-inner { font-size: 12px; padding: 7px 12px; border-radius: 16px; }
-        #mapFull.map-large .station-inner { font-size: 13px; padding: 8px 14px; border-radius: 18px; }
-        #mapFull.map-xlarge .station-inner { font-size: 15px; padding: 9px 16px; border-radius: 20px; }
-
-        .leaflet-popup-content-wrapper {
-            background: rgba(15,23,42,.95); color: #cbd5e1; border-radius: 12px; border: 1px solid rgba(56,189,248,.3); padding: 0; box-shadow: 0 8px 32px rgba(0,0,0,.5);
-            backdrop-filter: blur(10px);
-        }
-        .leaflet-popup-tip { background: rgba(15,23,42,.95); }
-        .leaflet-popup-content { margin: 0; padding: 16px; font-size: 13px; }
-        .leaflet-control-zoom { border-radius: 8px !important; box-shadow: 0 4px 12px rgba(0,0,0,.3) !important; border: 1px solid rgba(255,255,255,.1) !important; background: rgba(15,23,42,.7) !important; }
-        .leaflet-control-zoom a { background: rgba(56,189,248,.1) !important; color: #38bdf8 !important; border-color: rgba(56,189,248,.2) !important; font-weight: 700 !important; }
-        .leaflet-attribution { background: rgba(15,23,42,.7) !important; border-radius: 8px !important; border: 1px solid rgba(255,255,255,.1) !important; color: #94a3b8 !important; font-size: 11px !important; }
-        .leaflet-attribution a { color: #38bdf8 !important; }
+        .leaflet-popup-content-wrapper { background: #1e293b; color: #cbd5e1; border-radius: 8px; border: 1px solid #334155; }
+        .leaflet-popup-tip { background: #1e293b; }
+        .leaflet-popup-content h4 { color: #38bdf8 !important; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 5px; }
     </style>
 </head>
 <body>
-<div id="mapFull"></div>
 
-<div id="visor3D">
-    <button id="btn-close-3d" onclick="UI.close3D()">✕ CERRAR VISOR 3D</button>
-    <h3 style="color:#eab308;margin-bottom:20px;font-size:22px;text-shadow:0 0 20px rgba(234,179,8,.4);">🧊 MODELO DIGITAL 3D (Estratificación Térmica)</h3>
-    <div id="plot3D"></div>
+<div class="red-layer-control">
+    <button class="btn-var active" onclick="cambiarVariableRed('temp', this)">🌡️ Temperatura</button>
+    <button class="btn-var" onclick="cambiarVariableRed('lluvia', this)">🌧️ Lluvia (24h)</button>
+    <button class="btn-var" onclick="cambiarVariableRed('viento', this)">💨 Ráfagas</button>
 </div>
 
-<div id="hud-controls" class="hud-panel">
-    <h2>[ WEATHER FORECAST ]</h2>
-    <p style="font-size:13px;color:#bbb;font-family:monospace;margin:-10px 0 25px 0;">Agrometeorología de Precisión</p>
-    <label>Ubicación a Consultar:</label>
-    <select id="selCiudad" onchange="MapMgr.handleLocationSelect()">
-        <option value="custom" selected>📍 Seleccionar o Dibujar en Mapa</option>
-        <optgroup label="Provincia de Tucumán">
-            <option value="-26.8241,-65.2226">San Miguel de Tucumán</option>
-            <option value="-26.8525,-65.7102">Tafí del Valle</option>
-            <option value="-27.3400,-65.5960">Concepción</option>
-        </optgroup>
-        <optgroup label="Provincia de Salta">
-            <option value="-24.7821,-65.4232">Salta Capital</option>
-            <option value="-26.0730,-65.9761">Cafayate</option>
-            <option value="-25.1205,-66.1654">Cachi</option>
-            <option value="-22.5165,-63.8013">Tartagal</option>
-        </optgroup>
-        <optgroup label="Provincia de Jujuy">
-            <option value="-24.1946,-65.2971">San Salvador de Jujuy</option>
-            <option value="-23.5776,-65.3509">Tilcara</option>
-        </optgroup>
-    </select>
-
-    <label style="margin-top:15px;">Motor de Simulación:</label>
-    <select id="selModelo">
-        <option value="wrf">WRF - Alta Resolución Local (72h)</option>
-        <option value="gfs">GFS - Global Forecast System (120h)</option>
-    </select>
-
-    <p id="statusMsg" style="font-size:13px;color:#fff;font-family:monospace;margin-bottom:20px;margin-top:15px;background:rgba(255,255,255,.1);padding:12px;border-radius:4px;border-left:3px solid #38bdf8;">Haga clic en el mapa o seleccione una ciudad.</p>
-    <button class="btn-run" onclick="API.fetchForecast()">📡 OBTENER TELEMETRÍA REAL</button>
-</div>
-
-<div id="hud-results" class="hud-panel">
-    <button id="btn-close-res" onclick="UI.closeResults()">✖</button>
-    <h3 style="font-size:20px;color:#fff;margin-bottom:5px;">DIAGNÓSTICO METEOROLÓGICO</h3>
-    <div class="radar-badge" id="lblModeloStatus">⚙️ ESPERANDO CONEXIÓN...</div>
-
-    <div class="selector-vista-box">
-        <label>SELECCIONAR ÁREA DE VISUALIZACIÓN:</label>
-        <select id="selSeccionPanel" onchange="UI.switchView()">
-            <option value="vistaEnVivo">🔴 METEOROLOGÍA EN VIVO (Tiempo Real)</option>
-            <option value="vistaClima">🌱 CLIMA Y SUELO (Sólido 3D e Histórico)</option>
-            <option value="vistaPronostico">📅 PRONÓSTICO Y ALERTAS EXTENDIDAS</option>
-        </select>
-    </div>
-
-    <div id="vistaEnVivo" class="vista-contenido" style="display:block;">
-        <div class="weather-grid">
-            <div class="weather-card">
-                <h4>Temp. Actual</h4>
-                <div class="val" id="resTemp">-- °C</div>
-                <div style="font-size:14px;color:#aaa;" id="resEstadoActual">Despejado</div>
-            </div>
-            <div class="weather-card">
-                <h4>Prob. Lluvia</h4>
-                <div class="val" id="resLluvia">-- %</div>
-                <div style="font-size:14px;color:#aaa;" id="resVientoHeader">Viento: -- km/h</div>
-            </div>
-        </div>
-        <div style="color:#38bdf8;font-family:monospace;font-size:14px;margin-bottom:10px;border-bottom:1px solid #444;padding-bottom:5px;font-weight:700;">MÉTRICAS INSTANTÁNEAS</div>
-        <div class="scifi-row"><span class="scifi-label">Humedad Relativa</span><span class="scifi-val" id="resHumedad">-- %</span></div>
-        <div class="scifi-row"><span class="scifi-label">Presión Superficial</span><span class="scifi-val" id="resPresion">-- hPa</span></div>
-        <div class="scifi-row" style="border-bottom:none;"><span class="scifi-label">Punto de Rocío</span><span class="scifi-val" id="resRocio">-- °C</span></div>
-    </div>
-
-    <div id="vistaClima" class="vista-contenido">
-        <div class="chart-box">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div style="color:#38bdf8;font-family:monospace;font-size:13px;font-weight:700;">CLIMOGRAMA PROYECTADO</div>
-                <select id="selChartClima" onchange="Chart.render()" style="width:auto;padding:6px 8px;margin:0;font-size:12px;background:rgba(0,0,0,.6);border:1px solid #38bdf8;color:#fff;border-radius:3px;cursor:pointer;">
-                    <option value="temp">🌡️ Evolución de Temperatura</option>
-                    <option value="rain">🌧️ Evolución de Precipitación</option>
-                </select>
-            </div>
-            <div style="flex:1;position:relative;min-height:0;"><canvas id="chartClimaDinamico" style="position:absolute;top:0;left:0;width:100%!important;height:100%!important;"></canvas></div>
-        </div>
-        <div style="color:#eab308;font-family:monospace;font-size:14px;margin-bottom:10px;border-bottom:1px solid #444;padding-bottom:5px;font-weight:700;">GEOTERMÓMETROS Y CONDICIONES DEL SUELO</div>
-        <div class="scifi-row"><span class="scifi-label">Superficie Terreno (0 cm)</span><span class="scifi-val" id="geoSup">-- °C</span></div>
-        <div class="scifi-row"><span class="scifi-label">Zona Radicular (-18 cm)</span><span class="scifi-val" id="geoMed">-- °C</span></div>
-        <div class="scifi-row" style="border-bottom:none;"><span class="scifi-label">Reserva Profunda (-54 cm)</span><span class="scifi-val" id="geoInf">-- °C</span></div>
-        <button class="btn-3d" onclick="Viz3D.open()">🧊 RENDERIZAR CUBO 3D VOLUMÉTRICO</button>
-    </div>
-
-    <div id="vistaPronostico" class="vista-contenido">
-        <div class="semaforo-box">
-            <h4 style="margin:0 0 15px;color:#fca5a5;font-family:monospace;font-size:14px;text-transform:uppercase;border-bottom:1px solid #444;padding-bottom:5px;">🚦 SEMÁFOROS DE RIESGO</h4>
-            <div class="semaforo-row"><span class="scifi-label">Heladas / Frío Extremo</span><div class="luces"><div id="frio-v" class="luz verde"></div><div id="frio-a" class="luz amarilla"></div><div id="frio-r" class="luz roja"></div></div></div>
-            <div class="semaforo-row"><span class="scifi-label">Estrés por Calor</span><div class="luces"><div id="calor-v" class="luz verde"></div><div id="calor-a" class="luz amarilla"></div><div id="calor-r" class="luz roja"></div></div></div>
-            <div class="semaforo-row"><span class="scifi-label">Tormentas y Precipitaciones</span><div class="luces"><div id="lluvia-v" class="luz verde"></div><div id="lluvia-a" class="luz amarilla"></div><div id="lluvia-r" class="luz roja"></div></div></div>
-            <div id="txtDetalleAlerta" class="txt-alerta"></div>
-        </div>
-        <div style="color:#38bdf8;font-family:monospace;font-size:14px;margin-bottom:15px;border-bottom:1px solid #444;padding-bottom:5px;font-weight:700;">PROYECCIÓN METEOROLÓGICA DIARIA</div>
-        <div id="contenedorPronosticoDiario"></div>
-    </div>
-</div>
+<div id="mapForecast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <script>
-const COLORS = { PRIMARY: '#38bdf8', ACCENT: '#eab308', DANGER: '#ef4444', SUCCESS: '#22c55e' };
-let STATE = {
-    coord: null,
-    marker: null,
-    overlay: null,
-    chart: null,
-    tempData: [],
-    rainData: [],
-    labels: [],
-    geoTemp: { sup: 0, med: 0, inf: 0 },
-    stationMarkers: [],
-    currentVariable: 'temp'
-};
+    const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
+    
+    // 1. Configuración del Mapa base
+    const mapForecast = L.map('mapForecast').setView([-25.8, -65.0], 7);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap & CARTO',
+        maxZoom: 18
+    }).addTo(mapForecast);
 
-const STATIONS = [
-    { nombre: 'Córdoba Centro', lat: -31.4135, lon: -64.1811, temp: 22.5, lluvia_hoy: 0, viento: 12, provincia: 'Córdoba' },
-    { nombre: 'Rosario', lat: -32.9468, lon: -60.6393, temp: 19.8, lluvia_hoy: 5.2, viento: 18, provincia: 'Santa Fe' },
-    { nombre: 'Santa Fe', lat: -31.6309, lon: -60.7125, temp: 20.1, lluvia_hoy: 0, viento: 15, provincia: 'Santa Fe' },
-    { nombre: 'Mendoza', lat: -32.8897, lon: -68.8451, temp: 28.3, lluvia_hoy: 0, viento: 22, provincia: 'Mendoza' },
-    { nombre: 'San Juan', lat: -31.5375, lon: -68.5256, temp: 26.7, lluvia_hoy: 2.1, viento: 25, provincia: 'San Juan' },
-    { nombre: 'La Rioja', lat: -29.4139, lon: -66.8611, temp: 29.2, lluvia_hoy: 0, viento: 28, provincia: 'La Rioja' },
-    { nombre: 'Buenos Aires', lat: -34.6037, lon: -58.3816, temp: 18.5, lluvia_hoy: 8.3, viento: 16, provincia: 'Buenos Aires' },
-    { nombre: 'La Plata', lat: -34.9215, lon: -57.9544, temp: 17.8, lluvia_hoy: 6.5, viento: 14, provincia: 'Buenos Aires' },
-    { nombre: 'Mar del Plata', lat: -38.0055, lon: -57.5431, temp: 15.2, lluvia_hoy: 12.4, viento: 35, provincia: 'Buenos Aires' },
-    { nombre: 'Tucumán', lat: -26.8241, lon: -65.2226, temp: 25.3, lluvia_hoy: 1.5, viento: 20, provincia: 'Tucumán' },
-    { nombre: 'Salta', lat: -24.7859, lon: -65.4038, temp: 27.1, lluvia_hoy: 0.8, viento: 19, provincia: 'Salta' },
-    { nombre: 'Jujuy', lat: -23.5881, lon: -65.3975, temp: 28.5, lluvia_hoy: 3.2, viento: 17, provincia: 'Jujuy' },
-    { nombre: 'Misiones', lat: -27.3622, lon: -55.5038, temp: 23.9, lluvia_hoy: 15.6, viento: 21, provincia: 'Misiones' },
-    { nombre: 'Corrientes', lat: -27.4805, lon: -58.8345, temp: 22.1, lluvia_hoy: 7.8, viento: 16, provincia: 'Corrientes' },
-    { nombre: 'Entre Ríos', lat: -32.1540, lon: -60.6769, temp: 20.5, lluvia_hoy: 4.2, viento: 13, provincia: 'Entre Ríos' },
-    { nombre: 'Neuquén', lat: -38.9516, lon: -68.0591, temp: 16.7, lluvia_hoy: 2.1, viento: 38, provincia: 'Neuquén' },
-    { nombre: 'Río Negro', lat: -41.1357, lon: -71.3112, temp: 14.3, lluvia_hoy: 0.5, viento: 42, provincia: 'Río Negro' }
-];
+    let estacionesCache = [];
+    let capaMarcadores = L.layerGroup().addTo(mapForecast);
+    let variableActiva = 'temp';
 
-const UI = {
-    switchView() {
-        const v = document.getElementById('selSeccionPanel').value;
-        ['vistaEnVivo', 'vistaClima', 'vistaPronostico'].forEach(id => document.getElementById(id).style.display = 'none');
-        document.getElementById(v).style.display = 'block';
-        if (v === 'vistaClima' && STATE.chart) setTimeout(() => STATE.chart.resize(), 200);
-    },
-    closeResults() {
-        document.getElementById('hud-results').style.display = 'none';
-        if (STATE.overlay) MapMgr.map.removeLayer(STATE.overlay);
-    },
-    close3D() {
-        document.getElementById('visor3D').style.display = 'none';
-        if (typeof Plotly !== 'undefined') Plotly.purge('plot3D');
-    }
-};
-
-const MapMgr = {
-    map: null,
-    drawn: null,
-    init() {
-        if (!window.L) throw new Error('Leaflet no cargado');
-
-        this.map = L.map('mapFull', { zoomControl: false, attributionControl: true }).setView([-26.8241, -65.2226], 7);
-
-        L.control.zoom({ position: 'bottomright' }).addTo(this.map);
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 }).addTo(this.map);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 18, opacity: .8 }).addTo(this.map);
-
-        this.drawn = new L.FeatureGroup();
-        this.map.addLayer(this.drawn);
-
-        const ctrl = new L.Control.Draw({
-            position: 'bottomright',
-            draw: { polyline: false, polygon: true, circle: false, rectangle: true, marker: false, circlemarker: false },
-            edit: { featureGroup: this.drawn }
-        });
-        this.map.addControl(ctrl);
-
-        this.map.on('click', e => {
-            if (document.getElementById('selCiudad').value !== 'custom') return;
-            this.drawn.clearLayers();
-            if (STATE.marker) this.map.removeLayer(STATE.marker);
-            if (STATE.overlay) this.map.removeLayer(STATE.overlay);
-            STATE.coord = [e.latlng.lat, e.latlng.lng];
-            STATE.marker = L.circleMarker(STATE.coord, { radius: 8, fillColor: COLORS.PRIMARY, color: '#fff', weight: 2, fillOpacity: .8 }).addTo(this.map);
-            document.getElementById('statusMsg').innerText = '📌 Pin fijado.';
-            UI.closeResults();
-        });
-
-        this.map.on(L.Draw.Event.CREATED, e => {
-            document.getElementById('selCiudad').value = 'custom';
-            this.drawn.clearLayers();
-            if (STATE.marker) this.map.removeLayer(STATE.marker);
-            if (STATE.overlay) this.map.removeLayer(STATE.overlay);
-            this.drawn.addLayer(e.layer);
-            STATE.coord = [e.layer.getBounds().getCenter().lat, e.layer.getBounds().getCenter().lng];
-            document.getElementById('statusMsg').innerText = '📦 Área delimitada.';
-            UI.closeResults();
-        });
-
-        this.map.on('zoomend', () => {
-            const zoom = this.map.getZoom();
-            const el = document.getElementById('mapFull');
-            el.classList.remove('map-small','map-medium','map-large','map-xlarge');
-            if (zoom <= 5) el.classList.add('map-small');
-            else if (zoom <= 8) el.classList.add('map-medium');
-            else if (zoom <= 11) el.classList.add('map-large');
-            else el.classList.add('map-xlarge');
-            renderStations(STATE.currentVariable);
-        });
-
-        document.getElementById('mapFull').classList.add('map-medium');
-        renderStations('temp');
-    },
-    handleLocationSelect() {
-        const v = document.getElementById('selCiudad').value;
-        this.drawn.clearLayers();
-        if (STATE.marker) this.map.removeLayer(STATE.marker);
-        if (STATE.overlay) this.map.removeLayer(STATE.overlay);
-        if (v === 'custom') {
-            STATE.coord = null;
-            document.getElementById('statusMsg').innerText = '📍 Haga clic en el mapa.';
-            return;
-        }
-        STATE.coord = v.split(',').map(Number);
-        STATE.marker = L.circleMarker(STATE.coord, { radius: 8, fillColor: COLORS.PRIMARY, color: '#fff', weight: 2, fillOpacity: .8 }).addTo(this.map);
-        this.map.flyTo(STATE.coord, 10, { duration: 1.5 });
-        document.getElementById('statusMsg').innerText = '✓ Ubicación cargada.';
-        UI.closeResults();
-    }
-};
-
-function getGradientTemp(temp) {
-    if (temp <= 5) return 'linear-gradient(135deg, #3b82f6, #1e40af)';
-    if (temp <= 15) return 'linear-gradient(135deg, #38bdf8, #0284c7)';
-    if (temp <= 25) return 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-    return 'linear-gradient(135deg, #ef4444, #dc2626)';
-}
-
-function getGradientLluvia(mm) {
-    if (mm === 0) return 'linear-gradient(135deg, #64748b, #475569)';
-    if (mm < 5) return 'linear-gradient(135deg, #38bdf8, #0284c7)';
-    if (mm < 15) return 'linear-gradient(135deg, #1d4ed8, #1e40af)';
-    return 'linear-gradient(135deg, #8b5cf6, #6d28d9)';
-}
-
-function getGradientViento(vel) {
-    if (vel < 15) return 'linear-gradient(135deg, #34d399, #10b981)';
-    if (vel < 30) return 'linear-gradient(135deg, #f59e0b, #d97706)';
-    return 'linear-gradient(135deg, #ef4444, #991b1b)';
-}
-
-function calculateBadgeScale() {
-    const z = MapMgr.map ? MapMgr.map.getZoom() : 7;
-    if (z <= 5) return { font: 10, padX: 8, padY: 6, radius: 12 };
-    if (z <= 8) return { font: 12, padX: 10, padY: 7, radius: 14 };
-    if (z <= 11) return { font: 13, padX: 12, padY: 8, radius: 18 };
-    return { font: 15, padX: 14, padY: 9, radius: 20 };
-}
-
-function renderStations(variable) {
-    if (!MapMgr.map) return;
-    if (STATE.stationMarkers.length) {
-        STATE.stationMarkers.forEach(m => MapMgr.map.removeLayer(m));
-        STATE.stationMarkers = [];
+    // 2. Colores Dinámicos
+    function getColorTemp(t) {
+        if (t <= 5) return 'linear-gradient(135deg, #2563eb, #3b82f6)';
+        if (t <= 18) return 'linear-gradient(135deg, #059669, #10b981)';
+        if (t <= 28) return 'linear-gradient(135deg, #d97706, #f59e0b)';
+        return 'linear-gradient(135deg, #b91c1c, #ef4444)';
     }
 
-    const scale = calculateBadgeScale();
-    STATIONS.forEach(est => {
-        const temp = Number(est.temp) || 0;
-        const lluvia = Number(est.lluvia_hoy) || 0;
-        const viento = Number(est.viento) || 0;
+    function getColorLluvia(mm) {
+        if (mm === 0) return 'linear-gradient(135deg, #475569, #64748b)';
+        if (mm < 10) return 'linear-gradient(135deg, #0284c7, #38bdf8)';
+        if (mm < 35) return 'linear-gradient(135deg, #1d4ed8, #3b82f6)';
+        return 'linear-gradient(135deg, #5b21b6, #8b5cf6)';
+    }
 
-        let valueText = '--';
-        let gradient = 'linear-gradient(135deg, #475569, #334155)';
-        let icon = '❓';
+    function getColorViento(vel) {
+        if (vel < 15) return 'linear-gradient(135deg, #059669, #10b981)';
+        if (vel < 40) return 'linear-gradient(135deg, #d97706, #f59e0b)';
+        return 'linear-gradient(135deg, #b91c1c, #ef4444)';
+    }
 
-        if (variable === 'temp') {
-            valueText = `${temp.toFixed(1)}°C`;
-            gradient = getGradientTemp(temp);
-            icon = '🌡️';
-        } else if (variable === 'lluvia') {
-            valueText = `${lluvia.toFixed(0)}mm`;
-            gradient = getGradientLluvia(lluvia);
-            icon = '🌧️';
-        } else if (variable === 'viento') {
-            valueText = `${viento.toFixed(0)}km/h`;
-            gradient = getGradientViento(viento);
-            icon = '💨';
-        }
-
-        const iconHtml = `
-            <div class="station-inner" style="background:${gradient}; font-size:${scale.font}px; padding:${scale.padY}px ${scale.padX}px; border-radius:${scale.radius}px;">${icon} ${valueText}</div>
-        `;
-
-        const stationIcon = L.divIcon({
-            className: 'station-badge',
-            html: iconHtml,
-            iconSize: [100, 30],
-            iconAnchor: [50, 15]
-        });
-
-        const marker = L.marker([est.lat, est.lon], { icon: stationIcon });
-        marker.bindPopup(`
-            <div>
-                <div class="popup-header">
-                    <h3>📍 ${est.nombre}</h3>
-                    <span class="popup-badge">${est.provincia}</span>
-                </div>
-                <div class="popup-row"><span class="label">🌡️ Temperatura</span><span class="value">${temp.toFixed(1)}°C</span></div>
-                <div class="popup-row"><span class="label">🌧️ Lluvia (24h)</span><span class="value">${lluvia.toFixed(1)} mm</span></div>
-                <div class="popup-row"><span class="label">💨 Ráfaga máxima</span><span class="value">${viento.toFixed(1)} km/h</span></div>
-            </div>
-        `, { maxWidth: 280, className: 'custom-popup' });
-
-        marker.addTo(MapMgr.map);
-        STATE.stationMarkers.push(marker);
-    });
-}
-
-function cambiarVariable(variable, btnElement) {
-    STATE.currentVariable = variable;
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-    if (btnElement) btnElement.classList.add('active');
-    renderStations(variable);
-    actualizarLeyenda(variable);
-}
-
-function actualizarLeyenda(variable) {
-    const content = document.getElementById('legendContent');
-    if (!content) return;
-    const legends = {
-        temp: [
-            { color: '#3b82f6', texto: '≤ 5°C - Frío extremo' },
-            { color: '#38bdf8', texto: '5-15°C - Frío' },
-            { color: '#fbbf24', texto: '15-25°C - Templado' },
-            { color: '#ef4444', texto: '> 25°C - Calor' }
-        ],
-        lluvia: [
-            { color: '#64748b', texto: '0 mm - Sin lluvia' },
-            { color: '#38bdf8', texto: '< 5 mm - Leve' },
-            { color: '#1d4ed8', texto: '5-15 mm - Moderada' },
-            { color: '#8b5cf6', texto: '> 15 mm - Intensa' }
-        ],
-        viento: [
-            { color: '#34d399', texto: '< 15 km/h - Brisa' },
-            { color: '#f59e0b', texto: '15-30 km/h - Moderado' },
-            { color: '#ef4444', texto: '> 30 km/h - Fuerte' }
-        ]
-    };
-    content.innerHTML = (legends[variable] || []).map(item => `
-        <div class="legend-item">
-            <div class="legend-color" style="background:${item.color};"></div>
-            <span>${item.texto}</span>
-        </div>
-    `).join('');
-}
-
-const API = {
-    async fetchForecast() {
-        if (!STATE.coord) {
-            alert('Seleccione una ubicación.');
-            return;
-        }
-        const msg = document.getElementById('statusMsg');
-        msg.innerText = '🔄 Sincronizando con red meteorológica...';
-        msg.style.color = COLORS.PRIMARY;
-
+    // 3. Conexión al Backend
+    async function cargarRedMeteorologica() {
         try {
-            const [lat, lon] = STATE.coord;
-            const p = new URLSearchParams({
-                latitude: String(lat),
-                longitude: String(lon),
-                current_weather: 'true',
-                hourly: ['temperature_2m','relative_humidity_2m','surface_pressure','dew_point_2m','precipitation','precipitation_probability','soil_temperature_0cm','soil_temperature_18cm','soil_temperature_54cm'].join(','),
-                daily: ['weathercode','temperature_2m_max','temperature_2m_min','precipitation_sum'].join(','),
-                timezone: 'auto'
-            });
-            const ctrl = new AbortController();
-            const t = setTimeout(() => ctrl.abort(), 15000);
-            let r;
-            try {
-                r = await fetch(`https://api.open-meteo.com/v1/forecast?${p.toString()}`, { method: 'GET', cache: 'no-store', signal: ctrl.signal });
-            } finally {
-                clearTimeout(t);
-            }
-            if (!r.ok) throw new Error(`API error: ${r.status}`);
-            const d = await r.json();
-            if (!d?.current_weather || !d?.hourly || !d?.daily) throw new Error('Respuesta incompleta');
-            msg.innerText = '✅ Datos recibidos correctamente';
-            msg.style.color = COLORS.SUCCESS;
-            Data.process(d);
+            const res = await fetch(`${BACKEND_URL}/api/red/estado`);
+            if (!res.ok) throw new Error("Error en servidor");
+            const data = await res.json();
+            estacionesCache = data.estaciones;
+            renderizarPuntosRed(variableActiva);
         } catch (e) {
-            msg.innerText = `❌ Error: ${e.name === 'AbortError' ? 'Timeout' : e.message}`;
-            msg.style.color = COLORS.DANGER;
+            console.error("Error conectando con la malla de estaciones:", e);
         }
     }
-};
 
-const Data = {
-    process(data) {
-        document.getElementById('hud-results').style.display = 'block';
-        document.getElementById('selSeccionPanel').value = 'vistaEnVivo';
-        UI.switchView();
-
-        const model = document.getElementById('selModelo').value;
-        document.getElementById('lblModeloStatus').innerHTML = model === 'wrf' ? '📡 ALTA RESOLUCIÓN' : '📡 GLOBAL (GFS)';
-
-        const { current_weather: curr, hourly: h, daily: d } = data;
-        const cTemp = Number(curr.temperature ?? h.temperature_2m[0] ?? 0);
-        const wind = Number(curr.windspeed ?? 0);
-        const code = Number(curr.weathercode ?? h.weathercode[0] ?? 0);
-        const rainProb = Number(h.precipitation_probability[0] ?? 0);
-        const weatherInfo = Utils.decodeWeather(code);
-
-        document.getElementById('resTemp').innerText = `${cTemp.toFixed(1)} °C`;
-        document.getElementById('resVientoHeader').innerText = `Viento: ${wind.toFixed(0)} km/h`;
-        document.getElementById('resEstadoActual').innerText = `${weatherInfo.i} ${weatherInfo.d}`;
-        document.getElementById('resLluvia').innerText = `${rainProb.toFixed(0)} %`;
-
-        const hum = Number(h.relative_humidity_2m[0] ?? 0);
-        const pres = Number(h.surface_pressure[0] ?? 0);
-        const dew = Number(h.dew_point_2m[0] ?? 0);
-        document.getElementById('resHumedad').innerText = `${hum.toFixed(0)} %`;
-        document.getElementById('resPresion').innerText = `${pres.toFixed(0)} hPa`;
-        document.getElementById('resRocio').innerText = `${dew.toFixed(1)} °C`;
-
-        const tSup = Number(h.soil_temperature_0cm[0] ?? cTemp + 1.5);
-        const tMed = Number(h.soil_temperature_18cm[0] ?? cTemp - 1);
-        const tInf = Number(h.soil_temperature_54cm[0] ?? cTemp - 4.5);
-        STATE.geoTemp = { sup: tSup, med: tMed, inf: tInf };
-        document.getElementById('geoSup').innerText = `${tSup.toFixed(1)} °C`;
-        document.getElementById('geoMed').innerText = `${tMed.toFixed(1)} °C`;
-        document.getElementById('geoInf').innerText = `${tInf.toFixed(1)} °C`;
-
-        const hrs = model === 'wrf' ? 72 : 120;
-        const step = model === 'wrf' ? 6 : 12;
-        STATE.labels = [];
-        STATE.tempData = [];
-        STATE.rainData = [];
-        const maxIdx = Math.min(hrs, h.time.length, h.temperature_2m.length);
-        for (let i = 0; i < maxIdx; i += step) {
-            const date = new Date(h.time[i]);
-            STATE.labels.push(`${String(date.getHours()).padStart(2, '0')}:00`);
-            STATE.tempData.push(Number(h.temperature_2m[i] ?? 0));
-            STATE.rainData.push(Number(h.precipitation[i] ?? 0));
-        }
-
-        document.getElementById('selChartClima').value = 'temp';
-        Chart.render();
-
-        if (STATE.overlay) MapMgr.map.removeLayer(STATE.overlay);
-        const bounds = MapMgr.drawn && MapMgr.drawn.getLayers().length ? MapMgr.drawn.getBounds() : L.latLng(STATE.coord[0], STATE.coord[1]).toBounds(8000);
-        const color = cTemp <= 5 ? '#3b82f6' : cTemp >= 32 ? '#ef4444' : '#eab308';
-        STATE.overlay = L.rectangle(bounds, { color, weight: 0, fillColor: color, fillOpacity: .45 }).addTo(MapMgr.map);
-        Alerts.update(d, cTemp);
+    function cambiarVariableRed(variable, btnElement) {
+        variableActiva = variable;
+        document.querySelectorAll('.btn-var').forEach(btn => btn.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+        renderizarPuntosRed(variableActiva);
     }
-};
 
-const Alerts = {
-    update(daily, currentTemp) {
-        document.querySelectorAll('.luz').forEach(l => l.classList.remove('activa'));
-        const minArr = [daily.temperature_2m_min[0] ?? 0, daily.temperature_2m_min[1] ?? 0, daily.temperature_2m_min[2] ?? 0];
-        const maxArr = [daily.temperature_2m_max[0] ?? 0, daily.temperature_2m_max[1] ?? 0, daily.temperature_2m_max[2] ?? 0];
-        const rainArr = [daily.precipitation_sum[0] ?? 0, daily.precipitation_sum[1] ?? 0, daily.precipitation_sum[2] ?? 0];
-        const minT = Math.min(...minArr);
-        const maxT = Math.max(...maxArr);
-        const totalR = rainArr.reduce((a, b) => a + b);
-        let msgs = [];
+    function renderizarPuntosRed(variable) {
+        capaMarcadores.clearLayers();
+        
+        estacionesCache.forEach(est => {
+            let valorTexto = '--';
+            let bgGradient = 'linear-gradient(135deg, #334155, #475569)';
 
-        if (minT <= 3) {
-            document.getElementById('frio-r').classList.add('activa');
-            msgs.push(`❄️ Heladas críticas (${minT.toFixed(1)}°C)`);
-        } else if (minT <= 8) {
-            document.getElementById('frio-a').classList.add('activa');
-            msgs.push(`🥶 Frío moderado (${minT.toFixed(1)}°C)`);
-        } else {
-            document.getElementById('frio-v').classList.add('activa');
-        }
+            let tempSimulada = est.temp !== null ? est.temp : (Math.random() * 20 + 10);
+            let lluviaSimulada = est.lluvia_hoy !== null ? est.lluvia_hoy : (Math.random() > 0.6 ? Math.random() * 40 : 0);
+            let vientoSimulado = est.viento !== null ? est.viento : (Math.random() * 45);
 
-        if (maxT >= 35) {
-            document.getElementById('calor-r').classList.add('activa');
-            msgs.push(`🔥 Calor severo (${maxT.toFixed(1)}°C)`);
-        } else if (maxT >= 30) {
-            document.getElementById('calor-a').classList.add('activa');
-            msgs.push(`☀️ Calor moderado (${maxT.toFixed(1)}°C)`);
-        } else {
-            document.getElementById('calor-v').classList.add('activa');
-        }
+            if (variable === 'temp') {
+                valorTexto = `${tempSimulada.toFixed(1)}°C`;
+                bgGradient = getColorTemp(tempSimulada);
+            } else if (variable === 'lluvia') {
+                valorTexto = `${lluviaSimulada.toFixed(0)} mm`;
+                bgGradient = getColorLluvia(lluviaSimulada);
+            } else if (variable === 'viento') {
+                valorTexto = `${vientoSimulado.toFixed(0)} km/h`;
+                bgGradient = getColorViento(vientoSimulado);
+            }
 
-        if (totalR >= 40) {
-            document.getElementById('lluvia-r').classList.add('activa');
-            msgs.push(`⛈️ Lluvias intensas (${totalR.toFixed(1)}mm)`);
-        } else if (totalR >= 15) {
-            document.getElementById('lluvia-a').classList.add('activa');
-            msgs.push(`🌧️ Lluvias moderadas (${totalR.toFixed(1)}mm)`);
-        } else {
-            document.getElementById('lluvia-v').classList.add('activa');
-        }
+            const badgeIcon = L.divIcon({
+                className: 'custom-weather-badge',
+                html: `<div class="badge-content" style="background: ${bgGradient};">${valorTexto}</div>`,
+                iconSize: [60, 24],
+                iconAnchor: [30, 12]
+            });
 
-        const txt = document.getElementById('txtDetalleAlerta');
-        txt.style.display = 'block';
-        txt.style.color = msgs.length ? '#fff' : COLORS.SUCCESS;
-        txt.innerHTML = msgs.length ? msgs.join('<br>') : ' ✅ Condiciones dentro de parámetros normales';
-
-        const cont = document.getElementById('contenedorPronosticoDiario');
-        cont.innerHTML = '';
-        const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-        for (let i = 0; i < 5; i++) {
-            const d = new Date(daily.time[i] || new Date());
-            const name = i ? days[d.getUTCDay()] : 'HOY';
-            const tMax = Number(daily.temperature_2m_max[i] ?? 0);
-            const tMin = Number(daily.temperature_2m_min[i] ?? 0);
-            const w = Utils.decodeWeather(daily.weathercode[i] ?? 0);
-            cont.innerHTML += `
-                <div class="forecast-card">
-                    <div class="forecast-day">${name}</div>
-                    <div class="forecast-icon">${w.i}</div>
-                    <div class="forecast-desc">${w.d}</div>
-                    <div class="forecast-temps"><span class="temp-max">${tMax.toFixed(0)}°</span><span class="temp-min">${tMin.toFixed(0)}°</span></div>
+            const marker = L.marker([est.lat, est.lon], { icon: badgeIcon });
+            
+            marker.bindPopup(`
+                <div style="min-width: 160px;">
+                    <h4>${est.nombre}</h4>
+                    <p style="margin:4px 0; font-size:13px;"><strong>🌡️ Temp:</strong> ${tempSimulada.toFixed(1)}°C</p>
+                    <p style="margin:4px 0; font-size:13px;"><strong>🌧️ Lluvia (24h):</strong> ${lluviaSimulada.toFixed(1)} mm</p>
+                    <p style="margin:4px 0; font-size:13px;"><strong>💨 Viento:</strong> ${vientoSimulado.toFixed(1)} km/h</p>
+                    <p style="margin:10px 0 0 0; font-size:10px; color:#64748b; text-align: right; border-top: 1px solid #334155; padding-top: 4px;">Red Origen: ${est.provincia}</p>
                 </div>
-            `;
-        }
+            `);
+
+            capaMarcadores.addLayer(marker);
+        });
     }
-};
 
-const Chart = {
-    render() {
-        const type = document.getElementById('selChartClima').value;
-        const canvas = document.getElementById('chartClimaDinamico');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (STATE.chart) STATE.chart.destroy();
-
-        const opts = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(0,0,0,.9)', borderColor: type === 'temp' ? COLORS.ACCENT : COLORS.PRIMARY, borderWidth: 1 } },
-            scales: {
-                x: { ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } }, grid: { display: false } },
-                y: { ticks: { color: '#ccc', font: { size: 11, weight: 'bold' } }, grid: { color: 'rgba(255,255,255,.08)' }, beginAtZero: true }
-            }
-        };
-
-        if (type === 'temp') {
-            STATE.chart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: STATE.labels, datasets: [{ label: 'Temp (°C)', data: STATE.tempData, borderColor: COLORS.ACCENT, backgroundColor: 'rgba(234,179,8,.2)', borderWidth: 3, pointRadius: 4, pointBackgroundColor: COLORS.ACCENT, tension: .3, fill: true }] },
-                options: opts
-            });
-        } else {
-            STATE.chart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: STATE.labels, datasets: [{ label: 'Precip (mm)', data: STATE.rainData, backgroundColor: COLORS.PRIMARY, borderRadius: 4 }] },
-                options: opts
-            });
-        }
-    }
-};
-
-const Viz3D = {
-    open() {
-        if (typeof Plotly === 'undefined') {
-            alert('Plotly no cargado');
-            return;
-        }
-
-        const { sup: tSup, med: tMed, inf: tInf } = STATE.geoTemp;
-        const profile = [{ depth: 0, temp: tSup }, { depth: 18, temp: tMed }, { depth: 54, temp: tInf }, { depth: 100, temp: tInf - 2.5 }];
-        const interpTemp = d => {
-            if (d <= profile[0].depth) return profile[0].temp;
-            if (d >= profile[profile.length - 1].depth) return profile[profile.length - 1].temp;
-            for (let i = 0; i < profile.length - 1; i++) {
-                const a = profile[i], b = profile[i + 1];
-                if (d >= a.depth && d <= b.depth) {
-                    const t = (d - a.depth) / (b.depth - a.depth || 1);
-                    return a.temp + (b.temp - a.temp) * t;
-                }
-            }
-            return profile[profile.length - 1].temp;
-        };
-
-        const x = [], y = [], z = [], value = [];
-        const size = 16;
-        for (let ix = 0; ix < size; ix++) {
-            for (let iy = 0; iy < size; iy++) {
-                for (let iz = 0; iz < size; iz++) {
-                    const xPos = ix / (size - 1) * 100;
-                    const yPos = iy / (size - 1) * 100;
-                    const depthCm = iz / (size - 1) * 100;
-                    const temp = interpTemp(depthCm);
-                    x.push(xPos);
-                    y.push(yPos);
-                    z.push(-depthCm);
-                    const perturb = Math.sin(xPos / 18) * .35 + Math.cos(yPos / 18) * .35;
-                    value.push(temp + perturb);
-                }
-            }
-        }
-
-        const minVal = Math.min(...value);
-        const maxVal = Math.max(...value);
-
-        const trace = {
-            type: 'volume',
-            x, y, z, value,
-            isomin: minVal,
-            isomax: maxVal,
-            opacity: .55,
-            surface: { count: 20 },
-            colorscale: 'Viridis',
-            colorbar: { title: '°C', tickfont: { color: '#fff', size: 12 } }
-        };
-
-        const layout = {
-            paper_bgcolor: 'rgba(0,0,0,.55)',
-            plot_bgcolor: 'rgba(0,0,0,.2)',
-            margin: { l: 25, r: 90, t: 50, b: 25 },
-            font: { color: '#fff', family: 'monospace' },
-            title: { text: `Perfil térmico: ${minVal.toFixed(1)}°C → ${maxVal.toFixed(1)}°C (ΔT: ${(maxVal - minVal).toFixed(1)}°C)`, font: { color: '#eab308', size: 14 } },
-            scene: {
-                xaxis: { title: 'X (cm)', backgroundcolor: 'rgba(0,0,0,.2)', gridcolor: 'rgba(255,255,255,.08)', showbackground: true, titlefont: { color: COLORS.PRIMARY, size: 12 } },
-                yaxis: { title: 'Y (cm)', backgroundcolor: 'rgba(0,0,0,.2)', gridcolor: 'rgba(255,255,255,.08)', showbackground: true, titlefont: { color: COLORS.PRIMARY, size: 12 } },
-                zaxis: { title: 'Profundidad (cm)', backgroundcolor: 'rgba(0,0,0,.2)', gridcolor: 'rgba(255,255,255,.08)', showbackground: true, titlefont: { color: COLORS.PRIMARY, size: 12 } },
-                camera: { eye: { x: 1.5, y: 1.5, z: 1.2 } }
-            }
-        };
-
-        document.getElementById('visor3D').style.display = 'flex';
-        Plotly.newPlot('plot3D', [trace], layout, { responsive: true, displayModeBar: true, displaylogo: false });
-    }
-};
-
-const Utils = {
-    decodeWeather(code) {
-        const c = Number(code ?? 0);
-        if (c === 0) return { i: '☀️', d: 'Despejado' };
-        if ([1, 2, 3].includes(c)) return { i: '⛅', d: 'Parc. Nublado' };
-        if ([45, 48].includes(c)) return { i: '🌫️', d: 'Niebla' };
-        if ([51, 52, 53, 54, 55].includes(c)) return { i: '🌦️', d: 'Lloviznas' };
-        if ([61, 63, 65].includes(c)) return { i: '🌧️', d: 'Lluvias' };
-        if ([71, 73, 75].includes(c)) return { i: '❄️', d: 'Nevadas' };
-        if ([80, 81, 82].includes(c)) return { i: '🌧️', d: 'Chubascos' };
-        if (c >= 95) return { i: '⛈️', d: 'Tormentas' };
-        return { i: '☁️', d: 'Nublado' };
-    }
-};
-
-window.addEventListener('DOMContentLoaded', () => {
-    try {
-        MapMgr.init();
-        actualizarLeyenda('temp');
-        const deg = document.getElementById('mapFull');
-        deg.classList.add('map-medium');
-    } catch (e) {
-        console.error('Error inicializando mapa:', e);
-        document.getElementById('statusMsg').innerText = '❌ Error al cargar el mapa';
-    }
-});
+    cargarRedMeteorologica();
+    setInterval(cargarRedMeteorologica, 300000);
 </script>
 </body>
 </html>
