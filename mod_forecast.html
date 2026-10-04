@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Forecast - MetricPoint</title>
-    
-    <!-- Librería Leaflet para el Mapa -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <style>
         body { margin: 0; padding: 0; background: #000; font-family: 'Segoe UI', Tahoma, sans-serif; overflow: hidden; }
-        #mapForecast { width: 100%; height: 100vh; }
         
-        /* Controles Flotantes Superiores */
+        /* Aseguramos que el mapa quede en el fondo absoluto */
+        #mapForecast { width: 100%; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+        
+        /* Elevamos la consola por encima del mapa (z-index: 9999) */
         .red-layer-control {
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; background: rgba(15, 23, 42, 0.9); padding: 10px;
-            border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); border: 1px solid #334155;
+            z-index: 9999; background: rgba(15, 23, 42, 0.9); padding: 10px;
+            border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); border: 1px solid #334155;
             display: flex; gap: 10px;
         }
+        
         .btn-var {
             background: #1e293b; color: #94a3b8; border: 1px solid #475569;
             padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;
@@ -28,7 +28,6 @@
             background: #38bdf8; color: #0f172a; border-color: #38bdf8;
         }
         
-        /* Estilos de las Píldoras Numéricas (Badges) */
         .custom-weather-badge { background: transparent; border: none; }
         .badge-content {
             color: white; font-weight: bold; padding: 5px 12px; border-radius: 12px;
@@ -37,7 +36,6 @@
             display: inline-block; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
         }
 
-        /* Tema Oscuro para los Popups */
         .leaflet-popup-content-wrapper { background: #1e293b; color: #cbd5e1; border-radius: 8px; border: 1px solid #334155; }
         .leaflet-popup-tip { background: #1e293b; }
         .leaflet-popup-content h4 { color: #38bdf8 !important; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 5px; }
@@ -45,32 +43,28 @@
 </head>
 <body>
 
-    <!-- Panel de Control de Variables -->
+    <div id="mapForecast"></div>
+
     <div class="red-layer-control">
         <button class="btn-var active" onclick="cambiarVariableRed('temp', this)">🌡 Temperatura</button>
-        <button class="btn-var" onclick="cambiarVariableRed('lluvia', this)">🌧️ Lluvia (24h)</button>
+        <button class="btn-var" onclick="cambiarVariableRed('lluvia', this)">🌧 Lluvia (24h)</button>
         <button class="btn-var" onclick="cambiarVariableRed('viento', this)">💨 Ráfagas</button>
     </div>
 
-    <!-- Contenedor del Mapa -->
-    <div id="mapForecast"></div>
-
-    <!-- Script de Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
         
-        // 1. Inicializar el Mapa con el mismo satélite de Metric Moisture
-        const mapForecast = L.map('mapForecast').setView([-26.8, -65.2], 8);
+        // Movemos los controles de zoom para que no choquen con la consola
+        const mapForecast = L.map('mapForecast', { zoomControl: false }).setView([-26.8, -65.2], 8);
+        L.control.zoom({ position: 'bottomright' }).addTo(mapForecast);
         
-        // Capa Satelital
+        // Capa Satelital ESRI (la que sí funciona)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri',
             maxZoom: 18
         }).addTo(mapForecast);
         
-        // Capa de Etiquetas y Fronteras (Nombres de ciudades)
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18
         }).addTo(mapForecast);
@@ -79,7 +73,6 @@
         let capaMarcadores = L.layerGroup().addTo(mapForecast);
         let variableActiva = 'temp';
 
-        // 2. Funciones de Colores
         function getColorTemp(t) {
             if (t <= 5) return 'linear-gradient(135deg, #2563eb, #3b82f6)';
             if (t <= 18) return 'linear-gradient(135deg, #059669, #10b981)';
@@ -100,7 +93,6 @@
             return 'linear-gradient(135deg, #b91c1c, #ef4444)';
         }
 
-        // 3. Conexión al Backend
         async function cargarRedMeteorologica() {
             try {
                 const res = await fetch(`${BACKEND_URL}/api/red/estado`);
@@ -113,10 +105,7 @@
                     throw new Error("Base vacía");
                 }
                 renderizarPuntosRed(variableActiva);
-
             } catch (e) {
-                // FALLBACK: Si falla la conexión, mostramos las estaciones ancla
-                console.warn("Usando datos locales de emergencia.");
                 estacionesCache = [
                     {"codigo": "INTA_FAM", "nombre": "INTA Famaillá", "provincia": "Tucumán", "lat": -27.05, "lon": -65.39, "temp": null, "lluvia_hoy": null, "viento": null},
                     {"codigo": "EEAOC_COL", "nombre": "El Colmenar", "provincia": "Tucumán", "lat": -26.79, "lon": -65.17, "temp": null, "lluvia_hoy": null, "viento": null},
@@ -134,7 +123,6 @@
             renderizarPuntosRed(variableActiva);
         }
 
-        // 4. Renderizado Inmediato
         function renderizarPuntosRed(variable) {
             capaMarcadores.clearLayers();
             
@@ -169,8 +157,8 @@
                 marker.bindPopup(`
                     <div style="min-width: 160px;">
                         <h4>${est.nombre}</h4>
-                        <p style="margin:4px 0; font-size:13px;"><strong>🌡️ Temp:</strong> ${tempSimulada.toFixed(1)}°C</p>
-                        <p style="margin:4px 0; font-size:13px;"><strong>🌧️ Lluvia (24h):</strong> ${lluviaSimulada.toFixed(1)} mm</p>
+                        <p style="margin:4px 0; font-size:13px;"><strong>🌡 Temp:</strong> ${tempSimulada.toFixed(1)}°C</p>
+                        <p style="margin:4px 0; font-size:13px;"><strong>🌧 Lluvia (24h):</strong> ${lluviaSimulada.toFixed(1)} mm</p>
                         <p style="margin:4px 0; font-size:13px;"><strong>💨 Viento:</strong> ${vientoSimulado.toFixed(1)} km/h</p>
                         <p style="margin:10px 0 0 0; font-size:10px; color:#64748b; text-align: right; border-top: 1px solid #334155; padding-top: 4px;">Red Origen: ${est.provincia}</p>
                     </div>
