@@ -71,22 +71,22 @@
                 <span id="hud-status" class="flex h-3 w-3"><span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span></span>
             </div>
 
-            <!-- Selector de Estaciones (Idéntico a Meteo Monteros) -->
+            <!-- Selector de Estaciones Reales -->
             <select id="stationSelector" onchange="sincronizarHUD()" class="w-full bg-slate-900 border border-sky-500/50 text-sky-300 font-bold text-xs rounded-lg py-2 px-2 focus:outline-none appearance-none cursor-pointer">
-                <option value="IMONTE1127|-27.17|-65.50|Monteros (INTA)">Monteros (INTA)</option>
-                <option value="ISANMI169|-26.83|-65.20|SM de Tucumán 169">SMT (zona norte)</option>
-                <option value="ISANMI87|-26.83|-65.20|SM de Tucumán 87">SMT (zona centro)/option>
-                <option value="IVILLA1124|-26.80|-65.25|Villa Carmela">EL PUESTITO</option>
-                <option value="IDEABR3|-26.84|-65.16|Zona Este">7 DE ABRIL - Burruyacu</option>
-                <option value="IESCUE2|-26.83|-65.20|Zona Central">GOBERNADOR GARMENDIA</option>
-                <option value="IBURRU13|-26.50|-64.74|Burruyacú">SANTA ROSA - Burruyacú</option>
-                <option value="IBARRI105|-26.83|-65.20|Barrio (SMT)">SMT - Barrio San jose</option>
-                <option value="IYERBA8|-26.81|-65.32|Yerba Buena 8">Yerba Buena</option>
-                <option value="IYERBA10|-26.81|-65.32|Yerba Buena 10">Yerba Buena</option>
-                <option value="ISARGE7|-26.83|-65.20|San Miguel (Sarge)">SARGENTO MOYA - Monteros</option>
-                <option value="ICONCE101|-27.34|-65.59|Concepción">BOMBEROS - Concepción</option>
-                <option value="ILEALE3|-27.19|-65.30|Leales 3">TACANAS - Leales</option>
-                <option value="ILEALE2|-27.19|-65.30|Leales 2">MUJER MUERTA - Leales</option>
+                <option value="IMONTE1127|-27.17|-65.50|Monteros (INTA)">IMONTE1127 - Monteros (INTA)</option>
+                <option value="ISANMI169|-26.83|-65.20|SM de Tucumán 169">ISANMI169 - SMT 169</option>
+                <option value="ISANMI87|-26.83|-65.20|SM de Tucumán 87">ISANMI87 - SMT 87</option>
+                <option value="IVILLA1124|-26.80|-65.25|Villa Carmela">IVILLA1124 - Villa Carmela</option>
+                <option value="IDEABR3|-26.84|-65.16|Zona Este">IDEABR3 - Zona Este</option>
+                <option value="IESCUE2|-26.83|-65.20|Zona Central">IESCUE2 - Zona Central</option>
+                <option value="IBURRU13|-26.50|-64.74|Burruyacú">IBURRU13 - Burruyacú</option>
+                <option value="IBARRI105|-26.83|-65.20|Barrio (SMT)">IBARRI105 - Barrio (SMT)</option>
+                <option value="IYERBA8|-26.81|-65.32|Yerba Buena 8">IYERBA8 - Yerba Buena 8</option>
+                <option value="IYERBA10|-26.81|-65.32|Yerba Buena 10">IYERBA10 - Yerba Buena 10</option>
+                <option value="ISARGE7|-26.83|-65.20|San Miguel (Sarge)">ISARGE7 - SMT (Sarge)</option>
+                <option value="ICONCE101|-27.34|-65.59|Concepción">ICONCE101 - Concepción</option>
+                <option value="ILEALE3|-27.19|-65.30|Leales 3">ILEALE3 - Leales 3</option>
+                <option value="ILEALE2|-27.19|-65.30|Leales 2">ILEALE2 - Leales 2</option>
             </select>
 
             <!-- Datos Físicos en vivo -->
@@ -149,10 +149,8 @@
             </div>
 
             <!-- Contenido: Advertencia -->
-            <div id="mod-advertencia" class="hidden h-full flex items-center justify-center">
-                <div class="text-center text-red-500/50 font-mono text-sm border border-dashed border-red-900/50 p-6 rounded-lg w-full">
-                    [ MÓDULO ADVERTENCIA: Esperando tus instrucciones de diseño... ]
-                </div>
+            <div id="mod-advertencia" class="hidden h-full">
+                <!-- Se inyecta por JS al tocar la pestaña -->
             </div>
 
         </div>
@@ -162,40 +160,25 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // --- 1. CONFIGURACIÓN DEL MAPA ---
+        // ==========================================
+        // 1. CONFIGURACIÓN DEL MAPA
+        // ==========================================
         const mapForecast = L.map('mapaCentral', { zoomControl: false }).setView([-26.83, -65.20], 9);
         L.control.zoom({ position: 'bottomright' }).addTo(mapForecast);
         
-        // Capa Satelital ESRI
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18,
-            attribution: 'Tiles &copy; Esri'
+            maxZoom: 18, attribution: 'Tiles &copy; Esri'
         }).addTo(mapForecast);
 
-        // Capa de Fronteras y Nombres
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18
         }).addTo(mapForecast);
 
         let marcadorActual = null;
 
-        // --- 2. CONTROL DE MÓDULOS INFERIORES ---
-        function activarModulo(idModulo, btnElement) {
-            // Ocultar todos los contenidos
-            document.getElementById('mod-tiempo-real').classList.replace('block', 'hidden');
-            document.getElementById('mod-clima').classList.replace('block', 'hidden');
-            document.getElementById('mod-pronostico').classList.replace('block', 'hidden');
-            document.getElementById('mod-advertencia').classList.replace('block', 'hidden');
-            
-            // Quitar clase active de todos los botones
-            document.querySelectorAll('.mod-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Activar el seleccionado
-            document.getElementById(idModulo).classList.replace('hidden', 'block');
-            btnElement.classList.add('active');
-        }
-
-        // --- 3. EXTRACCIÓN DE DATOS DE METEO MONTEROS (WUnderground) ---
+        // ==========================================
+        // 2. EXTRACCIÓN DE DATOS TELEMÉTRICOS (HUD)
+        // ==========================================
         async function sincronizarHUD() {
             const selector = document.getElementById('stationSelector');
             const data = selector.value.split('|');
@@ -204,7 +187,7 @@
             const lon = parseFloat(data[2]);
             const nombreEstacion = data[3];
 
-            // 1. Mover el mapa a la estación seleccionada
+            // Mover mapa y crear marcador
             mapForecast.flyTo([lat, lon], 13, { duration: 1.5 });
             
             if (marcadorActual) mapForecast.removeLayer(marcadorActual);
@@ -212,13 +195,12 @@
                 radius: 10, fillColor: "#38bdf8", color: "#ffffff", weight: 2, fillOpacity: 0.8
             }).addTo(mapForecast).bindPopup(`ACTIVO:<br>${nombreEstacion}`).openPopup();
 
-            // 2. Estado de Carga
+            // Estado de UI: Cargando
             const msgHUD = document.getElementById('hud-msg');
             msgHUD.innerText = "Sincronizando satélite...";
             msgHUD.className = "text-[10px] text-sky-400 font-mono text-center mt-1 animate-pulse";
             document.getElementById('hud-status').innerHTML = '<span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-sky-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>';
 
-            // 3. Petición a WUnderground (Lógica Meteo Monteros)
             const url = `https://api.weather.com/v2/pws/observations/current?stationId=${stationId}&format=json&units=e&apiKey=e1f10a1e78da46f5b10a1e78da96f525`;
 
             try {
@@ -232,24 +214,22 @@
                 const obs = json.observations[0];
                 const imp = obs.imperial;
 
-                // Conversiones Matemáticas
+                // Conversiones Matemáticas a Métrico
                 const tempC = ((imp.temp - 32) * 5 / 9).toFixed(1);
                 const windKmh = (imp.windSpeed * 1.60934).toFixed(1);
                 const precipMm = (imp.precipTotal * 25.4).toFixed(1);
 
-                // Inyectar en el HUD
                 document.getElementById('hud-temp').innerText = tempC;
                 document.getElementById('hud-hum').innerText = obs.humidity;
                 document.getElementById('hud-viento').innerText = windKmh;
                 document.getElementById('hud-lluvia').innerText = precipMm;
 
-                // Mensaje de Éxito
                 msgHUD.innerText = `SISTEMA OPERATIVO • ACTUALIZADO ${obs.obsTimeLocal.split(' ')[1]}`;
                 msgHUD.className = "text-[10px] text-emerald-400 font-mono text-center mt-1";
                 document.getElementById('hud-status').innerHTML = '<span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>';
 
             } catch (error) {
-                // Si la estación se apaga, lo indicamos en rojo en el HUD
+                // UI: Offline
                 ['hud-temp', 'hud-hum', 'hud-viento', 'hud-lluvia'].forEach(id => document.getElementById(id).innerText = '--');
                 msgHUD.innerText = "PÉRDIDA DE SEÑAL • ESTACIÓN OFFLINE";
                 msgHUD.className = "text-[10px] text-red-500 font-mono text-center mt-1";
@@ -260,11 +240,145 @@
             }
         }
 
-        // Cargar por primera vez al abrir
-        window.onload = () => sincronizarHUD();
-        // Actualizar datos de telemetría cada 5 minutos
-        setInterval(sincronizarHUD, 300000);
+        // ==========================================
+        // 3. MOTOR DE ADVERTENCIAS (SMN VIA ALLORIGINS)
+        // ==========================================
+        const CORS_PROXY = "https://api.allorigins.win/get?url=";
 
+        async function fetchSMNFeed(urlFeed, tipoAlerta, iconoAlerta) {
+            try {
+                const response = await fetch(CORS_PROXY + encodeURIComponent(urlFeed));
+                if (!response.ok) return [];
+                const data = await response.json();
+                
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(data.contents, "application/xml");
+                const items = xml.querySelectorAll("item");
+                let alertasFiltradas = [];
+
+                items.forEach(item => {
+                    const title = item.querySelector("title")?.textContent || "";
+                    const desc = item.querySelector("description")?.textContent || "";
+                    const link = item.querySelector("link")?.textContent || "#";
+
+                    const cleanTitle = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
+                    const cleanDesc = desc.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim();
+
+                    // Filtro para Tucumán y Salta
+                    const regexZona = /Tucum[aá]n|Salta/i;
+                    if (regexZona.test(cleanTitle) || regexZona.test(cleanDesc)) {
+                        
+                        let nivel = "AMARILLO";
+                        let colorClass = "text-yellow-400 border-yellow-500/50 bg-yellow-500/10 shadow-[0_0_15px_rgba(234,179,8,0.15)]";
+                        let colorBadge = "bg-yellow-500 text-yellow-950 border-yellow-400";
+                        
+                        if (/naranja/i.test(cleanTitle) || /naranja/i.test(cleanDesc)) {
+                            nivel = "NARANJA";
+                            colorClass = "text-orange-400 border-orange-500/50 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.15)]";
+                            colorBadge = "bg-orange-500 text-orange-950 border-orange-400";
+                        } else if (/roja|rojo/i.test(cleanTitle) || /roja|rojo/i.test(cleanDesc)) {
+                            nivel = "ROJO";
+                            colorClass = "text-red-500 border-red-500/50 bg-red-500/10 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
+                            colorBadge = "bg-red-600 text-white border-red-400 animate-pulse";
+                        }
+
+                        alertasFiltradas.push({ titulo: cleanTitle, descripcion: cleanDesc, link: link, tipo: tipoAlerta, icono: iconoAlerta, nivel: nivel, colorClass: colorClass, colorBadge: colorBadge });
+                    }
+                });
+                return alertasFiltradas;
+            } catch (e) {
+                console.error(`Error feed ${tipoAlerta}:`, e);
+                return [];
+            }
+        }
+
+        async function cargarAdvertenciasSMN() {
+            const contenedor = document.getElementById('mod-advertencia');
+            
+            contenedor.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center space-y-3">
+                    <i class="fa-solid fa-satellite-dish text-4xl text-sky-500 animate-ping"></i>
+                    <p class="text-xs font-mono text-sky-400 uppercase tracking-widest">Interceptando protocolos CAP del SMN...</p>
+                </div>
+            `;
+
+            const canales = [
+                { url: "https://ssl.smn.gob.ar/feeds/CAP/rss_alertaCAP_nuevo_2026.xml", tipo: "Alerta Meteorológica", icono: "fa-triangle-exclamation" },
+                { url: "https://ssl.smn.gob.ar/feeds/CAP/oladecalor/rss_ola_calor_nuevo.xml", tipo: "Temperaturas Extremas", icono: "fa-temperature-arrow-up" },
+                { url: "https://ssl.smn.gob.ar/feeds/CAP/avisocortoplazo/rss_acpCAP.xml", tipo: "Aviso a Corto Plazo", icono: "fa-bolt" }
+            ];
+
+            const resultados = await Promise.all(canales.map(canal => fetchSMNFeed(canal.url, canal.tipo, canal.icono)));
+            const todasLasAlertas = resultados.flat();
+
+            if (todasLasAlertas.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="h-full flex items-center justify-center p-4">
+                        <div class="w-full max-w-lg border border-emerald-500/30 bg-emerald-900/20 p-5 rounded-xl flex items-center gap-5 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                            <div class="bg-emerald-500/20 p-4 rounded-full text-emerald-400">
+                                <i class="fa-solid fa-shield-check text-3xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-emerald-400 font-bold text-sm tracking-widest uppercase">Zona de Exclusión Segura</h3>
+                                <p class="text-xs text-slate-400 mt-1">Los radares del SMN no registran advertencias activas ni avisos a corto plazo para Tucumán y Salta.</p>
+                            </div>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            let html = `
+                <div class="w-full h-full overflow-y-auto pr-2 pb-4 flex flex-col justify-start">
+                    <div class="sticky top-0 bg-[#020617] z-10 pb-2 mb-3 border-b border-slate-700/80 flex items-center justify-between">
+                        <h3 class="text-[11px] font-black tracking-widest text-slate-400 uppercase"><i class="fa-solid fa-radar mr-2"></i>Intercepciones: Tucumán & Salta</h3>
+                        <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded font-mono">${todasLasAlertas.length} DETECCIONES</span>
+                    </div>
+            `;
+            
+            todasLasAlertas.forEach(alerta => {
+                html += `
+                    <div class="w-full border ${alerta.colorClass} p-4 rounded-xl flex flex-col gap-2 mb-3">
+                        <div class="flex items-start justify-between border-b border-current/20 pb-2 mb-1">
+                            <span class="text-[11px] font-bold uppercase tracking-widest"><i class="fa-solid ${alerta.icono} mr-2"></i>${alerta.tipo}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded border font-black tracking-wider ${alerta.colorBadge}">NIVEL ${alerta.nivel}</span>
+                        </div>
+                        <h4 class="text-sm font-semibold text-white leading-tight">${alerta.titulo}</h4>
+                        <p class="text-[11px] opacity-80 line-clamp-3 mt-1">${alerta.descripcion}</p>
+                        <a href="${alerta.link}" target="_blank" class="text-[10px] uppercase font-bold mt-2 hover:underline self-start bg-black/20 px-2 py-1 rounded"><i class="fa-solid fa-link mr-1"></i>Ver reporte oficial</a>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            contenedor.innerHTML = html;
+        }
+
+        // ==========================================
+        // 4. CONTROL DE PESTAÑAS (MÓDULOS INFERIORES)
+        // ==========================================
+        function activarModulo(idModulo, btnElement) {
+            document.getElementById('mod-tiempo-real').classList.replace('block', 'hidden');
+            document.getElementById('mod-clima').classList.replace('block', 'hidden');
+            document.getElementById('mod-pronostico').classList.replace('block', 'hidden');
+            document.getElementById('mod-advertencia').classList.replace('block', 'hidden');
+            
+            document.querySelectorAll('.mod-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(idModulo).classList.replace('hidden', 'block');
+            btnElement.classList.add('active');
+
+            if (idModulo === 'mod-advertencia') {
+                cargarAdvertenciasSMN();
+            }
+        }
+
+        // ==========================================
+        // 5. INICIALIZACIÓN
+        // ==========================================
+        window.onload = () => {
+            sincronizarHUD();
+        };
+        setInterval(sincronizarHUD, 300000); // 5 minutos auto-refresh
     </script>
 </body>
 </html>
