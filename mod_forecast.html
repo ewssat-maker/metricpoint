@@ -71,6 +71,7 @@
     <!-- SECCIÓN SUPERIOR: MAPA DOMINANTE -->
     <div class="relative w-full h-[65vh] border-b-2 border-sky-500/50 shadow-[0_10px_30px_rgba(2,132,199,0.2)]">
         
+        <!-- Contenedor del Mapa -->
         <div id="mapaCentral"></div>
 
         <!-- HUD FLOTANTE: Telemetría de WUnderground -->
@@ -155,7 +156,7 @@
                 </div>
             </div>
 
-            <!-- NUEVO MÓDULO ADVERTENCIA (TÁCTICO) -->
+            <!-- MÓDULO ADVERTENCIA (TÁCTICO) -->
             <div id="mod-advertencia" class="hidden h-full">
                 <!-- Se inyecta dinámicamente -->
             </div>
@@ -244,7 +245,7 @@
         }
 
         // ==========================================
-        // 3. MOTOR DE ALERTAS SMN (PANEL TÁCTICO)
+        // 3. MOTOR DE ALERTAS SMN (PANEL TÁCTICO 72H)
         // ==========================================
         const CORS_PROXY = "https://api.allorigins.win/get?url=";
 
@@ -267,8 +268,9 @@
                     const cleanTitle = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
                     const cleanDesc = desc.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim();
 
-                    // Filtro Geográfico: Solo Tucumán y Salta
-                    const regexZona = /Tucum[aá]n|Salta/i;
+                    // RADAR MEJORADO: Busca provincias y zonas topográficas del NOA
+                    const regexZona = /Tucum[aá]n|Salta|Taf[ií] del Valle|Calchaqu[ií]|Puna|Andina|Cafayate|San Carlos/i;
+                    
                     if (regexZona.test(cleanTitle) || regexZona.test(cleanDesc)) {
                         
                         let nivel = "AMARILLO";
@@ -293,7 +295,6 @@
         async function cargarAdvertenciasSMN() {
             const contenedor = document.getElementById('mod-advertencia');
             
-            // Layout de 3 columnas estilo Consola de Mando
             contenedor.innerHTML = `
                 <div class="h-full flex flex-col">
                     <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-2 shrink-0">
@@ -302,28 +303,25 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 overflow-hidden">
-                        <!-- Columna 1: Alertas Generales -->
                         <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
                             <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
-                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-cloud-bolt text-yellow-500 mr-1"></i> Alertas Met.</span>
+                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-cloud-bolt text-yellow-500 mr-1"></i> Alertas Met. (72h)</span>
                                 <span id="badge-alertas" class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span></span>
                             </div>
                             <div id="col-alertas" class="flex-1 overflow-y-auto p-2 radar-scan"></div>
                         </div>
 
-                        <!-- Columna 2: Extremos -->
                         <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
                             <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
-                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-temperature-arrow-up text-orange-500 mr-1"></i> Temp. Extremas</span>
+                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-temperature-arrow-up text-orange-500 mr-1"></i> Extremos (72h)</span>
                                 <span id="badge-extremos" class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span></span>
                             </div>
                             <div id="col-extremos" class="flex-1 overflow-y-auto p-2 radar-scan"></div>
                         </div>
 
-                        <!-- Columna 3: Avisos a Corto Plazo -->
                         <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
                             <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
-                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Corto Plazo (ACP)</span>
+                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Corto Plazo (Inmediato)</span>
                                 <span id="badge-acp" class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span></span>
                             </div>
                             <div id="col-acp" class="flex-1 overflow-y-auto p-2 radar-scan"></div>
@@ -332,7 +330,6 @@
                 </div>
             `;
 
-            // Ejecutar escaneo paralelo
             const urls = [
                 "https://ssl.smn.gob.ar/feeds/CAP/rss_alertaCAP_nuevo_2026.xml",
                 "https://ssl.smn.gob.ar/feeds/CAP/oladecalor/rss_ola_calor_nuevo.xml",
@@ -341,12 +338,11 @@
             
             const resultados = await Promise.all(urls.map(url => fetchSMNFeed(url)));
             
-            // Función constructora de tarjetas
             const renderizarColumna = (alertasArr, colId, badgeId) => {
                 const col = document.getElementById(colId);
                 const badge = document.getElementById(badgeId);
                 
-                col.classList.remove('radar-scan'); // Quitar animación al terminar
+                col.classList.remove('radar-scan');
 
                 if (alertasArr.length === 0) {
                     badge.innerHTML = '<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>';
@@ -364,10 +360,11 @@
                             <div class="border-l-4 ${a.borderColor} bg-slate-800/60 p-2 rounded mb-2 shadow-sm">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-[9px] font-black tracking-widest ${a.textColor} uppercase bg-black/40 px-1 py-0.5 rounded">NIVEL ${a.nivel}</span>
+                                    <span class="text-[8px] text-slate-400"><i class="fa-regular fa-clock"></i> 72H</span>
                                 </div>
                                 <h4 class="text-[10px] font-bold text-white leading-tight mb-1">${a.titulo}</h4>
                                 <p class="text-[9px] text-slate-400 line-clamp-3 leading-snug">${a.descripcion}</p>
-                                <a href="${a.link}" target="_blank" class="block text-right text-[9px] text-sky-400 hover:text-sky-300 uppercase mt-1"><i class="fa-solid fa-link mr-1"></i>Ver SAT SMN</a>
+                                <a href="${a.link}" target="_blank" class="block text-right text-[9px] text-sky-400 hover:text-sky-300 uppercase mt-1"><i class="fa-solid fa-link mr-1"></i>SAT Oficial</a>
                             </div>
                         `;
                     });
@@ -375,18 +372,16 @@
                 }
             };
 
-            // Volcar resultados en las columnas
             renderizarColumna(resultados[0], 'col-alertas', 'badge-alertas');
             renderizarColumna(resultados[1], 'col-extremos', 'badge-extremos');
             renderizarColumna(resultados[2], 'col-acp', 'badge-acp');
 
-            // Estado Global
             const totalAlertas = resultados[0].length + resultados[1].length + resultados[2].length;
             const statusDiv = document.getElementById('smn-global-status');
             statusDiv.classList.remove('animate-pulse');
             
             if (totalAlertas > 0) {
-                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> <span class="text-red-400">${totalAlertas} AMENAZAS EN REGIÓN</span>`;
+                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> <span class="text-red-400">${totalAlertas} AMENAZAS (72 HORAS)</span>`;
                 statusDiv.className = "text-[10px] font-mono bg-red-950/50 px-2 py-1 rounded border border-red-900/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
             } else {
                 statusDiv.innerHTML = `<i class="fa-solid fa-check text-emerald-500 mr-1"></i> <span class="text-emerald-400">MONITOREO LIMPIO</span>`;
@@ -408,7 +403,6 @@
             document.getElementById(idModulo).classList.replace('hidden', 'block');
             btnElement.classList.add('active');
 
-            // Ejecutar el escáner táctico solo al abrir la pestaña
             if (idModulo === 'mod-advertencia') {
                 cargarAdvertenciasSMN();
             }
