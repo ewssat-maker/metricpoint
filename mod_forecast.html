@@ -65,7 +65,7 @@
         
         <div id="mapaCentral"></div>
 
-        <!-- HUD FLOTANTE: Telemetría de WUnderground -->
+        <!-- HUD FLOTANTE: Telemetría -->
         <div class="absolute top-4 left-4 z-[1000] glass-hud p-4 rounded-2xl w-80 flex flex-col gap-3 transition-all duration-300">
             
             <div class="flex items-center justify-between border-b border-sky-500/30 pb-2">
@@ -124,28 +124,22 @@
         </div>
 
         <div class="glass-module flex-1 rounded-xl p-4 overflow-y-hidden relative">
-            
             <div id="mod-tiempo-real" class="block h-full flex items-center justify-center">
                 <div class="text-center text-slate-500 font-mono text-sm border border-dashed border-slate-700 p-6 rounded-lg w-full">
                     [ MÓDULO TIEMPO REAL: Esperando tus instrucciones... ]
                 </div>
             </div>
-
             <div id="mod-clima" class="hidden h-full flex items-center justify-center">
                 <div class="text-center text-slate-500 font-mono text-sm border border-dashed border-slate-700 p-6 rounded-lg w-full">
                     [ MÓDULO CLIMA: Esperando tus instrucciones... ]
                 </div>
             </div>
-
             <div id="mod-pronostico" class="hidden h-full flex items-center justify-center">
                 <div class="text-center text-slate-500 font-mono text-sm border border-dashed border-slate-700 p-6 rounded-lg w-full">
                     [ MÓDULO PRONÓSTICO: Esperando tus instrucciones... ]
                 </div>
             </div>
-
-            <!-- MÓDULO ADVERTENCIA (TÁCTICO) -->
             <div id="mod-advertencia" class="hidden h-full"></div>
-
         </div>
     </div>
 
@@ -168,7 +162,7 @@
         }).addTo(mapForecast);
 
         let marcadorActual = null;
-        let capaAlertasSMN = L.layerGroup().addTo(mapForecast); // Nueva capa exclusiva para polígonos SMN
+        let capaAlertasSMN = L.layerGroup().addTo(mapForecast);
 
         // ==========================================
         // 2. EXTRACCIÓN DE DATOS TELEMÉTRICOS (HUD)
@@ -181,7 +175,7 @@
             const lon = parseFloat(data[2]);
             const nombreEstacion = data[3];
 
-            mapForecast.flyTo([lat, lon], 10, { duration: 1.5 }); // Un poco más alejado para ver los polígonos
+            mapForecast.flyTo([lat, lon], 10, { duration: 1.5 });
             
             if (marcadorActual) mapForecast.removeLayer(marcadorActual);
             marcadorActual = L.circleMarker([lat, lon], {
@@ -231,11 +225,10 @@
         }
 
         // ==========================================
-        // 3. MOTOR DE ALERTAS SMN (CON POLÍGONOS Y FECHAS)
+        // 3. MOTOR DE ALERTAS SMN (ESCÁNER ABSOLUTO 72H)
         // ==========================================
         const CORS_PROXY = "https://api.allorigins.win/get?url=";
 
-        // Función para parsear fechas ISO a formato legible de Argentina
         function formatearFecha(isoString) {
             if (!isoString) return "No especificado";
             try {
@@ -247,7 +240,11 @@
 
         async function fetchSMNFeed(urlFeed) {
             try {
-                const response = await fetch(CORS_PROXY + encodeURIComponent(urlFeed));
+                // EVASIÓN DE CACHÉ: Obligamos al servidor a darnos los datos exactos de este minuto
+                const urlViva = urlFeed + "?nocache=" + new Date().getTime();
+                const proxyUrl = CORS_PROXY + encodeURIComponent(urlViva) + "&disableCache=true";
+
+                const response = await fetch(proxyUrl);
                 if (!response.ok) return [];
                 const data = await response.json();
                 
@@ -261,14 +258,15 @@
                     const desc = item.querySelector("description")?.textContent || "";
                     const link = item.querySelector("link")?.textContent || "#";
                     
-                    // Extraer Fechas (Suele venir en pubDate, onset, effective o expires dependiendo del XML)
                     const pubDate = item.querySelector("pubDate")?.textContent || item.getElementsByTagName('onset')[0]?.textContent || "";
                     const expires = item.getElementsByTagName('expires')[0]?.textContent || "";
 
                     const cleanTitle = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
                     const cleanDesc = desc.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim();
 
-                    // Extracción de Polígonos (Geometría del área)
+                    // ESCÁNER ABSOLUTO: Leemos todo el texto puro del nodo (Atrapa textos ocultos en <cap:areaDesc>)
+                    const contenidoTotal = item.textContent || "";
+
                     let polygonStr = item.getElementsByTagName('polygon')[0]?.textContent || item.getElementsByTagName('georss:polygon')[0]?.textContent || "";
                     let polygonCoords = [];
                     if (polygonStr) {
@@ -281,10 +279,10 @@
                         });
                     }
 
-                    // RADAR: Filtro para Tucumán, Salta y zonas propensas del NOA
-                    const regexZona = /Tucum[aá]n|Salta|Taf[ií] del Valle|Calchaqu[ií]|Puna|Andina|Cafayate|San Carlos/i;
+                    // RADAR TUCUMÁN/SALTA EXTREMO (Suma departamentos críticos del oeste)
+                    const regexZona = /Tucum[aá]n|Salta|Taf[ií]|Calchaqu[ií]|Puna|Andina|Cafayate|San Carlos|Trancas|Burruyac[uú]|Lules|Chicligasta|Alberdi|La Cocha|Monteros/i;
                     
-                    if (regexZona.test(cleanTitle) || regexZona.test(cleanDesc)) {
+                    if (regexZona.test(contenidoTotal)) {
                         
                         let nivel = "AMARILLO";
                         let textColor = "text-yellow-400";
@@ -292,15 +290,15 @@
                         let mapColor = "#eab308";
                         let mapFill = "#fef08a";
                         
-                        if (/naranja/i.test(cleanTitle) || /naranja/i.test(cleanDesc)) {
+                        if (/naranja/i.test(contenidoTotal)) {
                             nivel = "NARANJA"; textColor = "text-orange-400"; borderColor = "border-orange-500"; mapColor = "#f97316"; mapFill = "#fed7aa";
-                        } else if (/roja|rojo/i.test(cleanTitle) || /roja|rojo/i.test(cleanDesc)) {
+                        } else if (/roja|rojo/i.test(contenidoTotal)) {
                             nivel = "ROJO"; textColor = "text-red-400"; borderColor = "border-red-500"; mapColor = "#ef4444"; mapFill = "#fecaca";
                         }
 
                         alertasLocales.push({ 
-                            titulo: cleanTitle, 
-                            descripcion: cleanDesc, 
+                            titulo: cleanTitle || "Alerta Meteorológica", 
+                            descripcion: cleanDesc || "Revise el enlace oficial para más detalles.", 
                             link: link, 
                             nivel: nivel, 
                             textColor: textColor, 
@@ -365,7 +363,6 @@
             
             const resultados = await Promise.all(urls.map(url => fetchSMNFeed(url)));
             
-            // Limpiamos los polígonos anteriores del mapa
             capaAlertasSMN.clearLayers();
 
             const renderizarColumna = (alertasArr, colId, badgeId) => {
@@ -386,17 +383,15 @@
                     badge.innerHTML = '<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>';
                     let html = '';
                     alertasArr.forEach(a => {
-                        // Dibujar Polígono en el Mapa si existe
                         if (a.poligono && a.poligono.length > 0) {
                             L.polygon(a.poligono, {
                                 color: a.mapColor,
                                 fillColor: a.mapFill,
                                 weight: 2,
                                 fillOpacity: 0.35
-                            }).bindPopup(`<div class="text-xs text-center"><b>${a.titulo}</b><br>Válido hasta: ${a.fin}</div>`).addTo(capaAlertasSMN);
+                            }).bindPopup(`<div class="text-xs text-center font-sans"><b>${a.titulo}</b><br>Fin: ${a.fin}</div>`).addTo(capaAlertasSMN);
                         }
 
-                        // Construir Tarjeta UI con Fechas de Vigencia
                         html += `
                             <div class="border-l-4 ${a.borderColor} bg-slate-800/60 p-2 rounded mb-2 shadow-sm">
                                 <div class="flex justify-between items-center mb-1">
@@ -427,7 +422,7 @@
             statusDiv.classList.remove('animate-pulse');
             
             if (totalAlertas > 0) {
-                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> <span class="text-red-400">${totalAlertas} AMENAZAS DETECTADAS</span>`;
+                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> <span class="text-red-400">${totalAlertas} AMENAZAS DETECTADAS (72H)</span>`;
                 statusDiv.className = "text-[10px] font-mono bg-red-950/50 px-2 py-1 rounded border border-red-900/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
             } else {
                 statusDiv.innerHTML = `<i class="fa-solid fa-check text-emerald-500 mr-1"></i> <span class="text-emerald-400">MONITOREO LIMPIO</span>`;
@@ -454,7 +449,6 @@
             }
         }
 
-        // Inicialización
         window.onload = () => sincronizarHUD();
         setInterval(sincronizarHUD, 300000); 
     </script>
