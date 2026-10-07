@@ -67,7 +67,6 @@
 
         <!-- HUD FLOTANTE: Telemetría -->
         <div class="absolute top-4 left-4 z-[1000] glass-hud p-4 rounded-2xl w-80 flex flex-col gap-3 transition-all duration-300">
-            
             <div class="flex items-center justify-between border-b border-sky-500/30 pb-2">
                 <h2 class="text-sm font-black tracking-widest text-sky-400"><i class="fa-solid fa-satellite mr-2"></i>LINK TELEMÉTRICO</h2>
                 <span id="hud-status" class="flex h-3 w-3"><span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span></span>
@@ -108,14 +107,12 @@
                     <span class="text-xl font-mono font-bold text-white" id="hud-lluvia">--</span><span class="text-xs text-sky-400 font-bold ml-1">mm</span>
                 </div>
             </div>
-            
             <div id="hud-msg" class="text-[10px] text-emerald-400 font-mono text-center mt-1">SISTEMA OPERATIVO</div>
         </div>
     </div>
 
     <!-- SECCIÓN INFERIOR: MÓDULOS TECNOLÓGICOS -->
     <div class="w-full h-[35vh] flex flex-col p-4 bg-slate-950">
-        
         <div class="flex space-x-2 mb-3">
             <button onclick="activarModulo('mod-tiempo-real', this)" class="mod-btn active flex-1 py-2.5 rounded-lg"><i class="fa-solid fa-satellite-dish mr-2"></i>Tiempo Real</button>
             <button onclick="activarModulo('mod-clima', this)" class="mod-btn flex-1 py-2.5 rounded-lg"><i class="fa-solid fa-cloud-sun-rain mr-2"></i>Clima</button>
@@ -139,6 +136,7 @@
                     [ MÓDULO PRONÓSTICO: Esperando tus instrucciones... ]
                 </div>
             </div>
+            <!-- MÓDULO ADVERTENCIA -->
             <div id="mod-advertencia" class="hidden h-full"></div>
         </div>
     </div>
@@ -150,7 +148,7 @@
         // ==========================================
         // 1. CONFIGURACIÓN DEL MAPA
         // ==========================================
-        const mapForecast = L.map('mapaCentral', { zoomControl: false }).setView([-26.83, -65.20], 9);
+        const mapForecast = L.map('mapaCentral', { zoomControl: false }).setView([-26.83, -65.20], 8);
         L.control.zoom({ position: 'bottomright' }).addTo(mapForecast);
         
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -175,62 +173,42 @@
             const lon = parseFloat(data[2]);
             const nombreEstacion = data[3];
 
-            mapForecast.flyTo([lat, lon], 10, { duration: 1.5 });
+            mapForecast.flyTo([lat, lon], 9, { duration: 1.5 });
             
             if (marcadorActual) mapForecast.removeLayer(marcadorActual);
             marcadorActual = L.circleMarker([lat, lon], {
                 radius: 10, fillColor: "#38bdf8", color: "#ffffff", weight: 2, fillOpacity: 0.8
             }).addTo(mapForecast).bindPopup(`ACTIVO:<br>${nombreEstacion}`).openPopup();
 
-            const msgHUD = document.getElementById('hud-msg');
-            msgHUD.innerText = "Sincronizando satélite...";
-            msgHUD.className = "text-[10px] text-sky-400 font-mono text-center mt-1 animate-pulse";
-            document.getElementById('hud-status').innerHTML = '<span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-sky-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>';
-
             const url = `https://api.weather.com/v2/pws/observations/current?stationId=${stationId}&format=json&units=e&apiKey=e1f10a1e78da46f5b10a1e78da96f525`;
 
             try {
                 const response = await fetch(url);
-                if (response.status === 204 || response.status === 404) throw new Error('Estación Inactiva');
-                if (!response.ok) throw new Error('Error de red');
-                
+                if (!response.ok) throw new Error('Error');
                 const json = await response.json();
-                if (!json.observations || json.observations.length === 0) throw new Error('Sin datos');
-
                 const obs = json.observations[0];
                 const imp = obs.imperial;
 
-                const tempC = ((imp.temp - 32) * 5 / 9).toFixed(1);
-                const windKmh = (imp.windSpeed * 1.60934).toFixed(1);
-                const precipMm = (imp.precipTotal * 25.4).toFixed(1);
-
-                document.getElementById('hud-temp').innerText = tempC;
+                document.getElementById('hud-temp').innerText = ((imp.temp - 32) * 5 / 9).toFixed(1);
                 document.getElementById('hud-hum').innerText = obs.humidity;
-                document.getElementById('hud-viento').innerText = windKmh;
-                document.getElementById('hud-lluvia').innerText = precipMm;
-
-                msgHUD.innerText = `SISTEMA OPERATIVO • ACTUALIZADO ${obs.obsTimeLocal.split(' ')[1]}`;
-                msgHUD.className = "text-[10px] text-emerald-400 font-mono text-center mt-1";
-                document.getElementById('hud-status').innerHTML = '<span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>';
-
+                document.getElementById('hud-viento').innerText = (imp.windSpeed * 1.60934).toFixed(1);
+                document.getElementById('hud-lluvia').innerText = (imp.precipTotal * 25.4).toFixed(1);
+                document.getElementById('hud-msg').innerText = `SISTEMA OPERATIVO • ${obs.obsTimeLocal.split(' ')[1]}`;
+                document.getElementById('hud-msg').className = "text-[10px] text-emerald-400 font-mono text-center mt-1";
             } catch (error) {
                 ['hud-temp', 'hud-hum', 'hud-viento', 'hud-lluvia'].forEach(id => document.getElementById(id).innerText = '--');
-                msgHUD.innerText = "PÉRDIDA DE SEÑAL • ESTACIÓN OFFLINE";
-                msgHUD.className = "text-[10px] text-red-500 font-mono text-center mt-1";
-                document.getElementById('hud-status').innerHTML = '<span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>';
-                
-                marcadorActual.setStyle({ fillColor: '#dc2626' });
-                marcadorActual.bindPopup(`OFFLINE:<br>${nombreEstacion}`).openPopup();
+                document.getElementById('hud-msg').innerText = "ESTACIÓN OFFLINE";
+                document.getElementById('hud-msg').className = "text-[10px] text-red-500 font-mono text-center mt-1";
             }
         }
 
         // ==========================================
-        // 3. MOTOR DE ALERTAS SMN (ESCÁNER ABSOLUTO 72H)
+        // 3. MOTOR DE ALERTAS SMN (EXTREMO / ANTI-FALLOS)
         // ==========================================
         const CORS_PROXY = "https://api.allorigins.win/get?url=";
 
         function formatearFecha(isoString) {
-            if (!isoString) return "No especificado";
+            if (!isoString) return "No esp.";
             try {
                 const date = new Date(isoString);
                 if (isNaN(date)) return isoString;
@@ -240,33 +218,35 @@
 
         async function fetchSMNFeed(urlFeed) {
             try {
-                // EVASIÓN DE CACHÉ: Obligamos al servidor a darnos los datos exactos de este minuto
-                const urlViva = urlFeed + "?nocache=" + new Date().getTime();
-                const proxyUrl = CORS_PROXY + encodeURIComponent(urlViva) + "&disableCache=true";
-
+                // Anti-caché brutal para garantizar datos frescos
+                const proxyUrl = CORS_PROXY + encodeURIComponent(urlFeed + "?v=" + new Date().getTime());
                 const response = await fetch(proxyUrl);
                 if (!response.ok) return [];
-                const data = await response.json();
                 
+                const data = await response.json();
+                if (!data.contents) return [];
+
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(data.contents, "application/xml");
-                const items = xml.querySelectorAll("item");
+                
+                // Buscar etiquetas item (RSS)
+                const items = xml.getElementsByTagName("item");
                 let alertasLocales = [];
 
-                items.forEach(item => {
-                    const title = item.querySelector("title")?.textContent || "";
-                    const desc = item.querySelector("description")?.textContent || "";
-                    const link = item.querySelector("link")?.textContent || "#";
+                for (let i = 0; i < items.length; i++) {
+                    let item = items[i];
                     
-                    const pubDate = item.querySelector("pubDate")?.textContent || item.getElementsByTagName('onset')[0]?.textContent || "";
-                    const expires = item.getElementsByTagName('expires')[0]?.textContent || "";
+                    const title = item.getElementsByTagName("title")[0]?.textContent || "Alerta Meteorológica";
+                    const desc = item.getElementsByTagName("description")[0]?.textContent || "Revise el reporte oficial.";
+                    const link = item.getElementsByTagName("link")[0]?.textContent || "#";
+                    
+                    const pubDate = item.getElementsByTagName("pubDate")[0]?.textContent || "";
+                    const expires = item.getElementsByTagName("expires")[0]?.textContent || "";
 
                     const cleanTitle = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
                     const cleanDesc = desc.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').replace(/<[^>]*>?/gm, '').trim();
 
-                    // ESCÁNER ABSOLUTO: Leemos todo el texto puro del nodo (Atrapa textos ocultos en <cap:areaDesc>)
-                    const contenidoTotal = item.textContent || "";
-
+                    // POLÍGONOS
                     let polygonStr = item.getElementsByTagName('polygon')[0]?.textContent || item.getElementsByTagName('georss:polygon')[0]?.textContent || "";
                     let polygonCoords = [];
                     if (polygonStr) {
@@ -279,41 +259,46 @@
                         });
                     }
 
-                    // RADAR TUCUMÁN/SALTA EXTREMO (Suma departamentos críticos del oeste)
-                    const regexZona = /Tucum[aá]n|Salta|Taf[ií]|Calchaqu[ií]|Puna|Andina|Cafayate|San Carlos|Trancas|Burruyac[uú]|Lules|Chicligasta|Alberdi|La Cocha|Monteros/i;
-                    
-                    if (regexZona.test(contenidoTotal)) {
-                        
-                        let nivel = "AMARILLO";
-                        let textColor = "text-yellow-400";
-                        let borderColor = "border-yellow-500";
-                        let mapColor = "#eab308";
-                        let mapFill = "#fef08a";
-                        
-                        if (/naranja/i.test(contenidoTotal)) {
-                            nivel = "NARANJA"; textColor = "text-orange-400"; borderColor = "border-orange-500"; mapColor = "#f97316"; mapFill = "#fed7aa";
-                        } else if (/roja|rojo/i.test(contenidoTotal)) {
-                            nivel = "ROJO"; textColor = "text-red-400"; borderColor = "border-red-500"; mapColor = "#ef4444"; mapFill = "#fecaca";
-                        }
+                    // EXTRACCIÓN DE TEXTO ABSOLUTO (Lee todo el contenido oculto en el XML)
+                    const contenidoTotal = item.textContent || cleanTitle + " " + cleanDesc;
 
-                        alertasLocales.push({ 
-                            titulo: cleanTitle || "Alerta Meteorológica", 
-                            descripcion: cleanDesc || "Revise el enlace oficial para más detalles.", 
-                            link: link, 
-                            nivel: nivel, 
-                            textColor: textColor, 
-                            borderColor: borderColor,
-                            inicio: pubDate ? formatearFecha(pubDate) : "Inmediato",
-                            fin: expires ? formatearFecha(expires) : "Hasta nuevo aviso",
-                            poligono: polygonCoords,
-                            mapColor: mapColor,
-                            mapFill: mapFill
-                        });
+                    // FILTRO DE ESPECTRO AMPLIO: Captura cualquier mención de provincias del NOA o regiones topográficas
+                    const regexNOA = /Tucum[aá]n|Salta|Jujuy|Catamarca|Santiago del Estero|Taf[ií]|Calchaqu[ií]|Puna|Andina|Cafayate|Zonda|Oeste|Noroeste|Cordillera/i;
+                    
+                    let nivel = "AMARILLO";
+                    let textColor = "text-yellow-400";
+                    let borderColor = "border-yellow-500";
+                    let mapColor = "#eab308";
+                    let mapFill = "#fef08a";
+                    
+                    if (/naranja/i.test(contenidoTotal)) {
+                        nivel = "NARANJA"; textColor = "text-orange-400"; borderColor = "border-orange-500"; mapColor = "#f97316"; mapFill = "#fed7aa";
+                    } else if (/roja|rojo/i.test(contenidoTotal)) {
+                        nivel = "ROJO"; textColor = "text-red-400"; borderColor = "border-red-500"; mapColor = "#ef4444"; mapFill = "#fecaca";
                     }
-                });
+
+                    // GUARDAMOS LA ALERTA. Si tiene el regexNOA, la marcamos como Principal. Si no, como Secundaria.
+                    const esZonaNOA = regexNOA.test(contenidoTotal);
+
+                    alertasLocales.push({ 
+                        titulo: cleanTitle, 
+                        descripcion: cleanDesc, 
+                        link: link, 
+                        nivel: nivel, 
+                        textColor: textColor, 
+                        borderColor: borderColor,
+                        inicio: formatearFecha(pubDate),
+                        fin: formatearFecha(expires),
+                        poligono: polygonCoords,
+                        mapColor: mapColor,
+                        mapFill: mapFill,
+                        esNOA: esZonaNOA
+                    });
+                }
                 return alertasLocales;
             } catch (e) {
-                console.error("Error feed:", e); return [];
+                console.error("Fallo parseando Feed:", e);
+                return [];
             }
         }
 
@@ -321,37 +306,9 @@
             const contenedor = document.getElementById('mod-advertencia');
             
             contenedor.innerHTML = `
-                <div class="h-full flex flex-col">
-                    <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-2 shrink-0">
-                        <h3 class="text-xs font-black tracking-widest text-sky-400 uppercase"><i class="fa-solid fa-satellite-dish mr-2"></i>Intercepción SMN: Tucumán & Salta</h3>
-                        <div id="smn-global-status" class="text-[10px] font-mono bg-slate-800 text-sky-400 px-2 py-1 rounded border border-slate-600 animate-pulse">ESCANEO EN PROGRESO...</div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 overflow-hidden">
-                        <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
-                            <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
-                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-cloud-bolt text-yellow-500 mr-1"></i> Alertas Met.</span>
-                                <span id="badge-alertas" class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span></span>
-                            </div>
-                            <div id="col-alertas" class="flex-1 overflow-y-auto p-2 radar-scan"></div>
-                        </div>
-
-                        <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
-                            <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
-                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-temperature-arrow-up text-orange-500 mr-1"></i> Extremos</span>
-                                <span id="badge-extremos" class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span></span>
-                            </div>
-                            <div id="col-extremos" class="flex-1 overflow-y-auto p-2 radar-scan"></div>
-                        </div>
-
-                        <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
-                            <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
-                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Corto Plazo</span>
-                                <span id="badge-acp" class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span></span>
-                            </div>
-                            <div id="col-acp" class="flex-1 overflow-y-auto p-2 radar-scan"></div>
-                        </div>
-                    </div>
+                <div class="h-full flex flex-col items-center justify-center space-y-3">
+                    <i class="fa-solid fa-satellite-dish text-4xl text-sky-500 animate-ping"></i>
+                    <p class="text-xs font-mono text-sky-400 uppercase tracking-widest">Forzando conexión directa con SMN CAP...</p>
                 </div>
             `;
 
@@ -362,76 +319,112 @@
             ];
             
             const resultados = await Promise.all(urls.map(url => fetchSMNFeed(url)));
-            
             capaAlertasSMN.clearLayers();
 
-            const renderizarColumna = (alertasArr, colId, badgeId) => {
-                const col = document.getElementById(colId);
-                const badge = document.getElementById(badgeId);
-                
-                col.classList.remove('radar-scan');
-
+            // FUNCIÓN PARA RENDERIZAR
+            const generarHTMLTarjetas = (alertasArr) => {
                 if (alertasArr.length === 0) {
-                    badge.innerHTML = '<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>';
-                    col.innerHTML = `
-                        <div class="h-full flex flex-col items-center justify-center text-center opacity-50">
+                    return `
+                        <div class="h-full flex flex-col items-center justify-center text-center opacity-50 p-4">
                             <i class="fa-solid fa-shield-check text-2xl text-emerald-500 mb-1"></i>
-                            <span class="text-[9px] font-mono text-emerald-400 tracking-widest uppercase">Zona Despejada</span>
+                            <span class="text-[9px] font-mono text-emerald-400 tracking-widest uppercase">ZONA DESPEJADA</span>
+                        </div>`;
+                }
+
+                let html = '';
+                alertasArr.forEach(a => {
+                    // Si el polígono existe, lo dibujamos en el mapa
+                    if (a.poligono && a.poligono.length > 0) {
+                        L.polygon(a.poligono, {
+                            color: a.mapColor, fillColor: a.mapFill, weight: 2, fillOpacity: 0.35
+                        }).bindPopup(`<div class="text-xs text-center font-sans"><b>${a.titulo}</b><br>Fin: ${a.fin}</div>`).addTo(capaAlertasSMN);
+                    }
+
+                    // Si no es estrictamente NOA, le ponemos un aviso visual para que sepas por qué apareció
+                    let badgeZona = a.esNOA ? "" : `<span class="text-[8px] bg-slate-700 text-slate-300 px-1 rounded ml-1">ZONA ADYACENTE / NACIONAL</span>`;
+
+                    html += `
+                        <div class="border-l-4 ${a.borderColor} bg-slate-800/60 p-2 rounded mb-2 shadow-sm">
+                            <div class="flex justify-between items-center mb-1">
+                                <div>
+                                    <span class="text-[9px] font-black tracking-widest ${a.textColor} uppercase bg-black/40 px-1 py-0.5 rounded">NIVEL ${a.nivel}</span>
+                                    ${badgeZona}
+                                </div>
+                                <span class="text-[8px] text-slate-400"><i class="fa-regular fa-clock"></i> 72H</span>
+                            </div>
+                            <h4 class="text-[10px] font-bold text-white leading-tight mb-1">${a.titulo}</h4>
+                            <p class="text-[9px] text-slate-400 line-clamp-2 leading-snug mb-1">${a.descripcion}</p>
+                            <div class="bg-black/30 p-1.5 rounded flex flex-col text-[9px] text-slate-300 border border-slate-700/50">
+                                <div class="flex items-center gap-1"><i class="fa-solid fa-play text-emerald-400"></i> <b>INICIO:</b> ${a.inicio}</div>
+                                <div class="flex items-center gap-1 mt-0.5"><i class="fa-solid fa-stop text-rose-400"></i> <b>FIN:</b> ${a.fin}</div>
+                            </div>
+                            <a href="${a.link}" target="_blank" class="block text-right text-[9px] text-sky-400 hover:text-sky-300 uppercase mt-1.5"><i class="fa-solid fa-link mr-1"></i>SAT Oficial SMN</a>
                         </div>
                     `;
-                } else {
-                    badge.innerHTML = '<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>';
-                    let html = '';
-                    alertasArr.forEach(a => {
-                        if (a.poligono && a.poligono.length > 0) {
-                            L.polygon(a.poligono, {
-                                color: a.mapColor,
-                                fillColor: a.mapFill,
-                                weight: 2,
-                                fillOpacity: 0.35
-                            }).bindPopup(`<div class="text-xs text-center font-sans"><b>${a.titulo}</b><br>Fin: ${a.fin}</div>`).addTo(capaAlertasSMN);
-                        }
-
-                        html += `
-                            <div class="border-l-4 ${a.borderColor} bg-slate-800/60 p-2 rounded mb-2 shadow-sm">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-[9px] font-black tracking-widest ${a.textColor} uppercase bg-black/40 px-1 py-0.5 rounded">NIVEL ${a.nivel}</span>
-                                </div>
-                                <h4 class="text-[10px] font-bold text-white leading-tight mb-1">${a.titulo}</h4>
-                                <p class="text-[9px] text-slate-400 line-clamp-2 leading-snug mb-1">${a.descripcion}</p>
-                                
-                                <div class="bg-black/30 p-1.5 rounded flex flex-col text-[9px] text-slate-300 border border-slate-700/50">
-                                    <div class="flex items-center gap-1"><i class="fa-solid fa-play text-emerald-400"></i> <b>INICIO:</b> ${a.inicio}</div>
-                                    <div class="flex items-center gap-1 mt-0.5"><i class="fa-solid fa-stop text-rose-400"></i> <b>FIN:</b> ${a.fin}</div>
-                                </div>
-
-                                <a href="${a.link}" target="_blank" class="block text-right text-[9px] text-sky-400 hover:text-sky-300 uppercase mt-1.5"><i class="fa-solid fa-link mr-1"></i>SAT Oficial</a>
-                            </div>
-                        `;
-                    });
-                    col.innerHTML = html;
-                }
+                });
+                return html;
             };
 
-            renderizarColumna(resultados[0], 'col-alertas', 'badge-alertas');
-            renderizarColumna(resultados[1], 'col-extremos', 'badge-extremos');
-            renderizarColumna(resultados[2], 'col-acp', 'badge-acp');
+            // Reconstruimos la Interfaz
+            contenedor.innerHTML = `
+                <div class="h-full flex flex-col">
+                    <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-2 shrink-0">
+                        <h3 class="text-xs font-black tracking-widest text-sky-400 uppercase"><i class="fa-solid fa-satellite-dish mr-2"></i>Monitoreo SMN (Espectro Amplio)</h3>
+                        <div id="smn-global-status" class="text-[10px] font-mono px-2 py-1 rounded"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 overflow-hidden">
+                        <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
+                            <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
+                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-cloud-bolt text-yellow-500 mr-1"></i> Alertas Met.</span>
+                                <span id="badge-alertas"></span>
+                            </div>
+                            <div id="col-alertas" class="flex-1 overflow-y-auto p-2">${generarHTMLTarjetas(resultados[0])}</div>
+                        </div>
+
+                        <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
+                            <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
+                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-temperature-arrow-up text-orange-500 mr-1"></i> Extremos</span>
+                                <span id="badge-extremos"></span>
+                            </div>
+                            <div id="col-extremos" class="flex-1 overflow-y-auto p-2">${generarHTMLTarjetas(resultados[1])}</div>
+                        </div>
+
+                        <div class="flex flex-col bg-[#020617] border border-slate-700 rounded-lg shadow-lg overflow-hidden">
+                            <div class="bg-slate-800/80 p-2 border-b border-slate-700 flex justify-between items-center shrink-0">
+                                <span class="text-[10px] font-bold uppercase text-slate-300"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Corto Plazo</span>
+                                <span id="badge-acp"></span>
+                            </div>
+                            <div id="col-acp" class="flex-1 overflow-y-auto p-2">${generarHTMLTarjetas(resultados[2])}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
 
             const totalAlertas = resultados[0].length + resultados[1].length + resultados[2].length;
             const statusDiv = document.getElementById('smn-global-status');
-            statusDiv.classList.remove('animate-pulse');
             
+            // Actualizar luces de los badges
+            const setBadge = (id, count) => {
+                document.getElementById(id).innerHTML = count > 0 
+                    ? '<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span></span>'
+                    : '<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>';
+            };
+            setBadge('badge-alertas', resultados[0].length);
+            setBadge('badge-extremos', resultados[1].length);
+            setBadge('badge-acp', resultados[2].length);
+
             if (totalAlertas > 0) {
-                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> <span class="text-red-400">${totalAlertas} AMENAZAS DETECTADAS (72H)</span>`;
-                statusDiv.className = "text-[10px] font-mono bg-red-950/50 px-2 py-1 rounded border border-red-900/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
+                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> <span class="text-red-400">${totalAlertas} REGISTROS CAPTURADOS</span>`;
+                statusDiv.className = "text-[10px] font-mono bg-red-950/50 text-red-400 px-2 py-1 rounded border border-red-900/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
             } else {
-                statusDiv.innerHTML = `<i class="fa-solid fa-check text-emerald-500 mr-1"></i> <span class="text-emerald-400">MONITOREO LIMPIO</span>`;
-                statusDiv.className = "text-[10px] font-mono bg-emerald-950/50 px-2 py-1 rounded border border-emerald-900/50";
+                statusDiv.innerHTML = `<i class="fa-solid fa-check text-emerald-500 mr-1"></i> <span class="text-emerald-400">RED NACIONAL DESPEJADA</span>`;
+                statusDiv.className = "text-[10px] font-mono bg-emerald-950/50 text-emerald-400 px-2 py-1 rounded border border-emerald-900/50";
             }
         }
 
         // ==========================================
-        // 4. CONTROL DE PESTAÑAS (MÓDULOS)
+        // 4. CONTROL DE PESTAÑAS
         // ==========================================
         function activarModulo(idModulo, btnElement) {
             document.getElementById('mod-tiempo-real').classList.replace('block', 'hidden');
