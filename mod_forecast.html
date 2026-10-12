@@ -218,7 +218,7 @@
 
             try {
                 // Consultamos a nuestro propio backend en lugar del SMN directo
-                const respuesta = await fetch('/api/alertas');
+                const respuesta = await fetch('https://metricmoisture-backend.onrender.com/api/alertas');
                 const resultado = await respuesta.json();
                 
                 // Extraemos el array de alertas
