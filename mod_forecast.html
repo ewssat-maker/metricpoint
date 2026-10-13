@@ -109,6 +109,36 @@
             </div>
             <div id="hud-msg" class="text-[10px] text-emerald-400 font-mono text-center mt-1">SISTEMA OPERATIVO</div>
         </div>
+
+        <!-- HUD FLOTANTE: Radares -->
+        <div class="absolute top-4 right-4 z-[1000] glass-hud p-4 rounded-2xl w-64 flex flex-col gap-2">
+            <div class="flex items-center justify-between border-b border-sky-500/30 pb-2">
+                <h2 class="text-sm font-black tracking-widest text-sky-400"><i class="fa-solid fa-tower-broadcast mr-2"></i>RADARES</h2>
+            </div>
+
+            <label class="flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
+                <input type="checkbox" id="chk-RMA11" onchange="toggleRadar('RMA11', this.checked)" class="accent-sky-400">
+                <span class="font-bold">RMA11</span><span class="text-slate-400">Termas de Río Hondo</span>
+            </label>
+            <span id="rad-estado-RMA11" class="text-[10px] font-mono ml-6 text-slate-400"></span>
+
+            <label class="flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
+                <input type="checkbox" id="chk-RMA20" onchange="toggleRadar('RMA20', this.checked)" class="accent-sky-400">
+                <span class="font-bold">RMA20</span><span class="text-slate-400">Las Lajitas</span>
+            </label>
+            <span id="rad-estado-RMA20" class="text-[10px] font-mono ml-6 text-slate-400"></span>
+
+            <div class="mt-1">
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Opacidad</span>
+                <input type="range" min="20" max="100" value="70" oninput="cambiarOpacidadRadar(this.value)" class="w-full accent-sky-400">
+            </div>
+
+            <p class="text-[9px] leading-snug text-slate-500 border-t border-slate-700 pt-2">
+                Reflectividad máxima de columna (COLMAX, dBZ).<br>
+                Fuente: SMN / SINARAME, vía WebMet (OHMC Córdoba).<br>
+                Información orientativa: requiere interpretación técnica.
+            </p>
+        </div>
     </div>
 
     <!-- SECCIÓN INFERIOR: MÓDULOS TECNOLÓGICOS -->
@@ -155,8 +185,13 @@
             maxZoom: 18, attribution: 'Tiles &copy; Esri'
         }).addTo(mapForecast);
 
+        // Orden de capas: imagen satelital < radar < nombres de lugares
+        mapForecast.createPane('radarPane').style.zIndex = 250;
+        mapForecast.createPane('labelsPane').style.zIndex = 300;
+        mapForecast.getPane('labelsPane').style.pointerEvents = 'none';
+
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 18
+            maxZoom: 18, pane: 'labelsPane'
         }).addTo(mapForecast);
 
         let marcadorActual = null;
@@ -368,6 +403,111 @@
                 cargarAdvertenciasSMN();
             }
         }
+
+        // ==========================================
+        // 5. CAPAS DE RADAR (RMA11 / RMA20)
+        //    Datos: SMN / SINARAME, publicados vía WebMet (OHMC Córdoba)
+        //    Producto: COLMAX = reflectividad máxima de la columna (dBZ)
+        // ==========================================
+        const RADAR_WEBMET = 'https://webmet.ohmc.ar';
+        // Respaldo por tu backend si el navegador no puede consultar WebMet directo (CORS).
+        // Requiere desplegar modulos/radar_webmet.py.
+        const RADAR_PROXY = 'https://metricmoisture-backend.onrender.com/api/radar';
+        const RADAR_REFRESCO_MS = 5 * 60 * 1000;   // cada 5 min se busca una imagen nueva
+        const RADAR_ATRASO_MIN = 30;               // aviso si la imagen tiene más de 30 min
+        const RADAR_MAX_NATIVE_ZOOM = 10;          // ajustar si los tiles se ven borrosos o faltan
+        let radarOpacidad = 0.7;
+
+        // Por la geometría de sus coberturas: RMA11 = Termas de Río Hondo, RMA20 = Las Lajitas
+        const RADARES = {
+            RMA11: { capa: null, registro: null, activo: false },
+            RMA20: { capa: null, registro: null, activo: false }
+        };
+
+        async function pedirUltimoRadar(code) {
+            const qs = `radar_code=${code}&product_key=COLMAX&vol_nr=01&vol_nr=02&strategy=0315`;
+            try {
+                const r = await fetch(`${RADAR_WEBMET}/api/v1/cogs/latest?${qs}`);
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return await r.json();
+            } catch (errDirecto) {
+                console.warn(`Radar ${code}: consulta directa falló (${errDirecto.message}). Probando backend propio...`);
+                const r2 = await fetch(`${RADAR_PROXY}/${code}/latest`);
+                if (!r2.ok) throw new Error('HTTP ' + r2.status);
+                return await r2.json();
+            }
+        }
+
+        function estadoRadar(code, texto, nivel) {
+            const el = document.getElementById(`rad-estado-${code}`);
+            if (!el) return;
+            el.textContent = texto;
+            const color = nivel === 'error' ? 'text-red-400' : (nivel === 'aviso' ? 'text-amber-400' : 'text-slate-400');
+            el.className = `text-[10px] font-mono ml-6 ${color}`;
+        }
+
+        function describirObservacion(iso) {
+            const f = new Date(iso);
+            if (isNaN(f)) return { texto: 'Hora desconocida', nivel: 'aviso' };
+            const min = Math.max(0, Math.round((Date.now() - f.getTime()) / 60000));
+            const hora = f.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' });
+            const atrasado = min > RADAR_ATRASO_MIN;
+            return { texto: `${hora} (hace ${min} min)${atrasado ? ' ⚠ atrasado' : ''}`, nivel: atrasado ? 'aviso' : 'ok' };
+        }
+
+        async function actualizarRadar(code) {
+            const r = RADARES[code];
+            const reg = await pedirUltimoRadar(code);
+            if (!r.activo) return;                       // lo apagaron mientras cargaba
+
+            const obs = describirObservacion(reg.observation_time);
+            estadoRadar(code, obs.texto, obs.nivel);
+            if (r.registro && r.registro.id === reg.id) return;   // misma imagen, nada que cambiar
+
+            const bb = reg.bbox;
+            const bounds = L.latLngBounds([bb.min_lat, bb.min_lon], [bb.max_lat, bb.max_lon]);
+            const url = reg.tile_url.startsWith('http') ? reg.tile_url : RADAR_WEBMET + reg.tile_url;
+
+            const nueva = L.tileLayer(url, {
+                pane: 'radarPane', bounds: bounds, opacity: radarOpacidad,
+                minZoom: 4, maxNativeZoom: RADAR_MAX_NATIVE_ZOOM, maxZoom: 18
+            }).addTo(mapForecast);
+            if (r.capa) mapForecast.removeLayer(r.capa);   // se saca la vieja recién con la nueva ya puesta
+            r.capa = nueva;
+            r.registro = reg;
+        }
+
+        async function toggleRadar(code, activo) {
+            const r = RADARES[code];
+            r.activo = activo;
+            if (!activo) {
+                if (r.capa) mapForecast.removeLayer(r.capa);
+                r.capa = null; r.registro = null;
+                estadoRadar(code, '');
+                return;
+            }
+            estadoRadar(code, 'Cargando…');
+            try {
+                await actualizarRadar(code);
+            } catch (e) {
+                console.error(`Radar ${code}:`, e);
+                estadoRadar(code, 'No disponible', 'error');
+            }
+        }
+
+        function cambiarOpacidadRadar(valor) {
+            radarOpacidad = valor / 100;
+            Object.values(RADARES).forEach(r => { if (r.capa) r.capa.setOpacity(radarOpacidad); });
+        }
+
+        async function refrescarRadares() {
+            for (const code of Object.keys(RADARES)) {
+                if (!RADARES[code].activo) continue;
+                try { await actualizarRadar(code); }
+                catch (e) { console.error(`Radar ${code}:`, e); estadoRadar(code, 'No disponible', 'error'); }
+            }
+        }
+        setInterval(refrescarRadares, RADAR_REFRESCO_MS);
 
         window.onload = () => sincronizarHUD();
         setInterval(sincronizarHUD, 300000); 
