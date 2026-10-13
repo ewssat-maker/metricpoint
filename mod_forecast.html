@@ -219,10 +219,15 @@
             try {
                 // Consultamos a nuestro propio backend en lugar del SMN directo
                 const respuesta = await fetch('https://metricmoisture-backend.onrender.com/api/alertas');
+                if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
                 const resultado = await respuesta.json();
-                
-                // Extraemos el array de alertas
-                const alertas = (resultado.status === "success" && resultado.data) ? resultado.data : [];
+
+                // Si el backend responde con error NO mostramos "zona despejada":
+                // en un sistema de alertas, "sin datos" no es lo mismo que "sin peligro".
+                if (resultado.status !== "success" || !Array.isArray(resultado.data)) {
+                    throw new Error(resultado.message || "Respuesta inválida del backend");
+                }
+                const alertas = resultado.data;
 
                 // Dividimos las alertas en las 3 columnas según el canal
                 const alertasMet = alertas.filter(a => a.canal === "Alertas" || a.canal === "Alertas y Advertencias");
@@ -234,7 +239,7 @@
                     if (alertasArr.length === 0) {
                         return `
                             <div class="h-full flex flex-col items-center justify-center text-center opacity-50 p-4">
-                                <i class="fa-solid fa-shield-check text-2xl text-emerald-500 mb-1"></i>
+                                <i class="fa-solid fa-circle-check text-2xl text-emerald-500 mb-1"></i>
                                 <span class="text-[9px] font-mono text-emerald-400 tracking-widest uppercase">ZONA DESPEJADA</span>
                             </div>`;
                     }
@@ -339,6 +344,7 @@
                     <div class="h-full flex flex-col items-center justify-center space-y-3">
                         <i class="fa-solid fa-triangle-exclamation text-4xl text-red-500"></i>
                         <p class="text-xs font-mono text-red-400 uppercase tracking-widest">Error de Conexión con Backend</p>
+                        <p class="text-[10px] font-mono text-slate-500">${String(error.message || error)}</p>
                     </div>
                 `;
             }
