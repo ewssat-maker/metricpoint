@@ -129,15 +129,41 @@
             <span id="rad-estado-RMA20" class="text-[10px] font-mono ml-6 text-slate-400"></span>
 
             <div class="mt-1">
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Campo</span>
+                <select id="rad-campo" onchange="cambiarCampoRadar(this.value)" class="w-full bg-slate-900 border border-sky-500/50 text-sky-300 font-bold text-xs rounded-lg py-1.5 px-2 focus:outline-none cursor-pointer">
+                    <option value="COLMAX">Máximo de columna (COLMAX)</option>
+                    <option value="DBZH">Z@0.5° · barrido más bajo</option>
+                </select>
+            </div>
+
+            <div class="mt-1">
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Campo</span>
+                <select id="radar-campo" onchange="cambiarCampoRadar(this.value)" class="w-full bg-slate-900 border border-sky-500/50 text-sky-300 font-bold text-xs rounded-lg py-1.5 px-2 focus:outline-none cursor-pointer">
+                    <option value="COLMAX">Máximo en columna (COLMAX)</option>
+                    <option value="DBZH">Reflectividad a 0,5° (Z@0.5)</option>
+                </select>
+            </div>
+
+            <div class="mt-1">
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Opacidad</span>
                 <input type="range" min="20" max="100" value="70" oninput="cambiarOpacidadRadar(this.value)" class="w-full accent-sky-400">
             </div>
 
             <p class="text-[9px] leading-snug text-slate-500 border-t border-slate-700 pt-2">
-                Reflectividad máxima de columna (COLMAX, dBZ).<br>
+                Reflectividad en dBZ.<br>
                 Fuente: SMN / SINARAME, vía WebMet (OHMC Córdoba).<br>
                 Información orientativa: requiere interpretación técnica.
             </p>
+        </div>
+
+        <!-- LEYENDA DEL RADAR (visible solo con algún radar activo) -->
+        <div id="rad-leyenda" class="hidden absolute bottom-4 left-4 z-[1000] glass-hud px-3 py-2 rounded-xl w-72">
+            <div class="flex items-baseline justify-between mb-1">
+                <span id="rad-leyenda-titulo" class="text-[10px] font-black tracking-widest text-sky-400 uppercase">Reflectividad · dBZ</span>
+                <span class="text-[9px] text-slate-500">escala de referencia</span>
+            </div>
+            <div id="rad-leyenda-barra" class="h-3 rounded-sm border border-slate-600"></div>
+            <div id="rad-leyenda-marcas" class="relative h-4 mt-0.5 text-[9px] font-mono text-slate-300"></div>
         </div>
     </div>
 
@@ -418,6 +444,25 @@
         const RADAR_MAX_NATIVE_ZOOM = 10;          // ajustar si los tiles se ven borrosos o faltan
         let radarOpacidad = 0.7;
 
+        // Campos que ofrece la API de WebMet (claves de /api/v1/products).
+        // No se incluye KDP: la API lo marca como no abierto (see_in_open = false).
+        let radarCampo = 'COLMAX';
+        const RADAR_CAMPOS = {
+            COLMAX: { descripcion: 'Reflectividad máxima de la columna (COLMAX, dBZ).' },
+            DBZH:   { descripcion: 'Reflectividad a 0,5° de elevación (Z@0.5, dBZ). Es la más cercana al suelo.' }
+        };
+
+        // Campos disponibles en la API de WebMet (product_key). Ambos usan la misma paleta de tiles.
+        const CAMPOS_RADAR = {
+            COLMAX: { leyenda: 'Máx. de columna · dBZ' },
+            DBZH:   { leyenda: 'Z@0.5° · dBZ' }
+        };
+        let RADAR_CAMPO = 'COLMAX';
+
+        // Escala de colores de referencia (dBZ → color), muestreada de la leyenda del visor de WebMet.
+        // Cubre 10–70 dBZ, el rango donde hay ecos (los tiles no dibujan valores menores a ~11 dBZ).
+        const RADAR_PALETA = __RADAR_PALETA__;
+
         // Por la geometría de sus coberturas: RMA11 = Termas de Río Hondo, RMA20 = Las Lajitas
         const RADARES = {
             RMA11: { capa: null, registro: null, activo: false },
@@ -425,14 +470,14 @@
         };
 
         async function pedirUltimoRadar(code) {
-            const qs = `radar_code=${code}&product_key=COLMAX&vol_nr=01&vol_nr=02&strategy=0315`;
+            const qs = `radar_code=${code}&product_key=${RADAR_CAMPO}&vol_nr=01&vol_nr=02&strategy=0315`;
             try {
                 const r = await fetch(`${RADAR_WEBMET}/api/v1/cogs/latest?${qs}`);
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 return await r.json();
             } catch (errDirecto) {
                 console.warn(`Radar ${code}: consulta directa falló (${errDirecto.message}). Probando backend propio...`);
-                const r2 = await fetch(`${RADAR_PROXY}/${code}/latest`);
+                const r2 = await fetch(`${RADAR_PROXY}/${code}/latest?campo=${RADAR_CAMPO}`);
                 if (!r2.ok) throw new Error('HTTP ' + r2.status);
                 return await r2.json();
             }
@@ -457,8 +502,9 @@
 
         async function actualizarRadar(code) {
             const r = RADARES[code];
+            const campo = radarCampo;
             const reg = await pedirUltimoRadar(code);
-            if (!r.activo) return;                       // lo apagaron mientras cargaba
+            if (!r.activo || campo !== radarCampo) return;   // lo apagaron o cambiaron de campo mientras cargaba
 
             const obs = describirObservacion(reg.observation_time);
             estadoRadar(code, obs.texto, obs.nivel);
@@ -480,6 +526,7 @@
         async function toggleRadar(code, activo) {
             const r = RADARES[code];
             r.activo = activo;
+            actualizarLeyenda();
             if (!activo) {
                 if (r.capa) mapForecast.removeLayer(r.capa);
                 r.capa = null; r.registro = null;
@@ -500,6 +547,21 @@
             Object.values(RADARES).forEach(r => { if (r.capa) r.capa.setOpacity(radarOpacidad); });
         }
 
+        async function cambiarCampoRadar(campo) {
+            if (!RADAR_CAMPOS[campo]) return;
+            radarCampo = campo;
+            document.getElementById('radar-campo-desc').textContent = RADAR_CAMPOS[campo].descripcion;
+            for (const code of Object.keys(RADARES)) {
+                const r = RADARES[code];
+                if (r.capa) mapForecast.removeLayer(r.capa);
+                r.capa = null; r.registro = null;
+                if (!r.activo) continue;
+                estadoRadar(code, 'Cargando…');
+                try { await actualizarRadar(code); }
+                catch (e) { console.error(`Radar ${code}:`, e); estadoRadar(code, 'No disponible', 'error'); }
+            }
+        }
+
         async function refrescarRadares() {
             for (const code of Object.keys(RADARES)) {
                 if (!RADARES[code].activo) continue;
@@ -507,7 +569,44 @@
                 catch (e) { console.error(`Radar ${code}:`, e); estadoRadar(code, 'No disponible', 'error'); }
             }
         }
+        function construirLeyenda() {
+            const barra = document.getElementById('rad-leyenda-barra');
+            const marcas = document.getElementById('rad-leyenda-marcas');
+            if (!barra || !marcas) return;
+            const min = RADAR_PALETA[0][0];
+            const max = RADAR_PALETA[RADAR_PALETA.length - 1][0];
+            const paradas = RADAR_PALETA.map(([v, c]) => `${c} ${(((v - min) / (max - min)) * 100).toFixed(1)}%`);
+            barra.style.background = `linear-gradient(to right, ${paradas.join(', ')})`;
+            marcas.innerHTML = '';
+            for (let v = min; v <= max; v += 10) {
+                const pos = ((v - min) / (max - min)) * 100;
+                const t = document.createElement('span');
+                t.textContent = v;
+                t.style.position = 'absolute';
+                t.style.left = pos + '%';
+                t.style.transform = pos === 0 ? 'none' : (pos === 100 ? 'translateX(-100%)' : 'translateX(-50%)');
+                marcas.appendChild(t);
+            }
+        }
+
+        function actualizarLeyenda() {
+            const el = document.getElementById('rad-leyenda');
+            if (!el) return;
+            const algunoActivo = Object.values(RADARES).some(r => r.activo);
+            el.classList.toggle('hidden', !algunoActivo);
+            document.getElementById('rad-leyenda-titulo').textContent = CAMPOS_RADAR[RADAR_CAMPO].leyenda;
+        }
+
+        async function cambiarCampoRadar(valor) {
+            if (!CAMPOS_RADAR[valor]) return;
+            RADAR_CAMPO = valor;
+            Object.values(RADARES).forEach(r => { r.registro = null; });   // fuerza a recargar la capa
+            actualizarLeyenda();
+            await refrescarRadares();
+        }
+
         setInterval(refrescarRadares, RADAR_REFRESCO_MS);
+        construirLeyenda();
 
         window.onload = () => sincronizarHUD();
         setInterval(sincronizarHUD, 300000); 
