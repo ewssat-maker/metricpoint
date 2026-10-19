@@ -1,5 +1,5 @@
 """
-Proxy con caché hacia la API de WebMet (OHMC Córdoba) para los radares RMA11 y RMA20.
+Proxy con caché hacia la API de WebMet (OHMC Córdoba) para los radares RMA11, RMA20 y RMA7.
 
 SOLO hace falta si el navegador no puede consultar WebMet directo (error de CORS).
 Con la caché, WebMet recibe como máximo 1 consulta cada 5 minutos por radar,
@@ -24,7 +24,7 @@ from flask import Blueprint, abort, jsonify, request
 radar_bp = Blueprint("radar_webmet", __name__)
 
 WEBMET = "https://webmet.ohmc.ar"
-RADARES_PERMITIDOS = {"RMA11", "RMA20"}
+RADARES_PERMITIDOS = {"RMA11", "RMA20", "RMA7"}
 CAMPOS_PERMITIDOS = {"COLMAX", "DBZH"}   # DBZH = Z@0.5° (reflectividad del barrido más bajo)
 TTL_SEGUNDOS = 300
 USER_AGENT = "MetricPoint/1.0 (+https://metricpoint.onrender.com)"
