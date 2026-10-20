@@ -19,7 +19,7 @@ import threading
 import time
 
 import requests
-from flask import Blueprint, abort, jsonify, request
+from flask import Blueprint, Response, abort, jsonify, request
 
 radar_bp = Blueprint("radar_webmet", __name__)
 
@@ -82,3 +82,44 @@ def radar_latest(code):
     with _lock:
         _cache[clave] = (ahora, datos)
     return jsonify(datos)
+
+
+# ---------------------------------------------------------------------------
+# Teselas (imágenes) del radar con CORS, para el visor 3D (radar3d.html).
+# El visor 3D usa las imágenes como textura WebGL, y eso exige que el servidor permita CORS.
+# Solo se usa si WebMet no lo permite directo. Caché en memoria para no sobrecargar a WebMet.
+# ---------------------------------------------------------------------------
+TTL_TESELAS = 3600
+MAX_TESELAS = 700
+_teselas = {}             # (id, z, x, y) -> (momento, bytes)
+
+
+@radar_bp.route("/api/radar/tile/<int:reg_id>/<int:z>/<int:x>/<int:y>.png", methods=["GET"])
+def radar_tile(reg_id, z, x, y):
+    if not (0 <= z <= 12) or x < 0 or y < 0 or x >= 2 ** z or y >= 2 ** z:
+        abort(404)
+    clave = (reg_id, z, x, y)
+    ahora = time.time()
+    with _lock:
+        entrada = _teselas.get(clave)
+    if entrada and ahora - entrada[0] < TTL_TESELAS:
+        cuerpo = entrada[1]
+    else:
+        try:
+            r = requests.get(f"{WEBMET}/api/v1/tiles/{reg_id}/{z}/{x}/{y}.png",
+                             headers={"User-Agent": USER_AGENT}, timeout=10)
+        except Exception as e:
+            print(f"Radar tesela {clave}: {e}")
+            abort(502)
+        if r.status_code == 404:
+            abort(404)
+        if not r.ok or "image/png" not in r.headers.get("Content-Type", ""):
+            abort(502)
+        cuerpo = r.content
+        with _lock:
+            if len(_teselas) >= MAX_TESELAS:                       # descarta las más viejas
+                for k in sorted(_teselas, key=lambda k: _teselas[k][0])[: MAX_TESELAS // 4]:
+                    _teselas.pop(k, None)
+            _teselas[clave] = (ahora, cuerpo)
+    return Response(cuerpo, mimetype="image/png",
+                    headers={"Cache-Control": "public, max-age=600", "Access-Control-Allow-Origin": "*"})
