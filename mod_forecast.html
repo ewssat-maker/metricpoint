@@ -218,6 +218,7 @@
         // ==========================================
         // 2. EXTRACCIÓN DE DATOS TELEMÉTRICOS (HUD)
         // ==========================================
+        let pedidoHUD = 0;
         async function sincronizarHUD() {
             const selector = document.getElementById('stationSelector');
             const data = selector.value.split('|');
@@ -233,22 +234,32 @@
                 radius: 10, fillColor: "#38bdf8", color: "#ffffff", weight: 2, fillOpacity: 0.8
             }).addTo(mapForecast).bindPopup(`ACTIVO:<br>${nombreEstacion}`).openPopup();
 
-            const url = `https://api.weather.com/v2/pws/observations/current?stationId=${stationId}&format=json&units=e&apiKey=e1f10a1e78da46f5b10a1e78da96f525`;
+            // La consulta a Wunderground la hace el backend (clave en Render + caché + último dato guardado)
+            const url = `https://metricmoisture-backend.onrender.com/api/wu/${encodeURIComponent(stationId)}`;
+            const pedido = ++pedidoHUD;
 
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error('Error');
-                const json = await response.json();
-                const obs = json.observations[0];
+                const wu = await response.json().catch(() => ({}));
+                if (pedido !== pedidoHUD) return;          // el usuario ya eligió otra estación
+                if (!response.ok || !wu.observation) throw new Error(wu.error || 'Error');
+                const obs = wu.observation;
                 const imp = obs.imperial;
 
                 document.getElementById('hud-temp').innerText = ((imp.temp - 32) * 5 / 9).toFixed(1);
                 document.getElementById('hud-hum').innerText = obs.humidity;
                 document.getElementById('hud-viento').innerText = (imp.windSpeed * 1.60934).toFixed(1);
                 document.getElementById('hud-lluvia').innerText = (imp.precipTotal * 25.4).toFixed(1);
-                document.getElementById('hud-msg').innerText = `SISTEMA OPERATIVO • ${obs.obsTimeLocal.split(' ')[1]}`;
-                document.getElementById('hud-msg').className = "text-[10px] text-emerald-400 font-mono text-center mt-1";
+                const hora = (obs.obsTimeLocal || '').split(' ')[1] || '';
+                if (wu.stale) {
+                    document.getElementById('hud-msg').innerText = `ÚLTIMO DATO GUARDADO • ${hora} (hace ${Math.round(wu.edad_s / 60)} min)`;
+                    document.getElementById('hud-msg').className = "text-[10px] text-amber-400 font-mono text-center mt-1";
+                } else {
+                    document.getElementById('hud-msg').innerText = `SISTEMA OPERATIVO • ${hora}`;
+                    document.getElementById('hud-msg').className = "text-[10px] text-emerald-400 font-mono text-center mt-1";
+                }
             } catch (error) {
+                if (pedido !== pedidoHUD) return;
                 ['hud-temp', 'hud-hum', 'hud-viento', 'hud-lluvia'].forEach(id => document.getElementById(id).innerText = '--');
                 document.getElementById('hud-msg').innerText = "ESTACIÓN OFFLINE";
                 document.getElementById('hud-msg').className = "text-[10px] text-red-500 font-mono text-center mt-1";
