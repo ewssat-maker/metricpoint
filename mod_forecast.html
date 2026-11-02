@@ -111,7 +111,7 @@
         </div>
 
         <!-- HUD FLOTANTE: Radares -->
-        <div class="absolute top-4 right-4 z-[1000] glass-hud p-4 rounded-2xl w-64 flex flex-col gap-2">
+        <div class="absolute top-4 right-4 z-[1000] glass-hud p-4 rounded-2xl w-72 max-h-[90vh] overflow-y-auto flex flex-col gap-2">
             <div class="flex items-center justify-between border-b border-sky-500/30 pb-2">
                 <h2 class="text-sm font-black tracking-widest text-sky-400"><i class="fa-solid fa-tower-broadcast mr-2"></i>RADARES</h2>
             </div>
@@ -135,6 +135,11 @@
                     <option value="DBZH">Reflectividad a 0,5° (Z@0.5)</option>
                 </select>
                 <p id="radar-campo-desc" class="text-[9px] leading-snug text-slate-500 mt-1"></p>
+            </div>
+
+            <div class="mt-1">
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1"><i class="fa-solid fa-film mr-1"></i> Animación · últimas 6 imágenes</span>
+                <div id="radar-anim"></div>
             </div>
 
             <div class="mt-1">
@@ -191,6 +196,7 @@
 
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="radar_anim.js"></script>
     
     <script>
         // ==========================================
@@ -521,7 +527,7 @@
             const url = reg.tile_url.startsWith('http') ? reg.tile_url : RADAR_WEBMET + reg.tile_url;
 
             const nueva = L.tileLayer(url, {
-                pane: 'radarPane', bounds: bounds, opacity: radarOpacidad,
+                pane: 'radarPane', bounds: bounds, opacity: r.oculto ? 0 : radarOpacidad,
                 minZoom: 4, maxNativeZoom: RADAR_MAX_NATIVE_ZOOM, maxZoom: 18
             }).addTo(mapForecast);
             if (r.capa) mapForecast.removeLayer(r.capa);   // se saca la vieja recién con la nueva ya puesta
@@ -532,6 +538,15 @@
         async function cargarRadar(code) {
             try { await actualizarRadar(code); }
             catch (e) { console.error(`Radar ${code}:`, e); estadoRadar(code, 'No disponible', 'error'); }
+            if (RA) RA.sincronizar();
+        }
+
+        // Animación de las últimas 6 imágenes + clasificación + seguimiento (radar_anim.js)
+        let RA = null;
+        function ocultarSimple(code, ocultar) {
+            const r = RADARES[code]; if (!r) return;
+            r.oculto = ocultar;
+            if (r.capa) r.capa.setOpacity(ocultar ? 0 : radarOpacidad);
         }
 
         async function toggleRadar(code, activo) {
@@ -540,8 +555,9 @@
             actualizarLeyenda();
             if (!activo) {
                 if (r.capa) mapForecast.removeLayer(r.capa);
-                r.capa = null; r.registro = null;
+                r.capa = null; r.registro = null; r.oculto = false;
                 estadoRadar(code, '');
+                if (RA) RA.sincronizar();
                 return;
             }
             estadoRadar(code, 'Cargando…');
@@ -550,7 +566,8 @@
 
         function cambiarOpacidadRadar(valor) {
             radarOpacidad = valor / 100;
-            Object.values(RADARES).forEach(r => { if (r.capa) r.capa.setOpacity(radarOpacidad); });
+            Object.values(RADARES).forEach(r => { if (r.capa && !r.oculto) r.capa.setOpacity(radarOpacidad); });
+            if (RA) RA.setOpacidad();
         }
 
         async function cambiarCampoRadar(valor) {
@@ -560,7 +577,7 @@
             await Promise.all(Object.keys(RADARES).map(async code => {
                 const r = RADARES[code];
                 if (r.capa) mapForecast.removeLayer(r.capa);   // la capa vieja era de otro campo
-                r.capa = null; r.registro = null;
+                r.capa = null; r.registro = null; r.oculto = false;
                 if (!r.activo) return;
                 estadoRadar(code, 'Cargando…');
                 await cargarRadar(code);
@@ -602,6 +619,12 @@
             document.getElementById('radar-campo-desc').textContent = CAMPOS_RADAR[RADAR_CAMPO].descripcion;
         }
 
+        RA = RadarAnim.crear({
+            map: mapForecast, pane: 'radarPane', contenedor: document.getElementById('radar-anim'),
+            backend: RADAR_PROXY, webmet: RADAR_WEBMET,
+            activos: () => Object.keys(RADARES).filter(c => RADARES[c].activo),
+            campo: () => RADAR_CAMPO, opacidad: () => radarOpacidad, ocultarSimple
+        });
         setInterval(refrescarRadares, RADAR_REFRESCO_MS);
         construirLeyenda();
         actualizarLeyenda();
