@@ -598,9 +598,9 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
     </footer>
 
     <!-- LIBRERÍAS DE JS. NO HAY CHART.JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" defer></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" async></script>
 
     <script>
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
@@ -752,6 +752,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
         }
 
         var map, drawnItems, drawControl, poligonoActual = null;
+        function iniciarMapa() {
         try {
         map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
@@ -761,6 +762,8 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
         map.on(L.Draw.Event.CREATED, function (event) { drawnItems.clearLayers(); drawnItems.addLayer(event.layer); poligonoActual = event.layer.toGeoJSON().geometry.coordinates; });
 
         } catch (e) { console.error('Mapa no disponible:', e); window.dispatchEvent(new ErrorEvent('error', { message: 'Mapa no disponible: ' + e.message })); }
+        }
+        document.addEventListener('DOMContentLoaded', iniciarMapa);
 
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = []; window.ultimoDatoCalculado = null; 
 
@@ -862,4 +865,4 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
             Plotly.newPlot('soilHeatmap', u, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Depth', tickvals: [0, -10, -30, -60, -100], ticktext: ["Surface", "-10 cm", "-30 cm", "-60 cm", "-100 cm"] }}, {responsive: true});
             
             var v = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: t, cmin: o, cmax: p, colorbar: { title: 'm³/m³', thickness: 15, tickvals: r, ticktext: s } }]; 
-            Plotly.newPlot('soil3D', v, { margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Date' }, yaxis: { title: 'Dept
+      
