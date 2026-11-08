@@ -223,10 +223,10 @@
                     <input type="email" id="authEmail" data-i18n="ph_email" placeholder="example@company.com">
                     <label data-i18n="lbl_pass">Password</label>
                     <input type="password" id="authPassword" placeholder="••••••••">
-                    <button class="btn-auth-primary" onclick="hacerLogin()" data-i18n="btn_login">Sign In</button>
+                    <button class="btn-auth-primary" id="btnLogin" onclick="hacerLogin()" data-i18n="btn_login">Sign In</button>
+                    <p id="authStatusLogin" style="font-size: 14px; font-weight: 600; color: #d73027; margin: 12px 0 0 0; text-align: center; min-height: 20px;"></p>
                     <div class="divider"><span data-i18n="lbl_or">or</span></div>
                     <button class="btn-auth-secondary" onclick="mostrarRegistro()" data-i18n="btn_trial">Create Corporate Account</button>
-                    <p id="authStatusLogin" style="font-size: 13px; color: #d73027; margin-top: 15px; text-align: center; height: 15px;"></p>
                 </div>
 
                 <!-- CONTENEDOR REGISTRO CORPORATIVO -->
@@ -713,17 +713,26 @@
         }
 
         async function hacerLogin() {
-            const email = document.getElementById("authEmail").value; const password = document.getElementById("authPassword").value; const statusLabel = document.getElementById("authStatusLogin");
+            const email = document.getElementById("authEmail").value.trim(); const password = document.getElementById("authPassword").value; const statusLabel = document.getElementById("authStatusLogin"); const btn = document.getElementById("btnLogin");
             if(!email || !password) { statusLabel.innerText = getMsg("msg_auth_err"); return; }
-            statusLabel.innerText = getMsg("msg_login");
+            statusLabel.style.color = '#08306b'; statusLabel.innerText = getMsg("msg_login") + " (si el servidor estaba dormido puede tardar hasta 1 minuto)";
+            if (btn) btn.disabled = true;
+            const ctl = new AbortController(); const corte = setTimeout(() => ctl.abort(), 90000);
             try {
-                const res = await fetch(`${BACKEND_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-                const data = await res.json();
-                if(res.ok) { 
-                    localStorage.setItem("metric_token", data.token); localStorage.setItem("metric_email", email); 
-                    document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block"; 
-                } else { statusLabel.innerText = data.error; }
-            } catch(e) { statusLabel.innerText = getMsg("msg_err_serv"); }
+                const res = await fetch(`${BACKEND_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }), signal: ctl.signal });
+                let data = null; try { data = await res.json(); } catch (_) {}
+                if(res.ok && data && data.token) {
+                    localStorage.setItem("metric_token", data.token); localStorage.setItem("metric_email", email);
+                    statusLabel.innerText = '';
+                    document.getElementById("landingWrapper").style.display = "none"; document.getElementById("workspace").style.display = "block"; document.getElementById("dashboardHub").style.display = "block";
+                } else {
+                    statusLabel.style.color = '#d73027';
+                    statusLabel.innerText = (data && data.error) ? data.error : ('Error del servidor (código ' + res.status + '). Revisá los Logs de Render.');
+                }
+            } catch(e) {
+                statusLabel.style.color = '#d73027';
+                statusLabel.innerText = (e && e.name === 'AbortError') ? 'El servidor no respondió en 90 segundos. Probá de nuevo en un minuto.' : getMsg("msg_err_serv") + ' (' + (e && e.message ? e.message : 'sin detalle') + ')';
+            } finally { clearTimeout(corte); if (btn) btn.disabled = false; }
         }
 
         var map = L.map('map').setView([-27.00, -65.30], 11);
@@ -843,7 +852,3 @@
             const gridSize = 60; let xArr = [], yArr = []; for(let i=0; i<gridSize; i++) { xArr.push(minX + (maxX-minX)*(i/(gridSize-1))); yArr.push(minY + (maxY-minY)*(i/(gridSize-1))); }
             let minCota = Infinity, maxCota = -Infinity; if (puntosDEM && puntosDEM.length > 0) { puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; }); } else { minCota = 0; maxCota = 1; }
             let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
-            function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w; }
-            const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
-            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
-            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.m
