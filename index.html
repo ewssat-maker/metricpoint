@@ -769,7 +769,7 @@
             if (!poligonoActual) return document.getElementById('status').innerText = 'Error: Draw polygon.';
             const token = localStorage.getItem("metric_token"); if (!token) { document.getElementById("workspace").style.display = "none"; document.getElementById("landingWrapper").style.display = "flex"; return; }
             document.getElementById('status').innerText = 'Simulating...'; document.getElementById('status').style.color = '#08306b';
-            ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoClima'].forEach(id => document.getElementById(id).style.display = 'none');
+            ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoClima'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
             try {
                 const response = await fetch(`${BACKEND_URL}/api/calcular`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value, fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales }) });
                 const jsonResponse = await response.json();
@@ -778,7 +778,7 @@
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
-                    let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); document.getElementById('listaMeses').innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
+                    let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); const _lm = document.getElementById('listaMeses'); if (_lm) _lm.innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
                     
                     window.ultimoDatoCalculado = jsonResponse.data[jsonResponse.data.length - 1];
                     generarInforme(jsonResponse.data, jsonResponse.suelo); 
