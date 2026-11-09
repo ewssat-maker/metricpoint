@@ -21,8 +21,8 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suite MetricPoint by metricpoint</title>
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" media="print" onload="this.media='all'" />
 
     <style>
         /* ==========================================
@@ -147,7 +147,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
             #hydroSplitGrid { grid-template-columns: 1fr !important; }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" media="print" onload="this.media='all'" />
     <style>
         /* Almanaque de fechas: mismo azul de la app, legible sobre fondo claro y oscuro */
         input.flatpickr-input { cursor: pointer; }
@@ -598,11 +598,30 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
     </footer>
 
     <!-- LIBRERÍAS DE JS. NO HAY CHART.JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" defer></script>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" async></script>
+    
+    
+    
 
     <script>
+/* Las librerías externas se cargan en segundo plano: si una tarda o falla, el ingreso y los menús siguen funcionando. */
+(function () {
+    function cargar(src, ok) {
+        var el = document.createElement('script'); el.src = src; el.async = true;
+        el.onload = function () { if (ok) ok(); };
+        el.onerror = function () { window.dispatchEvent(new ErrorEvent('error', { message: 'No cargó: ' + src })); };
+        document.head.appendChild(el);
+    }
+    window.__cargarLib = cargar;
+    cargar('https://cdn.plot.ly/plotly-2.27.0.min.js');
+    cargar('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', function () {
+        cargar('https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js', function () {
+            window.__leafletListo = true;
+            if (typeof window.iniciarMapa === 'function') window.iniciarMapa();
+        });
+    });
+})();
+</script>
+<script>
         const BACKEND_URL = "https://metricmoisture-backend.onrender.com";
 
         const traducciones = {
@@ -753,6 +772,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
 
         var map, drawnItems, drawControl, poligonoActual = null;
         function iniciarMapa() {
+        if (map) return;
         try {
         map = L.map('map').setView([-27.00, -65.30], 11);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18}).addTo(map);
@@ -763,7 +783,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
 
         } catch (e) { console.error('Mapa no disponible:', e); window.dispatchEvent(new ErrorEvent('error', { message: 'Mapa no disponible: ' + e.message })); }
         }
-        document.addEventListener('DOMContentLoaded', iniciarMapa);
+        window.iniciarMapa = iniciarMapa; if (window.__leafletListo) iniciarMapa();
 
         window.datosSimulacion = []; window.parametrosSimulacion = null; window.topografiaLote = []; window.datosLocalesManuales = []; window.ultimoDatoCalculado = null; 
 
@@ -865,4 +885,178 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
             Plotly.newPlot('soilHeatmap', u, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Depth', tickvals: [0, -10, -30, -60, -100], ticktext: ["Surface", "-10 cm", "-30 cm", "-60 cm", "-100 cm"] }}, {responsive: true});
             
             var v = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: t, cmin: o, cmax: p, colorbar: { title: 'm³/m³', thickness: 15, tickvals: r, ticktext: s } }]; 
-      
+            Plotly.newPlot('soil3D', v, { margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Date' }, yaxis: { title: 'Depth (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Moisture (V/V)', range: [Math.max(0, n - .05), m + .15] }, camera: { eye: { x: 1.3, y: -1.6, z: 0.6 } } } }, {responsive: true});
+        }
+
+        function isPointInPoly(pt, poly) { let x = pt[0], y = pt[1], isInside = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { let xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1]; let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi); if (intersect) isInside = !isInside; } return isInside; }
+
+        function renderizarGeo3D(dato, parametros_suelo, puntosDEM) {
+            let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
+            const gridSize = 60; let xArr = [], yArr = []; for(let i=0; i<gridSize; i++) { xArr.push(minX + (maxX-minX)*(i/(gridSize-1))); yArr.push(minY + (maxY-minY)*(i/(gridSize-1))); }
+            let minCota = Infinity, maxCota = -Infinity; if (puntosDEM && puntosDEM.length > 0) { puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; }); } else { minCota = 0; maxCota = 1; }
+            let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
+            function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p = puntosDEM[i], d2 = Math.pow(p.lon-lon, 2) + Math.pow(p.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += (p.z-minCota)*w; } return sum_z_w / sum_w; }
+            const layers = [ { name: '10 cm', offset: 0, hum: dato.Humedad_10cm }, { name: '30 cm', offset: -25, hum: dato.Humedad_30cm }, { name: '60 cm', offset: -50, hum: dato.Humedad_60cm }, { name: '100 cm', offset: -75, hum: dato.Humedad_100cm } ];
+            const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
+            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
+            let traces = [];
+            layers.forEach((layer, index) => {
+                let zMatrix = [], colorMatrix = [], textMatrix = [];
+                for(let j=0; j<gridSize; j++) { let zRow = [], cRow = [], tRow = []; for(let i=0; i<gridSize; i++) { if (isPointInPoly([xArr[i], yArr[j]], poly)) { let relieveBase = getRelieveZ(xArr[i], yArr[j]); zRow.push(relieveBase + layer.offset); let cotaNorm = (relieveBase - minCota) / rangoCota; let factorAgua = (0.5 - cotaNorm); let humedadLocal = layer.hum + (factorAgua * 0.15); humedadLocal = Math.max(0.01, Math.min(1.0, humedadLocal)); cRow.push(humedadLocal); tRow.push(`Moisture: ${humedadLocal.toFixed(3)} m³/m³<br>Level: ${layer.name}`); } else { zRow.push(null); cRow.push(null); tRow.push(null); } } zMatrix.push(zRow); colorMatrix.push(cRow); textMatrix.push(tRow); }
+                traces.push({ name: `Prof: ${layer.name}`, x: xArr, y: yArr, z: zMatrix, surfacecolor: colorMatrix, text: textMatrix, type: "surface", colorscale: colorScaleRojoPurpura, cauto: false, cmin: globalMin, cmax: globalMax, showscale: index === 0, colorbar: { title: "Moisture", thickness: 15, len: .8, y: .5, tickformat: ".3f" }, hoverinfo: 'text', opacity: 1 });
+            });
+            Plotly.purge('soilGeo3D'); Plotly.newPlot('soilGeo3D', traces, { margin: { l:0, r:0, b:0, t:0 }, scene: { xaxis: {title: 'Longitud', visible: true}, yaxis: {title: 'Latitud', visible: true}, zaxis: {visible:false}, camera: { eye: {x:1.3, y:-1.6, z:0.6} }, aspectratio: {x:1, y:1, z:0.9} }, paper_bgcolor: "#ffffff" }, {responsive: !0});
+        }
+
+        function construirGemeloVolumetricoInteractiva(dato, parametros_suelo, puntosDEM, profundidadSeleccionada) {
+            if (!dato || !poligonoActual) return;
+            let poly = poligonoActual[0]; let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; poly.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
+            const gridSize = 60; let minCota = Infinity, maxCota = -Infinity; if (puntosDEM && puntosDEM.length > 0) { puntosDEM.forEach(p => { if (p.z<minCota) minCota=p.z; if (p.z>maxCota) maxCota=p.z; }); } else { minCota = 0; maxCota = 1; }
+            let rangoCota = (maxCota - minCota) === 0 ? 1 : (maxCota - minCota);
+            function getRelieveZ(lon, lat) { if (!puntosDEM || puntosDEM.length === 0) return 0; let sum_w = 0, sum_z_w = 0, smoothing = 0.00005; for (let i = 0; i < puntosDEM.length; i++) { let p2 = puntosDEM[i]; let d2 = Math.pow(p2.lon-lon, 2) + Math.pow(p2.lat-lat, 2); let w = 1/(d2+smoothing); sum_w += w; sum_z_w += p2.z*w; } return sum_z_w / sum_w; }
+            let profTop = parseInt(profundidadSeleccionada); let profBot = 100; const colorScaleRojoPurpura = [[0.0, 'rgb(215,25,28)'], [0.25, 'rgb(253,174,97)'], [0.5, 'rgb(255,255,191)'], [0.75, 'rgb(44,123,182)'], [1.0, 'rgb(128,0,128)']];
+            let globalMin = Math.max(0.01, Math.min(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) - 0.10); let globalMax = Math.min(1.0, Math.max(dato.Humedad_10cm, dato.Humedad_30cm, dato.Humedad_60cm, dato.Humedad_100cm) + 0.10);
+            let zOffsets = { 10: 0, 30: -25, 60: -50, 100: -75 }; let current_z_offset_top = zOffsets[profTop]; let current_z_offset_bot = -75; 
+            let z_crop = [], c_crop = []; let z_top = [], c_top = []; let z_bot = [], c_bot = []; let scat_x = [], scat_y = [], scat_z = [], scat_c = [];
+            function getHumedad(depth_cm, cotaReal) { let hum_base = dato.Humedad_10cm; if (depth_cm <= 10) hum_base = dato.Humedad_10cm; else if (depth_cm <= 30) hum_base = dato.Humedad_10cm + (dato.Humedad_30cm - dato.Humedad_10cm) * ((depth_cm - 10)/20); else if (depth_cm <= 60) hum_base = dato.Humedad_30cm + (dato.Humedad_60cm - dato.Humedad_30cm) * ((depth_cm - 30)/30); else if (depth_cm <= 100) hum_base = dato.Humedad_60cm + (dato.Humedad_100cm - dato.Humedad_60cm) * ((depth_cm - 60)/40); let cotaNorm = (cotaReal - minCota) / rangoCota; let factorAgua = (0.5 - cotaNorm); let hum = hum_base + (factorAgua * 0.15); return Math.max(0.01, Math.min(1.0, hum)); }
+            let plotX = [], plotY = []; for(let i=0; i<gridSize; i++) plotX.push(minX + (maxX-minX)*(i/(gridSize-1))); for(let j=0; j<gridSize; j++) plotY.push(minY + (maxY-minY)*(j/(gridSize-1)));
+            for(let j=0; j<gridSize; j++) { let row_z_crop = [], row_c_crop = []; let row_z_top = [], row_c_top = []; let row_z_bot = [], row_c_bot = []; let ry = plotY[j]; for(let i=0; i<gridSize; i++) { let rx = plotX[i]; if (isPointInPoly([rx, ry], poly)) { let cotaReal = getRelieveZ(rx, ry); row_z_crop.push(cotaReal + 15); row_c_crop.push(Math.sin(j * 2) > 0 ? 1 : 0.2); row_z_top.push(cotaReal + current_z_offset_top); row_c_top.push(getHumedad(profTop, cotaReal)); row_z_bot.push(cotaReal + current_z_offset_bot); row_c_bot.push(getHumedad(profBot, cotaReal)); if (profTop < 100 && i%2===0 && j%2===0) { for (let s = 1; s < 6; s++) { let w = s / 6; scat_x.push(rx); scat_y.push(ry); scat_z.push(cotaReal + current_z_offset_top + w * (current_z_offset_bot - current_z_offset_top)); scat_c.push(getHumedad(profTop + w * (profBot - profTop), cotaReal)); } } } else { row_z_crop.push(null); row_c_crop.push(null); row_z_top.push(null); row_c_top.push(null); row_z_bot.push(null); row_c_bot.push(null); } } z_crop.push(row_z_crop); c_crop.push(row_c_crop); z_top.push(row_z_top); c_top.push(row_c_top); z_bot.push(row_z_bot); c_bot.push(row_c_bot); }
+            const trace_crop = { x: plotX, y: plotY, z: z_crop, surfacecolor: c_crop, type: 'surface', colorscale: [[0, '#4a2f1d'], [0.5, '#784725'], [1, '#166534']], showscale: false, opacity: 1, name: 'Superficie', hovertemplate: "<b>Capa Vegetal</b><extra></extra>" };
+            const trace_hum_top = { x: plotX, y: plotY, z: z_top, surfacecolor: c_top, type: 'surface', colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, cauto: false, showscale: true, colorbar: { title: 'Moisture', thickness: 15, len: 0.8, y: 0.5, tickformat: '.3f' }, opacity: 1.0, name: `Capa Consultada` };
+            const trace_hum_bot = { x: plotX, y: plotY, z: z_bot, surfacecolor: c_bot, type: 'surface', colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, cauto: false, showscale: false, opacity: 1.0, name: `Fondo de Humedad` };
+            const trace_scatter = { x: scat_x, y: scat_y, z: scat_z, mode: 'markers', type: 'scatter3d', marker: { size: 5, color: scat_c, colorscale: colorScaleRojoPurpura, cmin: globalMin, cmax: globalMax, cauto: false, opacity: 0.08 }, name: 'Interior', showlegend: false };
+            let periX = [], periY = [], periZ_100 = [], periZ_110 = [], periC = []; for(let k = 0; k < poly.length; k++) { let pt = poly[k]; let cotaReal = getRelieveZ(pt[0], pt[1]); periX.push(pt[0]); periY.push(pt[1]); periZ_100.push(cotaReal - 75.0); periZ_110.push(cotaReal - 85.0); periC.push(0); } periX.push(periX[0]); periY.push(periY[0]); periZ_100.push(periZ_100[0]); periZ_110.push(periZ_110[0]); periC.push(0);
+            const trace_skirt = { x: [periX, periX], y: [periY, periY], z: [periZ_100, periZ_110], surfacecolor: [periC, periC], type: 'surface', colorscale: [[0, '#3e2723'], [1, '#3e2723']], showscale: false, hoverinfo: 'none', name: 'Base Sólida (-110cm)' };
+            Plotly.react('soilGemeloVolumetrico', [trace_crop, trace_hum_top, trace_hum_bot, trace_scatter, trace_skirt], { paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', margin: { l: 0, r: 120, b: 0, t: 0 }, scene: { camera: { eye: { x: 1.3, y: -1.6, z: 0.6 } }, xaxis: { visible: true }, yaxis: { visible: true }, zaxis: { visible: false }, aspectratio: { x: 1, y: 1, z: 0.9 } } }, {responsive: true, displayModeBar: false});
+        }
+
+        function cambiarCapaGemeloVolumetrico(profundidad) { if (!window.ultimoDatoCalculado) return; construirGemeloVolumetricoInteractiva(window.ultimoDatoCalculado, window.parametrosSimulacion, window.topografiaLote, profundidad); }
+
+        function consultarFechaGlobal(inputId) {
+            const fecha = document.getElementById(inputId).value;
+            if (!fecha || window.datosSimulacion.length === 0) return alert("Seleccione una fecha válida.");
+            const dato = window.datosSimulacion.find(d => d.timestamp === fecha);
+            if (dato) {
+                window.ultimoDatoCalculado = dato;
+                document.getElementById('rG_10').innerText = dato.Humedad_10cm.toFixed(3); document.getElementById('rG_30').innerText = dato.Humedad_30cm.toFixed(3); document.getElementById('rG_60').innerText = dato.Humedad_60cm.toFixed(3); document.getElementById('rG_100').innerText = dato.Humedad_100cm.toFixed(3); document.getElementById('rG_et0').innerText = dato.ET0.toFixed(1);
+                document.getElementById('rB_10').innerText = dato.Humedad_10cm.toFixed(3); document.getElementById('rB_30').innerText = dato.Humedad_30cm.toFixed(3); document.getElementById('rB_60').innerText = dato.Humedad_60cm.toFixed(3); document.getElementById('rB_100').innerText = dato.Humedad_100cm.toFixed(3);
+                document.getElementById('resGeo3D').style.display = 'block'; document.getElementById('resGemelo').style.display = 'block';
+                document.getElementById('contenedorGeo3D').style.display = 'block'; document.getElementById('lblFechaGeo3D').innerText = `(Date: ${dato.timestamp})`;
+                document.getElementById('fechaConsultaGeo3D').value = fecha; document.getElementById('fechaConsultaGemelo').value = fecha;
+                renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); 
+                let profPorDefecto = document.getElementById('selProfundidadGemelo').value;
+                construirGemeloVolumetricoInteractiva(dato, window.parametrosSimulacion, window.topografiaLote, profPorDefecto);
+            } else alert("Fecha fuera del rango de simulación.");
+        }
+
+        // ==========================================
+        // 6. FUNCIONES MÓDULO METRIC HYDRO
+        // ==========================================
+        let hydroAlertHistory = []; let hydroMapPolygon = null;
+        function abrirPestanaHydro(tabId, elementoBtn) { document.querySelectorAll('#moduloHydro .tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('#moduloHydro .hydro-cmd-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); if (tabId === 'tabHydroAdv' && window.hydroMap) { setTimeout(() => window.hydroMap.invalidateSize(), 100); } if (tabId === 'tabHydroSit') { cargarEstadoCuencasReal(); } }
+        function verificarUsoInterno(elementoBtn) { const emailActivo = localStorage.getItem("metric_email"); if(emailActivo && emailActivo.toLowerCase() === "ews.sat@gmail.com") { abrirPestanaHydro('tabHydroInt', elementoBtn); } else { alert("Access Denied: This emergency console is exclusive to the General Administration account."); } }
+        function verificarUsoInternoOraculo(elementoBtn) { const emailActivo = localStorage.getItem("metric_email"); if(emailActivo && emailActivo.toLowerCase() === "ews.sat@gmail.com") { abrirPestanaHydro('tabHydroOraculo', elementoBtn); } else { alert("Acceso Denegado: El modelo predictivo requiere licencia institucional."); } }
+
+        async function cargarEstadoCuencasReal() {
+            const contenedor = document.getElementById("contenedorResumenCuencas");
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/hidro/estado`); const data = await res.json();
+                if(res.ok && data.estaciones) {
+                    contenedor.innerHTML = data.estaciones.map(est => {
+                        let colorEstado = "#22c55e"; let textEstado = est.estado;
+                        if(textEstado === "VIGILANCIA") colorEstado = "#eab308"; else if(textEstado === "ALERTA") colorEstado = "#f97316"; else if(textEstado === "ALERTA SEVERA") colorEstado = "#ef4444"; else if(textEstado === "EMERGENCIA") colorEstado = "#831843"; else if(textEstado === "PRECAUCIÓN") colorEstado = "#eab308"; else if(textEstado === "PELIGRO") colorEstado = "#ef4444";
+                        return `<div style="background: #1e293b; padding: 15px; border-radius: 6px; border-left: 4px solid ${colorEstado};"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;"><strong style="color: #f8fafc; font-size: 14px;">${est.rio}</strong><span style="background: ${colorEstado}; color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold;">${textEstado}</span></div><p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Ubicación: <span style="color:#fff;">${est.ubicacion}</span></p><p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Altura actual: <strong style="color:#fff;">${est.altura_m} m</strong></p><p style="margin: 4px 0; font-size: 12px; color: #94a3b8;">Caudal estimado: <strong style="color:#fff;">${est.caudal_m3s} m³/s</strong></p><p style="margin: 4px 0; font-size: 11px; color: #64748b;">Tendencia: ${est.tendencia}</p></div>`;
+                    }).join('');
+                }
+            } catch(e) { contenedor.innerHTML = `<div style="color: #ef4444; font-size: 13px;">Error de conexión hidrológica.</div>`; }
+        }
+
+        async function dispararAlertaHydro(event) {
+            const msg = document.getElementById("txtAlertaHydro").value; if(!msg) return alert("Por favor, escriba un mensaje de advertencia antes de disparar.");
+            const btn = event.target; const status = document.getElementById("lblStatusHydro"); btn.innerText = "PROCESANDO ENVÍO..."; status.innerText = "Conectando con el servidor...";
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/alerta`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mensaje: msg }) });
+                if(response.ok) {
+                    const now = new Date(); const timestamp = `${now.toLocaleDateString('es-AR')} - ${now.toLocaleTimeString('es-AR')}`;
+                    hydroAlertHistory.unshift({ time: timestamp, text: msg });
+                    document.getElementById("msgSinHistorial").style.display = "none";
+                    document.getElementById("historialAlertas").innerHTML = hydroAlertHistory.map(alerta => `<div class="alert-history-item"><span class="alert-history-time">📅 ${alerta.time}</span>${alerta.text}</div>`).join('');
+                    const advCont = document.getElementById("advContainer"); advCont.className = "chart-container alert-active"; 
+                    document.getElementById("advIcon").innerText = "🚨"; document.getElementById("advTitle").innerText = "ALERTA ACTIVA"; document.getElementById("advTitle").style.color = "#dc2626"; document.getElementById("advText").innerText = msg; document.getElementById("advText").style.color = "#991b1b";
+                    if (window.hydroMap) { if (hydroMapPolygon) window.hydroMap.removeLayer(hydroMapPolygon); hydroMapPolygon = L.circle([-27.633, -65.250], { color: '#ef4444', fillColor: '#f43f5e', fillOpacity: 0.5, radius: 12000 }).addTo(window.hydroMap); window.hydroMap.fitBounds(hydroMapPolygon.getBounds()); }
+                    status.innerText = "✅ Orden enviada a Twilio."; btn.innerText = "🚀 DISPARAR NUEVA ALERTA"; document.getElementById("txtAlertaHydro").value = ""; actualizarContadorSMS();
+                } else { status.innerText = "❌ El servidor rechazó la orden."; btn.innerText = "🚀 REINTENTAR"; }
+            } catch(e) { status.innerText = "❌ Error de red."; btn.innerText = "🚀 REINTENTAR"; }
+        }
+
+        function actualizarContadorSMS() { const texto = document.getElementById("txtAlertaHydro").value; const contador = document.getElementById("contadorSMS"); if (contador) { contador.innerText = `${texto.length} / 160 caracteres`; contador.style.color = texto.length >= 150 ? "#991b1b" : "#e11d48"; } }
+
+        async function dispararWhatsAppPersonal() {
+            const mensaje = document.getElementById("txtAlertaWA").value; if (!mensaje) return alert("Escriba el mensaje para WhatsApp.");
+            try { await navigator.clipboard.writeText(mensaje); alert("✅ Copiado al portapapeles. Se abrirá WhatsApp."); const esCelular = /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent); window.location.href = esCelular ? "whatsapp://app" : "https://web.whatsapp.com"; } 
+            catch (err) { alert("❌ El navegador bloqueó el copiado automático. Por favor, copiá manualmente."); }
+        }
+
+        async function consultarOraculo(event) {
+            const lluviaSinguil = parseFloat(document.getElementById("oraLluviaSinguil").value) || 0; const lluviaLlanura = parseFloat(document.getElementById("oraLluviaLlanura").value) || 0; const cotaAyer = parseFloat(document.getElementById("oraCotaAyer").value) || 624.00; const cotaActual = parseFloat(document.getElementById("oraCotaEscaba").value) || 625.50;
+            const status = document.getElementById("lblStatusOraculo"); const btn = event.target; btn.innerText = "FORZANDO SIMULACIÓN..."; document.getElementById("resOraculoBox").style.display = "none"; document.getElementById("resOraWait").style.display = "block";
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/hidro/prediccion_24h`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cota_actual: cotaActual, cota_ayer: cotaAyer, lluvia_singuil_mm: lluviaSinguil, lluvia_lamadrid_mm: lluviaLlanura }) });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById("resOraWait").style.display = "none"; document.getElementById("resOraculoBox").style.display = "block"; document.getElementById("resOraCota").innerText = `${data.escaba_cota_proyectada} msnm`; document.getElementById("resOraCaudal").innerText = `${data.escaba_caudal_erogado} m³/s`;
+                    const alertaBox = document.getElementById("resOraAlertaBox"); const btnSMS = document.getElementById("btnOraDispararSMS");
+                    if (data.nivel_riesgo !== "NORMAL") {
+                        alertaBox.style.display = "block"; btnSMS.style.display = "block"; document.getElementById("resOraAltura").innerText = `${data.madrid_altura_proyectada} m`; document.getElementById("resOraTiempo").innerText = `${data.madrid_tiempo_impacto_hs} horas`; document.getElementById("resOraNivel").innerText = data.nivel_riesgo;
+                        btnSMS.setAttribute("data-sms", `ALERTA ${data.nivel_riesgo} MARAPA. Altura proj: ${data.madrid_altura_proyectada}m. Impacto en ${data.madrid_tiempo_impacto_hs}hs. Dique erogando ${data.escaba_caudal_erogado}m3/s.`);
+                    } else { alertaBox.style.display = "none"; btnSMS.style.display = "none"; }
+                    status.innerText = "✅ Override Manual Completado."; btn.innerText = "▶️ FORZAR SIMULACIÓN MANUAL";
+                } else { status.innerText = `❌ Error: ${data.error}`; btn.innerText = "▶️ REINTENTAR"; }
+            } catch(e) { status.innerText = "❌ Error conectando al XGBoost."; btn.innerText = "▶ REINTENTAR"; }
+        }
+
+        function transferirOraculoAlerta() { const smsText = document.getElementById("btnOraDispararSMS").getAttribute("data-sms"); const tabAdmin = Array.from(document.querySelectorAll('.hydro-cmd-btn')).find(btn => btn.innerText.includes("Uso Interno")); if (tabAdmin) { verificarUsoInterno(tabAdmin); document.getElementById("txtAlertaHydro").value = smsText; actualizarContadorSMS(); document.getElementById("txtAlertaHydro").scrollIntoView({ behavior: 'smooth', block: 'center' }); } }
+    </script>
+
+    <!-- WIDGET DE SOPORTE DE TELEGRAM RESTAURADO -->
+    <div id="widgetSoporte" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-left: 5px solid #08306b; width: 260px; font-family: 'Segoe UI', sans-serif;">
+        <span onclick="document.getElementById('widgetSoporte').style.display='none'" style="cursor:pointer; float:right; font-weight:bold; color:#08306b; font-size:18px; margin-top:-5px;" title="Cerrar widget">&times;</span>
+        <h4 style="margin: 0 0 5px 0; color: #08306b; font-size: 15px;" data-i18n="support_title">Soporte MetricPoint</h4>
+        <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.4;" data-i18n="support_desc">Canal habilitado para contacto, envíanos tu pregunta.</p>
+        <a href="https://t.me/MetricPointbot" target="_blank" style="display: block; margin-top: 10px; background: #38bdf8; color: #020617; text-align: center; padding: 8px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.3s;" data-i18n="support_btn">
+            Canal de Contacto
+        </a>
+    </div>
+
+<script>
+/* Almanaque desplegable para todos los campos de fecha. Si la librería no carga, los campos siguen funcionando escribiendo AAAA-MM-DD. */
+(function () {
+    function iniciar() {
+        if (!window.flatpickr) return;
+        try { if (flatpickr.l10ns && flatpickr.l10ns.es) flatpickr.localize(flatpickr.l10ns.es); } catch (e) {}
+        const base = { dateFormat: 'Y-m-d', allowInput: false, disableMobile: true, locale: { firstDayOfWeek: 1 } };
+        ['startDate', 'endDate', 'siembraDate'].forEach(id => {
+            const el = document.getElementById(id); if (el) flatpickr(el, base);
+        });
+        // Consulta por fecha: solo se pueden elegir días que están dentro de la simulación calculada
+        ['fechaConsultaGeo3D', 'fechaConsultaGemelo'].forEach(id => {
+            const el = document.getElementById(id); if (!el) return;
+            flatpickr(el, Object.assign({}, base, {
+                onOpen: function (sel, str, fp) {
+                    const d = window.datosSimulacion;
+                    if (d && d.length) { fp.set('minDate', d[0].timestamp.substring(0, 10)); fp.set('maxDate', d[d.length - 1].timestamp.substring(0, 10)); }
+                    if (el.value) fp.setDate(el.value, false);   // refleja cambios hechos por el programa
+                }
+            }));
+        });
+    }
+    function cuandoListo(f) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', f); else f(); }
+    cuandoListo(function () {
+        window.__cargarLib('https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js', function () {
+            window.__cargarLib('https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/es.js', iniciar);
+        });
+    });
+})();
+</script>
+</body>
+</html>
