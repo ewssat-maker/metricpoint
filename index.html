@@ -29,7 +29,8 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
            1. ESTILOS GLOBALES & IDIOMAS
            ========================================== */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
-        .lang-selector { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+        .lang-selector { position: absolute; top: 20px; right: 20px; z-index: 10000; }
+        #workspace .header { padding-right: 190px; }
         .lang-selector select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: rgba(255,255,255,0.9); font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 13px; color: #08306b; }
 
         /* ==========================================
@@ -159,6 +160,87 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
         .flatpickr-current-month .flatpickr-monthDropdown-months { background: #08306b; }
         .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month { fill: #fff; color: #fff; }
         .flatpickr-months .flatpickr-prev-month svg, .flatpickr-months .flatpickr-next-month svg { fill: #fff; }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap" media="print" onload="this.media='all'" />
+    <style>
+        /* ===== MetricMoisture: presentación de informe técnico ===== */
+        #moduloAgrometeo {
+            --rp-ink: #0b2545; --rp-navy: #08306b; --rp-text: #1f2933; --rp-muted: #5b6770; --rp-rule: #d5dbe3; --rp-soft: #f6f8fa;
+            --rp-ok: #2d7d46; --rp-warn: #a8680b; --rp-crit: #b42318;
+            --rp-sans: 'IBM Plex Sans', 'Segoe UI', Roboto, Arial, sans-serif; --rp-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+            font-family: var(--rp-sans); color: var(--rp-text); font-variant-numeric: tabular-nums;
+        }
+        #moduloAgrometeo .header { border-radius: 4px; box-shadow: none; padding: 14px 22px; }
+        #moduloAgrometeo .header-left h1 { font-family: var(--rp-serif); font-weight: 600; font-size: 21px; letter-spacing: .2px; }
+        #moduloAgrometeo .header-left span { font-style: normal; color: #a9c1e4; font-size: 13px; }
+        #moduloAgrometeo .container { gap: 18px; align-items: flex-start; }
+        #moduloAgrometeo .sidebar { border: 1px solid var(--rp-rule); box-shadow: none; border-radius: 4px; padding: 18px; }
+        #moduloAgrometeo .sidebar h3 { font-family: var(--rp-serif); font-size: 15px; font-weight: 600; color: var(--rp-ink); margin: 0 0 6px; padding-bottom: 10px; border-bottom: 1px solid var(--rp-rule); }
+        #moduloAgrometeo .sidebar label { display: block; margin-top: 14px; font-size: 12px; font-weight: 600; color: var(--rp-muted); }
+        #moduloAgrometeo .sidebar input[type=text] { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px 10px; border: 1px solid #c5ced8; border-radius: 3px; font: 14px var(--rp-sans); background: #fff; color: var(--rp-text); }
+        #moduloAgrometeo .sidebar input[type=text]:focus { outline: 2px solid #9ec1ea; outline-offset: 0; border-color: var(--rp-navy); }
+        #moduloAgrometeo .btn-primary { background: var(--rp-navy); border-radius: 3px; padding: 11px; font: 600 14px var(--rp-sans); letter-spacing: .2px; }
+        #moduloAgrometeo .btn-primary:hover { background: var(--rp-ink); }
+        #moduloAgrometeo .sidebar .btn-secondary { border-radius: 3px; font: 600 13px var(--rp-sans); }
+        #moduloAgrometeo #status { font-size: 13px; font-weight: 500; min-height: 18px; }
+        #moduloAgrometeo .soil-card { background: var(--rp-soft); border: 1px solid var(--rp-rule); border-radius: 4px; padding: 12px 14px; }
+        #moduloAgrometeo .soil-card h4 { margin: 0 0 8px; font-size: 13px; color: var(--rp-ink); }
+        #moduloAgrometeo .soil-card p { display: flex; justify-content: space-between; gap: 10px; margin: 0; padding: 5px 0; border-top: 1px solid #e4e9ef; font-size: 13px; }
+        #moduloAgrometeo .main-content { gap: 16px; min-width: 0; }
+        #moduloAgrometeo #map { border: 1px solid var(--rp-rule); border-radius: 4px; }
+
+        /* Cabecera del informe */
+        #moduloAgrometeo #contenedorInforme { background: #fff; border: 1px solid var(--rp-rule); border-radius: 4px; padding: 0; overflow: hidden; }
+        .rp-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px 32px; padding: 20px 24px 16px; border-bottom: 1px solid var(--rp-rule); }
+        .rp-title { margin: 0; font-family: var(--rp-serif); font-size: 21px; font-weight: 600; color: var(--rp-ink); line-height: 1.25; }
+        .rp-sub { margin: 5px 0 0; font-size: 13px; color: var(--rp-muted); max-width: 46ch; line-height: 1.45; }
+        .rp-meta { display: grid; grid-template-columns: auto auto; gap: 3px 16px; margin: 0; font-size: 12.5px; align-content: start; }
+        .rp-meta dt { color: var(--rp-muted); }
+        .rp-meta dd { margin: 0; color: var(--rp-text); font-weight: 500; }
+        .rp-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border-bottom: 1px solid var(--rp-rule); }
+        .rp-kpi { padding: 14px 20px 14px 24px; border-right: 1px solid var(--rp-rule); min-width: 0; }
+        .rp-kpi:last-child { border-right: 0; }
+        .rp-kpi .v { font-size: 25px; font-weight: 600; color: var(--rp-ink); line-height: 1.1; }
+        .rp-kpi .v small { font-size: 12px; font-weight: 400; color: var(--rp-muted); margin-left: 4px; }
+        .rp-kpi .l { margin-top: 5px; font-size: 12px; color: var(--rp-muted); line-height: 1.3; }
+        .rp-kpi .s { margin-top: 3px; font-size: 12px; font-weight: 600; }
+        .rp-kpi .s.ok { color: var(--rp-ok); } .rp-kpi .s.warn { color: var(--rp-warn); } .rp-kpi .s.crit { color: var(--rp-crit); }
+        .rp-concl { padding: 16px 24px 20px; }
+        .rp-concl h4 { margin: 0 0 8px; font-family: var(--rp-serif); font-size: 15px; font-weight: 600; color: var(--rp-ink); }
+        #moduloAgrometeo #textoInforme { margin: 0; font-size: 14px; line-height: 1.65; color: var(--rp-text); max-width: 80ch; }
+
+        /* Pestañas y figuras */
+        #moduloAgrometeo .tabs { border-bottom: 1px solid var(--rp-rule); margin-bottom: 0; gap: 4px; flex-wrap: wrap; }
+        #moduloAgrometeo .tab-btn { font: 500 14px var(--rp-sans); color: var(--rp-muted); padding: 10px 16px; }
+        #moduloAgrometeo .tab-btn:hover { color: var(--rp-ink); }
+        #moduloAgrometeo .tab-btn.active { color: var(--rp-ink); font-weight: 600; border-bottom: 2px solid var(--rp-navy); margin-bottom: -1px; }
+        #moduloAgrometeo .chart-container { flex-direction: column; background: #fff; border: 1px solid var(--rp-rule); box-shadow: none; border-radius: 4px; padding: 16px 20px 12px; }
+        #moduloAgrometeo #tab3D .chart-container > div[id=soil3D] { flex: 1; min-height: 0; }
+        .fig-t { margin: 0 0 8px; font-family: var(--rp-serif); font-size: 14.5px; line-height: 1.4; color: var(--rp-ink); }
+        .fig-t b { font-weight: 600; }
+        .fig-n { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid #e9edf2; font-size: 12px; line-height: 1.55; color: var(--rp-muted); max-width: 110ch; }
+        #moduloAgrometeo #tabAgronomia .chart-container + .chart-container, #moduloAgrometeo .tab-content.active > .chart-container { margin-top: 16px; }
+        #moduloAgrometeo .tab-content.active > .chart-container:first-child { margin-top: 16px; }
+
+        /* Métodos */
+        .rp-metodos { display: none; background: #fff; border: 1px solid var(--rp-rule); border-radius: 4px; padding: 0 20px; font-size: 12.5px; line-height: 1.6; color: var(--rp-text); }
+        .rp-metodos summary { cursor: pointer; padding: 13px 0; font-family: var(--rp-serif); font-size: 14.5px; font-weight: 600; color: var(--rp-ink); }
+        .rp-metodos dl { margin: 0 0 14px; display: grid; grid-template-columns: minmax(120px, 190px) 1fr; gap: 6px 18px; }
+        .rp-metodos dt { font-weight: 600; color: var(--rp-ink); } .rp-metodos dd { margin: 0; }
+        .rp-metodos p { margin: 0 0 14px; color: var(--rp-muted); }
+        @media (max-width: 700px) { .rp-metodos dl { grid-template-columns: 1fr; } .rp-kpi { border-right: 0; border-bottom: 1px solid var(--rp-rule); } }
+
+        /* Impresión / PDF */
+        @media print {
+            body { background: #fff !important; }
+            #moduloAgrometeo .header, #moduloAgrometeo .sidebar, #moduloAgrometeo #map, #moduloAgrometeo .tabs, #langSwitch, #barraErrores, .leaflet-control-container { display: none !important; }
+            #moduloAgrometeo .container { display: block !important; }
+            #moduloAgrometeo #tab3D, #moduloAgrometeo #tabGeo3D, #moduloAgrometeo #tabGemeloBeta { display: none !important; }
+            #moduloAgrometeo #tabAgronomia, #moduloAgrometeo #tabClima { display: block !important; }
+            #moduloAgrometeo .chart-container, #moduloAgrometeo #contenedorInforme { break-inside: avoid; margin-bottom: 12px; }
+            #moduloAgrometeo .rp-metodos { display: block !important; }
+            #moduloAgrometeo .rp-metodos:not([open]) > *:not(summary) { display: block; }
+        }
     </style>
 </head>
 <body>
@@ -372,7 +454,8 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
 
                     <button class="btn-primary" onclick="ejecutarAnalisis()" data-i18n="btn_execute">EXECUTE ANALYSIS</button>
                     
-                    <button class="btn-secondary" id="btnDownloadCSV" onclick="descargarCSV()" style="display:none; width: 100%; margin-top: 10px; background-color: #f59e0b; border: none;">⬇️️ Descargar Datos (CSV)</button>
+                    <button class="btn-secondary" id="btnDownloadCSV" onclick="descargarCSV()" data-rpt="csv" style="display:none; width: 100%; margin-top: 10px; background-color: #fff; color: #08306b; border: 1px solid #08306b;">Descargar datos (CSV)</button>
+                    <button class="btn-secondary" id="btnPrint" onclick="window.print()" data-rpt="print" style="display:none; width: 100%; margin-top: 8px; background-color: #fff; color: #08306b; border: 1px solid #08306b;">Exportar informe (PDF)</button>
                     <div id="status"></div>
                     
                     <div class="soil-card" id="infoSuelo">
@@ -386,9 +469,28 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
 
                 <div class="main-content">
                     <div id="map"></div>
-                    <div id="contenedorInforme" style="display: none; background: #eef7f9; border-left: 5px solid #08306b; padding: 15px; border-radius: 4px;">
-                        <h4 style="margin-top: 0; margin-bottom: 8px; color: #08306b;" data-i18n="lbl_diag">Agrometeorological Diagnostics</h4>
-                        <p id="textoInforme" style="margin: 0; font-size: 14px; color: #333; line-height: 1.5;"></p>
+                    <div id="contenedorInforme" style="display: none;">
+                        <div class="rp-head">
+                            <div>
+                                <h2 class="rp-title" data-rpt="rep_title">Informe de humedad edáfica</h2>
+                                <p class="rp-sub" data-rpt="rep_sub"></p>
+                            </div>
+                            <dl class="rp-meta">
+                                <dt data-rpt="m_period">Período</dt><dd id="rpMetaPeriodo">—</dd>
+                                <dt data-rpt="m_sow">Siembra</dt><dd id="rpMetaSiembra">—</dd>
+                                <dt data-rpt="m_area">Superficie del lote</dt><dd id="rpMetaSup">—</dd>
+                                <dt data-rpt="m_center">Centroide</dt><dd id="rpMetaCentro">—</dd>
+                                <dt data-rpt="m_sar">Pasadas Sentinel-1</dt><dd id="rpMetaSar">—</dd>
+                                <dt data-rpt="m_gen">Emitido</dt><dd id="rpMetaGen">—</dd>
+                            </dl>
+                        </div>
+                        <div class="rp-kpis">
+                            <div class="rp-kpi" id="rpKpiLluvia"></div><div class="rp-kpi" id="rpKpiEt0"></div><div class="rp-kpi" id="rpKpiBalance"></div><div class="rp-kpi" id="rpKpiAu60"></div><div class="rp-kpi" id="rpKpiAu100"></div>
+                        </div>
+                        <div class="rp-concl">
+                            <h4 data-rpt="concl">Conclusiones</h4>
+                            <p id="textoInforme"></p>
+                        </div>
                     </div>
 
                     <div class="tabs" id="tabMenu">
@@ -402,19 +504,25 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                     <!-- DIVS DE PLOTLY PARA EVITAR ERROR DE CHART.JS -->
                     <div id="tabAgronomia" class="tab-content active">
                         <div class="chart-container" id="contenedorLineasAgro" style="display: none;">
-                            <div id="chartAgro" style="width: 100%; height: 300px;"></div>
+                            <p class="fig-t" data-rpt="f1_t"></p>
+                            <div id="chartAgro" style="width: 100%; height: 360px;"></div>
+                            <p class="fig-n" data-rpt="f1_n"></p>
                         </div>
-                        <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 15px;">
-                            <div id="soilHeatmap" style="width: 100%; height: 350px;"></div>
+                        <div class="chart-container" id="contenedorCalor" style="display: none; margin-top: 16px;">
+                            <p class="fig-t" data-rpt="f2_t"></p>
+                            <div id="soilHeatmap" style="width: 100%; height: 360px;"></div>
+                            <p class="fig-n" data-rpt="f2_n"></p>
                         </div>
                     </div>
                     <div id="tabClima" class="tab-content">
                         <div class="chart-container" id="contenedorLineasClima" style="display: none;">
-                            <div id="chartClima" style="width: 100%; height: 300px;"></div>
+                            <p class="fig-t" data-rpt="f3_t"></p>
+                            <div id="chartClima" style="width: 100%; height: 360px;"></div>
+                            <p class="fig-n" data-rpt="f3_n"></p>
                         </div>
                     </div>
-                    
-                    <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 550px;"><div id="soil3D" style="width: 100%; height: 100%;"></div></div></div>
+
+                    <div id="tab3D" class="tab-content"><div class="chart-container" id="contenedor3D" style="display: none; height: 620px;"><p class="fig-t" data-rpt="f4_t"></p><div id="soil3D" style="width: 100%; flex: 1; min-height: 0;"></div><p class="fig-n" data-rpt="f4_n"></p></div></div>
                     
                     <div id="tabGeo3D" class="tab-content">
                         <div class="gemelo-control-panel" style="flex-wrap: wrap; gap: 10px; border-color: #38bdf8;">
@@ -454,6 +562,11 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                             </div>
                         </div>
                     </div>
+                    <details class="rp-metodos" id="informeMetodos">
+                        <summary data-rpt="met_t">Métodos y fuentes de datos</summary>
+                        <dl id="rpMetodosLista"></dl>
+                        <p data-rpt="met_p"></p>
+                    </details>
                 </div>
             </div>
         </div>
@@ -640,7 +753,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 "contact_title": "Get in Touch", "contact_desc": "Interested in bringing MetricPoint's technology to your fields? Drop us a message.", "contact_name": "Full Name", "contact_msg": "Your Message", "btn_send": "Send Message",
                 "paywall_title": "Trial Period Expired", "paywall_desc": "Your 48 hours of free access have ended. To continue using ESA satellites and injecting 3D topography, please upgrade to a Premium subscription.", "btn_upgrade": "Get Premium License", "btn_logout": "Sign Out",
                 "hub_subtitle": "Select the analysis module you want to use", "hub_vid_title": "MetricMoisture 3D Engine", "hub_vid_desc": "Interactive Volumetric Digital Twins for precision monitoring.", "mod_moisture_desc": "Deep edaphic moisture analysis with SAR satellites, 3D topography and water balance.", "mod_weather_title": "Weather Forecast", "mod_weather_desc": "Atmospheric modeling, live SMN radars and predictive meteorological variables.", "mod_poli_desc": "Comprehensive pollination suite, hive monitoring and advanced phenological analysis.", "mod_hydro_desc": "Hydrological monitoring, early flood warnings and basin status.", "mod_mine_desc": "ESG auditing, water stress in salt flats and health of high Andean wetlands.", "hydro_header_subtitle": "Hydrological Early Warning & Basin Telemetry", "hydro_title": "[ HYDROLOGICAL OPERATIONS CENTER - TUCUMÁN ]", "hydro_tab_adv": "⚠️ Warnings Panel", "hydro_tab_sit": "📊 Current Situation (Basin)", "hydro_tab_admin": "⚙️ Internal Use (Admin)", "hydro_normal_title": "Normal Operational Level", "hydro_normal_desc": "The basin does not register hydrological anomalies at this time.", "hydro_radar_badge": "ACTIVE SATELLITE RADAR", "hydro_history_title": "[ EVENT HISTORY ]", "hydro_no_history": "No events registered in the current session.", "hydro_rfs_title": "[ RFS : RIVER Forecast System - TUCUMAN BASIN ]", "hydro_rfs_sub": "Global hydrological flow and flood risk model (GEOGLOWS)", "hydro_admin_title": "⚠️ Emergency Dispatch Console (GOD MODE)", "hydro_admin_desc": "The message drafted here will be sent via SMS to registered contacts and will immediately update the public Warnings panel and the risk map.", "hydro_lbl_msg": "Draft Alert Message:", "hydro_btn_dispatch": "🚀 DISPATCH SMS AND WEB ALERT",
-                "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):", "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "EXECUTE ANALYSIS", "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):", "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):", "lbl_climate_data": "Climate Data", "lbl_total_rain": "Total Accumulated Rain:", "lbl_diag": "Agrometeorological Diagnostics",
+                "mod1_subtitle": "Satellite Edaphic Moisture", "btn_back": "Back to Menu", "lbl_lot_params": "Lot Parameters", "lbl_start_date": "Start Date (YYYY-MM-DD):", "lbl_end_date": "End Date (YYYY-MM-DD):", "lbl_sow_date": "Sowing Date (YYYY-MM-DD):", "lbl_manual_input": "Manual Input / Field Station", "lbl_reg_date": "Record Date:", "lbl_rain": "Rain (mm):", "btn_add_rec": "+ Add Record", "btn_execute": "Run analysis", "lbl_soil_props": "Analyzed Soil Properties", "lbl_sand": "Sand Texture:", "lbl_clay": "Clay Texture:", "lbl_cc": "Field Capacity (CC):", "lbl_pmp": "Wilting Point (PMP):", "lbl_query_prof": "Query Profile by Date", "btn_scan_3d": "Scan Topography", "lbl_surf10": "Surface (10 cm):", "lbl_sub30": "Subsurface (30 cm):", "lbl_root60": "Deep Roots (60 cm):", "lbl_res100": "Reserve (100 cm):", "lbl_et0": "Evapotranspiration (ET0):", "lbl_climate_data": "Climate Data", "lbl_total_rain": "Total Accumulated Rain:", "lbl_diag": "Agrometeorological Diagnostics",
                 "tab_moist": "Moisture & Vigor", "tab_clim": "Climate & Rain", "tab_3d": "3D Model (Campaign)", "tab_xray": "Spatial X-Ray",
                 "mod2_subtitle": "SINARAME Network - Live Precipitation Echoes", "lbl_layers": "Layer Control", "lbl_layer_desc": "Real-time monitoring of rain echoes using the National Meteorological Service radar network.", "btn_refresh": "Refresh Radar",
                 "msg_auth_err": "Please fill all required fields.", "msg_login": "Signing in...", "msg_reg": "Registering corporate profile...", "msg_err_serv": "Connection error to server.",
@@ -662,7 +775,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 "contact_title": "Póngase en Contacto", "contact_desc": "¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.", "contact_name": "Nombre Completo", "contact_msg": "Su Mensaje", "btn_send": "Enviar Mensaje",
                 "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 48 horas de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
                 "hub_subtitle": "Seleccione el módulo de análisis que desea utilizar", "mod_hydro_desc": "Monitoreo hidrológico, advertencias tempranas de crecidas y estado de la cuenca.", "mod_mine_desc": "Auditoría ESG, estrés hídrico en salares y salud de vegas altoandinas.", "hydro_header_subtitle": "Hydrological Early Warning", "hydro_title": "[ CENTRO DE OPERACIONES HIDROLÓGICAS - TUCUMÁN ]", "hydro_tab_adv": "⚠️ Panel de Advertencias", "hydro_tab_sit": "📊 Situación Actual (Cuenca)", "hydro_tab_admin": "⚙️ Uso Interno (Admin)", "hydro_normal_title": "Nivel Operativo Normal", "hydro_normal_desc": "La cuenca no registra anomalías hídricas en este momento.", "hydro_radar_badge": "RADAR SATELITAL ACTIVO", "hydro_history_title": "[ HISTORIAL DE EVENTOS ]", "hydro_no_history": "No hay eventos registrados en la sesión actual.", "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - CUENCA TUCUMÁN ]", "hydro_rfs_sub": "Modelo hidrológico global de caudal y riesgo de crecidas (GEOGLOWS)", "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]", "hydro_btn_refresh": "🔄 Actualizar Datos", "hydro_admin_title": "⚠️ Consola de Disparo de Emergencias (MODO DIOS)", "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.", "hydro_lbl_msg": "Redactar Mensaje de Alerta:", "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
-                "btn_gps": "📍 Usar Mi Ubicación GPS", "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio:", "lbl_end_date": "Fecha Fin:", "lbl_sow_date": "Fecha Siembra:", "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "EJECUTAR ANÁLISIS", "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):", "lbl_query_prof": "Consultar Perfil por Fecha", "btn_scan_3d": "Escanear Topografía 3D", "lbl_surf10": "Superficie (10 cm):", "lbl_sub30": "Subsuperficie (30 cm):", "lbl_root60": "Raíces Prof. (60 cm):", "lbl_res100": "Reserva (100 cm):", "lbl_et0": "Evapotranspiración (ET0):", "lbl_climate_data": "Datos Climáticos", "lbl_total_rain": "Lluvia Acumulada Total:", "lbl_diag": "Diagnóstico Agrometeorológico",
+                "btn_gps": "📍 Usar Mi Ubicación GPS", "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio:", "lbl_end_date": "Fecha Fin:", "lbl_sow_date": "Fecha Siembra:", "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "Ejecutar análisis", "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):", "lbl_query_prof": "Consultar Perfil por Fecha", "btn_scan_3d": "Escanear Topografía 3D", "lbl_surf10": "Superficie (10 cm):", "lbl_sub30": "Subsuperficie (30 cm):", "lbl_root60": "Raíces Prof. (60 cm):", "lbl_res100": "Reserva (100 cm):", "lbl_et0": "Evapotranspiración (ET0):", "lbl_climate_data": "Datos Climáticos", "lbl_total_rain": "Lluvia Acumulada Total:", "lbl_diag": "Diagnóstico Agrometeorológico",
                 "tab_moist": "Humedad y Vigor", "tab_clim": "Clima y Precipitaciones", "tab_3d": "Modelo 3D (Campaña)", "tab_xray": "Spatial X-Ray",
                 "msg_auth_err": "Complete todos los campos requeridos.", "msg_login": "Iniciando sesión...", "msg_reg": "Registrando perfil corporativo...", "msg_err_serv": "Error de conexión al servidor.",
                 "diag_base": "Durante la campaña analizada (START al END), el lote recibió un acumulado de <strong>RAIN mm</strong> de precipitaciones. La demanda atmosférica promedio (ET0) se mantuvo en <strong>ET0 mm/día</strong>.<br><br>", "diag_def": "El balance global muestra un <strong>déficit hídrico marcado</strong>, obligando al cultivo a depender estructuralmente del perfil edáfico. ", "diag_fav": "El balance global muestra un comportamiento atmosférico <strong>favorable</strong>. ", "diag_opt": "Actualmente, la reserva profunda del lote (100 cm) se encuentra en niveles <strong>óptimos</strong> (por encima del 65% de agua útil), garantizando estabilidad radicular ante olas de calor venideras.", "diag_reg": "Actualmente, la reserva profunda (100 cm) se encuentra en un estado de <strong>transición regular</strong>. Se sugiere monitorear el secado superficial para evitar estrés fenológico.", "diag_crit": "<span style='color:#d73027;'><strong>Alerta:</strong> La reserva profunda del lote ha ingresado en niveles <strong>críticos</strong> cercanos al Punto de Marchitez Permanente, lo que representa un riesgo alto de penalización sobre el rendimiento potencial del cultivo.</span>",
@@ -680,6 +793,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                     } else { el.innerHTML = actualTrans[key]; }
                 }
             });
+            if (typeof aplicarInforme === 'function') aplicarInforme();
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -819,38 +933,38 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
         function abrirPestana(tabId, elementoBtn) {
             document.querySelectorAll('#moduloAgrometeo .tab-content').forEach(tab => tab.classList.remove('active')); 
             document.querySelectorAll('#moduloAgrometeo .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); elSeguro('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
+            document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); elSeguro('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none'; setTimeout(function () { try { document.querySelectorAll('#' + tabId + ' .js-plotly-plot').forEach(function (el) { if (window.Plotly) Plotly.Plots.resize(el); }); } catch (e) {} }, 60);
             setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 10);
         }
 
         function generarInforme(datos, params) {
             const lluviaTotal = datos.reduce((acc, d) => acc + d.Lluvia, 0); const et0Promedio = datos.reduce((acc, d) => acc + d.ET0, 0) / datos.length; const humUltima = datos[datos.length-1].Humedad_100cm;
-            let texto = getMsg("diag_base").replace("START", datos[0].timestamp).replace("END", datos[datos.length-1].timestamp).replace("RAIN", lluviaTotal.toFixed(1)).replace("ET0", et0Promedio.toFixed(1));
+            let texto = getMsg("diag_base").replace("START", datos[0].timestamp).replace("END", datos[datos.length-1].timestamp).replace("RAIN", fmt(lluviaTotal, 1)).replace(/<strong>ET0/, "<strong>" + fmt(et0Promedio, 1));
             if (lluviaTotal < (et0Promedio * datos.length * 0.5)) { texto += getMsg("diag_def"); } else { texto += getMsg("diag_fav"); }
             let aguaUtil = (humUltima - params.PMP) / (params.CC - params.PMP);
             if (aguaUtil > 0.65) { texto += getMsg("diag_opt"); } else if (aguaUtil > 0.35) { texto += getMsg("diag_reg"); } else { texto += getMsg("diag_crit"); }
-            document.getElementById('textoInforme').innerHTML = texto; document.getElementById('contenedorInforme').style.display = 'block';
+            document.getElementById('textoInforme').innerHTML = texto; document.getElementById('contenedorInforme').style.display = 'block'; try { poblarInforme(datos, params); } catch (e) { console.error(e); }
         }
 
         async function ejecutarAnalisis() {
-            if (!poligonoActual) return document.getElementById('status').innerText = 'Error: Draw polygon.';
+            if (!poligonoActual) return document.getElementById('status').innerText = tr('s_draw');
             const token = localStorage.getItem("metric_token"); if (!token) { document.getElementById("workspace").style.display = "none"; document.getElementById("landingWrapper").style.display = "flex"; return; }
-            document.getElementById('status').innerText = 'Simulating...'; document.getElementById('status').style.color = '#08306b';
-            ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoClima'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+            document.getElementById('status').innerText = tr('s_run'); document.getElementById('status').style.color = '#08306b';
+            ['contenedorInforme','tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D','contenedorGeo3D','infoSuelo','infoClima','informeMetodos','btnDownloadCSV','btnPrint'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
             try {
                 const response = await fetch(`${BACKEND_URL}/api/calcular`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token, start_date: document.getElementById('startDate').value, end_date: document.getElementById('endDate').value, fecha_siembra: document.getElementById('siembraDate').value, coordenadas: poligonoActual, datos_locales: window.datosLocalesManuales }) });
                 const jsonResponse = await response.json();
-                if (response.status === 401) { localStorage.removeItem("metric_token"); document.getElementById('status').innerText = 'Sesión vencida: ingresá de nuevo.'; document.getElementById("workspace").style.display = "none"; document.getElementById("landingWrapper").style.display = "flex"; return; }
+                if (response.status === 401) { localStorage.removeItem("metric_token"); document.getElementById('status').innerText = tr('s_ses'); document.getElementById("workspace").style.display = "none"; document.getElementById("landingWrapper").style.display = "flex"; return; }
                 if (response.status === 403 && jsonResponse.error === "TRIAL_EXPIRED") { document.getElementById('status').innerText = ''; document.getElementById('paywallScreen').style.display = 'flex'; return; }
                 if (response.ok) {
-                    document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
+                    document.getElementById('status').innerText = tr('s_done'); document.getElementById('status').style.color = '#31a354';
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
                     let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); const _lm = elSeguro('listaMeses'); if (_lm) _lm.innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
                     
                     window.ultimoDatoCalculado = jsonResponse.data[jsonResponse.data.length - 1];
                     generarInforme(jsonResponse.data, jsonResponse.suelo); 
-                    ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); 
+                    ['tabMenu','contenedorLineasAgro','contenedorCalor','contenedorLineasClima','contenedor3D'].forEach(id => document.getElementById(id).style.display = 'flex'); ['informeMetodos'].forEach(id => elSeguro(id).style.display = 'block'); ['btnDownloadCSV','btnPrint'].forEach(id => elSeguro(id).style.display = 'block'); aplicarInforme(); 
                     abrirPestana('tabAgronomia', document.querySelector('#moduloAgrometeo .tab-btn.active')); 
                     
                     renderizarGraficosPuros(jsonResponse.data, jsonResponse.suelo);
@@ -859,35 +973,180 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                     document.getElementById('fechaConsultaGeo3D').value = uF; document.getElementById('fechaConsultaGemelo').value = uF;
                     consultarFechaGlobal('fechaConsultaGemelo'); 
                 } else { document.getElementById('status').innerText = 'Error: ' + jsonResponse.error; }
-            } catch (error) { document.getElementById('status').innerText = 'Server Error.'; }
+            } catch (error) { document.getElementById('status').innerText = tr('s_srv'); }
         }
 
-        function renderizarGraficosPuros(datos, params) {
-            const fechas = datos.map(a => a.timestamp); 
-            const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad); 
-            const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm); 
-            const m = params ? params.CC : .3, n = params ? params.PMP : .15;
-            
-            // PLOTLY 2D
-            var traceHum = { x: fechas, y: h, name: 'Humedad SAR', type: 'scatter', line: {color: '#1f77b4', width: 3} };
-            var traceVig = { x: fechas, y: g, name: 'Vigor RVI', type: 'scatter', yaxis: 'y2', line: {color: '#2ca02c', width: 3} };
-            var traceFis = { x: fechas, y: fisio, name: 'Modelo Ideal', type: 'scatter', yaxis: 'y2', line: {color: '#333333', width: 2, dash: 'dot'} };
-            Plotly.newPlot('chartAgro', [traceHum, traceVig, traceFis], { margin: { t: 20, b: 40, l: 50, r: 50 }, yaxis: { title: 'Humedad (v/v)', range: [0, 0.6] }, yaxis2: { title: 'Vigor', overlaying: 'y', side: 'right', range: [0, 1.2] }, legend: { orientation: 'h', y: -0.2 } }, {responsive: true});
+        // ==========================================
+        // INFORME TÉCNICO: textos, indicadores, gráficas y exportación
+        // ==========================================
+        const RPT = {
+            en: {
+                rep_title: 'Soil moisture assessment', rep_sub: 'Sentinel-1 SAR estimation coupled to a daily water-balance model.',
+                m_period: 'Period', m_sow: 'Sowing', m_area: 'Lot area', m_center: 'Centroid', m_sar: 'Sentinel-1 passes', m_gen: 'Issued',
+                k_rain: 'Accumulated rainfall', k_et0: 'Mean reference ET₀', k_bal: 'Water balance (P − ET₀)', k_au60: 'Plant-available water at 60 cm', k_au100: 'Plant-available water at 100 cm',
+                k_at: 'on', u_mm: 'mm', u_mmd: 'mm/day', u_ha: 'ha', st_ok: 'Adequate', st_reg: 'Moderate', st_crit: 'Critical', concl: 'Findings',
+                f1_t: '<b>Figure 1.</b> Estimated volumetric moisture and vegetation vigor', f1_n: 'Circles mark Sentinel-1 acquisitions; the continuous line joins consecutive acquisitions by linear interpolation. Dashed lines show the field capacity (CC) and permanent wilting point (PMP) of the lot. Vigor is the radar vegetation index (RVI), shown against the idealised crop cycle.',
+                f2_t: '<b>Figure 2.</b> Soil moisture profile through the campaign', f2_n: 'Modelled volumetric moisture (m³/m³) by depth. The surface layer is re-anchored to each Sentinel-1 estimate; deeper layers follow the water-balance model.',
+                f3_t: '<b>Figure 3.</b> Daily rainfall, reference evapotranspiration and accumulated rainfall', f3_n: 'Rainfall comes from CHIRPS satellite estimates, or from the local station when records were loaded. ET₀ comes from the local station, Open-Meteo (FAO-56) or a seasonal fallback curve.',
+                f4_t: '<b>Figure 4.</b> Three-dimensional soil moisture surface', f4_n: 'Depth (cm) against date; the vertical axis is volumetric moisture (m³/m³).',
+                met_t: 'Methods and data sources',
+                met: [['Soil', 'OpenLandMap sand and clay fractions (250 m); field capacity and wilting point from pedotransfer functions.'], ['Surface moisture', 'Sentinel-1 GRD backscatter (VV, IW mode) over the lot, normalised between wilting point and field capacity. Vigor from the VH/VV radar vegetation index.'], ['Profile', 'Daily water balance for the 10, 30, 60 and 100 cm layers: exponential drainage with texture-dependent time constants, ET₀ demand and rainfall redistribution.'], ['Rainfall and ET₀', 'CHIRPS daily rainfall; ET₀ from local station, Open-Meteo (FAO-56) or seasonal curve.'], ['Relief', 'CONAE digital elevation model, with SRTM 90 m as fallback.']],
+                met_p: 'Values are model estimates. Calibrate against in-situ probes before agronomic or contractual decisions.',
+                l_sar: 'SAR moisture', l_obs: 'Sentinel-1 passes', l_rvi: 'Vigor (RVI)', l_ideal: 'Ideal crop cycle', l_cc: 'Field capacity (CC)', l_pmp: 'Wilting point (PMP)',
+                l_rain: 'Daily rainfall', l_et0: 'ET₀', l_acum: 'Accumulated rainfall', ax_h: 'Volumetric moisture (m³/m³)', ax_v: 'Vigor index (0–1)', ax_mm: 'Daily (mm)', ax_acum: 'Accumulated (mm)',
+                surf: 'Surface', ax_depth: 'Depth', ax_date: 'Date', cb: 'θ (m³/m³)', csv: 'Download data (CSV)', print: 'Export report (PDF)', s_run: 'Running analysis…', s_done: 'Analysis complete.', s_draw: 'Draw the lot polygon on the map first.', s_srv: 'Server error. Try again in a minute.', s_ses: 'Session expired: sign in again.'
+            },
+            es: {
+                rep_title: 'Informe de humedad edáfica', rep_sub: 'Estimación con radar SAR Sentinel-1 acoplada a un balance hídrico diario.',
+                m_period: 'Período', m_sow: 'Siembra', m_area: 'Superficie del lote', m_center: 'Centroide', m_sar: 'Pasadas Sentinel-1', m_gen: 'Emitido',
+                k_rain: 'Precipitación acumulada', k_et0: 'ET₀ de referencia media', k_bal: 'Balance hídrico (P − ET₀)', k_au60: 'Agua útil a 60 cm', k_au100: 'Agua útil a 100 cm',
+                k_at: 'al', u_mm: 'mm', u_mmd: 'mm/día', u_ha: 'ha', st_ok: 'Adecuada', st_reg: 'Moderada', st_crit: 'Crítica', concl: 'Conclusiones',
+                f1_t: '<b>Figura 1.</b> Humedad volumétrica estimada y vigor de la vegetación', f1_n: 'Los círculos marcan las pasadas de Sentinel-1; la línea continua une pasadas consecutivas por interpolación lineal. Las líneas de trazos indican la capacidad de campo (CC) y el punto de marchitez permanente (PMP) del lote. El vigor es el índice de vegetación radar (RVI), contrastado con el ciclo ideal del cultivo.',
+                f2_t: '<b>Figura 2.</b> Perfil de humedad del suelo durante la campaña', f2_n: 'Humedad volumétrica modelada (m³/m³) por profundidad. La capa superficial se reancla a cada estimación de Sentinel-1; las capas profundas siguen el balance hídrico.',
+                f3_t: '<b>Figura 3.</b> Precipitación diaria, evapotranspiración de referencia y precipitación acumulada', f3_n: 'La precipitación proviene de CHIRPS (estimación satelital) o de la estación local si se cargaron registros. La ET₀ proviene de la estación local, de Open-Meteo (FAO-56) o de una curva estacional de respaldo.',
+                f4_t: '<b>Figura 4.</b> Superficie tridimensional de humedad del suelo', f4_n: 'Profundidad (cm) en función de la fecha; el eje vertical es la humedad volumétrica (m³/m³).',
+                met_t: 'Métodos y fuentes de datos',
+                met: [['Suelo', 'Fracciones de arena y arcilla de OpenLandMap (250 m); capacidad de campo y punto de marchitez mediante funciones de pedotransferencia.'], ['Humedad superficial', 'Retrodispersión Sentinel-1 GRD (VV, modo IW) sobre el lote, normalizada entre el punto de marchitez y la capacidad de campo. Vigor a partir del índice de vegetación radar VH/VV.'], ['Perfil', 'Balance hídrico diario para las capas de 10, 30, 60 y 100 cm: drenaje exponencial con constantes de tiempo según la textura, demanda de ET₀ y redistribución de la lluvia.'], ['Lluvia y ET₀', 'Precipitación diaria CHIRPS; ET₀ de estación local, Open-Meteo (FAO-56) o curva estacional.'], ['Relieve', 'Modelo digital de elevación CONAE, con SRTM de 90 m como respaldo.']],
+                met_p: 'Los valores son estimaciones de modelo. Calibrar con sondas in situ antes de tomar decisiones agronómicas o contractuales.',
+                l_sar: 'Humedad SAR', l_obs: 'Pasadas Sentinel-1', l_rvi: 'Vigor (RVI)', l_ideal: 'Ciclo ideal del cultivo', l_cc: 'Capacidad de campo (CC)', l_pmp: 'Punto de marchitez (PMP)',
+                l_rain: 'Precipitación diaria', l_et0: 'ET₀', l_acum: 'Precipitación acumulada', ax_h: 'Humedad volumétrica (m³/m³)', ax_v: 'Índice de vigor (0–1)', ax_mm: 'Diario (mm)', ax_acum: 'Acumulado (mm)',
+                surf: 'Superficie', ax_depth: 'Profundidad', ax_date: 'Fecha', cb: 'θ (m³/m³)', csv: 'Descargar datos (CSV)', print: 'Exportar informe (PDF)', s_run: 'Ejecutando análisis…', s_done: 'Análisis completo.', s_draw: 'Primero dibujá el polígono del lote en el mapa.', s_srv: 'Error del servidor. Probá de nuevo en un minuto.', s_ses: 'Sesión vencida: ingresá de nuevo.'
+            },
+            pt: {
+                rep_title: 'Relatório de umidade do solo', rep_sub: 'Estimativa com radar SAR Sentinel-1 acoplada a um balanço hídrico diário.',
+                m_period: 'Período', m_sow: 'Semeadura', m_area: 'Área do talhão', m_center: 'Centroide', m_sar: 'Passagens Sentinel-1', m_gen: 'Emitido',
+                k_rain: 'Precipitação acumulada', k_et0: 'ET₀ de referência média', k_bal: 'Balanço hídrico (P − ET₀)', k_au60: 'Água disponível a 60 cm', k_au100: 'Água disponível a 100 cm',
+                k_at: 'em', u_mm: 'mm', u_mmd: 'mm/dia', u_ha: 'ha', st_ok: 'Adequada', st_reg: 'Moderada', st_crit: 'Crítica', concl: 'Conclusões',
+                f1_t: '<b>Figura 1.</b> Umidade volumétrica estimada e vigor da vegetação', f1_n: 'Os círculos marcam as passagens do Sentinel-1; a linha contínua une passagens consecutivas por interpolação linear. As linhas tracejadas indicam a capacidade de campo (CC) e o ponto de murcha permanente (PMP) do talhão. O vigor é o índice de vegetação radar (RVI), comparado ao ciclo ideal da cultura.',
+                f2_t: '<b>Figura 2.</b> Perfil de umidade do solo durante a safra', f2_n: 'Umidade volumétrica modelada (m³/m³) por profundidade. A camada superficial é reancorada a cada estimativa do Sentinel-1; as camadas profundas seguem o balanço hídrico.',
+                f3_t: '<b>Figura 3.</b> Precipitação diária, evapotranspiração de referência e precipitação acumulada', f3_n: 'A precipitação vem do CHIRPS (estimativa por satélite) ou da estação local, se houver registros carregados. A ET₀ vem da estação local, do Open-Meteo (FAO-56) ou de uma curva sazonal de reserva.',
+                f4_t: '<b>Figura 4.</b> Superfície tridimensional de umidade do solo', f4_n: 'Profundidade (cm) em função da data; o eixo vertical é a umidade volumétrica (m³/m³).',
+                met_t: 'Métodos e fontes de dados',
+                met: [['Solo', 'Frações de areia e argila do OpenLandMap (250 m); capacidade de campo e ponto de murcha por funções de pedotransferência.'], ['Umidade superficial', 'Retroespalhamento Sentinel-1 GRD (VV, modo IW) sobre o talhão, normalizado entre o ponto de murcha e a capacidade de campo. Vigor pelo índice de vegetação radar VH/VV.'], ['Perfil', 'Balanço hídrico diário para as camadas de 10, 30, 60 e 100 cm: drenagem exponencial com constantes de tempo conforme a textura, demanda de ET₀ e redistribuição da chuva.'], ['Chuva e ET₀', 'Precipitação diária CHIRPS; ET₀ da estação local, Open-Meteo (FAO-56) ou curva sazonal.'], ['Relevo', 'Modelo digital de elevação CONAE, com SRTM de 90 m como reserva.']],
+                met_p: 'Os valores são estimativas de modelo. Calibre com sondas in situ antes de decisões agronômicas ou contratuais.',
+                l_sar: 'Umidade SAR', l_obs: 'Passagens Sentinel-1', l_rvi: 'Vigor (RVI)', l_ideal: 'Ciclo ideal da cultura', l_cc: 'Capacidade de campo (CC)', l_pmp: 'Ponto de murcha (PMP)',
+                l_rain: 'Precipitação diária', l_et0: 'ET₀', l_acum: 'Precipitação acumulada', ax_h: 'Umidade volumétrica (m³/m³)', ax_v: 'Índice de vigor (0–1)', ax_mm: 'Diário (mm)', ax_acum: 'Acumulado (mm)',
+                surf: 'Superfície', ax_depth: 'Profundidade', ax_date: 'Data', cb: 'θ (m³/m³)', csv: 'Baixar dados (CSV)', print: 'Exportar relatório (PDF)', s_run: 'Executando análise…', s_done: 'Análise concluída.', s_draw: 'Desenhe primeiro o polígono do talhão no mapa.', s_srv: 'Erro do servidor. Tente novamente em um minuto.', s_ses: 'Sessão expirada: entre novamente.'
+            }
+        };
+        function idiomaActual() { const el = document.getElementById('langSwitch'); const l = el ? el.value : 'es'; return RPT[l] ? l : 'es'; }
+        function tr(k) { const d = RPT[idiomaActual()]; return (d && d[k] !== undefined) ? d[k] : (RPT.es[k] !== undefined ? RPT.es[k] : k); }
 
-            var traceRain = { x: fechas, y: lluvia, name: 'Lluvia (mm)', type: 'bar', marker: {color: '#1f77b4'} };
-            var traceEt0 = { x: fechas, y: et0, name: 'ET0', type: 'scatter', line: {color: '#ff7f0e', dash: 'dash'} };
-            Plotly.newPlot('chartClima', [traceRain, traceEt0], { margin: { t: 20, b: 40, l: 50, r: 50 }, yaxis: { title: 'Milímetros (mm)' }, legend: { orientation: 'h', y: -0.2 } }, {responsive: true});
-            
-            // PLOTLY 3D
-            const o = Math.max(0, n - .03); const p = m + .05; const q = (p - o) / 10;
+        // Superficie (ha) y centroide de un polígono GeoJSON [[lon,lat],...]
+        function geometriaLote(coords) {
+            try {
+                const ring = coords[0]; const R = 6378137, rad = Math.PI / 180; let a = 0, sx = 0, sy = 0;
+                const n = ring.length - 1;
+                for (let i = 0; i < ring.length - 1; i++) {
+                    const p1 = ring[i], p2 = ring[i + 1];
+                    a += ((p2[0] - p1[0]) * rad) * (2 + Math.sin(p1[1] * rad) + Math.sin(p2[1] * rad));
+                }
+                for (let i = 0; i < n; i++) { sx += ring[i][0]; sy += ring[i][1]; }
+                return { ha: Math.abs(a * R * R / 2) / 10000, lon: sx / n, lat: sy / n };
+            } catch (e) { return null; }
+        }
+        const fmt = (v, d) => (v === null || v === undefined || isNaN(v)) ? '—' : Number(v).toLocaleString(idiomaActual() === 'en' ? 'en-US' : 'es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
+        function aguaUtilPct(theta, params) { const r = (theta - params.PMP) / (params.CC - params.PMP); return Math.max(0, Math.min(1, r)) * 100; }
+        function estadoAgua(p) { return p > 65 ? ['ok', 'st_ok'] : (p > 35 ? ['warn', 'st_reg'] : ['crit', 'st_crit']); }
+
+        function poblarInforme(datos, params) {
+            if (!datos || !datos.length || !params) return;
+            const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+            const ult = datos[datos.length - 1];
+            const lluvia = datos.reduce((s, d) => s + (d.Lluvia || 0), 0), et0s = datos.reduce((s, d) => s + (d.ET0 || 0), 0), et0m = et0s / datos.length;
+            const nSar = datos.filter(d => d.Proxy_Humedad !== null && d.Proxy_Humedad !== undefined).length;
+            const geo = window.poligonoActual ? geometriaLote(window.poligonoActual) : (typeof poligonoActual !== 'undefined' && poligonoActual ? geometriaLote(poligonoActual) : null);
+            set('rpMetaPeriodo', `${datos[0].timestamp} → ${ult.timestamp}`);
+            set('rpMetaSiembra', document.getElementById('siembraDate').value || '—');
+            set('rpMetaSup', geo ? `${fmt(geo.ha, 1)} ${tr('u_ha')}` : '—');
+            set('rpMetaCentro', geo ? `${geo.lat.toFixed(4)}°, ${geo.lon.toFixed(4)}°` : '—');
+            set('rpMetaSar', String(nSar));
+            set('rpMetaGen', new Date().toISOString().substring(0, 10));
+            const kpi = (id, valor, unidad, etiqueta, estado) => set(id, `<div class="v">${valor}<small>${unidad}</small></div><div class="l">${etiqueta}</div>` + (estado ? `<div class="s ${estado[0]}">${tr(estado[1])}</div>` : ''));
+            kpi('rpKpiLluvia', fmt(lluvia, 1), tr('u_mm'), tr('k_rain'));
+            kpi('rpKpiEt0', fmt(et0m, 1), tr('u_mmd'), tr('k_et0'));
+            kpi('rpKpiBalance', fmt(lluvia - et0s, 0).replace('-', '−'), tr('u_mm'), tr('k_bal'));
+            const a60 = aguaUtilPct(ult.Humedad_60cm, params), a100 = aguaUtilPct(ult.Humedad_100cm, params);
+            kpi('rpKpiAu60', fmt(a60, 0), '%', `${tr('k_au60')} · ${tr('k_at')} ${ult.timestamp}`, estadoAgua(a60));
+            kpi('rpKpiAu100', fmt(a100, 0), '%', `${tr('k_au100')} · ${tr('k_at')} ${ult.timestamp}`, estadoAgua(a100));
+        }
+
+        // Rótulos fijos del informe (títulos, leyendas de figuras, métodos) en el idioma elegido
+        function aplicarInforme() {
+            document.querySelectorAll('[data-rpt]').forEach(el => { const k = el.getAttribute('data-rpt'); const v = tr(k); if (typeof v === 'string') el.innerHTML = v; });
+            const met = document.getElementById('rpMetodosLista');
+            if (met) met.innerHTML = tr('met').map(f => `<dt>${f[0]}</dt><dd>${f[1]}</dd>`).join('');
+            const d = window.datosSimulacion, p = window.parametrosSimulacion;
+            if (d && d.length && p) {
+                try { generarInforme(d, p); } catch (e) {}
+                try { if (window.Plotly) renderizarGraficosPuros(d, p); } catch (e) {}
+            }
+        }
+        window.addEventListener('beforeprint', () => { const m = document.getElementById('informeMetodos'); if (m) m.open = true; });
+
+        // Exportación de la serie completa
+        function descargarCSV() {
+            const d = window.datosSimulacion; if (!d || !d.length) return;
+            const cols = Object.keys(d[0]);
+            const esc = v => { if (v === null || v === undefined) return ''; const s = String(v); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+            const csv = '﻿' + cols.join(',') + '\n' + d.map(r => cols.map(c => esc(r[c])).join(',')).join('\n');
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+            a.download = `MetricMoisture_${d[0].timestamp}_${d[d.length - 1].timestamp}.csv`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+        }
+
+        // Estilo común de las gráficas
+        const PL = { ink: '#0b2545', text: '#1f2933', muted: '#5b6770', grid: '#e6eaf0', axis: '#9aa5b1', moist: '#1b6ca8', vigor: '#2d7d46', ideal: '#52606d', cc: '#0f766e', pmp: '#a8680b', rain: '#7fb0dc', et0: '#c2410c' };
+        const plFuente = (s) => ({ family: "'IBM Plex Sans','Segoe UI',Roboto,Arial,sans-serif", size: s || 12, color: PL.text });
+        const plEje = (titulo, extra) => Object.assign({ title: { text: titulo, font: { size: 12, color: PL.muted }, standoff: 10 }, gridcolor: PL.grid, linecolor: PL.axis, showline: true, zeroline: false, ticks: 'outside', tickcolor: PL.axis, ticklen: 4, tickfont: { size: 11, color: '#3e4c59' } }, extra || {});
+        const plLayout = (extra) => Object.assign({ font: plFuente(), paper_bgcolor: '#fff', plot_bgcolor: '#fff', margin: { t: 12, r: 70, b: 70, l: 70 }, hovermode: 'x unified', hoverlabel: { bgcolor: '#fff', bordercolor: PL.axis, font: plFuente(12) }, legend: { orientation: 'h', x: 0, y: -0.24, font: plFuente(12) } }, extra || {});
+        const plConfig = () => ({ responsive: true, displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'], toImageButtonOptions: { format: 'png', filename: 'MetricMoisture_figura', scale: 2 } });
+
+        function renderizarGraficosPuros(datos, params) {
+            const fechas = datos.map(a => a.timestamp);
+            const lluvia = datos.map(a => a.Lluvia), et0 = datos.map(a => a.ET0), fisio = datos.map(a => a.Modelo_Fisiologico), g = datos.map(a => a.RVI_Crudo), h = datos.map(a => a.Proxy_Humedad);
+            const i = datos.map(a => a.Humedad_10cm), j = datos.map(a => a.Humedad_30cm), k = datos.map(a => a.Humedad_60cm), l = datos.map(a => a.Humedad_100cm);
+            const m = params ? params.CC : .3, n = params ? params.PMP : .15;
+            const f0 = fechas[0], f1 = fechas[fechas.length - 1];
+
+            // Figura 1: humedad SAR y vigor. connectgaps une las pasadas del satélite en una línea continua.
+            const hMax = Math.max(m, ...h.filter(v => v !== null && v !== undefined));
+            const trazaHum = { x: fechas, y: h, name: tr('l_sar'), type: 'scatter', mode: 'lines', connectgaps: true, line: { color: PL.moist, width: 2.4 } };
+            const trazaObs = { x: fechas, y: h, name: tr('l_obs'), type: 'scatter', mode: 'markers', hoverinfo: 'skip', marker: { color: '#fff', size: 6, line: { color: PL.moist, width: 1.6 } } };
+            const trazaVig = { x: fechas, y: g, name: tr('l_rvi'), type: 'scatter', mode: 'lines', connectgaps: true, yaxis: 'y2', line: { color: PL.vigor, width: 2 } };
+            const trazaFis = { x: fechas, y: fisio, name: tr('l_ideal'), type: 'scatter', mode: 'lines', yaxis: 'y2', line: { color: PL.ideal, width: 1.6, dash: 'dot' } };
+            const refCC = { x: [f0, f1], y: [m, m], name: tr('l_cc'), type: 'scatter', mode: 'lines', hoverinfo: 'skip', line: { color: PL.cc, width: 1.4, dash: 'dash' } };
+            const refPMP = { x: [f0, f1], y: [n, n], name: tr('l_pmp'), type: 'scatter', mode: 'lines', hoverinfo: 'skip', line: { color: PL.pmp, width: 1.4, dash: 'dash' } };
+            Plotly.newPlot('chartAgro', [trazaHum, trazaObs, trazaVig, trazaFis, refCC, refPMP], plLayout({
+                yaxis: plEje(tr('ax_h'), { range: [0, Math.ceil((hMax + 0.06) * 20) / 20], tickformat: '.2f' }),
+                yaxis2: plEje(tr('ax_v'), { overlaying: 'y', side: 'right', range: [0, 1.1], showgrid: false, tickformat: '.1f' }),
+                xaxis: plEje('', { showgrid: true, hoverformat: '%Y-%m-%d' })
+            }), plConfig());
+
+            // Figura 3: lluvia diaria, ET0 y lluvia acumulada
+            let acum = 0; const acumulada = lluvia.map(v => (acum += (v || 0)));
+            const barLluvia = { x: fechas, y: lluvia, name: tr('l_rain'), type: 'bar', marker: { color: PL.rain }, hovertemplate: '%{y:.1f} mm' };
+            const linEt0 = { x: fechas, y: et0, name: tr('l_et0'), type: 'scatter', mode: 'lines', line: { color: PL.et0, width: 1.8 }, hovertemplate: '%{y:.1f} mm/d' };
+            const linAcum = { x: fechas, y: acumulada, name: tr('l_acum'), type: 'scatter', mode: 'lines', yaxis: 'y2', line: { color: PL.ink, width: 2.2 }, hovertemplate: '%{y:.0f} mm' };
+            Plotly.newPlot('chartClima', [barLluvia, linEt0, linAcum], plLayout({
+                yaxis: plEje(tr('ax_mm'), { rangemode: 'tozero' }),
+                yaxis2: plEje(tr('ax_acum'), { overlaying: 'y', side: 'right', showgrid: false, rangemode: 'tozero' }),
+                xaxis: plEje('', { hoverformat: '%Y-%m-%d' }), bargap: 0.15
+            }), plConfig());
+
+            // Figuras 2 y 4: perfil de humedad
+            const o = Math.max(0, n - .03), p = m + .05, q = (p - o) / 10;
             let r = [], s = []; for (let a = 0; a <= 5; a++) { let b = o + a * (p - o) / 5; r.push(b); s.push(`${b.toFixed(2)} (${(b * 100).toFixed(0)}%)`); }
             const t = [[0, "#d7191c"], [.25, "#fdae61"], [.5, "#ffffbf"], [.75, "#abdda4"], [1, "#2b83ba"]];
-            
-            var u = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'contour', colorscale: t, zmin: o, zmax: p, contours: { coloring: 'fill', showlines: true, start: o, end: p, size: q }, colorbar: { title: 'Moisture', thickness: 15, tickvals: r, ticktext: s } }]; 
-            Plotly.newPlot('soilHeatmap', u, {margin: { t: 20, b: 50, l: 90, r: 40 }, yaxis: { title: 'Depth', tickvals: [0, -10, -30, -60, -100], ticktext: ["Surface", "-10 cm", "-30 cm", "-60 cm", "-100 cm"] }}, {responsive: true});
-            
-            var v = [{ z: [l, k, j, i, i], x: fechas, y: [-100,-60,-30,-10,0], type: 'surface', colorscale: t, cmin: o, cmax: p, colorbar: { title: 'm³/m³', thickness: 15, tickvals: r, ticktext: s } }]; 
-            Plotly.newPlot('soil3D', v, { margin: { l: 0, r: 0, b: 0, t: 30 }, scene: { xaxis: { title: 'Date' }, yaxis: { title: 'Depth (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: 'Moisture (V/V)', range: [Math.max(0, n - .05), m + .15] }, camera: { eye: { x: 1.3, y: -1.6, z: 0.6 } } } }, {responsive: true});
+            const etiquetasProf = [tr('surf'), '−10 cm', '−30 cm', '−60 cm', '−100 cm'];
+            const u = [{ z: [l, k, j, i, i], x: fechas, y: [-100, -60, -30, -10, 0], type: 'contour', colorscale: t, zmin: o, zmax: p, contours: { coloring: 'fill', showlines: true, start: o, end: p, size: q }, line: { width: 0.5, color: 'rgba(31,41,51,.35)' }, colorbar: { title: { text: tr('cb'), side: 'right' }, thickness: 14, len: 0.9, tickvals: r, ticktext: s, tickfont: { size: 11 } }, hovertemplate: '%{x}<br>%{y} cm<br>θ = %{z:.3f} m³/m³<extra></extra>' }];
+            Plotly.newPlot('soilHeatmap', u, plLayout({
+                margin: { t: 12, r: 20, b: 56, l: 90 }, hovermode: 'closest', legend: { visible: false },
+                yaxis: plEje(tr('ax_depth'), { tickvals: [0, -10, -30, -60, -100], ticktext: etiquetasProf }),
+                xaxis: plEje('', { showgrid: false })
+            }), plConfig());
+
+            const v = [{ z: [l, k, j, i, i], x: fechas, y: [-100, -60, -30, -10, 0], type: 'surface', colorscale: t, cmin: o, cmax: p, colorbar: { title: { text: tr('cb'), side: 'right' }, thickness: 14, tickvals: r, ticktext: s, tickfont: { size: 11 } } }];
+            Plotly.newPlot('soil3D', v, { font: plFuente(), paper_bgcolor: '#fff', margin: { l: 0, r: 0, b: 0, t: 10 }, scene: { xaxis: { title: tr('ax_date') }, yaxis: { title: tr('ax_depth') + ' (cm)', tickvals: [0, -10, -30, -60, -100] }, zaxis: { title: tr('ax_h'), range: [Math.max(0, n - .05), m + .15] }, camera: { eye: { x: 1.3, y: -1.6, z: 0.6 } } } }, plConfig());
         }
 
         function isPointInPoly(pt, poly) { let x = pt[0], y = pt[1], isInside = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { let xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1]; let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi); if (intersect) isInside = !isInside; } return isInside; }
