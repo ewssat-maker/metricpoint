@@ -807,17 +807,19 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
         }
 
         function agregarDatoManual() {
-            const f = document.getElementById('m_fecha').value, ll = document.getElementById('m_lluvia').value, et = document.getElementById('m_et0').value;
+            const f = elSeguro('m_fecha').value, ll = elSeguro('m_lluvia').value, et = elSeguro('m_et0').value;
             if (!f) return alert("Select Date");
             let registro = { timestamp: f }; if (ll !== "") registro.lluvia = parseFloat(ll); if (et !== "") registro.et0 = parseFloat(et);
             window.datosLocalesManuales = window.datosLocalesManuales.filter(b=>b.timestamp!==f); window.datosLocalesManuales.push(registro);
-            document.getElementById('m_status').innerText = `${window.datosLocalesManuales.length} records.`; document.getElementById('m_lluvia').value = ''; document.getElementById('m_et0').value = ''
+            elSeguro('m_status').innerText = `${window.datosLocalesManuales.length} records.`; elSeguro('m_lluvia').value = ''; elSeguro('m_et0').value = ''
         }
 
+        /* Si un bloque opcional ya no existe en la página, escribirle no rompe el resto del flujo */
+        function elSeguro(id) { return document.getElementById(id) || { style: {}, classList: { add: function () {}, remove: function () {} }, value: '', innerText: '', innerHTML: '' }; }
         function abrirPestana(tabId, elementoBtn) {
             document.querySelectorAll('#moduloAgrometeo .tab-content').forEach(tab => tab.classList.remove('active')); 
             document.querySelectorAll('#moduloAgrometeo .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); document.getElementById('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
+            document.getElementById(tabId).classList.add('active'); elementoBtn.classList.add('active'); elSeguro('infoClima').style.display = tabId === 'tabClima' ? 'block' : 'none';
             setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 10);
         }
 
@@ -844,7 +846,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                     document.getElementById('status').innerText = 'Analysis Complete!'; document.getElementById('status').style.color = '#31a354';
                     window.datosSimulacion = jsonResponse.data; window.parametrosSimulacion = jsonResponse.suelo; window.topografiaLote = jsonResponse.topografia; 
                     document.getElementById('infoSuelo').style.display = 'block'; document.getElementById('valArena').innerText = jsonResponse.suelo.Arena; document.getElementById('valArcilla').innerText = jsonResponse.suelo.Arcilla; document.getElementById('valCC').innerText = jsonResponse.suelo.CC.toFixed(3); document.getElementById('valPMP').innerText = jsonResponse.suelo.PMP.toFixed(3);
-                    let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); const _lm = document.getElementById('listaMeses'); if (_lm) _lm.innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
+                    let act = {}; jsonResponse.data.forEach(b => { let m = b.timestamp.substring(0,7); act[m] = (act[m]||0)+b.Lluvia; }); const _lm = elSeguro('listaMeses'); if (_lm) _lm.innerHTML = Object.entries(act).filter(a=>a[1]>0).map(a=>`<li>${a[0]}: <strong>${a[1].toFixed(1)} mm</strong></li>`).join('');
                     
                     window.ultimoDatoCalculado = jsonResponse.data[jsonResponse.data.length - 1];
                     generarInforme(jsonResponse.data, jsonResponse.suelo); 
@@ -939,8 +941,8 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
             if (dato) {
                 window.ultimoDatoCalculado = dato;
                 document.getElementById('rG_10').innerText = dato.Humedad_10cm.toFixed(3); document.getElementById('rG_30').innerText = dato.Humedad_30cm.toFixed(3); document.getElementById('rG_60').innerText = dato.Humedad_60cm.toFixed(3); document.getElementById('rG_100').innerText = dato.Humedad_100cm.toFixed(3); document.getElementById('rG_et0').innerText = dato.ET0.toFixed(1);
-                document.getElementById('rB_10').innerText = dato.Humedad_10cm.toFixed(3); document.getElementById('rB_30').innerText = dato.Humedad_30cm.toFixed(3); document.getElementById('rB_60').innerText = dato.Humedad_60cm.toFixed(3); document.getElementById('rB_100').innerText = dato.Humedad_100cm.toFixed(3);
-                document.getElementById('resGeo3D').style.display = 'block'; document.getElementById('resGemelo').style.display = 'block';
+                elSeguro('rB_10').innerText = dato.Humedad_10cm.toFixed(3); elSeguro('rB_30').innerText = dato.Humedad_30cm.toFixed(3); elSeguro('rB_60').innerText = dato.Humedad_60cm.toFixed(3); elSeguro('rB_100').innerText = dato.Humedad_100cm.toFixed(3);
+                document.getElementById('resGeo3D').style.display = 'block'; elSeguro('resGemelo').style.display = 'block';
                 document.getElementById('contenedorGeo3D').style.display = 'block'; document.getElementById('lblFechaGeo3D').innerText = `(Date: ${dato.timestamp})`;
                 document.getElementById('fechaConsultaGeo3D').value = fecha; document.getElementById('fechaConsultaGemelo').value = fecha;
                 renderizarGeo3D(dato, window.parametrosSimulacion, window.topografiaLote); 
