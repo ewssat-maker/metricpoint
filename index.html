@@ -16,6 +16,10 @@ window.addEventListener('error', function (e) {
 }, true);
 window.addEventListener('unhandledrejection', function (e) { try { window.dispatchEvent(new ErrorEvent('error', { message: 'Promesa: ' + (e.reason && e.reason.message ? e.reason.message : e.reason) })); } catch (_) {} });
 </script>
+<script>
+/* Si se toca "Sign In" antes de que termine de cargar la aplicación, avisa en lugar de fallar en silencio. */
+window.hacerLogin = function () { var s = document.getElementById('authStatusLogin'); if (s) { s.style.color = '#08306b'; s.textContent = 'Cargando la aplicación… esperá unos segundos y volvé a tocar.'; } };
+</script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -410,7 +414,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
     <div id="landingWrapper">
         <div id="authScreen">
             <div class="auth-left">
-                <video autoplay loop muted playsinline><source src="video_promo.mp4" type="video/mp4"></video>
+                <video data-lazy autoplay loop muted playsinline preload="none"><source data-lazy-src="video_promo.mp4" type="video/mp4"></video>
                 <div class="auth-slide-overlay">
                     <h2 data-i18n="landing_title">Geospatial Intelligence</h2>
                     <p data-i18n="landing_subtitle">Direct SAR telemetry to your agronomic control center.</p>
@@ -493,11 +497,11 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 </div>
                 <div id="introProd" class="intro-tab-content">
                     <div class="product-showcase">
-                        <video autoplay loop muted playsinline><source src="gemelos_digitales.mp4" type="video/mp4"></video>
+                        <video data-lazy autoplay loop muted playsinline preload="none"><source data-lazy-src="gemelos_digitales.mp4" type="video/mp4"></video>
                         <div class="product-info"><h3 style="color: #10b981;" data-i18n="prod_gem_title">Gemelos Digitales Volumétricos</h3><p data-i18n="prod_gem_desc">Visualice el subsuelo de su lote como nunca antes. Nuestra tecnología 3D permite realizar tomografías del terreno en tiempo real.</p></div>
                     </div>
                     <div class="product-showcase" style="border-left-color: #f59e0b; flex-direction: row-reverse;">
-                        <video autoplay loop muted playsinline><source src="RVI_vigor.mp4" type="video/mp4"></video>
+                        <video data-lazy autoplay loop muted playsinline preload="none"><source data-lazy-src="RVI_vigor.mp4" type="video/mp4"></video>
                         <div class="product-info"><h3 style="color: #f59e0b;" data-i18n="prod_rvi_title">Vigor RVI y Monitoreo Fenológico</h3><p data-i18n="prod_rvi_desc">Superamos las limitaciones de los índices ópticos tradicionales (NDVI). Utilizando Radar de Apertura Sintética (SAR), medimos el vigor real.</p></div>
                     </div>
                 </div>
@@ -535,7 +539,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 </div>
                 <button class="btn-danger" style="margin-top: 0;" onclick="cerrarSesion()" data-i18n="btn_logout">Sign Out</button>
             </div>
-            <div class="hub-video-container"><video autoplay loop muted playsinline><source src="video_carrousel.mp4" type="video/mp4"></video></div>
+            <div class="hub-video-container"><video data-lazy autoplay loop muted playsinline preload="none"><source data-lazy-src="video_carrousel.mp4" type="video/mp4"></video></div>
             <div class="hub-grid">
                 <div class="hub-card" onclick="abrirModulo('agrometeo')"><h3 style="margin-top: 0;">MetricMoisture</h3><p data-i18n="mod_moisture_desc">Deep edaphic moisture analysis with SAR satellites.</p></div>
                 <div class="hub-card" onclick="abrirModulo('pronostico')"><h3 style="margin-top: 0;" data-i18n="mod_weather_title">Weather Forecast</h3><p data-i18n="mod_weather_desc">Atmospheric modeling, live SMN radars and predictive meteorological variables.</p></div>
@@ -696,7 +700,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 <div class="header-left"><h1 style="color: #fff;" data-i18n="wf_title">WEATHER FORECAST</h1></div>
                 <div><button class="btn-secondary" style="background-color: #fff; color: #000;" onclick="volverAlHub()" data-i18n="btn_back">VOLVER</button></div>
             </div>
-            <div class="container" style="background: #0d0d0d; padding: 10px; width: 100%; box-sizing: border-box;"><iframe src="mod_forecast.html" width="100%" height="800px" style="border: none;"></iframe></div>
+            <div class="container" style="background: #0d0d0d; padding: 10px; width: 100%; box-sizing: border-box;"><iframe data-lazy-src="mod_forecast.html" width="100%" height="800px" style="border: none;"></iframe></div>
         </div>
         
         <div id="moduloMetricPoli" style="display: none;">
@@ -704,7 +708,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 <div class="header-left"><h1 style="color: #eab308;">METRIC POLI</h1></div>
                 <div><button class="btn-secondary" style="background-color: #eab308; color: #000;" onclick="volverAlHub()" data-i18n="btn_back">VOLVER</button></div>
             </div>
-            <div class="container" style="background: #0d0d0d; padding: 10px; width: 100%; box-sizing: border-box;"><iframe src="mod_poli.html" width="100%" height="800px" style="border: none;"></iframe></div>
+            <div class="container" style="background: #0d0d0d; padding: 10px; width: 100%; box-sizing: border-box;"><iframe data-lazy-src="mod_poli.html" width="100%" height="800px" style="border: none;"></iframe></div>
         </div>
         
         <div id="moduloHydro" style="display: none;">
@@ -741,7 +745,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                     <div id="tabHydroSit" class="tab-content">
                         <div class="chart-container" style="min-height: 650px; background: #0a0a0a; border: 1px solid #222; color: white; padding: 15px;">
                             <div style="border: 1px solid #333; border-radius: 4px; overflow: hidden; height: 500px; background: #000; position: relative; margin-bottom: 20px;">
-                                <iframe src="https://apps.geoglows.org/rfs#lon=-65.25&lat=-27.66&zoom=11.00&definition=" width="100%" height="100%" style="border: none;" title="GEOGLOWS River Forecast System"></iframe>
+                                <iframe data-lazy-src="https://apps.geoglows.org/rfs#lon=-65.25&lat=-27.66&zoom=11.00&definition=" width="100%" height="100%" style="border: none;" title="GEOGLOWS River Forecast System"></iframe>
                             </div>
                             <div style="background: #111827; border: 1px solid #334155; border-radius: 6px; padding: 20px;">
                                 <h4 style="margin-top: 0; color: #38bdf8; font-family: monospace; border-bottom: 1px solid #334155; padding-bottom: 8px; font-size: 14px; letter-spacing: 1px;">[ RESUMEN DE CUENCAS PRINCIPALES - TUCUMÁN ]</h4>
@@ -809,7 +813,7 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 <div class="header-left"><h1 style="color: #00d26a;">METRIC MINE</h1></div>
                 <div><button class="btn-secondary" style="background-color: #00d26a; color: #000;" onclick="volverAlHub()">VOLVER AL MENÚ</button></div>
             </div>
-            <div class="container" style="background: #0d0d0d; padding: 10px; width: 100%; box-sizing: border-box;"><iframe src="mod_mining.html" width="100%" height="900px" style="border: none;"></iframe></div>
+            <div class="container" style="background: #0d0d0d; padding: 10px; width: 100%; box-sizing: border-box;"><iframe data-lazy-src="mod_mining.html" width="100%" height="900px" style="border: none;"></iframe></div>
         </div>
     </div>
 
@@ -894,4 +898,4 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
                 "contact_title": "Póngase en Contacto", "contact_desc": "¿Interesado en llevar la tecnología de MetricPoint a sus campos? Envíenos un mensaje.", "contact_name": "Nombre Completo", "contact_msg": "Su Mensaje", "btn_send": "Enviar Mensaje",
                 "paywall_title": "Período de Prueba Expirado", "paywall_desc": "Tus 48 horas de acceso gratuito han finalizado. Para seguir utilizando los satélites de la Agencia Espacial Europea e inyectar topografía 3D, por favor actualiza a una suscripción Premium.", "btn_upgrade": "Adquirir Licencia Premium", "btn_logout": "Cerrar sesión",
                 "hub_subtitle": "Seleccione el módulo de análisis que desea utilizar", "mod_hydro_desc": "Monitoreo hidrológico, advertencias tempranas de crecidas y estado de la cuenca.", "mod_mine_desc": "Auditoría ESG, estrés hídrico en salares y salud de vegas altoandinas.", "hydro_header_subtitle": "Hydrological Early Warning", "hydro_title": "[ CENTRO DE OPERACIONES HIDROLÓGICAS - TUCUMÁN ]", "hydro_tab_adv": "⚠️ Panel de Advertencias", "hydro_tab_sit": "📊 Situación Actual (Cuenca)", "hydro_tab_admin": "⚙️ Uso Interno (Admin)", "hydro_normal_title": "Nivel Operativo Normal", "hydro_normal_desc": "La cuenca no registra anomalías hídricas en este momento.", "hydro_radar_badge": "RADAR SATELITAL ACTIVO", "hydro_history_title": "[ HISTORIAL DE EVENTOS ]", "hydro_no_history": "No hay eventos registrados en la sesión actual.", "hydro_rfs_title": "[ RFS : RIVER FORECAST SYSTEM - CUENCA TUCUMÁN ]", "hydro_rfs_sub": "Modelo hidrológico global de caudal y riesgo de crecidas (GEOGLOWS)", "hydro_summary_title": "[ TELEMETRÍA Y ESTADO DE CUENCAS - TIEMPO REAL ]", "hydro_btn_refresh": "🔄 Actualizar Datos", "hydro_admin_title": "⚠️ Consola de Disparo de Emergencias (MODO DIOS)", "hydro_admin_desc": "El mensaje redactado aquí se enviará vía SMS a los contactos registrados y actualizará inmediatamente el panel público de Advertencias y el mapa de riesgo.", "hydro_lbl_msg": "Redactar Mensaje de Alerta:", "hydro_btn_dispatch": "🚀 DISPARAR ALERTA SMS Y WEB",
-                "btn_gps": "📍 Usar Mi Ubicación GPS", "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back": "Volver al Menú", "lbl_lot_params": "Parámetros del Lote", "lbl_start_date": "Fecha Inicio:", "lbl_end_date": "Fecha Fin:", "lbl_sow_date": "Fecha Siembra:", "lbl_manual_input": "Carga Manual / Estación", "lbl_reg_date": "Fecha Registro:", "lbl_rain": "Lluvia (mm):", "btn_add_rec": "+ Agregar Registro", "btn_execute": "Ejecutar análisis", "lbl_soil_props": "Propiedades del Suelo", "lbl_sand": "Textura Arena:", "lbl_clay": "Textura Arcilla:", "lbl_cc": "Cap. de Campo (CC):", "lbl_pmp": "Pto. Marchitez (PMP):", "l
+                "btn_gps": "📍 Usar Mi Ubicación GPS", "mod1_subtitle": "Humedad Edáfica Satelital", "btn_back":
