@@ -1795,5 +1795,6 @@ window.addEventListener('unhandledrejection', function (e) { try { window.dispat
     window.abioRedibujar = function () { try { if (RES && $('abioDiag')) { lineas(false); ['abioGrafT', 'abioGrafA'].forEach(function (i) { var e = $(i); if (e && window.Plotly && e.data) Plotly.Plots.resize(e); }); } } catch (_) {} };
 })();
 </script>
+<script src="lluvia_live.js" defer></script>
 </body>
 </html>
